@@ -107,3 +107,65 @@ CREATE TABLE `languagestrings` (
   `language` varchar(4) NOT NULL default ''
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `admins`;
+CREATE TABLE `admins` (
+  `username` varchar(32) NOT NULL,
+  `password` varchar(32) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+INSERT INTO `admins` (username, password) VALUES (`nonametv`, ``);
+
+DROP TABLE IF EXISTS `epgservers`;
+CREATE TABLE `epgservers` (
+  `id` int(11) NOT NULL auto_increment,
+  `active` tinyint(4) NOT NULL default '0',
+  `name` varchar(100) NOT NULL default '',
+  `description` varchar(100) NOT NULL default '',
+  `vendor` varchar(100) NOT NULL default '',
+  `type` varchar(100) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `networks`;
+CREATE TABLE `networks` (
+  `id` int(11) NOT NULL auto_increment,
+  `epgserver` int(11) NOT NULL,
+  `active` tinyint(4) NOT NULL default '0',
+  `name` varchar(100) NOT NULL default '',
+  `operator` varchar(100) NOT NULL default '',
+  `description` varchar(100) NOT NULL default '',
+  `charset` varchar(100) NOT NULL default '',
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `transportstreams`;
+CREATE TABLE `transportstreams` (
+  `id` int(11) NOT NULL,
+  `network` int(11) NOT NULL,
+  `active` int(11) NOT NULL,
+  `description` varchar(256) NOT NULL,
+  `muxmainprotocol` int(11) NOT NULL,
+  `eitmaxbw` int(11) NOT NULL,
+  `simaxbw` int(11) NOT NULL,
+  `dsystype` int(11) NOT NULL,
+  `dsysfrequency` int(11) NOT NULL,
+  `dsysmodulationschemeid` int(11) NOT NULL,
+  `dsysfecouterschemeid` int(11) NOT NULL,
+  `dsysfecinnerschemeid` int(11) NOT NULL,
+  `dsyssymbolrate` int(11) NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `services`;
+CREATE TABLE `services` (
+  `id` int(11) NOT NULL,
+  `transportstream` int(11) NOT NULL,
+  `active` int(11) NOT NULL,
+  `serviceid` int(11) NOT NULL,
+  `servicename` varchar(256) NOT NULL,
+  `logicalchannelnumber` int(11) NOT NULL,
+  `description` varchar(256) NOT NULL,
+  `nvod` int(11) NOT NULL,
+  `servicetypeid` int(11) NOT NULL,
+  `dbchid` int(11) NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
