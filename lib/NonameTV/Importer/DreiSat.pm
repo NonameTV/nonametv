@@ -13,9 +13,10 @@ The downloaded file is in xml-format.
 
 use DateTime;
 use XML::LibXML;
+use Switch;
 
 use NonameTV qw/ParseXml norm AddCategory/;
-use NonameTV::Log qw/progress error/;
+use NonameTV::Log qw/progress w error/;
 
 use NonameTV::Importer::BaseWeekly;
 
@@ -27,7 +28,8 @@ sub new {
     my $self  = $class->SUPER::new( @_ );
     bless ($self, $class);
 
-
+    # url is linked from public web site so make it the default
+    defined( $self->{UrlRoot} ) or $self->{UrlRoot} = "http://programmdienst.3sat.de/wspressefahne/Dateien";
     defined( $self->{UrlRoot} ) or die "You must specify UrlRoot";
 
     return $self;
@@ -41,7 +43,7 @@ sub Object2Url {
 
   my( $year, $week ) = ( $objectname =~ /(\d+)-(\d+)$/ );
  
-  my $url = sprintf( "%s/3Sat_%04d%02d.XML", $self->{UrlRoot}, $year, $week );
+  my $url = sprintf( "%s/3sat_Woche%02d%02d.xml", $self->{UrlRoot}, $week, $year%100 );
 
   progress("DreiSat: fetching data from $url");
 
@@ -112,9 +114,12 @@ sub ImportContent
 
     # the title
     my $title = $sc->findvalue( './programm//sendetitel' );
+    $title = $self->clean_sendetitel ($title);
 
     # the subtitle
     my $subtitle = $sc->findvalue( './programm//untertitel' );
+    # strip "repeat"
+    $subtitle =~ s|\(Wh\.\)||;
 
     # additional info to the title
     my @addinfo;
@@ -167,7 +172,7 @@ sub ImportContent
 
       # end time
       my $biszeit = $as->getElementsByTagName( 'biszeit' );
-      my $endtime = $self->create_dt( $biszeit );
+      my $endtime = $self->create_dt_incomplete( $biszeit, $starttime );
       if( not defined $endtime ){
         error( "$batch_id: Invalid endtime for programme id $id - Skipping." );
         next;
@@ -186,8 +191,22 @@ sub ImportContent
         start_time  => $starttime->ymd("-") . " " . $starttime->hms(":"),
         end_time    => $endtime->ymd("-") . " " . $endtime->hms(":"),
         title       => norm($title),
-        #aspect      => $sixteen_nine ? "16:9" : "4:3", 
       };
+
+      foreach my $attribut (split (" ", $attribute)) {
+        switch ($attribut) {
+          case /auddes/ {} # stereo = audio description
+          case /dolby/  {$ce->{stereo} = "dolby"}
+          case /dolbyd/ {$ce->{stereo} = "dolby digital"}
+          case /f16zu9/ {$ce->{aspect} = "16:9"}
+          case /gbsp/   {} # sign language
+          case /stereo/ {$ce->{stereo} = "stereo"}
+          case /sw/     {} # colour=no
+          case /videot/ {} # subtitles=teletext
+          case /zweika/ {$ce->{stereo} = "bilingual"}
+          else          { w ("DreiSat: unhandled attribute:" . $attribut) }
+        }
+      }
 
       # form the subtitle out of 'episodetitle' and 'subtitle'
       my $st;
@@ -211,7 +230,7 @@ sub ImportContent
       }
       $description .= norm($longdesc) || norm($shortdesc);
       if( $origin ){
-        $description .= "<br>" . $origin . "\n";
+        $description .= "<br/>" . $origin . "\n";
       }
       $ce->{description} = $description;
 
@@ -238,7 +257,7 @@ sub ImportContent
 sub create_dt
 {
   my $self = shift;
-  my( $str ) = @_;
+  my $str = shift;
 
   my( $date, $time ) = split( 'T', $str );
   if( not defined $time )
@@ -248,10 +267,10 @@ sub create_dt
 
   my( $year, $month, $day );
 
-  if( $date =~ /(\d{4})\.(\d{2})\.(\d{2})/ ){
-    ( $year, $month, $day ) = ( $date =~ /(\d{4})\.(\d{2})\.(\d{2})/ );
-  } elsif( $date =~ /(\d{2})\.(\d{2})\.(\d{4})/ ){
-    ( $day, $month, $year ) = ( $date =~ /(\d{2})\.(\d{2})\.(\d{4})/ );
+  if( $date =~ /(\d{4})\.(\d+)\.(\d+)/ ){
+    ( $year, $month, $day ) = ( $date =~ /(\d{4})\.(\d+)\.(\d+)/ );
+  } elsif( $date =~ /(\d+)\.(\d+)\.(\d{4})/ ){
+    ( $day, $month, $year ) = ( $date =~ /(\d+)\.(\d+)\.(\d{4})/ );
   }
 
   my( $hour, $minute, $second ) = ( $time =~ /(\d{2}):(\d{2}):(\d{2})/ );
@@ -266,12 +285,44 @@ sub create_dt
                           hour   => $hour,
                           minute => $minute,
                           second => $second,
-                          time_zone => 'Europe/Zagreb',
+                          time_zone => 'Europe/Berlin',
                           );
   
   $dt->set_time_zone( "UTC" );
   
   return $dt;
+}
+
+sub create_dt_incomplete
+{
+  my $self = shift;
+  my $str = shift;
+  my $start = shift;
+
+  my $dt;
+
+  if ($str =~ /\d{6}/) {
+    my ($hour, $minute, $second) = ($str =~ /(\d{2})(\d{2})(\d{2})/ );
+    $dt = $start->clone();
+    $dt->set_hour ($hour);
+    $dt->set_minute ($minute);
+    $dt->set_second ($second);
+  } else {
+    $dt = $self->create_dt ($str)
+  }
+
+  return $dt;
+}
+
+sub clean_sendetitel
+{
+  my $self = shift;
+  my $title = shift;
+
+  # remove episode numbers from title
+  $title =~ s| \(\d+/\d+\)$||;
+
+  return $title;
 }
 
 1;
