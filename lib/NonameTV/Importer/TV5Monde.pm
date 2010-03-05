@@ -175,7 +175,7 @@ sub isDate
 #print ">$text<\n";
 
   # the format is 'Samedi 1er novembre 2008'
-  if( $text =~ /^(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)\s+\d+\S*\s+(janvier|favrier|mars|avril|mai|juin|juillet|aout|septembre|octobre|novembre|décembre)\s+\d+$/i ){
+  if( $text =~ /^(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)\s+\d+\S*\s+(janvier|Février|mars|avril|mai|juin|juillet|aout|septembre|octobre|novembre|décembre)\s+\d+$/i ){
     return 1;
   }
 

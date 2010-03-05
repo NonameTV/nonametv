@@ -58,10 +58,11 @@ sub ImportContentFile {
   my $dsh = $self->{datastorehelper};
   my $ds = $self->{datastore};
 
-#print "FILE: $file\n";
-return if ( $file !~ /Disney/ );
+print "FILE: $file\n";
+#return if ( $file !~ /Disney/ );
 
   my $ft = CheckFileFormat( $file );
+print "FT $ft\n";
 
   if( $ft eq FT_FLATXLS ){
     $self->ImportFlatXLS( $file, $channel_id, $xmltvid );
@@ -298,7 +299,7 @@ print "kolona $iC dayno $dayno\n";
         next if( ! $oWkC );
         my $text = $oWkC->Value;
         next if( ! $text );
-#print "$iR $iC >$text<\n";
+print "$iR $iC >$text<\n";
 
         my $title = $text;
 
@@ -308,7 +309,7 @@ print "kolona $iC dayno $dayno\n";
         my $time = $oWkC->Value;
         next if( ! $time );
         next if( $time =~ /^KEY$/ );
-#print "$iR $iC >$time<\n";
+print "$iR $iC >$time<\n";
 
         my $show = {
           start_time => $time,
@@ -321,10 +322,10 @@ print "kolona $iC dayno $dayno\n";
         # all these days have the same show at this time slot
         for( my $c = $iC + 1 ; $c <= $lastcol ; $c++) {
           my $dayoff = $dayno + ($c - $iC);
-#print "dayoff $dayoff\n";
+print "dayoff $dayoff\n";
           $oWkC = $oWkS->{Cells}[$iR][$c];
           if( ! $oWkC->Value ){
-#print "spread " . $show->{title} . "\n";
+print "spread " . $show->{title} . "\n";
             @{$shows[ $dayno + ($c - $iC) ]} = () if not $shows[ $dayno + ($c - $iC) ];
             push( @{$shows[ $dayno + ($c - $iC) ]} , $show );
           } else {
@@ -332,9 +333,8 @@ print "kolona $iC dayno $dayno\n";
           }
         }
 
-
       } # next row
-#print "zadnje u koloni $iC\n----------------\n";
+print "zadnje u koloni $iC\n----------------\n";
 
       $dayno++;
 
@@ -354,6 +354,7 @@ print "kolona $iC dayno $dayno\n";
 sub SpreadWeeks {
   my ( $spreadweeks, @shows ) = @_;
 
+print "SpreadWeeks 1\n";
   for( my $w = 1; $w < $spreadweeks; $w++ ){
     for( my $d = 0; $d < 7; $d++ ){
       my @tmpshows = @{$shows[$d]};
@@ -361,6 +362,7 @@ sub SpreadWeeks {
     }
   }
 
+print "SpreadWeeks 2\n";
   return @shows;
 }
 
@@ -370,6 +372,7 @@ sub FlushData {
   my $date = $firstdate;
   my $currdate = "x";
 
+print "FlushData 1\n";
   # run through the shows
   foreach my $dayshows ( @shows ) {
 
@@ -416,7 +419,7 @@ sub FlushData {
 sub ParsePeriod {
   my ( $text ) = @_;
 
-print ">$text<\n";
+print "ParsePeriod >$text<\n";
   my( $day1, $monthname1 );
   my( $day2, $monthname2 );
 
@@ -441,10 +444,10 @@ print ">$text<\n";
     ( $day1, $monthname1, $day2, $monthname2 ) = ( $text =~ /^\s*JETIX PLAY\s+(\d+)\S+\s+(\S+)\s+to\s+(\d+)\S+\s+(\S+)\s*$/ );
   }
 
-#print "DAY1: $day1\n";
-#print "MON1: $monthname1\n";
-#print "DAY2: $day2\n";
-#print "MON2: $monthname2\n";
+print "ParsePeriod DAY1: $day1\n";
+print "ParsePeriod MON1: $monthname1\n";
+print "ParsePeriod DAY2: $day2\n";
+print "ParsePeriod MON2: $monthname2\n";
 
   my $year = 2009;
 

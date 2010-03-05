@@ -131,7 +131,7 @@ sub ImportXLS
       # date - column 0 ('Date')
       my $oWkC = $oWkS->{Cells}[$iR][$columns{'Date'}];
       next if( ! $oWkC );
-
+      next if( ! $oWkC->Value );
       $date = ParseDate( $oWkC->Value );
       next if( ! $date );
 
@@ -153,7 +153,8 @@ sub ImportXLS
       # starttime - column ('Film start hour')
       $oWkC = $oWkS->{Cells}[$iR][$columns{'Film start hour'}];
       next if( ! $oWkC );
-      my $starttime = $oWkC->Value;
+      next if( ! $oWkC->Value );
+      my $starttime = ParseTime( $oWkC->Value );
       next if( ! $starttime );
 
       # title - column ('Polish Title')
@@ -340,6 +341,8 @@ sub ParseDate {
 
   $text =~ s/^\s+//;
 
+#print "ParseDate: >$text<\n";
+
   my( $dayname, $day, $monthname, $year );
   my $month;
 
@@ -355,6 +358,24 @@ sub ParseDate {
   }
 
   return sprintf( '%d-%02d-%02d', $year, $month, $day );
+}
+
+sub ParseTime {
+  my( $text ) = @_;
+
+#print "ParseTime: >$text<\n";
+
+  my( $hour , $min );
+
+  if( $text =~ /^\d+:\d+$/ ){
+    ( $hour , $min ) = ( $text =~ /^(\d+):(\d+)$/ );
+  } elsif( $text =~ /^0\.\d+$/){ # format '0.377962962962964'
+    my $daysecs = int( 86400 * $text );
+    $hour = int( $daysecs / 3600 );
+    $min =  int( ( $daysecs - ( $hour * 3600 ) ) / 60 );
+  }
+
+  return sprintf( "%02d:%02d", $hour, $min );
 }
 
 sub isShow {

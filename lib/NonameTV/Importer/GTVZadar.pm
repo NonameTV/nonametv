@@ -156,7 +156,7 @@ sub isDate {
 #print ">$text<\n";
 
   # format 'PETAK: 11. srpnja 2008.god.'
-  if( $text =~ /^(ponedjeljak|utorak|srijeda|ČETVRTAK|petak|subota|nedjelja):\s*\d+\.\s*(sijecnja|veljače|ozujka|travnja|svibnja|lipnja|srpnja|kolovoza|rujna|listopada|studenog\a*|prosinca)\s*\d+\.\s*god\.$/i ){
+  if( $text =~ /^(ponedjeljak|utorak|srijeda|ČETVRTAK|petak|subota|nedjelja):\s*\d+\.\s*(siječnja|veljače|ozujka|travnja|svibnja|lipnja|srpnja|kolovoza|rujna|listopada|studenog\a*|prosinca)\s*\d+\.\s*god\.$/i ){
     return 1;
   }
 

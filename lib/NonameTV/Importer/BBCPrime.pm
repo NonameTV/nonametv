@@ -17,7 +17,7 @@ use Spreadsheet::ParseExcel;
 use Data::Dumper;
 use File::Temp qw/tempfile/;
 
-use NonameTV qw/MyGet norm MonthNumber/;
+use NonameTV qw/MyGet norm MonthNumber AddCategory/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/progress error/;
 
@@ -96,9 +96,19 @@ return if( $file !~ /Entertainment/i );
 
             $columns{$value} = $iC;
 
-            $columns{'DATETIME'} = $iC if( $value =~ /^DATE\s*CET$/ );
+            $columns{'DATETIME'} = $iC if( $value =~ /^DATE\s*CET$/i );
+            $columns{'DATE'} = $iC if( $value =~ /^plandate$/i );
+            $columns{'TIME'} = $iC if( $value =~ /^plantime$/i );
+            $columns{'PROGRAMME'} = $iC if( $value =~ /^title\s*name$/i );
+            $columns{'SERIES'} = $iC if( $value =~ /^series$/i );
+            $columns{'EP'} = $iC if( $value =~ /^ep no$/i );
+            $columns{'EPISODETITLE'} = $iC if( $value =~ /^EPISODE\s*NAME$/i );
+            $columns{'BILLING'} = $iC if( $value =~ /^billing$/i );
+            $columns{'GENRE'} = $iC if( $value =~ /^genre$/i );
+            $columns{'SUBS'} = $iC if( $value =~ /^subtles$/i );
+            $columns{'CERT'} = $iC if( $value =~ /^certificates$/i );
 
-            $colrow = $iR if( $value =~ /^PROGRAMME$/ );
+            $colrow = $iR if( ( $value =~ /^PROGRAMME$/ ) or ( $value =~ /^billing$/i ) );
 
             next;
           }
@@ -163,6 +173,7 @@ return if( $file !~ /Entertainment/i );
 
       #my $srs = $oWkS->{Cells}[$iR][$columns{'SRS'}]->Value if defined $columns{'SRS'};
       my $ep = $oWkS->{Cells}[$iR][$columns{'EP'}]->Value if defined $columns{'EP'};
+      my $series = $oWkS->{Cells}[$iR][$columns{'SERIES'}]->Value if defined $columns{'SERIES'};
       my $episodetitle = $oWkS->{Cells}[$iR][$columns{'EPISODETITLE'}]->Value if defined $columns{'EPISODETITLE'};
       my $billing = $oWkS->{Cells}[$iR][$columns{'BILLING'}]->Value if defined $columns{'BILLING'};
       my $genre = $oWkS->{Cells}[$iR][$columns{'GENRE'}]->Value if defined $columns{'GENRE'};
@@ -178,7 +189,9 @@ return if( $file !~ /Entertainment/i );
         start_time => $time,
       };
 
-      if( $ep ){
+      if( $series and $ep ){
+        $ce->{episode} = sprintf( "%d . %d .", $series-1, $ep-1 );
+      } elsif( $ep ){
         $ce->{episode} = sprintf( ". %d .", $ep-1 );
       }
 
@@ -191,8 +204,8 @@ return if( $file !~ /Entertainment/i );
       }
 
       if( $genre ){
-        #my($program_type, $category ) = $ds->LookupCat( 'BBCPrime', $genre );
-        #AddCategory( $ce, $program_type, $category );
+        my($program_type, $category ) = $ds->LookupCat( 'BBCPrime', $genre );
+        AddCategory( $ce, $program_type, $category );
       }
 
       if( $cert ){
@@ -224,6 +237,8 @@ sub ParseDate
     ( $day, $monthname, $year ) = ( $text =~ /^(\d+)-(\S+)-(\d+)$/ );
     $year += 2000 if $year < 100;
     $month = MonthNumber( $monthname, "en" );
+  } elsif( $text =~ /^\d+\/\d+\/\d+$/ ){ # new BBC Entertainment date format '01/03/2010'
+    ( $day, $month, $year ) = ( $text =~ /^(\d+)\/(\d+)\/(\d+)$/ );
   } else {
     return undef;
   }
@@ -243,6 +258,8 @@ sub ParseTime
     ( $hour, $min ) = ( $text =~ /^\d+\/\d+\/\d+\s+(\d+)\:(\d+)$/ );
   } elsif( $text =~ /^\d+\:\d+$/ ){ # new BBC Entertainment time format '22:10'
     ( $hour, $min ) = ( $text =~ /^(\d+)\:(\d+)$/ );
+  } elsif( $text =~ /^\d+\:\d+\:\d+$/ ){ # time format '18:40:00'
+    ( $hour, $min ) = ( $text =~ /^(\d+)\:(\d+)\:\d+$/ );
   } else {
     return undef;
   }

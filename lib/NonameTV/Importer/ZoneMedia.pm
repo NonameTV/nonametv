@@ -1,4 +1,4 @@
-package NonameTV::Importer::ZoneClub;
+package NonameTV::Importer::ZoneMedia;
 
 use strict;
 use warnings;
@@ -49,7 +49,7 @@ sub new {
 
   $self->{FileStore} = $conf->{FileStore};
 
-  my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
+  my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore}, "Europe/Zagreb" );
   $self->{datastorehelper} = $dsh;
 
   return $self;
@@ -64,7 +64,7 @@ sub ImportContentFile {
   my $dsh = $self->{datastorehelper};
   my $ds = $self->{datastore};
 
-#return if ( $chd->{xmltvid} !~ /club/ );
+#return if ( $chd->{xmltvid} !~ /reality/ );
 
   my $ft = CheckFileFormat( $file );
 
@@ -73,7 +73,7 @@ sub ImportContentFile {
   } elsif( $ft eq FT_FLATXLS ){
     $self->ImportFlatXLS( $file, $chd );
   } else {
-    progress( "ZoneClub: $chd->{xmltvid}: Unknown format of the file $file" );
+    progress( "ZoneMedia: $chd->{xmltvid}: Unknown format of the file $file" );
   }
 
   return;
@@ -117,8 +117,8 @@ sub CheckFileFormat
   }
 
   # Flat XLS
-  if( $oBook->{SheetCount} eq 1 ){
-    my $oWkS = $oBook->{Worksheet}[0];
+  for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
+    my $oWkS = $oBook->{Worksheet}[$iSheet];
     my $oWkC = $oWkS->{Cells}[0][0];
     if( $oWkC and ( $oWkC->Value =~ /^Tx Date$/i ) or ( $oWkC->Value =~ /^schedule_date$/i ) ){
       return FT_FLATXLS;
@@ -139,7 +139,7 @@ sub ImportGridXLS
 
   # Only process .xls files.
   return if( $file !~ /\.xls$/i );
-  progress( "ZoneClub GridXLS: $chd->{xmltvid}: Processing $file" );
+  progress( "ZoneMedia GridXLS: $chd->{xmltvid}: Processing $file" );
 
   my $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
 
@@ -158,7 +158,7 @@ sub ImportGridXLS
       next;
     }
 
-    progress( "ZoneClub GridXLS: $chd->{xmltvid}: Processing worksheet: $oWkS->{Name}" );
+    progress( "ZoneMedia GridXLS: $chd->{xmltvid}: Processing worksheet: $oWkS->{Name}" );
 
     for(my $iC = $oWkS->{MinCol} ; defined $oWkS->{MaxCol} && $iC <= $oWkS->{MaxCol} ; $iC++){
 
@@ -169,7 +169,7 @@ sub ImportGridXLS
 
       if( $date ){
 
-        progress("ZoneClub GridXLS: $chd->{xmltvid}: Date is $date");
+        progress("ZoneMedia GridXLS: $chd->{xmltvid}: Date is $date");
 
         if( ( $date ne $currdate ) and ( $currdate ne "x" ) ) {
           $dsh->EndBatch( 1 );
@@ -195,7 +195,7 @@ sub ImportGridXLS
         next if( ! $oWkC->Value );
         my $time = $oWkC->Value;
 
-        progress("ZoneClub GridXLS: $chd->{xmltvid}: $time - $title");
+        progress("ZoneMedia GridXLS: $chd->{xmltvid}: $time - $title");
 
         my $ce = {
           channel_id => $chd->{id},
@@ -228,7 +228,7 @@ sub ImportFlatXLS
 
   # Only process .xls files.
   return if( $file !~ /\.xls$/i );
-  progress( "ZoneClub FlatXLS: $chd->{xmltvid}: Processing $file" );
+  progress( "ZoneMedia FlatXLS: $chd->{xmltvid}: Processing $file" );
 
   my %columns = ();
   my $date;
@@ -241,7 +241,11 @@ sub ImportFlatXLS
 
     my $oWkS = $oBook->{Worksheet}[$iSheet];
 
-    progress( "ZoneClub FlatXLS: $chd->{xmltvid}: Processing worksheet: $oWkS->{Name}" );
+    if( $chd->{xmltvid} =~ /extreme/ and $oWkS->{Name} !~ /ENG/ ){
+      next;
+    }
+
+    progress( "ZoneMedia FlatXLS: $chd->{xmltvid}: Processing worksheet: $oWkS->{Name}" );
 
     # browse through rows
     # schedules are starting after that
@@ -281,12 +285,13 @@ sub ImportFlatXLS
           $columns{'EPISODE'} = $iC if ( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Episode number/i );
           $columns{'EPISODE'} = $iC if ( $oWkS->{Cells}[$iR][$iC]->Value =~ /^episode_number/i );
 
+          $columns{'SEASON'} = $iC if ( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Season/i );
 
         }
 
-#foreach my $cl (%columns) {
-#print "COL >$cl<\n";
-#}
+foreach my $cl (%columns) {
+print "COL >$cl<\n";
+}
         next;
       }
 
@@ -301,7 +306,7 @@ sub ImportFlatXLS
 
       if( $date ne $currdate ){
 
-        progress("ZoneClub FlatXLS: $chd->{xmltvid}: Date is $date");
+        progress("ZoneMedia FlatXLS: $chd->{xmltvid}: Date is $date");
 
         if( $currdate ne "x" ) {
           $dsh->EndBatch( 1 );
@@ -317,7 +322,7 @@ sub ImportFlatXLS
       $oWkC = $oWkS->{Cells}[$iR][$columns{'TIME'}];
       next if( ! $oWkC );
       next if( ! $oWkC->Value );
-      my $time = $oWkC->Value if( $oWkC->Value );
+      my $time = ParseTime( $oWkC->Value );
       next if( ! $time );
 
       # title
@@ -363,7 +368,7 @@ sub ImportFlatXLS
         }
       }
 
-      progress("ZoneClub FlatXLS: $chd->{xmltvid}: $time - $title");
+      progress("ZoneMedia FlatXLS: $chd->{xmltvid}: $time - $title");
 
       my $ce = {
         channel_id => $chd->{id},
@@ -430,6 +435,24 @@ sub ParseDate
   return sprintf( "%04d-%02d-%02d", $year, $month, $day );
 }
 
+sub ParseTime {
+  my( $text ) = @_;
+
+#print "ParseTime: >$text<\n";
+
+  my( $hour , $min );
+
+  if( $text =~ /^\d+:\d+$/ ){
+    ( $hour , $min ) = ( $text =~ /^(\d+):(\d+)$/ );
+  } elsif( $text =~ /^0\.\d+$/){ # format '0.377962962962964'
+    my $daysecs = int( 86400 * $text );
+    $hour = int( $daysecs / 3600 );
+    $min =  int( ( $daysecs - ( $hour * 3600 ) ) / 60 );
+  }
+
+  return sprintf( "%02d:%02d", $hour, $min );
+}
+
 sub UpdateFiles {
   my( $self ) = @_;
 
@@ -457,7 +480,7 @@ sub UpdateFiles {
         foreach my $sufix ( qw/V L/ ){
           my $filename = sprintf( "%s%02d%02d%s%02d.xls", $data->{grabber_info}, $dt->month, $dt->strftime( '%y' ), $sufix, $v );
           my $url = $self->{UrlRoot} . "/" . $filename;
-          progress("ZoneClub: $xmltvid: Fetching xls file from $url");
+          progress("ZoneMedia: $xmltvid: Fetching xls file from $url");
           http_get( $url, $self->{FileStore} . '/' . $xmltvid . '/' . $filename );
         }
 

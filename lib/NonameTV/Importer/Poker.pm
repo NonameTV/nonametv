@@ -102,34 +102,48 @@ sub ImportGridXLS
     my( $monthname, $year ) = ( $oWkC->Value =~ /^(\S+)-(\d+)$/ );
     $year += 2000 if $year < 100;
     my $month = MonthNumber( $monthname, "en" );
+print "$month $year\n";
 
     # Each column contains data for one day
     # starting with column 3 for monday to column 9 for sunday
     for(my $iC = 3; $iC <= 9 ; $iC++ ) {
 
-      # DATE is in the 14th row
-      $oWkC = $oWkS->{Cells}[14][$iC];
-      next if( ! $oWkC );
-      next if( ! $oWkC->Value );
-      $date = ParseDate( $year, $month, $oWkC->Value );
-      next if ( ! $date );
+      my $firstrow;
 
-      if( $date ne $currdate ){
+      # skip to the row with the date
+      for(my $iR = 0 ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
 
-        if( $currdate ne "x" ) {
-          $dsh->EndBatch( 1 );
+        $oWkC = $oWkS->{Cells}[$iR][$iC];
+        next if( ! $oWkC );
+        next if( ! $oWkC->Value );
+print $oWkC->Value . "\n";
+        if( $oWkC->Value =~ /^\d+-(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)$/i ){
+print "bingooooooooooooo\n";
+          # DATE
+          $date = ParseDate( $year, $month, $oWkC->Value );
+          next if ( ! $date );
+
+          if( $date ne $currdate ){
+
+            if( $currdate ne "x" ) {
+              $dsh->EndBatch( 1 );
+            }
+
+            my $batch_id = $xmltvid . "_" . $date;
+            $dsh->StartBatch( $batch_id , $channel_id );
+            $dsh->StartDate( $date , "07:00" );
+            $currdate = $date;
+          }
+
+          progress("Poker: $xmltvid: Date is: $date");
+          $firstrow = $iR + 1;
+
         }
 
-        my $batch_id = $xmltvid . "_" . $date;
-        $dsh->StartBatch( $batch_id , $channel_id );
-        $dsh->StartDate( $date , "07:00" );
-        $currdate = $date;
       }
 
-      progress("Poker: $xmltvid: Date is: $date");
-
       # programmes start from row 15
-      for(my $iR = 15 ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
+      for(my $iR = $firstrow ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
 
         # Time - column 0
         $oWkC = $oWkS->{Cells}[$iR][0];

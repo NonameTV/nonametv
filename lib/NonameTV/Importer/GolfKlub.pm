@@ -1,11 +1,11 @@
-package NonameTV::Importer::OBN;
+package NonameTV::Importer::GolfKlub;
 
 use strict;
 use warnings;
 
 =pod
 
-Channels: OBN (www.obn.ba)
+Channels: Golf Klub
 
 Import data from Word-files delivered via e-mail.  Each day
 is handled as a separate batch.
@@ -56,13 +56,13 @@ sub ImportContentFile
   
   return if( $file !~ /\.doc$/i );
 
-  progress( "OBN: $xmltvid: Processing $file" );
+  progress( "GolfKlub: $xmltvid: Processing $file" );
   
   my $doc;
   $doc = Wordfile2Xml( $file );
 
   if( not defined( $doc ) ) {
-    error( "OBN $xmltvid: $file: Failed to parse" );
+    error( "GolfKlub $xmltvid: $file: Failed to parse" );
     return;
   }
 
@@ -76,7 +76,7 @@ sub ImportContentFile
   my $ns = $doc->find( "//div" );
   
   if( $ns->size() == 0 ) {
-    error( "OBN $xmltvid: $file: No divs found." ) ;
+    error( "GolfKlub $xmltvid: $file: No divs found." ) ;
     return;
   }
 
@@ -97,7 +97,7 @@ sub ImportContentFile
 
       if( $date ) {
 
-        progress("OBN: $xmltvid: Date is $date");
+        progress("GolfKlub: $xmltvid: Date is $date");
 
         if( $date ne $currdate ) {
 
@@ -118,30 +118,16 @@ sub ImportContentFile
 
     } elsif( isShow( $text ) ) {
 
-      my( $time, $title, $genre, $epnum, $eptot, $rating ) = ParseShow( $text );
-      next if( ! $time );
-      next if( ! $title );
-
+      my( $time, $title, ) = ParseShow( $text );
       #$title = decode( "iso-8859-2" , $title );
 
-      progress("OBN: $xmltvid: $time - $title");
+      progress("GolfKlub: $xmltvid: $time - $title");
 
       my $ce = {
         channel_id => $chd->{id},
         start_time => $time,
-        title => $title,
+        title => norm($title),
       };
-
-      if( $genre ){
-        my($program_type, $category ) = $ds->LookupCat( 'OBN', $genre );
-        AddCategory( $ce, $program_type, $category );
-      }
-
-      if( $epnum and $eptot ){
-        $ce->{episode} = sprintf( ". %d/%d .", $epnum-1 , $eptot );
-      }
-
-      $ce->{rating} = $rating if $rating;
 
       $dsh->AddProgramme( $ce );
 
@@ -160,10 +146,8 @@ sub isDate {
 
 #print ">$text<\n";
 
-  # format 'subota, 21.studeni 2009.'
-  if( $text =~ /^(ponedjeljak|utorak|srijeda|ČETVRTAK|petak|subota|nedjelja),\s*\d+\.\s*(siječanj|veljače|ozujak|travanj|svibanj|lipanj|srpanj|kolovoz|rujan|listopad|studeni|prosinac)\s*\d+\.$/i ){
-    return 1;
-  } elsif( $text =~ /^(ponedjeljak|utorak|srijeda|ČETVRTAK|petak|subota|nedjelja),\s*\d+\.\s*(siječanj|veljače|ozujak|travnj|svibanj|lipanj|srpanj|kolovoz|rujan|listopad|studeni|prosinac)$/i ){ # format 'SUBOTA, 21. studeni'
+  # format 'PONEDELJAK, 08.03. (WEEK 10)'
+  if( $text =~ /^(ponedeljak|utorak|sreda|ČETVRTAK|petak|subota|nedelja),\s*\d+\.\d+\.\s*\(WEEK\s*\d+\)$/i ){
     return 1;
   }
 
@@ -174,18 +158,9 @@ sub ParseDate {
   my( $text ) = @_;
 
 #print ">$text<\n";
+  my( $dayname, $day, $month ) = ( $text =~ /^(\S+),\s*(\d+)\.(\d+)\.\s*\(WEEK\s*\d+\)$/i );
 
-  my( $dayname, $day, $monthname, $year );
-
-  # format 'subota, 21.studeni 2009.'
-  if( $text =~ /^(ponedjeljak|utorak|srijeda|ČETVRTAK|petak|subota|nedjelja),\s*\d+\.\s*(siječanj|veljače|ozujak|travanj|svibanj|lipanj|srpanj|kolovoz|rujan|listopad|studeni|prosinac)\s*\d+\.$/i ){
-    ( $dayname, $day, $monthname, $year ) = ( $text =~ /^(\S+),\s*(\d+)\.\s*(\S+)\s*(\d+)\.$/i )
-  } elsif( $text =~ /^(ponedjeljak|utorak|srijeda|ČETVRTAK|petak|subota|nedjelja),\s*\d+\.\s*(siječanj|veljače|ozujak|travnj|svibanj|lipanj|srpanj|kolovoz|rujan|listopad|studeni|prosinac)$/i ){ # format 'SUBOTA, 21. studeni'
-    ( $dayname, $day, $monthname ) = ( $text =~ /^(\S+),\s*(\d+)\.\s*(\S+)$/i );
-    $year = DateTime->today->year();
-  }
-
-  my $month = MonthNumber( $monthname , 'hr' );
+  my $year = DateTime->today->year();
 
   return sprintf( '%d-%02d-%02d', $year, $month, $day );
 }
@@ -193,7 +168,7 @@ sub ParseDate {
 sub isShow {
   my ( $text ) = @_;
 
-  # format '09:00 Nasljednici zemlje, 4/8'
+  # format '12:30 Omega Dubai Desert Classic Highlights'
   if( $text =~ /^\d+\:\d+\s+\S+/i ){
     return 1;
   }
@@ -204,25 +179,11 @@ sub isShow {
 sub ParseShow {
   my( $text ) = @_;
 
-  my( $time, $title, $genre, $epnum, $eptot, $rating );
+  my( $hour, $min, $title );
 
-  ( $time, $title ) = ( $text =~ /^(\d+\:\d+)\s+(.*)$/ );
+  ( $hour, $min, $title ) = ( $text =~ /^(\d+)\:(\d+)\s+(.*)$/ );
 
-  # parse episode
-  # format '22:00 - Pepper Dennis, 5/13'
-  if( $title =~ /,\s*\d+\/\d+$/ ){
-    ( $epnum, $eptot ) = ( $title =~ /,\s*(\d+)\/(\d+)$/ );
-    $title =~ s/,\s*\d+\/\d+$//;
-  }
-
-  # parse rating
-  # format '02:45 - Tequila (18)'
-  if( $title =~ /\s+\(\d+\)$/ ){
-    ( $rating ) = ( $title =~ /\s+\((\d+)\)$/ );
-    $title =~ s/\s+\(\d+\)$//;
-  }
-
-  return( $time, $title, $genre, $epnum, $eptot, $rating );
+  return( $hour . ":" . $min , $title );
 }
 
 1;

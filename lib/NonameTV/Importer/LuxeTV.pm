@@ -112,7 +112,7 @@ sub ImportContentFile {
     if( $row->{'Duration'} ) {
       $duration = $row->{'Duration'};
     }
-    next if ( $duration !~ /^\d\d\:\d\d\:\d\d\.\d\d$/ );
+    #next if ( $duration !~ /^\d\d\:\d\d\:\d\d\.\d\d$/ );
 
     my $title;
     if( $row->{'Title'} ) {
@@ -205,6 +205,8 @@ sub ParseDate {
 
 sub ParseTime {
   my( $tinfo ) = @_;
+
+#print "$tinfo\n";
 
   return undef if ( $tinfo !~ /^\d\d\:\d\d\:\d\d\s+(AM|PM)$/ );
 

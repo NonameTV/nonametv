@@ -36,6 +36,7 @@ use constant {
   FT_UNKNOWN      => 0,  # unknown
   FT_XML_HBOADRIA => 1,  # HBOAdria xml file
   FT_XML_CINEMAX  => 2,  # Cinemax xml file
+  FT_XML_AXN      => 3,  # AXN xml file
 };
 
 sub new {
@@ -70,7 +71,7 @@ sub ImportContentFile
   my $ds = $self->{datastore};
 
 #return if( $file !~ /Cinemax_Raspored_04-09_CRO\.XLS/i );
-#return if( $channel_xmltvid !~ /hboco/i );
+#return if( $channel_xmltvid !~ /test3/i );
 
   if( $file =~ /\.xml$/i ){
     my $ft = CheckFileFormat( $file );
@@ -78,6 +79,8 @@ sub ImportContentFile
       $self->ImportXML_HBOAdria( $file, $chd );
     } elsif( $ft eq FT_XML_CINEMAX ){
       $self->ImportXML_Cinemax( $file, $chd );
+    } elsif( $ft eq FT_XML_AXN ){
+      $self->ImportXML_AXN( $file, $chd );
     }
   } elsif( $file =~ /\.xls$/i ){
     #$self->ImportXLS( $file, $chd );
@@ -120,6 +123,12 @@ sub CheckFileFormat
   if( $sdbs->size() gt 0 ) {
     progress( "HBOAdria: Cinemax XML format recognized in $file" );
     return FT_XML_CINEMAX;
+  }
+
+  $sdbs = $doc->findnodes( "//AXN" );
+  if( $sdbs->size() gt 0 ) {
+    progress( "HBOAdria: AXN XML format recognized in $file" );
+    return FT_XML_AXN;
   }
 
   return FT_UNKNOWN;
@@ -764,6 +773,28 @@ sub ImportXML_Cinemax
 
     progress("HBOAdria: $chd->{xmltvid}: Populating database with " . @ces . " events" );
     FlushData( $dsh, $chd->{id}, $chd->{xmltvid}, @ces );
+  }
+
+  return 1;
+}
+
+sub ImportXML_AXN
+{
+  my $self = shift;
+  my( $file, $chd ) = @_;
+
+  my $dsh = $self->{datastorehelper};
+  my $ds = $self->{datastore};
+
+  progress( "HBOAdria: $chd->{xmltvid}: Processing XML $file" );
+
+  my $doc;
+  my $xml = XML::LibXML->new;
+  eval { $doc = $xml->parse_file($file); };
+
+  if( not defined( $doc ) ) {
+    error( "HBOAdria: $chd->{xmltvid}: Failed to parse xml file $file" );
+    return;
   }
 
   return 1;

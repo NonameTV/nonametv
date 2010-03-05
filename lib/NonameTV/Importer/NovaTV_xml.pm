@@ -43,14 +43,15 @@ sub FetchDataFromSite
   my( $xmltvid, $year, $month, $day ) = ($batch_id =~ /^(.*)_(\d+)-(\d+)-(\d+)$/);
 
   my $url;
+  $url = $self->{UrlRoot} . "/" . $data->{grabber_info} . "/xml/" . $year . $month . $day . ".xml";
 
-  if( $xmltvid =~ /^nova\.tv\.gonix\.net$/i or $xmltvid =~ /^cwtest3\.tv\.gonix\.net$/i ){
-    $url = "http://www.novatv.hr/xml/" . $year . $month . $day . ".xml";
-  } elsif( $xmltvid =~ /^novamini\.tv\.gonix\.net$/i ){
-    $url = "http://www.mojamini.tv/xml/" . $year . $month . $day . ".xml";
-  } else {
-    $url = $self->{UrlRoot} . "/" . $year . $month . $day . ".xml";
-  }
+#  if( $xmltvid =~ /^nova\.tv\.gonix\.net$/i or $xmltvid =~ /^cwtest3\.tv\.gonix\.net$/i ){
+#    $url = "http://www.novatv.hr/xml/" . $year . $month . $day . ".xml";
+#  } elsif( $xmltvid =~ /^novamini\.tv\.gonix\.net$/i ){
+#    $url = "http://www.mojamini.tv/xml/" . $year . $month . $day . ".xml";
+#  } else {
+#    $url = $self->{UrlRoot} . "/" . $year . $month . $day . ".xml";
+#  }
 
   progress("NovaTV_xml: $xmltvid: Fetching data from $url");
 

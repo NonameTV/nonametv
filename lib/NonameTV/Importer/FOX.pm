@@ -363,6 +363,8 @@ sub ExtractDate {
   my( $fn ) = @_;
   my $month;
 
+#print "ExtractDate: >$fn<\n";
+
   # format of the file name could be
   # 'FOX Crime schedule 28 Apr - 04 May CRO.xml'
   # or
@@ -377,6 +379,10 @@ sub ExtractDate {
   # format: 'Programa 15 - 21 Sep 08 CRO.xls'
   } elsif( $fn =~ m/.*\s+\d+\s*-\s*\d+\s+\S+.*/ ){
     ( $day , $monthname ) = ($fn =~ m/.*\s+(\d+)\s*-\s*\d+\s+(\S{3}).*/ );
+
+  # format: 'Programa Crime 18-24Jan CRO.xls'
+  } elsif( $fn =~ m/.*\s+\d+\s*-\s*\d+\s*\S+.*/ ){
+    ( $day , $monthname ) = ($fn =~ m/.*\s+(\d+)\s*-\s*\d+\s*(\S{3}).*/ );
 
   # format: 'Life Programa 24 DecCRO.xls'
   } elsif( $fn =~ m/.*\s+\d+\s*\S+.*/ ){

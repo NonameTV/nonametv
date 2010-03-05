@@ -17,8 +17,9 @@ Features:
 use utf8;
 
 use DateTime;
-use Spreadsheet::ParseExcel;
-use PDF::OCR::Thorough;
+use PDF::Core;
+#use PDF::Parse;
+use PDF;
 
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/progress error/;
@@ -61,108 +62,6 @@ sub ImportContentFile {
   return;
 }
 
-sub ImportXLS
-{
-  my $self = shift;
-  my( $file, $channel_id, $xmltvid ) = @_;
-
-  my $dsh = $self->{datastorehelper};
-  my $ds = $self->{datastore};
-
-  # Only process .xls files.
-  return if $file !~  /\.xls$/i;
-
-  my $batch_id;
-  my $currdate = "x";
-  my $timecol = 0;
-
-  progress( "SOAC: $xmltvid:  Processing XLS $file" );
-  
-  my( $oBook, $oWkS, $oWkC );
-
-  $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
-
-  for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
-
-    $oWkS = $oBook->{Worksheet}[$iSheet];
-
-    # process only the sheet with the name PPxle
-    #next if ( $oWkS->{Name} !~ /PPxle/ );
-
-    progress( "SOAC: $xmltvid:  Processing worksheet: $oWkS->{Name}" );
-
-    # browse through columns
-    for(my $iC = $oWkS->{MinCol} ; defined $oWkS->{MaxCol} && $iC <= $oWkS->{MaxCol} ; $iC++) {
-
-      # browse through columns
-      for(my $iR = $oWkS->{MinRow} ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
-
-        # time column is #0
-        # columns with shows are from 1 to 7
-        next if( $iC lt 1 );
-        next if( $iC gt 7 );
-
-        # read the cell
-        $oWkC = $oWkS->{Cells}[$iR][$iC];
-        next if ( ! $oWkC );
-
-        if( isDate( $oWkC->Value ) ){
-
-          my $date = ParseDate( $oWkC->Value );
-
-          if( $date ne $currdate ) {
-            if( $currdate ne "x" ) {
-              $dsh->EndBatch( 1 );
-            }
-
-            my $batch_id = $xmltvid . "_" . $date;
-            $dsh->StartBatch( $batch_id , $channel_id );
-            $dsh->StartDate( $date , "06:00" );
-            $currdate = $date;
-
-            progress("SOAC: $xmltvid: Date is $date");
-          }
-
-          next;
-        }
-
-        # this is the cell with some text
-        my $text = $oWkC->Value;
-        if( $text ){
-
-          # read the time from first column on the left
-          $oWkC = $oWkS->{Cells}[$iR][$timecol];
-          next if ( ! $oWkC );
-          next if ( ! isTime( $oWkC->Value ) );
-          my $time = ParseTime( $oWkC->Value );
-          next if ( ! $time );
-
-          my( $title, $subtitle ) = ParseShow( $text );
-
-          progress( "SOAC: $xmltvid: $iR $iC $time - $title" );
-
-          my $ce = {
-            channel_id => $channel_id,
-            start_time => $time,
-            title => norm($title),
-          };
-
-          $ce->{subtitle} = $subtitle if $subtitle;
-
-          $dsh->AddProgramme( $ce );
-        }
-
-      } # next row
-
-    } # next column
-
-    $ds->EndBatch( 1 );
-
-  } # next worksheet
-
-  return;
-}
-
 sub ImportPDF
 {
   my $self = shift;
@@ -178,13 +77,22 @@ sub ImportPDF
   my $currdate = "x";
   my $timecol = 0;
 
-  progress( "SOAC: $xmltvid:  Processing PDF $file" );
+  progress( "SOAC: $xmltvid: Processing $file" );
 
-  my $p = new PDF::OCR::Thorough( $file );
-print "$p\n";
-  my $text = $p->get_text;
+  my $pdf = PDF->new( $file );
 
-print "$text\n";
+  my $pagenum = $pdf->Pages;
+print "$pagenum\n";
+
+  my $res= $pdf->GetObject( $pdf );
+print "$res\n";
+
+
+
+
+#  my $text = $p->get_text;
+
+#print "$text\n";
 
 
   return;

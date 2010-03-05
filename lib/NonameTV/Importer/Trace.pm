@@ -16,6 +16,7 @@ use utf8;
 use DateTime;
 use Encode qw/encode decode/;
 use Spreadsheet::ParseExcel;
+use DateTime::Format::Excel;
 use Data::Dumper;
 use File::Temp qw/tempfile/;
 
@@ -221,6 +222,12 @@ sub ParseDate
   # Format 'MM-DD-YY'
   } elsif( $text =~ /^(\d+)-(\d+)-(\d+)$/ ){
     ( $month, $day, $year ) = ( $text =~ /^(\d+)-(\d+)-(\d+)$/ );
+  # Format '40179' - Excel date format
+  } elsif( $text =~ /^\d{5}$/ ){
+    my $dt = DateTime::Format::Excel->parse_datetime( $text );
+    $year = $dt->year;
+    $month = $dt->month;
+    $day = $dt->day;
   }
 
   $year += 2000 if $year < 100;
@@ -233,12 +240,17 @@ sub ParseTime
   my( $text ) = @_;
 
   return undef if not $text;
+#print ">$text<\n";
 
   my( $hour, $min, $sec );
 
   # Format '21:00'
   if( $text =~ /^\d+:\d+$/ ){
     ( $hour, $min ) = ( $text =~ /^(\d+):(\d+)$/ );
+  } elsif( $text =~ /^0\.\d+$/){ # format '0.377962962962964'
+    my $daysecs = int( 86400 * $text );
+    $hour = int( $daysecs / 3600 );
+    $min =  int( ( $daysecs - ( $hour * 3600 ) ) / 60 );
   }
 
   return sprintf( "%02d:%02d", $hour, $min );
@@ -274,25 +286,25 @@ sub UpdateFiles {
       $filename = "TRACE_INTL_EPG_" . uc( $dt->strftime( '%b' ) ) . uc( $dt->strftime( '%g' ) ) . ".xls";
       $url = $self->{UrlRoot} . "/" . $filename;
       progress("Trace: $xmltvid: Fetching xls file from $url");
-      url_get( $url, $self->{FileStore} . '/' .  $xmltvid . '/' . $filename );
+#      url_get( $url, $self->{FileStore} . '/' .  $xmltvid . '/' . $filename );
 
       # format: 'TRACE_INTL_EPG_APR_09.xls'
-      $filename = "TRACE_INTL_EPG_" . uc( $dt->strftime( '%b' ) ) . "_" . uc( $dt->strftime( '%g' ) ) . ".xls";
-      $url = $self->{UrlRoot} . "/" . $filename;
-      progress("Trace: $xmltvid: Fetching xls file from $url");
-      url_get( $url, $self->{FileStore} . '/' .  $xmltvid . '/' . $filename );
+#      $filename = "TRACE_INTL_EPG_" . uc( $dt->strftime( '%b' ) ) . "_" . uc( $dt->strftime( '%g' ) ) . ".xls";
+#      $url = $self->{UrlRoot} . "/" . $filename;
+#      progress("Trace: $xmltvid: Fetching xls file from $url");
+#      url_get( $url, $self->{FileStore} . '/' .  $xmltvid . '/' . $filename );
 
       # format: 'TRACE_INTL_EPG_APRIL09.xls'
-      $filename = "TRACE_INTL_EPG_" . uc( $dt->strftime( '%B' ) ) . uc( $dt->strftime( '%g' ) ) . ".xls";
-      $url = $self->{UrlRoot} . "/" . $filename;
-      progress("Trace: $xmltvid: Fetching xls file from $url");
-      url_get( $url, $self->{FileStore} . '/' .  $xmltvid . '/' . $filename );
+#      $filename = "TRACE_INTL_EPG_" . uc( $dt->strftime( '%B' ) ) . uc( $dt->strftime( '%g' ) ) . ".xls";
+#      $url = $self->{UrlRoot} . "/" . $filename;
+#      progress("Trace: $xmltvid: Fetching xls file from $url");
+#      url_get( $url, $self->{FileStore} . '/' .  $xmltvid . '/' . $filename );
 
       # format: 'TRACE_INTL_EPG_APRIL_09.xls'
-      $filename = "TRACE_INTL_EPG_" . uc( $dt->strftime( '%B' ) ) . "_" . uc( $dt->strftime( '%g' ) ) . ".xls";
-      $url = $self->{UrlRoot} . "/" . $filename;
-      progress("Trace: $xmltvid: Fetching xls file from $url");
-      url_get( $url, $self->{FileStore} . '/' .  $xmltvid . '/' . $filename );
+#      $filename = "TRACE_INTL_EPG_" . uc( $dt->strftime( '%B' ) ) . "_" . uc( $dt->strftime( '%g' ) ) . ".xls";
+#      $url = $self->{UrlRoot} . "/" . $filename;
+#      progress("Trace: $xmltvid: Fetching xls file from $url");
+#      url_get( $url, $self->{FileStore} . '/' .  $xmltvid . '/' . $filename );
 
     }
   }
