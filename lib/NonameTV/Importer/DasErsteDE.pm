@@ -41,6 +41,8 @@ sub new {
 
 #    $self->{datastore}->{SILENCE_DUPLICATE_SKIP} = 1;
 
+    $self->{SkipYesterday} =1; # there is no data for the past
+
     return $self;
 }
 
