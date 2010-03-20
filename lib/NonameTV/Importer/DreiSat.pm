@@ -39,8 +39,6 @@ sub Object2Url {
   my $self = shift;
   my( $objectname, $chd ) = @_;
 
-#return( undef, undef ) if ( $objectname =~ /3sat\.tv\.gonix\.net_2009-14/ );
-
   my( $year, $week ) = ( $objectname =~ /(\d+)-(\d+)$/ );
  
   my $url = sprintf( "%s/3sat_Woche%02d%02d.xml", $self->{UrlRoot}, $week, $year%100 );
@@ -55,7 +53,7 @@ sub FilterContent {
   my( $cref, $chd ) = @_;
 
   my $doc = ParseXml( $cref );
-  
+
   if( not defined $doc ) {
     return (undef, "ParseXml failed" );
   } 
@@ -195,6 +193,7 @@ sub ImportContent
 
       foreach my $attribut (split (" ", $attribute)) {
         switch ($attribut) {
+          # DreiSat
           case /auddes/ {} # stereo = audio description
           case /dolby/  {$ce->{stereo} = "dolby"}
           case /dolbyd/ {$ce->{stereo} = "dolby digital"}
@@ -204,7 +203,17 @@ sub ImportContent
           case /sw/     {} # colour=no
           case /videot/ {} # subtitles=teletext
           case /zweika/ {$ce->{stereo} = "bilingual"}
-          else          { w ("DreiSat: unhandled attribute:" . $attribut) }
+          # ZDF
+          case /&ad;/   {} # audio description
+          case /&dd;/   {$ce->{stereo} = "dolby digital"}
+          case /&ds;/   {$ce->{stereo} = "dolby"}
+          case /&f16;/  {$ce->{aspect} = "16:9"}
+          case /&hd;/   {} # high definition
+          case /&st;/   {$ce->{stereo} = "stereo"}
+          case /&vo;/   {} # video text
+          # ZDFneo
+          case /&zw;/   {$ce->{stereo} = "bilingual"} 
+          else          { w ($self->{Type} . ": unhandled attribute:" . $attribut) }
         }
       }
 
@@ -239,10 +248,12 @@ sub ImportContent
         $ce->{episode} = ". " . ($episodenr-1) . " .";
       }
 
-      my ( $program_type, $categ ) = $ds->LookupCat( "DreiSat_genre", $genre );
+      my $lookup_genre = $self->{Type}. "_genre";
+      my ( $program_type, $categ ) = $ds->LookupCat( $lookup_genre, $genre );
       AddCategory( $ce, $program_type, $categ );
 
-      ( $program_type, $categ ) = $ds->LookupCat( "DreiSat_category", $category );
+      my $lookup_categ = $self->{Type}. "_category";
+      ( $program_type, $categ ) = $ds->LookupCat( $lookup_categ, $category );
       AddCategory( $ce, $program_type, $categ );
 
       $ds->AddProgramme( $ce );
