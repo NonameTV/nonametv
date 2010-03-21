@@ -28,9 +28,9 @@ sub new {
     my $self  = $class->SUPER::new( @_ );
     bless ($self, $class);
 
-    # url is linked from public web site so make it the default
-    defined( $self->{UrlRoot} ) or $self->{UrlRoot} = "http://programmdienst.3sat.de/wspressefahne/Dateien";
-    defined( $self->{UrlRoot} ) or die "You must specify UrlRoot";
+    if (defined $self->{UrlRoot}) {
+      w ( $self->{Type} . ": deprecated parameter UrlRoot");
+    }
 
     return $self;
 }
@@ -40,10 +40,13 @@ sub Object2Url {
   my( $objectname, $chd ) = @_;
 
   my( $year, $week ) = ( $objectname =~ /(\d+)-(\d+)$/ );
- 
-  my $url = sprintf( "%s/3sat_Woche%02d%02d.xml", $self->{UrlRoot}, $week, $year%100 );
 
-  progress("DreiSat: fetching data from $url");
+  # Tomica's (more like the files from ZDF and ZDFneo)
+  my $url = sprintf( "http://pressetreff2.3sat.de/Public/Woche/3Sat_%04d%02d.XML", $year, $week);
+  # Karl's (looks like some postprocessed version, basically the same)
+  #my $url = sprintf( "http://programmdienst.3sat.de/wspressefahne/Dateien/3sat_Woche%02d%02d.xml", $week, $year%100 );
+
+  progress($self->{Type} . ": fetching data from $url");
 
   return( $url, undef );
 }
@@ -103,21 +106,29 @@ sub ImportContent
     error( "$batch_id: No 'sendung' blocks found" );
     return 0;
   }
-  progress("DreiSat: Found " . $ns->size() . " shows");
+  progress($self->{Type} . ": Found " . $ns->size() . " shows");
   
   foreach my $sc ($ns->get_nodelist)
   {
+    my %sce = (
+        channel_id  => $chd->{id},
+    );
+
     # the id of the program
     my $id  = $sc->findvalue( './id ' );
 
     # the title
     my $title = $sc->findvalue( './programm//sendetitel' );
-    $title = $self->clean_sendetitel ($title);
+    if ($title) {
+      $title = $self->clean_sendetitel ($title);
+    }
+    $sce{title} = norm($title);
 
     # the subtitle
     my $subtitle = $sc->findvalue( './programm//untertitel' );
-    # strip "repeat"
-    $subtitle =~ s|\(Wh\.\)||;
+    if ($subtitle) {
+      $subtitle = $self->clean_untertitel (\%sce, $subtitle);
+    }
 
     # additional info to the title
     my @addinfo;
@@ -182,38 +193,40 @@ sub ImportContent
       # attributes
       my $attribute = $as->getElementsByTagName( 'attribute' );
 
-      progress("DreiSat: $chd->{xmltvid}: $starttime - $title");
+      progress($self->{Type} . ": $chd->{xmltvid}: $starttime - $title");
 
-      my $ce = {
-        channel_id  => $chd->{id},
+      my %ce = (
         start_time  => $starttime->ymd("-") . " " . $starttime->hms(":"),
         end_time    => $endtime->ymd("-") . " " . $endtime->hms(":"),
-        title       => norm($title),
-      };
+      );
+
+      # append shared ce to this ce
+      @ce{keys %sce} = values %sce;
 
       foreach my $attribut (split (" ", $attribute)) {
         switch ($attribut) {
           # DreiSat
           case /auddes/ {} # stereo = audio description
-          case /dolby/  {$ce->{stereo} = "dolby"}
-          case /dolbyd/ {$ce->{stereo} = "dolby digital"}
-          case /f16zu9/ {$ce->{aspect} = "16:9"}
+          case /dolby/  {$ce{stereo} = "dolby"}
+          case /dolbyd/ {$ce{stereo} = "dolby digital"}
+          case /f16zu9/ {$ce{aspect} = "16:9"}
           case /gbsp/   {} # sign language
-          case /stereo/ {$ce->{stereo} = "stereo"}
+          case /&gs;/   {} # sign language
+          case /stereo/ {$ce{stereo} = "stereo"}
           case /sw/     {} # colour=no
           case /videot/ {} # subtitles=teletext
-          case /zweika/ {$ce->{stereo} = "bilingual"}
+          case /zweika/ {$ce{stereo} = "bilingual"}
           # ZDF
           case /&ad;/   {} # audio description
-          case /&dd;/   {$ce->{stereo} = "dolby digital"}
-          case /&ds;/   {$ce->{stereo} = "dolby"}
-          case /&f16;/  {$ce->{aspect} = "16:9"}
+          case /&dd;/   {$ce{stereo} = "dolby digital"}
+          case /&ds;/   {$ce{stereo} = "dolby"}
+          case /&f16;/  {$ce{aspect} = "16:9"}
           case /&hd;/   {} # high definition
-          case /&st;/   {$ce->{stereo} = "stereo"}
+          case /&st;/   {$ce{stereo} = "stereo"}
           case /&vo;/   {} # video text
           # ZDFneo
-          case /&zw;/   {$ce->{stereo} = "bilingual"} 
-          else          { w ($self->{Type} . ": unhandled attribute:" . $attribut) }
+          case /&zw;/   {$ce{stereo} = "bilingual"} 
+          else          { w ($self->{Type} . ": unhandled attribute: " . $attribut) }
         }
       }
 
@@ -227,7 +240,7 @@ sub ImportContent
       } elsif( $subtitle ){
         $st = $subtitle;
       }
-      $ce->{subtitle} = norm($st);
+      $ce{subtitle} = norm($st);
 
       # form the description out of 'zusatz', 'shortdesc', 'longdesc'
       # 'origin'
@@ -238,25 +251,27 @@ sub ImportContent
         }
       }
       $description .= norm($longdesc) || norm($shortdesc);
-      if( $origin ){
-        $description .= "<br/>" . $origin . "\n";
-      }
-      $ce->{description} = $description;
+#      if( $origin ){
+#        $description .= "<br/>" . $origin . "\n";
+#      }
+      $ce{description} = $description;
 
       # episode number
       if( $episodenr ){
-        $ce->{episode} = ". " . ($episodenr-1) . " .";
+        $ce{episode} = ". " . ($episodenr-1) . " .";
       }
 
-      my $lookup_genre = $self->{Type}. "_genre";
+      #my $lookup_genre = $self->{Type}. "_genre";
+      my $lookup_genre = "DreiSat_genre";
       my ( $program_type, $categ ) = $ds->LookupCat( $lookup_genre, $genre );
-      AddCategory( $ce, $program_type, $categ );
+      AddCategory( \%ce, $program_type, $categ );
 
-      my $lookup_categ = $self->{Type}. "_category";
+      #my $lookup_categ = $self->{Type}. "_category";
+      my $lookup_categ = "DreiSat_category";
       ( $program_type, $categ ) = $ds->LookupCat( $lookup_categ, $category );
-      AddCategory( $ce, $program_type, $categ );
+      AddCategory( \%ce, $program_type, $categ );
 
-      $ds->AddProgramme( $ce );
+      $ds->AddProgramme( \%ce );
     }
 
   }
@@ -334,6 +349,124 @@ sub clean_sendetitel
   $title =~ s| \(\d+/\d+\)$||;
 
   return $title;
+}
+
+sub clean_untertitel
+{
+  my $self = shift;
+  my $sce = shift;
+  my $subtitle = shift;
+
+  if (!defined $subtitle) {
+    return undef;
+  }
+
+  # strip "repeat"
+  if ($subtitle =~ m|^\(Wh\.\)$|) {
+    return undef;
+  }
+  # strip "anschl. Wetter"
+  if ($subtitle =~ m|^anschl\. 3sat-Wetter$|) {
+    return undef;
+  }
+
+  # [format,] production countries [year of production]
+  # Fernsehfilm, BRD 1980
+  # Fernsehfilm, DDR 1973
+  # Fernsehfilm, Deutschland 1990
+  # Fernsehfilm, Rum<E4>nien/Frankreich/BRD 1968
+  # Fernsehserie, BRD 1978
+  # Historienfilm, <D6>sterreich/Deutschland 2001
+  # Krimireihe, Schweden 1997
+  # Kurzfilm, Belgien 2006
+  # Serie, USA 2008
+  # Spielfilm, Argentinien 2006
+  # Stummfilm, Sowjetunion 1924
+  # Zeichentrickfilm, USA/Australien 1997
+  # 
+  if ($subtitle =~ m|^[^ ,]+, [^ ]+ [0-9][0-9][0-9][0-9]$|) {
+    my ($format, $pcountries, $pyear) = ($subtitle =~ m|^([^ ,]+), ([^ ]+) ([0-9]+)$|);
+
+    $sce->{production_date} = "$pyear-01-01";
+    # programme format is mostly reported in genre, too. so just reuse that
+    my ( $program_type, $categ ) = $self->{datastore}->LookupCat( "DreiSat_genre", $format );
+    AddCategory( $sce, $program_type, $categ );
+    return undef;
+  }
+  #
+  # production countries [year of production]
+  # Deutschland/Polen 2008
+  # Deutschland 2007
+  #
+  if ($subtitle =~ m|^[^ ]+ [0-9][0-9][0-9][0-9]$|) {
+    my ($pcountries, $pyear) = ($subtitle =~ m|^([^ ]+) ([0-9]+)$|);
+
+    $sce->{production_date} = "$pyear-01-01";
+    return undef;
+  }
+
+  # producers
+  # Filmessay von Wolfgang Peschl und Christian Riehs
+  # Filme von Wolfram Giese und Horst Brandenburg
+  # Film Otmar Penker und Klaus Feichtenberger
+  # Filmportr<E4>t von Gallus Kalt
+  # Film von Adam Schmedes
+  # Film von Alexander von Sobeck, Stephan Merseburger
+  # Film von Alexia Sp<E4>th, Ralph Gladitz und Michael Mandlik
+  # Film von Carsten Heider
+  # Film von Carsten  Heider
+  # Film von Claudia Buckenmaier, Anne Gellinek, Peter Kunz und
+  # Film von Clara und Robert Kuperberg
+  # Film von Mario Schmitt, Heribert Roth, Claudia Buckenmaier
+  # Film von Peter Paul Huth und Maik Platzen, Deutschland 2010
+  # Film von Rollo und Angelika Gebhard und Andrey Alexander
+  # Film von Sabrina Hermsen und Ursula Hopf
+  # Film von Sabrina Hermsen und Uschi Hopf
+  # Film von Sandra Schlittenhardt, Faika Kalac,
+  # Film von und mit Axel Bulthaupt
+  # Kriminalserie von Herbert Reinecker
+  # Portr<E4>tfilm von  Jesse A. Allaoua
+  # Portr<E4>t von Friederike Mayr<F6>cker zum 85. Geburtstag
+  # Portr<E4>t von Roland Adrowitzer, Ernst Johann Schwarz
+  # Reisedokumentation von Thomas Radler und Volker Schmidt
+  # Reportagen von Peter Resetarits, Petra Kanduth und Nora
+  # Reportage von Alfred Schwarz und Julia Kovarik
+  # Roman von Jaroslav Hasek, <D6>sterreich 1975
+
+  # possible false positives / more data
+  # Fox Theatre, Oakland, Kalifornien, USA 2009
+  # Gast: Annette Frier
+  # Gespr<E4>chssendung mit J<F6>rg Thadeusz
+  # Gestaltung: Anita Dollmanits
+  # Goldener Saal des Wiener Musikvereins, April 2010
+  # Gret Haller und Jean Ziegler im Gespr<E4>ch mit
+  # G<E4>ste bei Wieland Backes
+  # Harald Lesch und Wilhelm Vossenkuhl im Gespr<E4>ch
+  # Historiker David Gugerli im Gespr<E4>ch mit Roger de Weck
+  # im Gespr<E4>ch mit Norbert Bischofberger
+  # Im Gespr<E4>ch mit Norbert Bischofberger
+  # Literarische Comedy mit J<FC>rgen von der Lippe
+  #
+  # Mit 20 f<FC>r ein Jahr nach S<FC>dafrika
+  # mit Alexandra Vacano
+  # Mit Andrea Jansen und Mahara McKay
+  # mit Anmerkungen von Elmar Theve<DF>en und Thomas Schmeken
+  # Mit Claus Richter unterwegs
+  # Mit dem Erzgebirgsensemble auf Tour
+  # Mit dem Gast Egon Amman, Verleger
+  # Mit Dietmar Schumann im vergessenen Osten
+  # Mit Ulan &amp; Bator, Michl M<FC>ller und Matthias Reuter
+  #
+  # Moderation: Charlotte Roche und Giovanni di Lorenzo
+  # Politsatire mit Priol und Schramm
+  # Reportagen <FC>bers Ehrenamt
+  # Sitcom in franz<F6>sischer Sprache
+  # Sitcom in spanischer Sprache
+  #
+
+
+
+  return $subtitle;
 }
 
 1;
