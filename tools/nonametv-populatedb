@@ -67,8 +67,12 @@ sub populate_table {
 
   $ds->sa->Delete( $table, {} );
 
-  my $in = new IO::File( "< $file" ) 
-      or die "Failed to read from $file";
+  if( not -f $file ) {
+      print "Skipping $table\n";
+      return;
+  }
+
+  my $in = new IO::File( "< $file" ) or die;
 
   my $csv = Text::CSV_XS->new({eol=> "\n", 'binary' => 1});
 

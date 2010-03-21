@@ -34,8 +34,8 @@ sub BatchPeriods {
 
   my $maxdays = $shortgrab ? $self->{MaxDaysShort} : $self->{MaxDays};
 
-  my $start_dt = DateTime->today(time_zone => 'local')
-      ->subtract( days => 1 );
+  my $start_dt = DateTime->today(time_zone => 'local');
+  $start_dt = $start_dt ->subtract( days => 1 ) unless defined $self->{SkipYesterday};
 
   my @periods;
 

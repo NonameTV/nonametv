@@ -2,7 +2,6 @@ package NonameTV::Importer::TechnoBaseFM;
 
 use strict;
 use warnings;
-use IO::Uncompress::Gunzip qw(gunzip $GunzipError) ;
 
 =pod
 
@@ -11,8 +10,11 @@ See xxx for instructions.
 
 =cut
 
+use HTML::Entities;
 use HTML::TableExtract;
 use HTML::Parse;
+use IO::Uncompress::Gunzip qw(gunzip $GunzipError) ;
+use Unicode::String;
 
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/p w f/;
@@ -74,13 +76,17 @@ sub FilterContent {
   gunzip $gzcref => \$cref
     or die "gunzip failed: $GunzipError\n";
 
+  # FIXME convert latin1 to utf-8 to HTML
+  $cref = Unicode::String::latin1 ($cref)->utf8 ();
+  $cref = encode_entities ($cref, "\200-\377");
+
   $cref =~ s|^.+(<table width="100.+</table>)</div></div><div.+$|<html><body>$1</body></html>|s;
 
   return( \$cref, undef);
 }
 
 sub ContentExtension {
-  return 'html';
+  return 'html.gz';
 }
 
 sub FilteredExtension {

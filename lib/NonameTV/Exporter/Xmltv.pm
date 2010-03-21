@@ -62,6 +62,7 @@ sub new {
 
     $self->{MaxDays} = 365 unless defined $self->{MaxDays};
     $self->{MinDays} = $self->{MaxDays} unless defined $self->{MinDays};
+    $self->{PastDays} = 8 unless defined $self->{PastDays};
 
     $self->{LastRequiredDate} = 
       DateTime->today->add( days => $self->{MinDays}-1 )->ymd("-");
@@ -760,8 +761,8 @@ sub RemoveOld
 
   my $ds = $self->{datastore};
  
-  # Keep files for the last week.
-  my $keep_date = DateTime->today->subtract( days => 8 )->ymd("-");
+  # Keep files for the last PastDays. (default: one week)
+  my $keep_date = DateTime->today->subtract( days => $self->{PastDays} )->ymd("-");
 
   my @files = glob( $self->{Root} . "*" );
   my $removed = 0;

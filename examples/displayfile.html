@@ -51,6 +51,10 @@ function transformXml(xmlurl, xslturl, nodeid){
       xmlDoc = myXMLHTTPRequest.responseXML;
 
       // xsltProcessor.setParameter(null,"subj",subject);
+      // ATTENTION if you get interesting errors in the next line
+      // check if your webserver is sending the x-gzip encoding
+      // correctly! (Apache needs AddEncoding and must not have anything
+      // else relating to .gz files) 
       var fragment = xsltProcessor.transformToFragment(xmlDoc,document);
       document.getElementById(nodeid).innerHTML = "";
       // myDOM = fragment; 

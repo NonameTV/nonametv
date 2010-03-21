@@ -20,6 +20,8 @@ use DateTime;
 use XML::LibXML;
 use HTTP::Date;
 
+use Compress::Zlib;
+
 use NonameTV qw/ParseXml norm AddCategory/;
 use NonameTV::Log qw/w f/;
 
@@ -72,8 +74,16 @@ sub FilterContent {
 
   my( $chid ) = ($chd->{grabber_info} =~ /^(\d+)/);
 
-  my $doc = ParseXml( $cref );
-  
+  my $uncompressed = Compress::Zlib::memGunzip($$cref);
+  my $doc;
+
+  if( defined $uncompressed ) {
+      $doc = ParseXml( \$uncompressed );
+  }
+  else {
+      $doc = ParseXml( $cref );
+  }
+
   if( not defined $doc ) {
     return (undef, "ParseXml failed" );
   } 
