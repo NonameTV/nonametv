@@ -120,7 +120,7 @@ sub ImportContent
     # the title
     my $title = $sc->findvalue( './programm//sendetitel' );
     if ($title) {
-      $title = $self->clean_sendetitel ($title);
+      $title = $self->clean_sendetitel (\%sce, $title);
     }
     $sce{title} = norm($title);
 
@@ -160,6 +160,9 @@ sub ImportContent
 
     # long description
     my $longdesc = $sc->findvalue( './programm//pressetext//lang' );
+
+    # whole description (ZDF/ZDFneo)
+    my $wholedesc = $sc->findvalue( './programm//pressetext' );
 
     # moderation
     my $moderation = $sc->findvalue( './programm//moderation' );
@@ -226,23 +229,16 @@ sub ImportContent
           case /&vo;/   {} # video text
           # ZDFneo
           case /&zw;/   {$ce{stereo} = "bilingual"} 
-          else          { w ($self->{Type} . ": unhandled attribute: " . $attribut) }
+          else          { w ("unhandled attribute: $attribut") } 
         }
       }
 
-      # form the subtitle out of 'episodetitle' and 'subtitle'
-      my $st;
-      if( $episodetitle ){
-        $st = $episodetitle;
-        if( $subtitle ){
-          $st .= " : " . $subtitle;
-        }
-      } elsif( $subtitle ){
-        $st = $subtitle;
-      }
-      $ce{subtitle} = norm($st);
+      # form the subtitle out of 'episodetitle' and ignore 'subtitle' completely
+      # the information is usually duplicated in the longdesc anyway and of no
+      # use for automated processing
+      $ce{subtitle} = norm($episodetitle);
 
-      # form the description out of 'zusatz', 'shortdesc', 'longdesc'
+      # form the description out of 'zusatz', 'shortdesc', 'longdesc', 'wholedesc'
       # 'origin'
       my $description;
       if( @addinfo ){
@@ -250,10 +246,7 @@ sub ImportContent
           $description .= $z . "\n";
         }
       }
-      $description .= norm($longdesc) || norm($shortdesc);
-#      if( $origin ){
-#        $description .= "<br/>" . $origin . "\n";
-#      }
+      $description .= norm($longdesc) || norm($shortdesc) || norm($wholedesc);
       $ce{description} = $description;
 
       # episode number
@@ -343,10 +336,27 @@ sub create_dt_incomplete
 sub clean_sendetitel
 {
   my $self = shift;
+  my $sce = shift;
   my $title = shift;
 
-  # remove episode numbers from title
-  $title =~ s| \(\d+/\d+\)$||;
+  # move episode numbers from title into episode
+  if ($title =~ m| \(\d+/\d+\)$|) {
+    my ($episodenr, $episodecnt) = ($title =~ m| \((\d+)/(\d+)\)$|);
+    # if it's more than six episodes it's a series, otherwise it's likely a serial
+    if ($episodecnt>6) {
+      # we guess its a "normal" tv series, will get type series automatically
+      $sce->{episode} = ". " . ($episodenr-1) . "/" . ($episodecnt-1) . " .";
+    } else {
+      # we guess its one programme thats broken in multiple parts or a serial
+      # this will not get type series automatically
+      $sce->{episode} = ". . " . ($episodenr-1) . "/" . ($episodecnt-1);
+    }
+    $title =~ s| \(\d+/\d+\)$||;
+  } elsif ($title =~ m| \(\d+\)$|) {
+    my $episodenr = ($title =~ m| \((\d+)\)$|);
+    $sce->{episode} = ". " . ($episodenr-1) . " .";
+    $title =~ s| \(\d+\)$||;
+  }
 
   return $title;
 }
@@ -365,6 +375,10 @@ sub clean_untertitel
   if ($subtitle =~ m|^\(Wh\.\)$|) {
     return undef;
   }
+  if ($subtitle =~ m|\s+\(Wh\..*\)$|) {
+    $subtitle =~ s|\s+\(Wh\..*\)$||;
+  }
+
   # strip "anschl. Wetter"
   if ($subtitle =~ m|^anschl\. 3sat-Wetter$|) {
     return undef;
@@ -408,7 +422,6 @@ sub clean_untertitel
   # producers
   # Filmessay von Wolfgang Peschl und Christian Riehs
   # Filme von Wolfram Giese und Horst Brandenburg
-  # Film Otmar Penker und Klaus Feichtenberger
   # Filmportr<E4>t von Gallus Kalt
   # Film von Adam Schmedes
   # Film von Alexander von Sobeck, Stephan Merseburger
@@ -423,7 +436,43 @@ sub clean_untertitel
   # Film von Sabrina Hermsen und Ursula Hopf
   # Film von Sabrina Hermsen und Uschi Hopf
   # Film von Sandra Schlittenhardt, Faika Kalac,
+  #
+  if ($subtitle =~ m|^Film\S* von \S+ \S+$|) {
+    w ( $self->{Type} . ": parsing producer from subtitle: " . $subtitle);
+    my ($format, $producer) = ($subtitle =~ m|^(\S+) von (\S+ \S+)$|);
+
+    if ($sce->{producers}) {
+      $sce->{producers} = join (", ", $sce->{producers}, $producer);
+    } else {
+      $sce->{producers} = $producer;
+    }
+
+    # programme format is mostly reported in genre, too. so just reuse that
+    my ( $program_type, $categ ) = $self->{datastore}->LookupCat( "DreiSat_genre", $format );
+    AddCategory( $sce, $program_type, $categ );
+
+    return undef;
+  }
+  if ($subtitle =~ m|^Film\S* von \S+ \S+ und \S+ \S+$|) {
+    w ( $self->{Type} . ": parsing producers from subtitle: " . $subtitle);
+    my ($format, $producer1, $producer2) = ($subtitle =~ m|^(\S+) von (\S+ \S+) und (\S+ \S+)$|);
+
+    if ($sce->{producers}) {
+      $sce->{producers} = join (", ", $sce->{producers}, $producer1, $producer2);
+    } else {
+      $sce->{producers} = join (", ", $producer1, $producer2);
+    }
+
+    # programme format is mostly reported in genre, too. so just reuse that
+    my ( $program_type, $categ ) = $self->{datastore}->LookupCat( "DreiSat_genre", $format );
+    AddCategory( $sce, $program_type, $categ );
+
+    return undef;
+  }
+
+  # possible false positives / more data
   # Film von und mit Axel Bulthaupt
+  # Film Otmar Penker und Klaus Feichtenberger
   # Kriminalserie von Herbert Reinecker
   # Portr<E4>tfilm von  Jesse A. Allaoua
   # Portr<E4>t von Friederike Mayr<F6>cker zum 85. Geburtstag
@@ -432,8 +481,6 @@ sub clean_untertitel
   # Reportagen von Peter Resetarits, Petra Kanduth und Nora
   # Reportage von Alfred Schwarz und Julia Kovarik
   # Roman von Jaroslav Hasek, <D6>sterreich 1975
-
-  # possible false positives / more data
   # Fox Theatre, Oakland, Kalifornien, USA 2009
   # Gast: Annette Frier
   # Gespr<E4>chssendung mit J<F6>rg Thadeusz
