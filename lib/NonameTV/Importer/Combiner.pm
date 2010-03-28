@@ -214,6 +214,30 @@ $channel_data{ "hustlertvsw.tv.gonix.net" } =
       ],
   };
 
+=pod
+
+ZDFneo / KI.KA switch on ZDFmobil
+
+=cut
+
+$channel_data{ "neokika.zdfmobil.de" } =
+  { 
+    "kika.de" => 
+      [ 
+        {
+          day => 'all',
+	  time => '0600-2100',
+        },
+      ],
+    "neo.zdf.de" =>
+      [
+        {
+          day => 'all',
+	  time => '2100-0600',
+        },
+      ],
+  };
+
 use DateTime;
 use XML::LibXML;
 use Compress::Zlib;
