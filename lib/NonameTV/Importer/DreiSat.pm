@@ -55,6 +55,9 @@ sub FilterContent {
   my $self = shift;
   my( $cref, $chd ) = @_;
 
+  # turn right single ' into '
+  $$cref =~ s|&#8217;|'|g;
+
   my $doc = ParseXml( $cref );
 
   if( not defined $doc ) {
@@ -217,6 +220,7 @@ sub ImportContent
           case /&gs;/   {} # sign language
           case /stereo/ {$ce{stereo} = "stereo"}
           case /sw/     {} # colour=no
+          case /&sw;/   {} # colour=no
           case /videot/ {} # subtitles=teletext
           case /zweika/ {$ce{stereo} = "bilingual"}
           # ZDF
@@ -298,7 +302,9 @@ sub create_dt
     return undef;
   }
 
-  my $dt = DateTime->new( year   => $year,
+  my $dt;
+  eval {
+  $dt = DateTime->new( year   => $year,
                           month  => $month,
                           day    => $day,
                           hour   => $hour,
@@ -306,6 +312,11 @@ sub create_dt
                           second => $second,
                           time_zone => 'Europe/Berlin',
                           );
+  };
+  if ($@){
+    error ("Could not convert time! Check for daylight saving time border.");
+    return undef;
+  };
   
   $dt->set_time_zone( "UTC" );
   
@@ -345,11 +356,11 @@ sub clean_sendetitel
     # if it's more than six episodes it's a series, otherwise it's likely a serial
     if ($episodecnt>6) {
       # we guess its a "normal" tv series, will get type series automatically
-      $sce->{episode} = ". " . ($episodenr-1) . "/" . ($episodecnt-1) . " .";
+      $sce->{episode} = ". " . ($episodenr-1) . "/" . $episodecnt . " .";
     } else {
       # we guess its one programme thats broken in multiple parts or a serial
       # this will not get type series automatically
-      $sce->{episode} = ". . " . ($episodenr-1) . "/" . ($episodecnt-1);
+      $sce->{episode} = ". . " . ($episodenr-1) . "/" . $episodecnt;
     }
     $title =~ s| \(\d+/\d+\)$||;
   } elsif ($title =~ m| \(\d+\)$|) {
@@ -438,7 +449,7 @@ sub clean_untertitel
   # Film von Sandra Schlittenhardt, Faika Kalac,
   #
   if ($subtitle =~ m|^Film\S* von \S+ \S+$|) {
-    w ( $self->{Type} . ": parsing producer from subtitle: " . $subtitle);
+    progress ( $self->{Type} . ": parsing producer from subtitle: " . $subtitle);
     my ($format, $producer) = ($subtitle =~ m|^(\S+) von (\S+ \S+)$|);
 
     if ($sce->{producers}) {
@@ -454,7 +465,7 @@ sub clean_untertitel
     return undef;
   }
   if ($subtitle =~ m|^Film\S* von \S+ \S+ und \S+ \S+$|) {
-    w ( $self->{Type} . ": parsing producers from subtitle: " . $subtitle);
+    progress ( $self->{Type} . ": parsing producers from subtitle: " . $subtitle);
     my ($format, $producer1, $producer2) = ($subtitle =~ m|^(\S+) von (\S+ \S+) und (\S+ \S+)$|);
 
     if ($sce->{producers}) {
