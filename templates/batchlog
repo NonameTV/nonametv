@@ -1,4 +1,6 @@
-<html>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 [% USE date %]
 <head>
   <title>Nonametv Batchlog</title>
@@ -6,16 +8,20 @@
 <body>
   <h1>Errors</h1>
   [% FOREACH error = errors %]
+    <div>
     <h2>[% error.name %]</h2>
-    Last ok: [% INCLUDE process_ts ts=error.last_updated %]<br>
+    Last ok: [% INCLUDE process_ts ts=error.last_updated %]<br />
     <pre>[% error.abort_message %]</pre>
+    </div>
   [% END %]
 
   <h1>Warnings</h1>
   [% FOREACH error = warnings %]
+    <div>
     <h2>[% error.name %]</h2>
-    Last ok: [% INCLUDE process_ts ts=error.last_updated %]<br>
+    Last ok: [% INCLUDE process_ts ts=error.last_updated %]<br />
     <pre>[% error.message %]</pre>
+    </div>
   [% END %]
 
 </body>
