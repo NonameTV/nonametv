@@ -240,7 +240,9 @@ sub ImportContent
       # form the subtitle out of 'episodetitle' and ignore 'subtitle' completely
       # the information is usually duplicated in the longdesc anyway and of no
       # use for automated processing
-      $ce{subtitle} = norm($episodetitle);
+      if (norm($episodetitle)) {
+        $ce{subtitle} = norm($episodetitle);
+      }
 
       # form the description out of 'zusatz', 'shortdesc', 'longdesc', 'wholedesc'
       # 'origin'
@@ -251,7 +253,9 @@ sub ImportContent
         }
       }
       $description .= norm($longdesc) || norm($shortdesc) || norm($wholedesc);
-      $ce{description} = $description;
+      if ($description) {
+        $ce{description} = $description;
+      }
 
       # episode number
       if( $episodenr ){

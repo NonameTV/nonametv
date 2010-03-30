@@ -89,12 +89,14 @@ sub FilteredExtension {
 
 sub trimX {
   my $theString = shift;
-  $theString =~ s|\[Tipp\]||g;
-  $theString =~ s|\{Tipp\]||g;
-  $theString =~ s|\(Wdh.\)||g;
-  $theString =~ s|[[:space:]]+| |g;
-  $theString =~ s/^\s+//;
-  $theString =~ s/\s+$//;
+  if ($theString) {
+    $theString =~ s|\[Tipp\]||g;
+    $theString =~ s|\{Tipp\]||g;
+    $theString =~ s|\(Wdh.\)||g;
+    $theString =~ s|[[:space:]]+| |g;
+    $theString =~ s/^\s+//;
+    $theString =~ s/\s+$//;
+  }
 
   return $theString;
 }
@@ -184,10 +186,10 @@ sub ImportContent {
               start_time => $start_time,
               title => $title
             };
-            if ($desc) {
-              # trim description
-              $desc = trimX ($desc);
 
+            # trim description
+            $desc = trimX ($desc);
+            if ($desc) {
               $ce->{description} = $desc;
             }
 
