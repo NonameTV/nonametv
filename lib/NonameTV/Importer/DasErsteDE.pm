@@ -249,6 +249,16 @@ sub ImportContent {
       $ce->{directors} = join (", ", @directors_array);
     }
 
+    my $writers= $pgm->findnodes ('.//Buch');
+    my @writers_array;
+    foreach my $writer ($writers->get_nodelist()) {
+      my @fixup = split (" und ", $writers->string_value());
+      @writers_array = (@writers_array, @fixup);
+    }
+    if (@writers_array) {
+      $ce->{writers} = join (", ", @writers_array);
+    }
+
     my $production_date = $pgm->findvalue( 'Produktionsjahr' );
     if ($production_date) {
       $ce->{production_date} = $production_date."-01-01";
