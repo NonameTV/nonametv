@@ -5,10 +5,19 @@ package NonameTV::Importer::Combiner;
 Combine several channels into one. Read data from xmltv-files downloaded
 via http.
 
-Limitations:
+Configuration:
+  - day is either 'all' or '<one>'
+    with lower case english two letter day names (mo, tu, we, th, fr, sa, su)
+    or numbers with 1 being monday
+    see http://search.cpan.org/dist/DateTime-Event-Recurrence/lib/DateTime/Event/Recurrence.pm
+  - time is either '<hhmm>-<hhmm>' in local time (FIXME which one??) or left empty for all day aka '0000-0000' (in local time!)
 
- - No support for different schedules for different days.
- - No support for schedule-periods that span midnight.
+Todo:
+  - where to store the time zone of each schedule?
+    grabber_info looks like the best place for it
+
+Bugs:
+  - a 12 hour nonstop program with a channel switch every hour doesn't work
 
 =cut 
 
@@ -238,7 +247,75 @@ $channel_data{ "neokika.zdfmobil.de" } =
       ],
   };
 
+=pod
+
+ARTE / EinsExtra on ARD national mux from HR
+
+=cut
+
+$channel_data{ "arteeinsextra.ard.de" } =
+  { 
+    "arte.de" => 
+      [ 
+        {
+          day => 1,
+	  time => '1400-0300',
+        },
+        {
+          day => 2,
+	  time => '1400-0300',
+        },
+        {
+          day => 3,
+	  time => '1400-0300',
+        },
+        {
+          day => 4,
+	  time => '1400-0300',
+        },
+        {
+          day => 5,
+	  time => '1400-0300',
+        },
+        {
+          day => 'sa',
+	  time => '0800-0000',
+        },
+        {
+          day => 'su',
+        },
+      ],
+    "eins-extra.ard.de" =>
+      [
+        {
+          day => 'mo',
+	  time => '0300-1400',
+        },
+        {
+          day => 'tu',
+	  time => '0300-1400',
+        },
+        {
+          day => 'we',
+	  time => '0300-1400',
+        },
+        {
+          day => 'th',
+	  time => '0300-1400',
+        },
+        {
+          day => 'fr',
+	  time => '0300-1400',
+        },
+        {
+          day => 'sa',
+	  time => '0300-0800',
+        },
+      ],
+  };
+
 use DateTime;
+use DateTime::Event::Recurrence;
 use XML::LibXML;
 use Compress::Zlib;
 
@@ -361,68 +438,94 @@ sub BuildDay
 
   foreach my $subch (keys %{$sched})
   {
+    # build spanset of schedule times
+    my $sspan = DateTime::SpanSet->empty_set ();
+
     foreach my $span (@{$sched->{$subch}}) {
-      my $sstart_dt;
-      my $sstop_dt;
-
-      if( defined( $span->{time} ) ) {
-	my( $sstart, $sstop ) = split( /-/, $span->{time} );
-	
-	$sstart_dt = changetime( $date_dt, $sstart );
-	$sstop_dt = changetime( $date_dt, $sstop );
-	if( $sstop_dt lt $sstart_dt ) {
-
-	  # BUG: The algorithm will discard any programs that start after
-	  # midnight and matches a span-entry that starts before midnight.
-	  # To fix this, we should generate two spans from this entry,
-	  # one that spans midnight on the night before this date
-	  # and one that spans midnight on the night after this date.
-
-	  $sstop_dt->add( days => 1 );
-	}
-      }
-      else { 
-	$sstart_dt = date2dt( "1970-01-01" );
-	$sstop_dt = date2dt( "2030-01-01" );
+      my $weekly;
+      if (($span->{day}) && ($span->{day} ne 'all')) {
+        progress ("handling specific days schedule");
+        $weekly = DateTime::Event::Recurrence->weekly (
+          days => $span->{day},
+        );
+      } else {
+        # progress ("handling all days schedule");
+        $weekly = DateTime::Event::Recurrence->daily;
       }
 
-      foreach my $e (@{$prog->{$subch}}) {
-	my $pstart_dt = $e->{start_dt}->clone();
-	my $pstop_dt = $e->{stop_dt}->clone();
-	
-	my $partial = 0;
-	
-	if( $pstart_dt lt $sstart_dt ) {
-	  $pstart_dt = $sstart_dt->clone();
-	  $partial = 1;
-	}
-	
-	if( $pstop_dt gt $sstop_dt ) {
-	  $pstop_dt = $sstop_dt->clone();
-	  $partial = 1;
-	}
-	
-	next if $pstart_dt ge $pstop_dt;
-	
-	my %e2 = %{$e};
+      my $iter = $weekly->iterator (
+        start => $date_dt->clone->add (days => -1),
+        end => $date_dt->clone->add (days => 1)
+      );
+      while ( my $date_dt = $iter->next ) {
+        # progress ("adding schedules for $date_dt to spanset");
+        my $sstart_dt;
+        my $sstop_dt;
 
-	$pstart_dt->set_time_zone( "UTC" );
-	$pstop_dt->set_time_zone( "UTC" );
+        if( defined( $span->{time} ) ) {
+          my( $sstart, $sstop ) = split( /-/, $span->{time} );
+	
+	  $sstart_dt = changetime( $date_dt, $sstart );
+	  $sstop_dt = changetime( $date_dt, $sstop );
+	  if( $sstop_dt lt $sstart_dt ) {
+	    $sstop_dt->add( days => 1 );
+          }
+        } else { 
+	  $sstart_dt = changetime( $date_dt, '0000' );
+	  $sstop_dt = $sstart_dt->clone->add ( days=> 1);
+        }
 
-	$e2{start_time} = $pstart_dt->ymd('-') . " " . $pstart_dt->hms(':');
-	$e2{end_time} = $pstop_dt->ymd('-') . " " . $pstop_dt->hms(':');
-	
-	delete( $e2{start_dt} );
-	delete( $e2{stop_dt} );
+        # progress ("span from $sstart_dt until $sstop_dt");
 
-	if( $partial ) {
-	  $e2{title} = "(P) " . $e2{title};
-	}
-	
-	$e2{channel_id} = $chd->{id};
-	
-	$ds->AddProgrammeRaw( \%e2 );
+        $sspan = $sspan->union (
+          DateTime::SpanSet->from_spans (
+            spans => [DateTime::Span->from_datetimes (
+              start => $sstart_dt,
+              before => $sstop_dt
+            )]
+          )
+        );
       }
+    }
+
+    $sspan->set_time_zone ("Europe/Berlin");
+    $sspan->set_time_zone ("UTC");
+
+    # now that we have a spanset containing all spans
+    # that should be included it gets easy
+
+    foreach my $e (@{$prog->{$subch}}) {
+      # programme span
+      my $pspan = DateTime::Span->from_datetimes (
+        start => $e->{start_dt},
+        before => $e->{stop_dt}
+      );
+      $pspan->set_time_zone ("UTC");
+
+      # continue with next programme if there is no match
+      next if (!$sspan->intersects ($pspan));
+
+      # copy programme
+      my %e2 = %{$e};
+      # always update the time
+      my $ptspan = $sspan->intersection( $pspan );
+      $e2{start_dt} = $ptspan->min;
+      $e2{stop_dt} = $ptspan->max;
+
+      # partial programme
+      if (!$sspan->contains ($pspan)) {
+        $e2{title} = "(P) " . $e2{title};
+      }
+
+      $e2{start_time} = $e2{start_dt}->ymd('-') . " " . $e2{start_dt}->hms(':');
+      delete $e2{start_dt};
+      $e2{end_time} = $e2{stop_dt}->ymd('-') . " " . $e2{stop_dt}->hms(':');
+      delete $e2{stop_dt};
+      progress ("match $e2{title} at $e2{start_time} or " . $pspan->min);
+
+      $e2{channel_id} = $chd->{id};
+
+      $ds->AddProgrammeRaw( \%e2 );
     }
   }
   $ds->EndBatch( 1 );
@@ -454,7 +557,6 @@ sub date2dt {
   my $dt = DateTime->new( year   => $year,
                           month  => $month,
                           day    => $day,
-                          time_zone => 'Europe/Stockholm',
                           );
 }
 
