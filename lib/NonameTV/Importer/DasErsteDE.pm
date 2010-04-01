@@ -21,7 +21,7 @@ use XML::LibXML;
 
 use NonameTV qw/AddCategory MyGet norm ParseXml/;
 use NonameTV::DataStore::Helper;
-use NonameTV::Log qw/p w f/;
+use NonameTV::Log qw/p progress w f/;
 
 use NonameTV::Importer::BaseDaily;
 
@@ -200,12 +200,24 @@ sub ImportContent {
     }
 
     my $subtitle1 = $pgm->findvalue( 'Untertitel1' );
-    if ($subtitle1 =~ /^Spielfilm/ ) {
-      $ce->{program_type} = "movie";
-    }
+    $subtitle1 = $self->parse_subtitle ($ce, $subtitle1);
     my $subtitle2 = $pgm->findvalue( 'Untertitel2' );
-    if ($subtitle2 =~ /^Spielfilm/ ) {
-      $ce->{program_type} = "movie";
+    $subtitle2 = $self->parse_subtitle ($ce, $subtitle2);
+
+    # take unparsed subtitle
+    # TODO else add them to description
+    my $subtitle;
+    if ($subtitle1) {
+      if ($subtitle2) {
+        $subtitle = $subtitle1 . " " . $subtitle2;
+      } else {
+        $subtitle = $subtitle1;
+      }
+    } elsif ($subtitle2) {
+      $subtitle = $subtitle2;
+    }
+    if ($subtitle) {
+      $ce->{subtitle} = $subtitle;
     }
 
     my $url = $pgm->findvalue( 'Internetlink' );
@@ -271,6 +283,111 @@ sub ImportContent {
     }
   }
   return 1;
+}
+
+sub parse_subtitle
+{
+  my $self = shift;
+  my $sce = shift;
+  my $subtitle = shift;
+
+  if (!$subtitle) {
+    return undef;
+  }
+
+  # match program type, production county, production year
+  if ($subtitle =~ m|^\S+ \S+ \d{4}$|) {
+    my ($program_type, $production_countries, $production_year) = ($subtitle =~ m|^(\S+) (\S+) (\d{4})$|);
+    $sce->{production_date} = $production_year . "-01-01";
+    my ( $type, $categ ) = $self->{datastore}->LookupCat( "DasErste_type", $program_type );
+    AddCategory( $sce, $type, $categ );
+    $subtitle = undef;
+  } elsif ($subtitle =~ m|^Moderation: \S+ \S+$|) {
+    my ($presenter) = ($subtitle =~ m|^Moderation: (\S+ \S+)$|);
+    if ($sce->{presenters}) {
+      $sce->{presenters} = join (", ", $sce->{presenters}, $presenter);
+    } else {
+      $sce->{presenters} = $presenter;
+    }
+    $subtitle = undef;
+  } elsif ($subtitle =~ m|^mit [A-Z]\S+ [A-Z]\S+$|) {
+    # match "mit First Lastname" but not "mit den Wildgaensen"
+    my ($presenter) = ($subtitle =~ m|^mit (\S+ \S+)$|);
+    if ($sce->{presenters}) {
+      $sce->{presenters} = join (", ", $sce->{presenters}, $presenter);
+    } else {
+      $sce->{presenters} = $presenter;
+    }
+    $subtitle = undef;
+  } elsif ($subtitle =~ m|^mit [A-Z]\S+ [A-Z]\S+, [A-Z]\S+ [A-Z]\S+ und [A-Z]\S+ [A-Z]\S+$|) {
+    # match "mit First Lastname" but not "mit den Wildgaensen"
+    my ($presenter) = ($subtitle =~ m|^mit (\S+ \S+), (\S+ \S+) und (\S+ \S+)$|);
+    if ($sce->{presenters}) {
+      $sce->{presenters} = join (", ", $sce->{presenters}, $presenter);
+    } else {
+      $sce->{presenters} = $presenter;
+    }
+    $subtitle = undef;
+  } elsif ($subtitle =~ m|^Moderation: \S+ \S+ und \S+ \S+$|) {
+    my ($presenter1, $presenter2) = ($subtitle =~ m|^Moderation: (\S+ \S+) und (\S+ \S+)$|);
+    if ($sce->{presenters}) {
+      $sce->{presenters} = join (", ", $sce->{presenters}, $presenter1, $presenter2);
+    } else {
+      $sce->{presenters} = join (", ", $presenter1, $presenter2);
+    }
+    $subtitle = undef;
+  } elsif ($subtitle =~ m|^\S+teili\S+ \S+ \S+ \d{4}$|) {
+    # 14-teiliger Spielfilm Deutschland 2000
+    # vierteiliger Spielfilm Deutschland 2000
+    my ($program_type, $production_countries, $production_year) = ($subtitle =~ m|^\S+ (\S+) (\S+) (\d{4})$|);
+    $sce->{production_date} = $production_year . "-01-01";
+    my ( $type, $categ ) = $self->{datastore}->LookupCat( "DasErste_type", $program_type );
+    AddCategory( $sce, $type, $categ );
+    $subtitle = undef;
+  } elsif ($subtitle =~ m|^\S+teili\S+ \S+ und \S+erie \S+ \d{4}$|) {
+    # 13-teilige Kinder- und Familienserie Deutschland 2009
+    my ($program_type, $production_countries, $production_year) = ($subtitle =~ m|^\S+ (\S+ \S+ \S+) (\S+) (\d{4})$|);
+    $sce->{production_date} = $production_year . "-01-01";
+    my ( $type, $categ ) = $self->{datastore}->LookupCat( "DasErste_type", $program_type );
+    AddCategory( $sce, $type, $categ );
+    $subtitle = undef;
+  } elsif ($subtitle =~ m|^Film von [A-Z]\S+ [A-Z]\S+$|) {
+    my ($producer) = ($subtitle =~ m|^Film von (\S+ \S+)$|);
+    if ($sce->{producers}) {
+      $sce->{producers} = join (", ", $sce->{producers}, $producer);
+    } else {
+      $sce->{producers} = $producer;
+    }
+    $subtitle = undef;
+  } elsif ($subtitle =~ m|^Film von [A-Z]\S+ [A-Z]\S+ und [A-Z]\S+ [A-Z]\S+$|) {
+    my ($producer1, $producer2) = ($subtitle =~ m|^Film von (\S+ \S+) und (\S+ \S+)$|);
+    if ($sce->{producers}) {
+      $sce->{producers} = join (", ", $sce->{producers}, $producer1, $producer2);
+    } else {
+      $sce->{producers} = join (", ", $producer1, $producer2);
+    }
+    $subtitle = undef;
+  } elsif ($subtitle =~ m|^\(Vom \d+\.\d+\.\d{4}\)$|) {
+    my ($psd) = ($subtitle =~ m|^Vom (\S+)$|);
+    # is a repeat from $previously shown date
+    $subtitle = undef;
+  } elsif ($subtitle =~ m|^\(.*\)$|) {
+    my ($title_orig) = ($subtitle =~ m|^\((.*)\)$|);
+    # original title
+    $subtitle = undef;
+  } elsif ($subtitle =~ m|^Reporter: \S+ \S+$|) {
+    my ($presenter) = ($subtitle =~ m|^Reporter: (\S+ \S+)$|);
+    if ($sce->{presenters}) {
+      $sce->{presenters} = join (", ", $sce->{presenters}, $presenter);
+    } else {
+      $sce->{presenters} = $presenter;
+    }
+    $subtitle = undef;
+  } else {
+    progress ("unhandled subtitle: $subtitle");
+  }
+
+  return $subtitle;
 }
 
 1;
