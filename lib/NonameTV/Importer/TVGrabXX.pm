@@ -243,7 +243,7 @@ sub create_dt
                           hour   => $hour,
                           minute => $minute,
                           second => $second,
-                          time_zone => 'Europe/Zagreb',
+                          time_zone => $offset,
                           );
   
   $dt->set_time_zone( "UTC" );
