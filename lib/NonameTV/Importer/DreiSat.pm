@@ -240,8 +240,11 @@ sub ImportContent
       # form the subtitle out of 'episodetitle' and ignore 'subtitle' completely
       # the information is usually duplicated in the longdesc anyway and of no
       # use for automated processing
-      if (norm($episodetitle)) {
-        $ce{subtitle} = norm($episodetitle);
+      if ($episodetitle) {
+        $episodetitle = clean_untertitel (\%ce, $episodetitle);
+        if ($episodetitle) {
+          $ce{subtitle} = norm($episodetitle);
+        }
       }
 
       # form the description out of 'zusatz', 'shortdesc', 'longdesc', 'wholedesc'
@@ -262,14 +265,13 @@ sub ImportContent
         $ce{episode} = ". " . ($episodenr-1) . " .";
       }
 
-      #my $lookup_genre = $self->{Type}. "_genre";
-      my $lookup_genre = "DreiSat_genre";
-      my ( $program_type, $categ ) = $ds->LookupCat( $lookup_genre, $genre );
+      my ( $program_type, $categ ) = $ds->LookupCat( "DreiSat_genre", $genre );
       AddCategory( \%ce, $program_type, $categ );
 
-      #my $lookup_categ = $self->{Type}. "_category";
-      my $lookup_categ = "DreiSat_category";
-      ( $program_type, $categ ) = $ds->LookupCat( $lookup_categ, $category );
+      ( $program_type, $categ ) = $ds->LookupCat( "DreiSat_category", $category );
+      AddCategory( \%ce, $program_type, $categ );
+
+      ( $program_type, $categ ) = $ds->LookupCat( "DreiSat_thember", $thember );
       AddCategory( \%ce, $program_type, $categ );
 
       $ds->AddProgramme( \%ce );
@@ -386,6 +388,8 @@ sub clean_untertitel
     return undef;
   }
 
+  $subtitle = norm ($subtitle);
+
   # strip "repeat"
   if ($subtitle =~ m|^\(Wh\.\)$|) {
     return undef;
@@ -429,6 +433,16 @@ sub clean_untertitel
   #
   if ($subtitle =~ m|^[^ ]+ [0-9][0-9][0-9][0-9]$|) {
     my ($pcountries, $pyear) = ($subtitle =~ m|^([^ ]+) ([0-9]+)$|);
+
+    $sce->{production_date} = "$pyear-01-01";
+    return undef;
+  }
+
+  #
+  # Französischer Spielfilm von 2003
+  #
+  if ($subtitle =~ m|^\S+ischer [\S+]ilm von [0-9][0-9][0-9][0-9]$|) {
+    my ($pcountries, $pyear) = ($subtitle =~ m|^(\S+) \S+ von (\d+)$|);
 
     $sce->{production_date} = "$pyear-01-01";
     return undef;
