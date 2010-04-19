@@ -99,6 +99,7 @@ sub ImportContentFile {
       # date - column 0 ('DATE')
       my $oWkC = $oWkS->{Cells}[$iR][$columns{'DATE'}];
       next if( ! $oWkC );
+      next if( ! $oWkC->Value );
 
       $date = ParseDate( $oWkC->Value );
       next if( ! $date );
@@ -106,17 +107,20 @@ sub ImportContentFile {
       # starttime - column ('HEURE DIF')
       $oWkC = $oWkS->{Cells}[$iR][$columns{'HEURE DIF'}];
       next if( ! $oWkC );
+      next if( ! $oWkC->Value );
       my $starttime = create_dt( $date , $oWkC->Value ) if( $oWkC->Value );
       next if( ! $starttime );
 
       # title - column ('TITRE')
       $oWkC = $oWkS->{Cells}[$iR][$columns{'TITRE'}];
       next if( ! $oWkC );
+      next if( ! $oWkC->Value );
       my $title = $oWkC->Value if( $oWkC->Value );
 
       # duration - column ('DUREE')
       $oWkC = $oWkS->{Cells}[$iR][$columns{'DUREE'}];
       #next if( ! $oWkC );
+      #next if( ! $oWkC->Value );
       my $duration = $oWkC->Value if( $oWkC->Value );
 
       my $endtime = create_endtime( $starttime , $duration );
@@ -125,6 +129,7 @@ sub ImportContentFile {
       # genre - column ('GENRE')
       $oWkC = $oWkS->{Cells}[$iR][$columns{'GENRE'}];
       #next if( ! $oWkC );
+      #next if( ! $oWkC->Value );
       my $genre = $oWkC->Value if( $oWkC->Value );
 
       # language - column ('LANGUE')
@@ -163,7 +168,15 @@ sub ParseDate
 {
   my ( $dinfo ) = @_;
 
-  my( $month, $day, $year ) = ( $dinfo =~ /(\d+)-(\d+)-(\d+)/ );
+#print "ParseDate >$dinfo<\n";
+
+  my( $month, $day, $year );
+
+  if( $dinfo =~ /^\d{4}-\d{2}-\d{2}$/ ){
+    ( $year, $month, $day ) = ( $dinfo =~ /^(\d{4})-(\d{2})-(\d{2})$/ );
+  } else {
+    ( $day, $month, $year ) = ( $dinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
+  }
 
   return undef if( ! $year);
 

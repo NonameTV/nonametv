@@ -202,8 +202,15 @@ sub ParseDate
 
   return undef if not $text;
 
-  # Format '2-1-09'
-  my( $month, $day, $year ) = ( $text =~ /^(\d+)-(\d+)-(\d+)$/ );
+#print "$text\n";
+
+  my( $month, $day, $year );
+
+  if( $text =~ /^\d{4}-\d{2}-\d{2}$/ ){ # Format '2010-04-01'
+    ( $year, $month, $day ) = ( $text =~ /^(\d+)-(\d+)-(\d+)$/ );
+  } elsif( $text =~ /^\d+-\d+-\d+$/ ){ # Format '2-1-09'
+    ( $month, $day, $year ) = ( $text =~ /^(\d+)-(\d+)-(\d+)$/ );
+  }
 
   $year += 2000 if $year < 100;
 

@@ -18,6 +18,7 @@ use utf8;
 
 use POSIX;
 use DateTime;
+use Spreadsheet::ParseExcel;
 
 use NonameTV qw/MyGet Wordfile2Xml norm AddCategory MonthNumber/;
 use NonameTV::DataStore::Helper;
@@ -55,9 +56,11 @@ sub ImportContentFile
 #return if ( $file !~ /20090407104828-noname/ );
 
   if( $file =~ /\.doc$/i ){
-    $self->ImportDOC( $file, $channel_id, $xmltvid );
+    $self->ImportDOC( $file, $chd );
+  } elsif( $file =~ /\.xls$/i ){
+    $self->ImportXLS( $file, $chd );
   } elsif( $file =~ /noname$/i ){
-    $self->ImportTXT( $file, $channel_id, $xmltvid );
+    $self->ImportTXT( $file, $chd );
   }
 
   return;
@@ -66,20 +69,20 @@ sub ImportContentFile
 sub ImportDOC
 {
   my $self = shift;
-  my( $file, $channel_id, $xmltvid ) = @_;
+  my( $file, $chd ) = @_;
   
   my $dsh = $self->{datastorehelper};
   my $ds = $self->{datastore};
 
   return if( $file !~ /\.doc$/i );
 
-  progress( "Z1 DOC: $xmltvid: Processing $file" );
+  progress( "Z1 DOC: $chd->{xmltvid}: Processing $file" );
   
   my $doc;
   $doc = Wordfile2Xml( $file );
 
   if( not defined( $doc ) ) {
-    error( "Z1 DOC $xmltvid: $file: Failed to parse" );
+    error( "Z1 DOC $chd->{xmltvid}: $file: Failed to parse" );
     return;
   }
 
@@ -93,7 +96,7 @@ sub ImportDOC
   my $ns = $doc->find( "//div" );
   
   if( $ns->size() == 0 ) {
-    error( "Z1 DOC $xmltvid: $file: No divs found." ) ;
+    error( "Z1 DOC $chd->{xmltvid}: $file: No divs found." ) ;
     return;
   }
 
@@ -112,7 +115,7 @@ sub ImportDOC
 
       if( $date ) {
 
-        progress("Z1 DOC: $xmltvid: Date is $date");
+        progress("Z1 DOC: $chd->{xmltvid}: Date is $date");
 
         if( $date ne $currdate ) {
 
@@ -120,8 +123,8 @@ sub ImportDOC
             $dsh->EndBatch( 1 );
           }
 
-          my $batch_id = "${xmltvid}_" . $date;
-          $dsh->StartBatch( $batch_id, $channel_id );
+          my $batch_id = "$chd->{xmltvid}_" . $date;
+          $dsh->StartBatch( $batch_id, $chd->{id} );
           $dsh->StartDate( $date , "00:00" ); 
           $currdate = $date;
         }
@@ -135,10 +138,10 @@ sub ImportDOC
 
       my( $time, $title, $genre, $ep_no, $ep_se ) = ParseShow( $text );
 
-      progress("Z1 DOC: $xmltvid: $time - $title");
+      progress("Z1 DOC: $chd->{xmltvid}: $time - $title");
 
       my $ce = {
-        channel_id => $channel_id,
+        channel_id => $chd->{id},
         start_time => $time,
         title => norm($title),
       };
@@ -170,12 +173,12 @@ sub ImportDOC
 sub ImportTXT
 {
   my $self = shift;
-  my( $file, $channel_id, $xmltvid ) = @_;
+  my( $file, $chd ) = @_;
   
   my $dsh = $self->{datastorehelper};
   my $ds = $self->{datastore};
 
-  progress( "Z1 TXT: $xmltvid: Processing $file" );
+  progress( "Z1 TXT: $chd->{xmltvid}: Processing $file" );
 
   open(HTMLFILE, $file);
   my @lines = <HTMLFILE>;
@@ -198,21 +201,21 @@ sub ImportTXT
           $dsh->EndBatch( 1 );
         }
 
-        my $batch_id = $xmltvid . "_" . $date;
-        $dsh->StartBatch( $batch_id , $channel_id );
+        my $batch_id = $chd->{xmltvid} . "_" . $date;
+        $dsh->StartBatch( $batch_id , $chd->{id} );
         $dsh->StartDate( $date , "06:00" );
         $currdate = $date;
 
-        progress("Z1 TXT: $xmltvid: Date is: $date");
+        progress("Z1 TXT: $chd->{xmltvid}: Date is: $date");
       }
     } elsif( $date and isShow( $text ) ) {
 
       my( $time, $title, $genre, $ep_no, $ep_se ) = ParseShow( $text );
 
-      progress("Z1 TXT: $xmltvid: $time - $title");
+      progress("Z1 TXT: $chd->{xmltvid}: $time - $title");
 
       my $ce = {
-        channel_id => $channel_id,
+        channel_id => $chd->{id},
         start_time => $time,
         title => norm($title),
       };
@@ -240,6 +243,97 @@ sub ImportTXT
   return;
 }
   
+
+sub ImportXLS
+{
+  my $self = shift;
+  my( $file, $chd ) = @_;
+  
+  my $dsh = $self->{datastorehelper};
+  my $ds = $self->{datastore};
+
+  return if( $file !~ /\.xls$/i );
+
+  progress( "Z1 XLS: $chd->{xmltvid}: Processing $file" );
+
+  my( $oBook, $oWkS, $oWkC );
+  $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
+
+  if( not defined( $oBook ) ) {
+    error( "Z1 XLS: $file: Failed to parse xls" );
+    return;
+  }
+
+  for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
+
+    $oWkS = $oBook->{Worksheet}[$iSheet];
+    progress("Z1 XLS: $chd->{xmltvid}: processing worksheet named '$oWkS->{Name}'");
+
+    my $date = undef;
+
+    # find the cell with the date
+    # the file contains the schedule for one date on one sheet
+    for(my $iR = $oWkS->{MinRow} ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
+      for(my $iC = $oWkS->{MinCol} ; defined $oWkS->{MaxCol} && $iC <= $oWkS->{MaxCol} ; $iC++) {
+
+        my $oWkC = $oWkS->{Cells}[$iR][$iC];
+        next if( ! $oWkC );
+        next if( ! $oWkC->Value );
+        if( isDate( $oWkC->Value ) ){
+          $date = ParseDate( $oWkC->Value );
+          if( $date ) {
+
+            my $batch_id = $chd->{xmltvid} . "_" . $date;
+            $dsh->StartBatch( $batch_id , $chd->{id} );
+            $dsh->StartDate( $date , "06:00" );
+
+            progress("Z1 XLS: $chd->{xmltvid}: Date is: $date");
+          } else {
+            return 0;
+          }
+        }
+      }
+    }
+
+    my $coltime = 2;
+    my $coltitle = 3;
+
+    # read the programs
+    for(my $iR = $oWkS->{MinRow} ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
+
+      my $oWkC;
+
+      # time
+      $oWkC = $oWkS->{Cells}[$iR][$coltime];
+      next if( ! $oWkC );
+      next if( ! $oWkC->Value );
+      my $time = ParseTime( $oWkC->Value );
+      next if( ! $time );
+
+      # title
+      $oWkC = $oWkS->{Cells}[$iR][$coltitle];
+      next if( ! $oWkC );
+      next if( ! $oWkC->Value );
+      my $title = $oWkC->Value;
+      next if( ! $title );
+
+      progress("Z1 XLS: $chd->{xmltvid}: $time - $title");
+
+      my $ce = {
+        channel_id => $chd->{id},
+        start_time => $time,
+        title => norm($title),
+      };
+
+      $dsh->AddProgramme( $ce );
+    }
+
+    $dsh->EndBatch( 1 );
+  }
+  
+  return;
+}
+
 sub isDate {
   my ( $text ) = @_;
 
@@ -274,6 +368,22 @@ sub ParseDate {
   $year += 2000 if $year lt 100;
 
   return sprintf( '%d-%02d-%02d', $year, $month, $day );
+}
+
+sub ParseTime {
+  my( $text ) = @_;
+
+#print "ParseTime: >$text<\n";
+
+  my( $hour, $min, $sec );
+
+  if( $text =~ /^\d+:\d+$/ ){
+    ( $hour, $min ) = ( $text =~ /^(\d+):(\d+)$/ );
+  } else {
+    return undef;
+  }
+
+  return sprintf( '%02d:%02d', $hour, $min );
 }
 
 sub isShow {

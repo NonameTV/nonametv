@@ -270,7 +270,7 @@ sub ParseTime
 sub UpdateFiles {
   my( $self ) = @_;
 
-return;
+#return;
 
   my $today = DateTime->today;
 

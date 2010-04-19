@@ -171,7 +171,14 @@ sub ParseDate
 {
   my ( $dinfo ) = @_;
 
-  my( $month, $day, $year ) = ( $dinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
+  my( $month, $day, $year );
+
+  if( $dinfo =~ /^\d{4}-\d{2}-\d{2}$/ ){
+    ( $year, $month, $day ) = ( $dinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
+  } elsif( $dinfo =~ /^\d+-\d+-\d+$/ ){
+    ( $month, $day, $year ) = ( $dinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
+  }
+
   return undef if( ! $year);
 
   $year+= 2000 if $year< 100;

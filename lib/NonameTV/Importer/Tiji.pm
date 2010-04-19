@@ -68,6 +68,9 @@ sub ImportContentFile {
 
   # get the column names from the first line
   my @columns = $csv->column_names( $csv->getline( $CSVFILE ) );
+#foreach my $cl (@columns) {
+#print "$cl\n";
+#}
 
   # main loop
   while( my $row = $csv->getline_hr( $CSVFILE ) ){

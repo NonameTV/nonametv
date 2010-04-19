@@ -139,9 +139,9 @@ sub ImportContent
     my $title = $sc->getElementsByTagName( 'title' );
     next if( ! $title );
 
-    my $genre = $sc->getElementsByTagName( 'category' );
-    my $description = $sc->getElementsByTagName( 'desc' );
-    my $url = $sc->getElementsByTagName( 'url' );
+#    my $genre = $sc->getElementsByTagName( 'category' );
+#    my $description = $sc->getElementsByTagName( 'desc' );
+#    my $url = $sc->getElementsByTagName( 'url' );
 
     progress("RTLTV: $chd->{xmltvid}: $time - $title");
 
@@ -149,13 +149,14 @@ sub ImportContent
       channel_id => $chd->{id},
       start_time => $time,
       title => norm($title),
-      description => norm($description),
     };
 
-    if( $genre ){
-      my($program_type, $category ) = $ds->LookupCat( "RTLTV", norm($genre) );
-      AddCategory( $ce, $program_type, $category );
-    }
+#    $ce->{description} = $description if $description;
+
+#    if( $genre ){
+#      my($program_type, $category ) = $ds->LookupCat( "RTLTV", norm($genre) );
+#      AddCategory( $ce, $program_type, $category );
+#    }
 
     $dsh->AddProgramme( $ce );
   }

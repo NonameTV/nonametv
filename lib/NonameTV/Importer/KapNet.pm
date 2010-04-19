@@ -5,24 +5,21 @@ use warnings;
 
 =pod
 
-channel: Kapital Network
-country: Croatia
-
-Import data from Excel-files delivered via e-mail.
-Each file is for one week.
+Importer for data from KapNet (www.kupitv.hr) channel. 
 
 Features:
 
 =cut
 
-use utf8;
-
+use POSIX qw/strftime/;
 use DateTime;
 use Spreadsheet::ParseExcel;
+use DateTime::Format::Excel;
 
+use NonameTV qw/MyGet norm AddCategory/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/progress error/;
-use NonameTV qw/AddCategory norm/;
+use NonameTV::Config qw/ReadConfig/;
 
 use NonameTV::Importer::BaseFile;
 
@@ -34,168 +31,208 @@ sub new {
   my $self  = $class->SUPER::new( @_ );
   bless ($self, $class);
 
+  my $conf = ReadConfig();
+
+  $self->{FileStore} = $conf->{FileStore};
+
+  my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
+  $self->{datastorehelper} = $dsh;
 
   return $self;
 }
 
-sub ImportContentFile {
+sub ImportContentFile
+{
   my $self = shift;
   my( $file, $chd ) = @_;
-  my( $dateinfo );
-  my( $kada, $newtime, $lasttime );
-  my( $title, $newtitle , $lasttitle , $newdescription , $lastdescription );
-  my( $day, $month , $year , $hour , $min );
-  my( $oBook, $oWkS, $oWkC );
 
-  # Only process .xls files.
-  return if $file !~  /\.xls$/i;
-
-  progress( "KapNet: Processing $file" );
-  
   $self->{fileerror} = 0;
 
-  my $xmltvid=$chd->{xmltvid};
   my $channel_id = $chd->{id};
+  my $channel_xmltvid = $chd->{xmltvid};
+  my $dsh = $self->{datastorehelper};
   my $ds = $self->{datastore};
-  $ds->{SILENCE_END_START_OVERLAP}=1;
 
+  if( $file =~ /\.xls$/i ){
+    $self->ImportXLS( $file, $chd );
+  }
+
+  return;
+}
+
+sub ImportXLS
+{
+  my $self = shift;
+  my( $file, $chd ) = @_;
+
+  my $dsh = $self->{datastorehelper};
+  my $ds = $self->{datastore};
+
+  my %columns = ();
+  my $date;
+  my $currdate = "x";
+
+  progress( "KapNet: $chd->{xmltvid}: Processing XLS $file" );
+
+  my( $oBook, $oWkS, $oWkC );
   $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
+
+  if( not defined( $oBook ) ) {
+    error( "KapNet: $file: Failed to parse xls" );
+    return;
+  }
+
+  if( not $oBook->{SheetCount} ){
+    error( "KapNet: $file: No worksheets found in file" );
+    return;
+  }
 
   for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
 
     $oWkS = $oBook->{Worksheet}[$iSheet];
+    if( $oWkS->{Name} =~ /AM(\s+|\/)PM/ ){
+      progress("KapNet: $chd->{xmltvid}: Skipping worksheet named '$oWkS->{Name}'");
+      next;
+    }
 
-    # process only the sheet with the name PPxle
-    #next if ( $oWkS->{Name} !~ /PPxle/ );
+    progress("KapNet: $chd->{xmltvid}: Processing worksheet named '$oWkS->{Name}'");
 
-    progress( "KapNet: Processing worksheet: $oWkS->{Name}" );
+    $date = ParseDate( $oWkS->{Name} );
+    next if( ! $date );
 
-    my $batch_id = $xmltvid . "_" . $file;
-    $ds->StartBatch( $batch_id , $channel_id );
+    if( $date ne $currdate ) {
 
-    for(my $iC = $oWkS->{MinCol} ; defined $oWkS->{MaxCol} && $iC <= $oWkS->{MaxCol} ; $iC++) {
-
-      # Date & Day info is in the first row
-      $oWkC = $oWkS->{Cells}[0][$iC];
-      if( $oWkC ){
-        $dateinfo = $oWkC->Value;
+      if( $currdate ne "x" ) {
+        $dsh->EndBatch( 1 );
       }
-      next if ( ! $dateinfo );
-      next if( $dateinfo !~ /\S+\s+\d\d\.\d\d/ );
 
-      ( $day , $month , $year ) = ParseDate( $dateinfo );
+      my $batch_id = $chd->{xmltvid} . "_" . $date;
+      $dsh->StartBatch( $batch_id , $chd->{id} );
+      $dsh->StartDate( $date , "00:00" );
+      $currdate = $date;
 
-      progress("KapNet: Processing day: $day / $month / $year ($dateinfo)");
+      progress("KapNet: $chd->{xmltvid}: Date is: $date");
+    }
 
-      for(my $iR = $oWkS->{MinRow} ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
+    # read the rows with data
+    for(my $iR = $oWkS->{MinRow} ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
 
-        # Time Slot
-        $oWkC = $oWkS->{Cells}[$iR][0];
-        if( $oWkC ){
-          $kada = $oWkC->Value;
-        }
+      if( not defined $columns{'TIME'} ){
 
-        # next if kada is empty
-        next if ( ! $kada );
-        next if( $kada !~ /\d\d:\d\d/ );
+        # the column names are stored in the 1st or 2nd row
+        # so read them and store their column positions
+        # for further findvalue() calls
 
-        # Title
-        $oWkC = $oWkS->{Cells}[$iR][$iC];
-        if( $oWkC ){
-          $title = $oWkC->Value;
-        }
+        for(my $iC = $oWkS->{MinCol} ; defined $oWkS->{MaxCol} && $iC <= $oWkS->{MaxCol} ; $iC++) {
 
-        # next if title is empty as it spreads across more cells
-        next if ( ! $title );
-        next if( $title !~ /\S+/ );
+          if( $oWkS->{Cells}[$iR][$iC] ){
 
-        # create the time
-        $newtime = create_dt( $day , $month , $year , $kada );
+            $columns{$oWkS->{Cells}[$iR][$iC]->Value} = $iC;
 
-        # all data is in one string which has to be split
-        # to title and description
-        if( $title =~ /: / ){
-          ( $newtitle , $newdescription ) = split( ':', $title );
-        } else {
-          $newtitle = $title;
-          $newdescription = '';
-        }
+            # other possible names of the columns
+            $columns{'TIME'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Satnica$/ );
+            $columns{'TITLE'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Naziv TV sadr/ );
+            $columns{'DESCRIPTION'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Kratak opis/ );
 
-        if( defined( $lasttitle ) and defined( $newtitle ) ){
-
-          if( $newtime < $lasttime ){
-            $newtime->add( days => 1 );
+            next;
           }
-
-          progress("KapNet: $lasttime - $newtime : $lasttitle");
-
-          my $ce = {
-            channel_id   => $channel_id,
-            start_time   => $lasttime->ymd("-") . " " . $lasttime->hms(":"),
-            end_time     => $newtime->ymd("-") . " " . $newtime->hms(":"),
-            title        => norm($lasttitle),
-            description  => $lastdescription,
-          };
-
-          $ds->AddProgramme( $ce );
         }
+#foreach my $cl (%columns) {
+#print "$cl\n";
+#}
+      }
+      
+      # start time
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'TIME'}];
+      next if( ! $oWkC );
+      next if( ! $oWkC->Value );
 
-        if( defined( $newtime ) ){
-          $lasttime = $newtime;
-          $lasttitle = $newtitle;
-          $lastdescription = $newdescription;
-        }
+      my $time = ParseTime( $oWkC->Value );
+      if( not defined( $time ) ) {
+        error( "Invalid start-time '$date' '" . $oWkC->Value . "'. Skipping." );
+        next;
+      }
 
-      } # next row (next show)
+      # Title
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'TITLE'}];
+      next if( ! $oWkC );
+      next if( ! $oWkC->Value );
+      my $title = $oWkC->Value;
+      next if( ! $title );
 
-      $dateinfo = undef;
-      $kada = undef;
-      $title = undef;
+      # Description
+      my $description;
+      if( $columns{'DESCRIPTION'} ){
+        $oWkC = $oWkS->{Cells}[$iR][$columns{'DESCRIPTION'}];
+        $description = $oWkC->Value if ( $oWkC and $oWkC->Value );
+      }
 
-    } # next column (next day)
+      progress( "KapNet: $chd->{xmltvid}: $time - $title" );
 
-    $ds->EndBatch( 1 );
+      my $ce = {
+        channel_id => $chd->{id},
+        title => $title,
+        start_time => $time,
+      };
 
-  } # next worksheet
+      $ce->{description} = $description if $description;
+
+      $dsh->AddProgramme( $ce );
+
+    } # next row
+
+    %columns = ();
+
+  } # next sheet
+
+  $dsh->EndBatch( 1 );
 
   return;
 }
 
 sub ParseDate
 {
-  my ( $dinfo ) = @_;
+  my( $text ) = @_;
 
-  my( $d, $m ) = ( $dinfo =~ /(\d{2})\.(\d{2})/ );
+#print "DATE >$text<\n";
 
-  my $y = DateTime->today()->year;
+  my( $day, $month, $year );
 
-  return( $d , $m , $y );
+  if( $text =~ /^\d{5}$/ ){
+    my $dt = DateTime::Format::Excel->parse_datetime( $text );
+    $year = $dt->year;
+    $month = $dt->month;
+    $day = $dt->day;
+  } elsif( $text =~ /^\d+\.\d+\.\d+\.$/ ){ # format '18.12.2009.'
+    ( $day, $month, $year ) = ( $text =~ /^(\d+)\.(\d+)\.(\d+)\.$/ );
+  } else {
+    return undef;
+  }
+
+  return sprintf( "%04d-%02d-%02d", $year, $month, $day );
 }
-  
-sub create_dt
+
+sub ParseTime
 {
-  my ( $d , $m , $y , $tinfo ) = @_;
+  my( $text ) = @_;
 
-  my( $hr, $mn ) = ( $tinfo =~ /(\d+)\:(\d+)/ );
+#print "TIME >$text<\n";
 
-  my $dt = DateTime->new( year   => $y,
-                           month  => $m,
-                           day    => $d,
-                           hour   => $hr,
-                           minute => $mn,
-                           second => 0,
-                           time_zone => 'Europe/Zagreb',
-                           );
+  my( $hour, $min, $sec );
 
-  # times are in CET timezone in original XLS file
-  $dt->set_time_zone( "UTC" );
+  if( $text =~ /^\d+$/ ){ # Excel time
+    my $dt = DateTime::Format::Excel->parse_datetime( $text );
+    $hour = $dt->hour;
+    $min = $dt->min;
+  } elsif( $text =~ /^\d+:\d+$/ ){
+    ( $hour, $min ) = ( $text =~ /^(\d+):(\d+)$/ );
+  } elsif( $text =~ /^\d{2}:\d{2}:\d{2}:\d{2}$/ ){
+    ( $hour, $min ) = ( $text =~ /^(\d{2}):(\d{2}):\d{2}:\d{2}$/ );
+  } else {
+    return undef;
+  }
 
-  return( $dt );
+  return sprintf( "%02d:%02d", $hour, $min );
 }
-  
-1;
 
-### Setup coding system
-## Local Variables:
-## coding: utf-8
-## End:
+1;

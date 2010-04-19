@@ -279,21 +279,25 @@ sub ImportXLS
       # Time Slot
       $oWkC = $oWkS->{Cells}[$iR][$columns{'Time Slot'}];
       next if( ! $oWkC );
+      next if( ! $oWkC->Value );
       $timeslot = $oWkC->Value;
 
       # EN Title
       $oWkC = $oWkS->{Cells}[$iR][$columns{'EN Title'}];
       next if( ! $oWkC );
+      next if( ! $oWkC->Value );
       $title = $oWkC->Value;
 
       # Croatian Title
       $oWkC = $oWkS->{Cells}[$iR][$columns{'Croatian Title'}];
       next if( ! $oWkC );
+      next if( ! $oWkC->Value );
       $crotitle = $oWkC->Value;
 
       # Genre
       $oWkC = $oWkS->{Cells}[$iR][$columns{'Genre'}];
       next if( ! $oWkC );
+      next if( ! $oWkC->Value );
       $genre = $oWkC->Value;
 
       if( ! $timeslot ){

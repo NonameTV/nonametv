@@ -345,8 +345,8 @@ sub ParseDate
 
   my( $m, $d, $y );
 
-  if( $dinfo =~ /^\d+-\d+-\d+$/ ){ # mm-dd-yyyy
-    ( $m, $d, $y ) = ( $dinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
+  if( $dinfo =~ /^\d{2}-\d{2}-\d{4}$/ ){ # mm-dd-yyyy
+    ( $d, $m, $y ) = ( $dinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
   } elsif( $dinfo =~ /^\d+\/\d+\/\d+$/ ){ # dd/mm/yy
     ( $d, $m, $y ) = ( $dinfo =~ /^(\d+)\/(\d+)\/(\d+)$/ );
   } else {

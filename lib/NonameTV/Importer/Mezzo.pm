@@ -253,11 +253,17 @@ sub ParseDate
 {
   my( $dateinfo ) = @_;
 
-  if( $dateinfo !~ /^\d+-\d+-\d+$/ ){
+#print ">$dateinfo<\n";
+
+  my( $month, $day, $year );
+
+  if( $dateinfo =~ /^\d{4}-\d{2}-\d{2}$/ ){
+    ( $year, $month, $day ) = ( $dateinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
+  } elsif( $dateinfo =~ /^\d+-\d+-\d+$/ ){
+    ( $month, $day, $year ) = ( $dateinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
+  } else {
     return undef;
   }
-
-  my( $month, $day, $year ) = ( $dateinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
 
   $year += 2000 if( $year < 100);
 

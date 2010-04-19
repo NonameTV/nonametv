@@ -143,8 +143,13 @@ sub ParseDate
 {
   my ( $dinfo ) = @_;
 
-  # format '1-23-09'
-  my( $month, $day, $year ) = ( $dinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
+  my( $month, $day, $year );
+
+  if( $dinfo =~ /^\d{4}-\d{2}-\d{2}$/ ){ # format '2010-04-22'
+    ( $year, $month, $day ) = ( $dinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
+  } elsif( $dinfo =~ /^\d+-\d+-\d+$/ ){ # format '1-23-09'
+    ( $month, $day, $year ) = ( $dinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
+  }
 
   return undef if( ! $year );
 

@@ -312,6 +312,8 @@ sub ParseDate {
 
   if( $text =~ /(\d{4})\.(\d{2})\.(\d{2})\.*\s+(\S+)/ ){
     ( $year , $month , $day , $dayname ) = ( $text =~ /(\d{4})\.(\d{2})\.(\d{2})\.*\s+(\S+)/ );
+  } elsif( $text =~ /^\d{4}-\d{2}-\d{2}$/ ){
+    ( $year , $month , $day ) = ( $text =~ /(\d+)-(\d+)-(\d+)/ );
   } elsif( $text =~ /^\d+-\d+-\d+$/ ){
     ( $month , $day , $year ) = ( $text =~ /(\d+)-(\d+)-(\d+)/ );
   } elsif( $text =~ /^\d+$/ ){
@@ -331,9 +333,11 @@ sub ParseTime {
 
 #print ">$text<\n";
 
-  my( $hour , $min );
+  my( $hour , $min , $sec );
 
-  if( $text =~ /^\d+:\d+$/ ){
+  if( $text =~ /^\[\d+\]:\d+:\d+$/ ){ # format '[00]:00:30'
+    ( $hour , $min, $sec ) = ( $text =~ /^\[(\d+)\]:(\d+):(\d+)$/ );
+  } elsif( $text =~ /^\d+:\d+$/ ){
     ( $hour , $min ) = ( $text =~ /^(\d+):(\d+)$/ );
   } elsif( $text =~ /^0\.\d+$/){ # format '0.377962962962964'
     my $daysecs = int( 86400 * $text );

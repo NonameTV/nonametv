@@ -66,7 +66,7 @@ sub ImportContentFile {
   if( $ff eq FT_XML ){
     $self->ImportXML( $file, $chd );
   } elsif( $ff eq FT_XLS1 ){
-    $self->ImportXLS1( $file, $chd );
+    $self->ImportXLS2( $file, $chd );
   } elsif( $ff eq FT_XLS2 ){
     $self->ImportXLS2( $file, $chd );
   } else {
@@ -301,14 +301,78 @@ sub ImportXLS2
     return;
   }
 
+  my $coltime = 0;
+
   for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
 
     $oWkS = $oBook->{Worksheet}[$iSheet];
 
     progress("Nickelodeon XLS: $channel_xmltvid: processing worksheet named '$oWkS->{Name}'");
 
+
+    for(my $iC = $oWkS->{MinCol} ; defined $oWkS->{MaxCol} && $iC <= $oWkS->{MaxCol} ; $iC++){
+      for(my $iR = $oWkS->{MinRow} ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++){
+
+        my $oWkC = $oWkS->{Cells}[$iR][$iC];
+        next if( ! $oWkC );
+        next if( ! $oWkC->Value );
+
+        if( $oWkC->Value =~ /^NICKELODEON EURO$/ ){
+
+          progress("Nickelodeon XLS: $channel_xmltvid: processing NICKELODEON EURO" );
+
+        } elsif( isPeriod( $oWkC->Value ) ){
+
+          my ( $firstdate, $lastdate ) = ParsePeriod( $oWkC->Value );
+print "Period: $firstdate $lastdate\n";
+
+        } else {
+
+          # title
+          my $title = $oWkC->Value;
+
+          # time
+          my $oWkT = $oWkS->{Cells}[$iR][$coltime];
+          next if( ! $oWkT );
+          next if( ! $oWkT->Value );
+          my $time = $oWkT->Value;
+          next if( ! $time );
+
+          progress( "Nickelodeon XLS: $channel_xmltvid: $time - $title" );
+
+        }
+      }
+    }
   }
 
+}
+
+sub isPeriod {
+  my( $text ) = @_;
+
+  # Format: Monday 1st - Sunday 21st of March 2010
+  if( $text =~ /^\S+\s+\d+(st|nd|rd|th)\s+-\s+\S+\s+\d+(st|nd|rd|th)\s+of\s+\S+\s+\d+$/i ){
+    return 1;
+  }
+
+  return 0;
+}
+
+sub ParsePeriod {
+  my( $text ) = @_;
+
+#print "ParsePeriod: $text\n";
+
+  my ( $fday, $lday, $monthname, $year );
+
+  # Format: Monday 1st - Sunday 21st of March 2010
+  if( $text =~ /^\S+\s+\d+(st|nd|rd|th)\s+-\s+\S+\s+\d+(st|nd|rd|th)\s+of\s+\S+\s+\d+$/i ){
+    ( $fday, $lday, $monthname, $year ) = ( $text =~ /^\S+\s+(\d+)\S+\s+-\s+\S+\s+(\d+)\S+\s+of\s+(\S+)\s+(\d+)$/i );
+  }
+
+  my $month = MonthNumber( $monthname, "en" );
+
+  return ( sprintf( "%04d-%02d-%02d", $year, $month, $fday ), sprintf( "%04d-%02d-%02d", $year, $month, $lday ) );
 }
 
 sub ParseDate {

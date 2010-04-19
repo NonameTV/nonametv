@@ -27,6 +27,13 @@ use NonameTV::Importer::BaseFile;
 
 use base 'NonameTV::Importer::BaseFile';
 
+# File types
+use constant {
+  FT_UNKNOWN  => 0,  # unknown
+  FT_FLATXLS  => 1,  # flat xls file
+  FT_GRIDXLS  => 2,  # xls file with grid
+};
+
 sub new {
   my $proto = shift;
   my $class = ref($proto) || $proto;
@@ -46,6 +53,203 @@ sub ImportContentFile {
 
   $self->{fileerror} = 0;
 
+#return if( $file !~ /palinsesto Aprile 2010/i );
+
+  my $ft = $self->CheckFileFormat( $file, $chd );
+print "FT $ft " . %{$self->{columns}} . "\n";
+  if( $ft eq FT_FLATXLS ){
+    $self->ImportFlatXLS( $file, $chd );
+  } elsif( $ft eq FT_GRIDXLS ){
+    $self->ImportGridXLS( $file, $chd );
+  } else {
+    error( "Sailing: $chd->{xmltvid}: Unknown file format of $file" );
+  }
+
+  return;
+}
+
+sub CheckFileFormat
+{
+  my $self = shift;
+  my( $file, $chd ) = @_;
+
+  # Only process .xls files.
+  return if( $file !~ /\.xls$/i );
+
+  my $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
+  return FT_UNKNOWN if( ! $oBook );
+
+  # the flat sheet file which sometimes uses
+
+  my %columns = ();
+
+  progress( "Sailing: $chd->{xmltvid}: Checking file format for $file" );
+
+  for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
+
+    my $oWkS = $oBook->{Worksheet}[$iSheet];
+
+    progress( "Sailing: $chd->{xmltvid}: Checking worksheet: $oWkS->{Name}" );
+
+    # try to read the columns
+    # if column names are present -> flat xls file
+
+    for(my $iR = $oWkS->{MinRow} ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
+
+      # get the names of the columns from the 1st row
+      if( not %columns ){
+
+        for(my $iC = $oWkS->{MinCol} ; defined $oWkS->{MaxCol} && $iC <= $oWkS->{MaxCol} ; $iC++) {
+
+          my $oWkC = $oWkS->{Cells}[$iR][$iC];
+          next if( ! $oWkC );
+          next if( ! $oWkC->Value );
+
+#print "$iR $iC " . $oWkS->{Cells}[$iR][$iC]->Value . "\n";
+
+          #$columns{norm($oWkS->{Cells}[$iR][$iC]->Value)} = $iC;
+
+          # columns alternate names
+          $columns{'DATE'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Date$/i );
+          $columns{'DATE'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Data$/i );
+
+          $columns{'TIME'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Time$/i );
+          $columns{'TIME'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Ora$/i );
+
+          $columns{'TITLE'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Name of the episode$/i );
+          $columns{'TITLE'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Name of episode$/i );
+          $columns{'TITLE'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Codice$/i );
+
+          $columns{'DESCRIPTION'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Description$/i );
+          $columns{'DESCRIPTION'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Descrizione$/i );
+
+          $columns{'LENGTH'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Length$/i );
+          $columns{'LENGTH'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Durata$/i );
+        }
+
+#print "A\n";
+        if( defined $columns{'DATE'} and defined $columns{'TIME'} ){
+foreach my $col (%columns) {
+print "$col\n";
+}
+          %{$self->{columns}} = %columns;
+          return FT_FLATXLS;
+        }
+#print "B\n";
+      }
+#print "C\n";
+    }
+#print "D\n";
+  }
+
+  return FT_UNKNOWN;
+}
+
+sub ImportFlatXLS
+{
+  my $self = shift;
+  my( $file, $chd ) = @_;
+
+  my $xmltvid=$chd->{xmltvid};
+  my $channel_id = $chd->{id};
+  my $dsh = $self->{datastorehelper};
+  my $ds = $self->{datastore};
+
+  my %columns = %{$self->{columns}};
+
+  # Only process .xls files.
+  return if $file !~  /\.xls$/i;
+  progress( "Sailing FlatXLS: $xmltvid: Processing $file" );
+  
+  my $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
+
+  my $date;
+  my $currdate = "x";
+
+  for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
+
+    my $oWkS = $oBook->{Worksheet}[$iSheet];
+
+    progress( "Sailing: $chd->{xmltvid}: Checking worksheet: $oWkS->{Name}" );
+
+    for(my $iR = $oWkS->{MinRow} ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
+
+      # date
+      my $oWkC = $oWkS->{Cells}[$iR][$columns{'DATE'}];
+      next if( ! $oWkC );
+      next if( ! $oWkC->Value );
+      $date = ParseDate( $oWkC->Value );
+      next if( ! $date );
+
+      if( $date ne $currdate ){
+        if( $currdate ne "x" ) {
+          $dsh->EndBatch( 1 );
+        }
+
+        my $batch_id = $xmltvid . "_" . $date;
+        $dsh->StartBatch( $batch_id , $channel_id );
+        $dsh->StartDate( $date , "00:00" );
+        $currdate = $date;
+
+        progress("Sailing FlatXLS: $xmltvid: Date is: $date");
+      }
+
+      # time
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'TIME'}];
+      next if( ! $oWkC );
+      next if( ! $oWkC->Value );
+      my $time = $oWkC->Value;
+      next if( ! $time );
+
+      # title
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'TITLE'}];
+      next if( ! $oWkC );
+      next if( ! $oWkC->Value );
+      my $title = $oWkC->Value;
+      next if( ! $title );
+
+      # description
+      my $description;
+      if( defined $columns{'DESCRIPTION'} ){
+        $oWkC = $oWkS->{Cells}[$iR][$columns{'DESCRIPTION'}];
+        next if( ! $oWkC );
+        next if( ! $oWkC->Value );
+        $description = $oWkC->Value;
+      }
+
+      progress("Sailing FlatXLS: $xmltvid: $time - $title");
+
+      my $ce = {
+        channel_id   => $channel_id,
+        start_time   => $time,
+        title        => $title,
+      };
+
+      if( $description ){
+
+        if( $description =~ /^EP\.\d+$/i ){
+          my ( $ep_nr ) = ( $description =~ /^EP\.(\d+)$/i );
+          $ce->{episode} = sprintf( ". %d .", $ep_nr-1 );
+        }
+
+        $ce->{description} = $description;
+      }
+
+      $dsh->AddProgramme( $ce );
+
+    }
+  }
+
+  $dsh->EndBatch( 1 );
+
+  return;
+}
+
+sub ImportGridXLS
+{
+  my $self = shift;
+  my( $file, $chd ) = @_;
+
   my $xmltvid=$chd->{xmltvid};
   my $channel_id = $chd->{id};
   my $dsh = $self->{datastorehelper};
@@ -58,7 +262,7 @@ sub ImportContentFile {
 
   # Only process .xls files.
   return if $file !~  /\.xls$/i;
-  progress( "Sailing: $xmltvid: Processing $file" );
+  progress( "Sailing GridXLS: $xmltvid: Processing $file" );
   
   my $currdate = "x";
 
@@ -68,7 +272,7 @@ sub ImportContentFile {
 
     $oWkS = $oBook->{Worksheet}[$iSheet];
 
-    progress( "Sailing: $xmltvid: Processing worksheet: $oWkS->{Name}" );
+    progress( "Sailing GridXLS: $xmltvid: Processing worksheet: $oWkS->{Name}" );
 
     # check if there is data in the sheet
     # sometimes there are some hidden empty sheets
@@ -95,7 +299,7 @@ sub ImportContentFile {
 
       if( $date ne $currdate ){
 
-        progress("Sailing: $xmltvid: Date is: $date");
+        progress("Sailing GridXLS: $xmltvid: Date is: $date");
 
         if( $currdate ne "x" ) {
           $dsh->EndBatch( 1 );
@@ -131,7 +335,7 @@ sub ImportContentFile {
         # create the time
         $starttime = create_dt( $date , $when );
 
-        progress("Sailing: $xmltvid: $starttime - $title");
+        progress("Sailing GridXLS: $xmltvid: $starttime - $title");
 
         my $ce = {
           channel_id   => $channel_id,
@@ -159,25 +363,20 @@ sub ParseDate
 {
   my ( $dinfo ) = @_;
 
-  return undef if( $dinfo !~ /^\S+,\s+\d+\s+\S+\s+\d+$/ );
+#print ">$dinfo<\n";
 
-  my( $dn, $d, $mn, $y ) = ( $dinfo =~ /(\S+),\s+(\d+)\s+(\S+)\s+(\d+)/ );
+  my( $dayname, $day, $monthname, $month, $year );
 
-  my $month;
-  $month = 1 if( $mn =~ /January/i );
-  $month = 2 if( $mn =~ /February/i );
-  $month = 3 if( $mn =~ /March/i );
-  $month = 4 if( $mn =~ /April/i );
-  $month = 5 if( $mn =~ /May/i );
-  $month = 6 if( $mn =~ /June/i );
-  $month = 7 if( $mn =~ /July/i );
-  $month = 8 if( $mn =~ /August/i );
-  $month = 9 if( $mn =~ /September/i );
-  $month = 10 if( $mn =~ /October/i );
-  $month = 11 if( $mn =~ /November/i );
-  $month = 12 if( $mn =~ /December/i );
+  if( $dinfo =~ /^\d{2}\/\d{2}\/\d{4}$/ ){
+    ( $day, $month, $year ) = ( $dinfo =~ /^(\d{2})\/(\d{2})\/(\d{4})$/ );
+  } elsif( $dinfo =~ /^\S+,\s+\d+\s+\S+\s+\d+$/ ){
+    ( $dayname, $day, $monthname, $year ) = ( $dinfo =~ /(\S+),\s+(\d+)\s+(\S+)\s+(\d+)/ );
+    $month = MonthNumber( $monthname, "en" );
+  } else {
+    return undef;
+  }
 
-  return sprintf( "%4d-%02d-%02d", $y, $month, $d );
+  return sprintf( "%04d-%02d-%02d", $year, $month, $day );
 }
   
 sub create_dt

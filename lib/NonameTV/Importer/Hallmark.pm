@@ -173,6 +173,8 @@ sub ParseDate
 
   my( $day, $monthname, $year );
 
+#print ">$dinfo<\n";
+
   # format '033 03 Jul 2008'
   if( $dinfo =~ /^\d+\s+\d+\s+\S+\s+\d+$/ ){
     ( $day, $monthname, $year ) = ( $dinfo =~ /^\d+\s+(\d+)\s+(\S+)\s+(\d+)$/ );
@@ -180,11 +182,19 @@ sub ParseDate
   # format '05-sep-08'
   } elsif( $dinfo =~ /^\d+-(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)-\d+$/i ){
     ( $day, $monthname, $year ) = ( $dinfo =~ /^(\d+)-(\S+)-(\d+)$/ );
+
+  # format 'Fri 30 Apr 2010'
+  } elsif( $dinfo =~ /^\S+\s*\d+\s*(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\s*\d+$/i ){
+    ( $day, $monthname, $year ) = ( $dinfo =~ /^\S+\s*(\d+)\s*(\S+)\s*(\d+)$/ );
   }
 
   else {
     return undef;
   }
+
+#print "DAY: $day\n";
+#print "MON: $monthname\n";
+#print "YEA: $year\n";
 
   return undef if( ! $year);
 
@@ -194,7 +204,6 @@ sub ParseDate
 
 #print "DAY: $day\n";
 #print "MON: $mon\n";
-#print "YEA: $year\n";
 
   my $dt = DateTime->new( year   => $year,
                           month  => $mon,

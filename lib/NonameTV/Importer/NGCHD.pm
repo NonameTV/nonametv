@@ -81,20 +81,28 @@ sub CheckFileFormat
   return FT_UNKNOWN if( ! $oBook );
 
   # the content of this cell shoul be 'PROGRAM/ EmisiA3n'
-  if( $oBook->{SheetCount} eq 1 ){
-    my $oWkS = $oBook->{Worksheet}[0];
-    my $oWkC = $oWkS->{Cells}[5][7];
-    if( $oWkC ){
-      return FT_FLATXLS if( $oWkC->Value =~ /^PROGRAM\/ Emisión $/ );
+  for(my $iW = 0 ; $iW <= $oBook->{SheetCount} ; $iW++) {
+    my $oWkS = $oBook->{Worksheet}[$iW];
+    for(my $iR = 0 ; $iR <= 5 ; $iR++) {
+      for(my $iC = 0 ; $iC <= 5 ; $iC++) {
+        my $oWkC = $oWkS->{Cells}[$iR][$iC];
+        next if( ! $oWkC );
+        next if( ! $oWkC->Value );
+        return FT_FLATXLS if( $oWkC->Value =~ /^PROGRAM\/ Emisión $/ );
+      }
     }
   }
 
   # check the content of the cell[0][3]
-  if( $oBook->{SheetCount} gt 1 ){
-    my $oWkS = $oBook->{Worksheet}[1];
-    my $oWkC = $oWkS->{Cells}[0][3];
-    if( $oWkC ){
-      return FT_GRIDXLS if( $oWkC->Value =~ /^NATIONAL GEOGRAPHIC CHANNEL HD$/ );
+  for(my $iW = 0 ; $iW <= $oBook->{SheetCount} ; $iW++) {
+    my $oWkS = $oBook->{Worksheet}[$iW];
+    for(my $iR = 0 ; $iR <= 5 ; $iR++) {
+      for(my $iC = 0 ; $iC <= 5 ; $iC++) {
+        my $oWkC = $oWkS->{Cells}[$iR][$iC];
+        next if( ! $oWkC );
+        next if( ! $oWkC->Value );
+        return FT_GRIDXLS if( $oWkC->Value =~ /NATIONAL GEOGRAPHIC CHANNEL HD/ );
+      }
     }
   }
 
@@ -353,8 +361,13 @@ sub ParseDate
 {
   my ( $dinfo ) = @_;
 
-  # the format is '01-10-08'
-  my( $day, $month, $year ) = ( $dinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
+  my( $day, $month, $year );
+
+  if( $dinfo =~ /^\d{4}-\d{2}-\d{2}$/ ){ # the format is '2010-04-25'
+    ( $year, $month, $day ) = ( $dinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
+  } elsif( $dinfo =~ /^\d+-\d+-\d+$/ ){ # the format is '01-10-08'
+    ( $day, $month, $year ) = ( $dinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
+  }
 
   return undef if( ! $year );
 

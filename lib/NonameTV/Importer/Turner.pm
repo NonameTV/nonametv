@@ -313,14 +313,21 @@ sub ParseDate {
 sub ParseDateXLS {
   my( $text ) = @_;
 
+#print "ParseDateXLS: >$text<\n";
+
   return undef if ( ! $text );
 
-  # format '8-1-08'
-  my( $month, $day, $year ) = ( $text =~ /^(\d+)-(\d+)-(\d+)$/ );
+  my( $month, $day, $year );
+
+  if( $text =~ /^(\d{4})-(\d{2})-(\d{2})$/ ){ # format '2010-04-26'
+    ( $year, $month, $day ) = ( $text =~ /^(\d+)-(\d+)-(\d+)$/ );
+  } elsif( $text =~ /^(\d+)-(\d+)-(\d+)$/ ){ # format '8-1-08'
+    ( $month, $day, $year ) = ( $text =~ /^(\d+)-(\d+)-(\d+)$/ );
+  }
 
   $year += 2000 if( $year < 100 );
 
-  return sprintf( '%d-%02d-%02d', $year, $month, $day );
+  return sprintf( '%04d-%02d-%02d', $year, $month, $day );
 }
 
 sub isShow {

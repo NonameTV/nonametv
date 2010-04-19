@@ -21,6 +21,7 @@ use DateTime;
 use XML::LibXML;
 use Encode qw/decode/;
 use File::Basename;
+use Clone qw(clone);
 
 use NonameTV qw/MyGet Wordfile2Xml Htmlfile2Xml norm AddCategory MonthNumber/;
 use NonameTV::DataStore::Helper;
@@ -100,17 +101,30 @@ print "EDATE $enddate\n";
 
     my( $text ) = norm( $div->findvalue( '.' ) );
 
-#print ">$text<\n";
+print ">$text<\n";
 
     if( isDate( $text ) ) { # the line with the date in format 'Friday 1st August 2008'
 
-      if( @ces ){
-        @weekces[$weekday] = [ @ces ];
-        @ces = {};
-      }
-
       for( $weekday = 0 ; $weekday < scalar(@weekdays) ; $weekday++ ){
+
         if( $text =~ /$weekdays[$weekday]/i ){
+
+          # save last saved day
+          if( @ces ){
+print "C @ces\n";
+            @{$weekces[$weekday]} = @ces;
+print "W @{$weekces[$weekday]}\n";
+print "1\n";
+foreach my $wc ( @weekces ){
+  print "WC $wc\n";
+}
+            @ces = {};
+print "2\n";
+foreach my $wc ( @weekces ){
+  print "WC $wc\n";
+}
+          }
+
           last;
         }
       }
@@ -118,7 +132,7 @@ print "EDATE $enddate\n";
       progress("OSTV: $xmltvid: Skupljam programe za dan $weekdays[$weekday]");
 
       # initialize day and week array
-      @weekces[$weekday] = {};
+      $weekces[$weekday] = {};
 
     } elsif( isShow( $text ) ) {
 
@@ -147,25 +161,37 @@ print "EDATE $enddate\n";
     }
   }
 
-  @weekces[$weekday] = [ @ces ];
+  @weekces[$weekday] = clone( \@ces );
   @ces = {};
 
-  $self->FlushData( $chd, $startdate, $enddate, @weekces );
+  $self->{weekces} = @weekces;
+
+  $self->FlushData( $chd, $startdate, $enddate );
 
   return;
 }
 
 sub FlushData {
   my $self = shift;
-  my( $chd, $sdt, $edt, @weekces ) = @_;
+  my( $chd, $sdt, $edt ) = @_;
 
   my $xmltvid = $chd->{xmltvid};
   my $channel_id = $chd->{id};
   my $dsh = $self->{datastorehelper};
 
+  my @weekces = $self->{weekces};
+
   my $currdate = "x";
 
+foreach my $wc ( @weekces ){
+  print "WC $wc\n";
+}
+
+print "FlushData S $sdt\n";
+print "FlushData E $edt\n";
+
   for( my $dt = $sdt ; $dt <= $edt ; $dt->add( days => 1 ) ){
+print "FlushData D $dt\n";
 
     if( $dt ne $currdate ) {
 
@@ -187,6 +213,7 @@ sub FlushData {
     next if not $weekces[$weekday];
 
     foreach my $ce ( @{$weekces[$weekday]} ) {
+print "FlushData CE $ce\n";
 
       next if not $ce;
       next if not $ce->{title};
@@ -239,7 +266,7 @@ sub isDate {
 #print ">$text<\n";
 
   # format 'PONEDJELJAK'
-  if( $text =~ /^(ponedjeljak|utorak|srijeda|ČETVRTAK|petak|subota|nedjelja)$/i ){
+  if( $text =~ /^(ponedjeljak|utorak|srijeda|ČETVRTAK|petak|subota|nedjelja)\s*\,*$/i ){
     return 1;
   }
 

@@ -216,11 +216,14 @@ sub ParseDate
 
   my( $day, $month, $year );
 
+  # Format '2010-03-31'
+  if( $text =~ /^\d{4}-\d{2}-\d{2}$/ ){
+    ( $year, $month, $day ) = ( $text =~ /^(\d+)-(\d+)-(\d+)$/ );
   # Format 'DD/MM/YY'
-  if( $text =~ /^(\d+)\/(\d+)\/(\d+)$/ ){
+  } elsif( $text =~ /^\d+\/\d+\/\d+$/ ){
     ( $day, $month, $year ) = ( $text =~ /^(\d+)\/(\d+)\/(\d+)$/ );
   # Format 'MM-DD-YY'
-  } elsif( $text =~ /^(\d+)-(\d+)-(\d+)$/ ){
+  } elsif( $text =~ /^\d+-\d+-\d+$/ ){
     ( $month, $day, $year ) = ( $text =~ /^(\d+)-(\d+)-(\d+)$/ );
   # Format '40179' - Excel date format
   } elsif( $text =~ /^\d{5}$/ ){

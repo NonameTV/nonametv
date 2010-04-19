@@ -194,12 +194,15 @@ sub ParseDate
 {
   my( $dateinfo ) = @_;
 
-  # the date information in format '1-31-08'
-  if( $dateinfo !~ /^\d+-\d+-\d+$/ ){
-    return undef;
-  }
+#print "$dateinfo\n";
 
-  my( $month, $day, $year ) = ( $dateinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
+  my( $month, $day, $year );
+
+  if( $dateinfo =~ /^\d{4}-\d{2}-\d{2}$/ ){
+    ( $year, $month, $day ) = ( $dateinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
+  } elsif( $dateinfo =~ /^\d+-\d+-\d+$/ ){
+    ( $month, $day, $year ) = ( $dateinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
+  }
 
   $year += 2000 if( $year lt 100 );
 
