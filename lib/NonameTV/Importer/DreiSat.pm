@@ -13,9 +13,10 @@ The downloaded file is in xml-format.
 
 use DateTime;
 use XML::LibXML;
+use Switch;
 
 use NonameTV qw/ParseXml norm AddCategory/;
-use NonameTV::Log qw/progress error/;
+use NonameTV::Log qw/progress w error/;
 
 use NonameTV::Importer::BaseWeekly;
 
@@ -38,8 +39,6 @@ sub Object2Url {
   my $self = shift;
   my( $objectname, $chd ) = @_;
 
-#return( undef, undef ) if ( $objectname =~ /3sat\.tv\.gonix\.net_2009-14/ );
-
   my( $year, $week ) = ( $objectname =~ /(\d+)-(\d+)$/ );
 
   # Tomica's (more like the files from ZDF and ZDFneo)
@@ -60,7 +59,7 @@ sub FilterContent {
   $$cref =~ s|&#8217;|'|g;
 
   my $doc = ParseXml( $cref );
-  
+
   if( not defined $doc ) {
     return (undef, "ParseXml failed" );
   } 
@@ -188,7 +187,7 @@ sub ImportContent
 
       # end time
       my $biszeit = $as->getElementsByTagName( 'biszeit' );
-      my $endtime = $self->create_dt( $biszeit );
+      my $endtime = $self->create_dt_incomplete( $biszeit, $starttime );
       if( not defined $endtime ){
         error( "$batch_id: Invalid endtime for programme id $id - Skipping." );
         next;
@@ -287,7 +286,7 @@ sub ImportContent
 sub create_dt
 {
   my $self = shift;
-  my( $str ) = @_;
+  my $str = shift;
 
   my( $date, $time ) = split( 'T', $str );
   if( not defined $time )
@@ -297,10 +296,10 @@ sub create_dt
 
   my( $year, $month, $day );
 
-  if( $date =~ /(\d{4})\.(\d{2})\.(\d{2})/ ){
-    ( $year, $month, $day ) = ( $date =~ /(\d{4})\.(\d{2})\.(\d{2})/ );
-  } elsif( $date =~ /(\d{2})\.(\d{2})\.(\d{4})/ ){
-    ( $day, $month, $year ) = ( $date =~ /(\d{2})\.(\d{2})\.(\d{4})/ );
+  if( $date =~ /(\d{4})\.(\d+)\.(\d+)/ ){
+    ( $year, $month, $day ) = ( $date =~ /(\d{4})\.(\d+)\.(\d+)/ );
+  } elsif( $date =~ /(\d+)\.(\d+)\.(\d{4})/ ){
+    ( $day, $month, $year ) = ( $date =~ /(\d+)\.(\d+)\.(\d{4})/ );
   }
 
   my( $hour, $minute, $second ) = ( $time =~ /(\d{2}):(\d{2}):(\d{2})/ );
@@ -317,7 +316,7 @@ sub create_dt
                           hour   => $hour,
                           minute => $minute,
                           second => $second,
-                          time_zone => 'Europe/Zagreb',
+                          time_zone => 'Europe/Berlin',
                           );
   };
   if ($@){
