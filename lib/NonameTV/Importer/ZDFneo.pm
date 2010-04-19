@@ -59,5 +59,28 @@ sub Object2Url {
   return( $url, undef );
 }
 
+#
+# weekly programs run sat-fri instead of mon-sun
+#
+sub BatchPeriods { 
+  my $self = shift;
+  my( $shortgrab ) = @_;
+
+  my $start_dt = DateTime->today(time_zone => 'local' );
+
+  my $maxweeks = $shortgrab ? $self->{MaxWeeksShort} : 
+    $self->{MaxWeeks};
+
+  my @periods;
+
+  for( my $week=0; $week <= $maxweeks; $week++ ) {
+    my $dt = $start_dt->clone->add( days => $week*7+2 );
+
+    push @periods, $dt->week_year . '-' . $dt->week_number;
+  }
+
+  return @periods;
+}
+
 
 1;

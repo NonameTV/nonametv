@@ -21,7 +21,7 @@ use XML::LibXML;
 
 use NonameTV qw/AddCategory MyGet norm ParseXml/;
 use NonameTV::DataStore::Helper;
-use NonameTV::Log qw/p w f/;
+use NonameTV::Log qw/p progress w f/;
 
 use NonameTV::Importer::BaseDaily;
 
@@ -200,12 +200,24 @@ sub ImportContent {
     }
 
     my $subtitle1 = $pgm->findvalue( 'Untertitel1' );
-    if ($subtitle1 =~ /^Spielfilm/ ) {
-      $ce->{program_type} = "movie";
-    }
+    $subtitle1 = $self->parse_subtitle ($ce, $subtitle1);
     my $subtitle2 = $pgm->findvalue( 'Untertitel2' );
-    if ($subtitle2 =~ /^Spielfilm/ ) {
-      $ce->{program_type} = "movie";
+    $subtitle2 = $self->parse_subtitle ($ce, $subtitle2);
+
+    # take unparsed subtitle
+    # TODO else add them to description
+    my $subtitle;
+    if ($subtitle1) {
+      if ($subtitle2) {
+        $subtitle = $subtitle1 . " " . $subtitle2;
+      } else {
+        $subtitle = $subtitle1;
+      }
+    } elsif ($subtitle2) {
+      $subtitle = $subtitle2;
+    }
+    if ($subtitle) {
+      $ce->{subtitle} = $subtitle;
     }
 
     my $url = $pgm->findvalue( 'Internetlink' );
@@ -217,15 +229,16 @@ sub ImportContent {
     foreach my $attribute ($attributes->get_nodelist()) {
       my $str = $attribute->string_value();
       switch ($str) {
-        case "Audiodeskription" { ; }
+        case "Audiodeskription" { ; } # audio for the visually impaired
         case "Breitbild 16:9"   { $ce->{aspect} = "16:9" }
         case "Dolby Digital"    { $ce->{stereo} = "dolby digital" }
         case "Dolby Surround"   { $ce->{stereo} = "surround" }
-        case "HD"               { ; }
+        case "HD"               { ; } # quality=HTDV
         case "Kinderprogramm"   { ; } # to many false positives
-        case "Schwarzweiß"      { ; }
+        case "Schwarzweiß"      { ; } # colour=no
         case "Stereo"           { $ce->{stereo} = "stereo" }
-        case "Videotext"        { ; }
+        case "Videotext"        { ; } # subtitles=teletext
+        case "Zweikanalton"     { $ce->{stereo} = "bilingual" }
         else { w ("DasErsteDE: unknown attribute: " . $str) }
       }
     }
@@ -249,6 +262,16 @@ sub ImportContent {
       $ce->{directors} = join (", ", @directors_array);
     }
 
+    my $writers= $pgm->findnodes ('.//Buch');
+    my @writers_array;
+    foreach my $writer ($writers->get_nodelist()) {
+      my @fixup = split (" und ", $writers->string_value());
+      @writers_array = (@writers_array, @fixup);
+    }
+    if (@writers_array) {
+      $ce->{writers} = join (", ", @writers_array);
+    }
+
     my $production_date = $pgm->findvalue( 'Produktionsjahr' );
     if ($production_date) {
       $ce->{production_date} = $production_date."-01-01";
@@ -261,6 +284,144 @@ sub ImportContent {
     }
   }
   return 1;
+}
+
+sub parse_subtitle
+{
+  my $self = shift;
+  my $sce = shift;
+  my $subtitle = shift;
+
+  if (!$subtitle) {
+    return undef;
+  }
+
+  $subtitle = norm ($subtitle);
+
+  # match program type, production county, production year
+  if ($subtitle =~ m|^\S+ \S+ \d{4}$|) {
+    my ($program_type, $production_countries, $production_year) = ($subtitle =~ m|^(\S+) (\S+) (\d{4})$|);
+    $sce->{production_date} = $production_year . "-01-01";
+    my ( $type, $categ ) = $self->{datastore}->LookupCat( "DasErste_type", $program_type );
+    AddCategory( $sce, $type, $categ );
+    $subtitle = undef;
+  } elsif ($subtitle =~ m|^Moderation: |) {
+    my ($presenters) = ($subtitle =~ m|^Moderation: (.*)$|);
+    # split ", " and " und "
+    my (@presenter) = split (", ", join (", ", split (" und ", $presenters)));
+    if ($sce->{presenters}) {
+      $sce->{presenters} = join (", ", $sce->{presenters}, @presenter);
+    } else {
+      $sce->{presenters} = join (@presenter);
+    }
+    $subtitle = undef;
+  } elsif ($subtitle =~ m|^mit [A-Z]\S+ [A-Z]\S+$|) {
+    # match "mit First Lastname" but not "mit den Wildgaensen"
+    my ($presenter) = ($subtitle =~ m|^mit (\S+ \S+)$|);
+    if ($sce->{presenters}) {
+      $sce->{presenters} = join (", ", $sce->{presenters}, $presenter);
+    } else {
+      $sce->{presenters} = $presenter;
+    }
+    $subtitle = undef;
+  } elsif ($subtitle =~ m|^mit [A-Z]\S+ [A-Z]\S+, [A-Z]\S+ [A-Z]\S+ und [A-Z]\S+ [A-Z]\S+$|) {
+    # match "mit First Lastname" but not "mit den Wildgaensen"
+    my ($presenter) = ($subtitle =~ m|^mit (\S+ \S+), (\S+ \S+) und (\S+ \S+)$|);
+    if ($sce->{presenters}) {
+      $sce->{presenters} = join (", ", $sce->{presenters}, $presenter);
+    } else {
+      $sce->{presenters} = $presenter;
+    }
+    $subtitle = undef;
+  } elsif ($subtitle =~ m|^\S+teili\S+ \S+ \S+ \d{4}$|) {
+    # 14-teiliger Spielfilm Deutschland 2000
+    # vierteiliger Spielfilm Deutschland 2000
+    my ($program_type, $production_countries, $production_year) = ($subtitle =~ m|^\S+ (\S+) (\S+) (\d{4})$|);
+    $sce->{production_date} = $production_year . "-01-01";
+    my ( $type, $categ ) = $self->{datastore}->LookupCat( "DasErste_type", $program_type );
+    AddCategory( $sce, $type, $categ );
+    $subtitle = undef;
+  } elsif ($subtitle =~ m|^\S+teili\S+ \S+ und \S+erie \S+ \d{4}$|) {
+    # 13-teilige Kinder- und Familienserie Deutschland 2009
+    my ($program_type, $production_countries, $production_year) = ($subtitle =~ m|^\S+ (\S+ \S+ \S+) (\S+) (\d{4})$|);
+    $sce->{production_date} = $production_year . "-01-01";
+    my ( $type, $categ ) = $self->{datastore}->LookupCat( "DasErste_type", $program_type );
+    AddCategory( $sce, $type, $categ );
+    $subtitle = undef;
+  } elsif ($subtitle =~ m|^Film von [A-Z]\S+ [A-Z]\S+$|) {
+    my ($producer) = ($subtitle =~ m|^Film von (\S+ \S+)$|);
+    if ($sce->{producers}) {
+      $sce->{producers} = join (", ", $sce->{producers}, $producer);
+    } else {
+      $sce->{producers} = $producer;
+    }
+    $subtitle = undef;
+  } elsif ($subtitle =~ m|^Film von [A-Z]\S+ [A-Z]\. [A-Z]\S+$|) {
+    my ($producer) = ($subtitle =~ m|^Film von (\S+ \S+ \S+)$|);
+    if ($sce->{producers}) {
+      $sce->{producers} = join (", ", $sce->{producers}, $producer);
+    } else {
+      $sce->{producers} = $producer;
+    }
+    $subtitle = undef;
+  } elsif ($subtitle =~ m|^Film von [A-Z]\S+ [A-Z]\S+ und [A-Z]\S+ [A-Z]\S+$|) {
+    my ($producer1, $producer2) = ($subtitle =~ m|^Film von (\S+ \S+) und (\S+ \S+)$|);
+    if ($sce->{producers}) {
+      $sce->{producers} = join (", ", $sce->{producers}, $producer1, $producer2);
+    } else {
+      $sce->{producers} = join (", ", $producer1, $producer2);
+    }
+    $subtitle = undef;
+  } elsif ($subtitle =~ m|^Film von [A-Z]\S+ [A-Z]\S+, [A-Z]\S+ [A-Z]\S+$|) {
+    my ($producer1, $producer2) = ($subtitle =~ m|^Film von (\S+ \S+), (\S+ \S+)$|);
+    if ($sce->{producers}) {
+      $sce->{producers} = join (", ", $sce->{producers}, $producer1, $producer2);
+    } else {
+      $sce->{producers} = join (", ", $producer1, $producer2);
+    }
+    $subtitle = undef;
+  } elsif ($subtitle =~ m|^\(Vom \d+\.\d+\.\d{4}\)$|) {
+    my ($psd) = ($subtitle =~ m|^Vom (\S+)$|);
+    # is a repeat from $previously shown date
+    $subtitle = undef;
+  } elsif ($subtitle =~ m|^\(.*\)$|) {
+    my ($title_orig) = ($subtitle =~ m|^\((.*)\)$|);
+    # original title
+    $subtitle = undef;
+  } elsif ($subtitle =~ m|^Reporter: \S+ \S+$|) {
+    my ($presenter) = ($subtitle =~ m|^Reporter: (\S+ \S+)$|);
+    if ($sce->{presenters}) {
+      $sce->{presenters} = join (", ", $sce->{presenters}, $presenter);
+    } else {
+      $sce->{presenters} = $presenter;
+    }
+    $subtitle = undef;
+  } elsif ($subtitle =~ m|^\S+teiliger Film von [A-Z]\S+ [A-Z]\S+$|) {
+    my ($producer) = ($subtitle =~ m|^\S+ Film von (\S+ \S+)$|);
+    if ($sce->{producers}) {
+      $sce->{producers} = join (", ", $sce->{producers}, $producer);
+    } else {
+      $sce->{producers} = $producer;
+    }
+    $subtitle = undef;
+  } elsif ($subtitle =~ m|^\S+teiliger Film von [A-Z]\S+ [A-Z]\S+ und [A-Z]\S+ [A-Z]\S+$|) {
+    my ($producer1, $producer2) = ($subtitle =~ m|^\S+ Film von (\S+ \S+) und (\S+ \S+)$|);
+    if ($sce->{producers}) {
+      $sce->{producers} = join (", ", $sce->{producers}, $producer1, $producer2);
+    } else {
+      $sce->{producers} = join (", ", $producer1, $producer2);
+    }
+    $subtitle = undef;
+  } elsif (($subtitle =~ m|^mit den Wildgänsen$|) && ($sce->{title} =~ m|^Die wunderbare Reise des kleinen Nils Holgersson$|)) {
+    $subtitle = undef;
+    $sce->{title} = $sce->{title} . " mit den Wildgänsen";
+  } elsif (($subtitle =~ m|^\d+\. |) && ($sce->{title} =~ m|^Die wunderbare Reise des kleinen Nils Holgersson mit den Wildgänsen$|)) {
+    $subtitle =~ s|^\d+\. ||;
+  } else {
+    progress ("unhandled subtitle: $subtitle");
+  }
+
+  return $subtitle;
 }
 
 1;

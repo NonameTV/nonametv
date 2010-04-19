@@ -420,7 +420,11 @@ sub AddProgrammeRaw {
       }
     }
     else {
-      w $err;
+      if ($err) {
+        w $err;
+      } else {
+        w "FIXME error but empty err variable! (might be field in ce that is not in the programs table)";
+      }
       $self->{batcherror} = 1;
     }
   }
