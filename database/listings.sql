@@ -129,6 +129,7 @@ DROP TABLE IF EXISTS `networks`;
 CREATE TABLE `networks` (
   `id` int(11) NOT NULL auto_increment,
   `epgserver` int(11) NOT NULL,
+  `nit` int(11) NOT NULL,
   `active` tinyint(4) NOT NULL default '0',
   `name` varchar(100) NOT NULL default '',
   `operator` varchar(100) NOT NULL default '',
@@ -141,6 +142,7 @@ DROP TABLE IF EXISTS `transportstreams`;
 CREATE TABLE `transportstreams` (
   `id` int(11) NOT NULL,
   `network` int(11) NOT NULL,
+  `tsid` int(11) NOT NULL,
   `active` int(11) NOT NULL,
   `description` varchar(256) NOT NULL,
   `muxmainprotocol` int(11) NOT NULL,
@@ -167,5 +169,6 @@ CREATE TABLE `services` (
   `nvod` int(11) NOT NULL,
   `servicetypeid` int(11) NOT NULL,
   `dbchid` int(11) NOT NULL,
+  `lasteventid` int(11) NOT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
