@@ -76,6 +76,9 @@ sub FilterContent {
   $cref =~ s| class=\"((?!\").)*\"||g;
   $cref =~ s| id=\"((?!\").)*\"||g;
 
+  my $doc = Html2Xml ($cref);
+  $cref = $doc->toStringHTML ();
+
   return( \$cref, undef);
 }
 
