@@ -34,9 +34,6 @@ sub new {
 
     defined( $self->{UrlRoot} ) or die "You must specify UrlRoot";
 
-    my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
-    $self->{datastorehelper} = $dsh;
-
     return $self;
 }
 
@@ -112,7 +109,6 @@ sub ImportContent {
   my( $xmltvid, $year, $month, $day ) = ( $batch_id =~ /^(.+)_(\d+)-(\d+)-(\d+)$/ );
 
   my $ds = $self->{datastore};
-  my $dsh = $self->{datastorehelper};
 
   my $dt = DateTime->new( 
                           year  => $year,
@@ -120,7 +116,6 @@ sub ImportContent {
                           day   => $day,
                           time_zone => 'Europe/Berlin'
                           );
-  $dsh->StartDate ($year . "-" .$month."-".$day, "00:00");
 
   my $te = HTML::TableExtract->new(
     keep_html => 1
@@ -161,16 +156,29 @@ sub ImportContent {
     # program over midnight? expecting to start today and end tomorrow
     if (DateTime->compare ($start, $end) == 1) {
       $end->add(days => 1);
+      # program longer then 12 hours? it's more likely that start/end are swapped
+      my $duration = $end->subtract_datetime($start);
+      my $maxduration = DateTime::Duration->new (hours => 12);
+      if (DateTime::Duration->compare ($duration, $maxduration) == 1) {
+        $end->add (days => -1);
+      }
+      $year = $end->year;
+      $month = $end->month;
+      $day = $end->day;
     }
 
+    $start->set_time_zone ('UTC');
+    $end->set_time_zone ('UTC');
+
     my $ce = {
-        start_time => $hour1.":".$minute1,
-	end_time => $hour2.":".$minute2,
+        channel_id  => $chd->{id},
+        start_time  => $start->ymd("-") . " " . $start->hms(":"),
+        end_time    => $end->ymd("-") . " " . $end->hms(":"),
         title => $title,
         description => $desc
     };
 
-    $dsh->AddProgramme( $ce );
+    $ds->AddProgramme( $ce );
   }
 
   return 1;
