@@ -19,7 +19,7 @@ use Unicode::String;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/p w f/;
 
-use NonameTV qw/Html2Xml/;
+use NonameTV qw/Html2Xml norm/;
 
 use NonameTV::Importer::BaseWeekly;
 
@@ -134,6 +134,19 @@ sub ImportContent {
     @row = $te->table(2,$i/3)->row(1);
     my ( $title ) = ( $row[1] =~ m|<b>(.*)</b><br>| );
     my ( $desc ) = ( $row[1] =~ m|(Musikstyle: .+)<br><br>| );
+    my ( $moredesc ) = ( $row[1] =~ m|<br><br>(.*)$|s );
+
+    if ($moredesc) {
+      $moredesc =~ s|\s+| |gs;
+      $moredesc =~ s|<.*?>||g;
+      $moredesc = norm (decode_entities ($moredesc));
+      $moredesc =~ s|\x{201e}|\"|g;
+      if ($moredesc eq '') {
+        $moredesc = undef;
+      } else {
+        $desc = $moredesc . "\n" . $desc;
+      }
+    }
 
     my $start = DateTime->new(
                           year  => $year,
@@ -175,7 +188,8 @@ sub ImportContent {
         start_time  => $start->ymd("-") . " " . $start->hms(":"),
         end_time    => $end->ymd("-") . " " . $end->hms(":"),
         title => $title,
-        description => $desc
+        description => $desc,
+        presenters => $dj
     };
 
     $ds->AddProgramme( $ce );
