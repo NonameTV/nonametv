@@ -487,15 +487,19 @@ array of hashes with programme-info.
 =cut
 
 sub ParseXmltv {
-  my( $cref ) = @_;
+  my( $cref, $channel ) = @_;
 
   my $doc = ParseXml( $cref );
   return undef if not defined $doc;
 
   my @d;
 
-  # Find all "programme"-entries.
-  my $ns = $doc->find( "//programme" );
+  # Find all "programme"-entries for $channel or all channels.
+  my $filter = "//programme";
+  if ($channel) {
+    $filter .= '[@channel="' . $channel . '"]';
+  }
+  my $ns = $doc->find( $filter );
   if( $ns->size() == 0 ) {
     return;
   }

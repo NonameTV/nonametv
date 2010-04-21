@@ -22,7 +22,7 @@ use DateTime;
 use XML::LibXML;
 use Encode qw/encode decode/;
 
-use NonameTV qw/norm AddCategory/;
+use NonameTV qw/norm AddCategory ParseXmltv/;
 use NonameTV::Log qw/progress error/;
 use NonameTV::Config qw/ReadConfig/;
 
@@ -72,183 +72,37 @@ sub ImportContent
   my $ds = $self->{datastore};
   $ds->{SILENCE_END_START_OVERLAP}=1;
 
-  my $xml = XML::LibXML->new;
-  my $doc;
-  eval { $doc = $xml->parse_string($$cref); };
-  if( $@ ne "" )
-  {
-    error( "$batch_id: Failed to parse $@" );
-    return 0;
-  }
-  
-  # Find starting '<tv>' block
-  my $tvbs = $doc->find( '//tv' );
-  if( $tvbs->size() == 0 ){
-    error( "$batch_id: No root <tv>' blocks found in xml file" );
-    return 0;
-  }
-  progress("TVGrabXX: $chd->{xmltvid}: Found " . $tvbs->size() . " <tv> blocks in xml file");
+  my $prog = ParseXmltv (\$$cref, $self->{tvchannel});
+  foreach my $e (@{$prog}) {
+    $e->{channel_id} = $chd->{id};
 
-  # browse through <tv> nodes
-  foreach my $tvb ($tvbs->get_nodelist){
+    # translate start end from DateTime to string
+    $e->{start_dt}->set_time_zone ('UTC');
+    $e->{start_time} = $e->{start_dt}->ymd('-') . " " . $e->{start_dt}->hms(':');
+    delete $e->{start_dt};
+    $e->{stop_dt}->set_time_zone ('UTC');
+    $e->{end_time} = $e->{stop_dt}->ymd('-') . " " . $e->{stop_dt}->hms(':');
+    delete $e->{stop_dt};
 
-    # Filter all "programme" entries for this channel
-    my $ns = $tvb->findnodes( './programme[@channel="' . $self->{tvchannel} . '"]' );
-    if( $ns->size() == 0 ){
-      error( "$batch_id: No shows found for $self->{tvchannel}" );
-      return 0;
+    # translate channel specific program_type and category to common ones
+    my $pt = $e->{program_type};
+    delete $e->{program_type};
+    my $c = $e->{category};
+    delete $e->{category};
+    if( $pt ){
+      my($program_type, $category ) = $ds->LookupCat( $chd->{xmltvid}, $pt );
+      AddCategory( $e, $program_type, $category );
     }
-    progress("TVGrabXX: $chd->{xmltvid}: Found " . $ns->size() . " shows for $self->{tvchannel}");
-
-    # browse through shows
-    foreach my $sc ($ns->get_nodelist)
-    {
-      #
-      # start time
-      #
-      my $start = $self->create_dt( $sc->findvalue( './@start' ) );
-      if( not defined $start ){
-        error( "$batch_id: Invalid starttime '" . $sc->findvalue( './@start' ) . "'. Skipping." );
-        next;
-      }
-
-      #
-      # end time
-      #
-      my $end = $self->create_dt( $sc->findvalue( './@stop' ) );
-      if( not defined $end ){
-        error( "$batch_id: Invalid endtime '" . $sc->findvalue( './@stop' ) . "'. Skipping." );
-        next;
-      }
-
-      #
-      # title
-      #
-      my $title = $sc->getElementsByTagName('title');
-      next if( ! $title );
-
-      #
-      # subtitle
-      #
-      my $subtitle = $sc->getElementsByTagName('sub-title');
-    
-      #
-      # description
-      #
-      my $description  = $sc->getElementsByTagName('desc');
-    
-      #
-      # genre
-      #
-      my $genre = norm($sc->getElementsByTagName( 'category' ));
-
-      #
-      # url
-      #
-      my $url = $sc->getElementsByTagName( 'url' );
-
-      #
-      # production year
-      #
-      my $production_year = $sc->getElementsByTagName( 'date' );
-
-      #
-      # episode number
-      #
-      my $episode = undef;
-      if( $sc->getElementsByTagName( 'episode-num' ) ){
-        my $ep_nr = int( $sc->getElementsByTagName( 'episode-num' ) );
-        my $ep_se = 0;
-        if( ($ep_nr > 0) and ($ep_se > 0) )
-        {
-          $episode = sprintf( "%d . %d .", $ep_se-1, $ep_nr-1 );
-        }
-        elsif( $ep_nr > 0 )
-        {
-          $episode = sprintf( ". %d .", $ep_nr-1 );
-        }
-      }
-
-      # The director and actor info are children of 'credits'
-      my $directors = $sc->getElementsByTagName( 'director' );
-      my $actors = $sc->getElementsByTagName( 'actor' );
-      my $writers = $sc->getElementsByTagName( 'writer' );
-      my $adapters = $sc->getElementsByTagName( 'adapter' );
-      my $producers = $sc->getElementsByTagName( 'producer' );
-      my $presenters = $sc->getElementsByTagName( 'presenter' );
-      my $commentators = $sc->getElementsByTagName( 'commentator' );
-      my $guests = $sc->getElementsByTagName( 'guest' );
-
-      progress("TVGrabXX: $chd->{xmltvid}: $start - $title");
-
-      my $ce = {
-        channel_id   => $chd->{id},
-        title        => norm($title),
-        start_time   => $start->ymd("-") . " " . $start->hms(":"),
-        end_time     => $end->ymd("-") . " " . $end->hms(":"),
-      };
-
-      $ce->{subtitle} = $subtitle if $subtitle;
-      $ce->{description} = $description if $description;
-
-      $ce->{directors} = $directors if $directors;
-      $ce->{actors} = $actors if $actors;
-      $ce->{writers} = $writers if $writers;
-      $ce->{adapters} = $adapters if $adapters;
-      $ce->{producers} = $producers if $producers;
-      $ce->{presenters} = $presenters if $presenters;
-      $ce->{commentators} = $commentators if $commentators;
-      $ce->{guests} = $guests if $guests;
-
-      $ce->{url} = $url if $url;
-
-      if( defined( $episode ) and ($episode =~ /\S/) )
-      {
-        $ce->{episode} = norm($episode);
-        $ce->{program_type} = 'series';
-      }
-
-      if( $genre ){
-        my($program_type, $category ) = $ds->LookupCat( $chd->{xmltvid}, $genre );
-        AddCategory( $ce, $program_type, $category );
-      }
-
-      if( defined( $production_year ) and ($production_year =~ /(\d\d\d\d)/) )
-      {
-        $ce->{production_date} = "$1-01-01";
-      }
-
-      $ds->AddProgramme( $ce );
-
+    if( $c ){
+      my($program_type, $category ) = $ds->LookupCat( $chd->{xmltvid}, $c );
+      AddCategory( $e, $program_type, $category );
     }
 
+    $ds->AddProgramme ($e);
   }
 
   # Success
   return 1;
-}
-
-sub create_dt
-{
-  my $self = shift;
-  my( $str ) = @_;
-  
-  my( $year, $month, $day, $hour, $minute, $second, $offset ) = ( $str =~ /^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})\s(.*)$/ );
-
-  return undef if( ! $year );
-  
-  my $dt = DateTime->new( year   => $year,
-                          month  => $month,
-                          day    => $day,
-                          hour   => $hour,
-                          minute => $minute,
-                          second => $second,
-                          time_zone => $offset,
-                          );
-  
-  $dt->set_time_zone( "UTC" );
-  
-  return $dt;
 }
 
 1;
