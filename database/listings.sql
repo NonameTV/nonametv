@@ -64,6 +64,7 @@ CREATE TABLE `programs` (
   `episode` varchar(20) default NULL,
   `production_date` date default NULL,
   `aspect` enum('unknown','4:3','16:9') NOT NULL default 'unknown',
+  `quality` varchar(40) default NULL,
   `stereo` varchar(40) NOT NULL,
   `rating` varchar(20) NOT NULL,
   `directors` text NOT NULL,
