@@ -225,7 +225,7 @@ sub ImportContent {
       $ce->{url} = $url;
     }
 
-    my $attributes = $pgm->findnodes ('//Sendeattribut');
+    my $attributes = $pgm->findnodes ('Sendeattribute/Sendeattribut');
     foreach my $attribute ($attributes->get_nodelist()) {
       my $str = $attribute->string_value();
       switch ($str) {
