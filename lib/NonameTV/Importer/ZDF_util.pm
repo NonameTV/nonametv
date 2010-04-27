@@ -171,7 +171,7 @@ sub ParseData
           case /&dd;/   {$ce{stereo} = "dolby digital"}
           case /&ds;/   {$ce{stereo} = "dolby"}
           case /&f16;/  {$ce{aspect} = "16:9"}
-          case /&hd;/   {} # high definition
+          case /&hd;/   {$ce{quality} = "HDTV"}
           case /&st;/   {$ce{stereo} = "stereo"}
           case /&vo;/   {} # video text
           # ZDFneo

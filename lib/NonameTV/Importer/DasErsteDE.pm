@@ -233,7 +233,7 @@ sub ImportContent {
         case "Breitbild 16:9"   { $ce->{aspect} = "16:9" }
         case "Dolby Digital"    { $ce->{stereo} = "dolby digital" }
         case "Dolby Surround"   { $ce->{stereo} = "surround" }
-        case "HD"               { ; } # quality=HTDV
+        case "HD"               { $ce->{quality} = "HDTV"; }
         case "Kinderprogramm"   { ; } # to many false positives
         case "Schwarzweiß"      { ; } # colour=no
         case "Stereo"           { $ce->{stereo} = "stereo" }
