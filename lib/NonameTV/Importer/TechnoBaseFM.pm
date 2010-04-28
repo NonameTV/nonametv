@@ -31,8 +31,9 @@ sub new {
     my $self  = $class->SUPER::new( @_ );
     bless ($self, $class);
 
-
-    defined( $self->{UrlRoot} ) or die "You must specify UrlRoot";
+    if ($self->{MaxDays} >= 7) {
+      $self->{MaxDays} = 7;
+    }
 
     return $self;
 }

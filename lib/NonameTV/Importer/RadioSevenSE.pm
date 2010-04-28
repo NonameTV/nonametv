@@ -32,7 +32,9 @@ sub new {
     my $self  = $class->SUPER::new( @_ );
     bless ($self, $class);
 
-    defined ( $self->{UrlRoot} ) or die "You must specify UrlRoot";
+    if (!defined ( $self->{UrlRoot} )) {
+      $self->{UrlRoot} = 'http://www.radioseven.se/default.asp?page=tabla';
+    }
 
     my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
     $self->{datastorehelper} = $dsh;

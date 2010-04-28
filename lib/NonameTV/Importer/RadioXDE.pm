@@ -31,8 +31,9 @@ sub new {
     my $self  = $class->SUPER::new( @_ );
     bless ($self, $class);
 
-
-    defined( $self->{UrlRoot} ) or die "You must specify UrlRoot";
+    if (!defined( $self->{UrlRoot} )) {
+      $self->{UrlRoot} = 'http://www.radiox.de/scripts/woche/woche_show_week.php';
+    }
 
     my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
     $self->{datastorehelper} = $dsh;

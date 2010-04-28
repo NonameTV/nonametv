@@ -36,6 +36,14 @@ sub new {
     defined( $self->{Username} ) or die "You must specify Username";
     defined( $self->{Password} ) or die "You must specify Password";
 
+    if ($self->{MaxDays} == 32) {
+      # default to all data
+      $self->{MaxDays} = 6*7; # 6 weeks from today
+    } elsif ($self->{MaxDays} > 6*7) {
+      w ($self->{Type} . ": limiting MaxDays to availible data");
+      $self->{MaxDays} = 6*7; # 6 weeks from today
+    }
+
     my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
     $self->{datastorehelper} = $dsh;
 
