@@ -23,7 +23,7 @@ use HTML::FormatText;
 use XML::LibXML;
 use Spreadsheet::ParseExcel;
 
-use NonameTV qw/MyGet norm AddCategory/;
+use NonameTV qw/MyGet norm AddCategory MonthNumber/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/progress error/;
 use NonameTV::Config qw/ReadConfig/;
@@ -71,7 +71,7 @@ sub ImportContentFile
   my $ds = $self->{datastore};
 
 #return if( $file !~ /Cinemax_Raspored_04-09_CRO\.XLS/i );
-#return if( $channel_xmltvid !~ /test3/i );
+#return if( $channel_xmltvid !~ /axn/i );
 
   if( $file =~ /\.xml$/i ){
     my $ft = CheckFileFormat( $file );
@@ -797,6 +797,127 @@ sub ImportXML_AXN
     return;
   }
 
+  my $date;
+  my $currdate = "x";
+
+  # find 'Programme' blocks
+  my $sdbs = $doc->findnodes( "//Programme" );
+  if( $sdbs->size() == 0 ) {
+    error( "HBOAdria: $chd->{xmltvid}: No 'Programme' blocks found" ) ;
+    return 0;
+  }
+  progress( "HBOAdria: $chd->{xmltvid}: " . $sdbs->size() . " programme blocks found" );
+
+  # browse through Programme nodes - one node is here for each day
+  foreach my $sdb ($sdbs->get_nodelist)
+  {
+
+    my $channelname  = $sdb->findvalue( './/ChannelName' );
+    $date  = ParseDate( $sdb->findvalue( './/LogDate' ) );
+
+    if( $date ne $currdate ) {
+      if( $currdate ne "x" ) {
+        $dsh->EndBatch( 1 );
+      }
+
+      my $batch_id = $chd->{xmltvid} . "_" . $date;
+      $dsh->StartBatch( $batch_id , $chd->{id} );
+      $dsh->StartDate( $date , "00:00" );
+      $currdate = $date;
+
+      progress("HBOAdria: $chd->{xmltvid}: Date is: $date");
+    }
+
+    # find 'Series' events
+    my $vwsts = $sdb->findnodes( ".//Series" );
+    if( $vwsts->size() == 0 ) {
+      error( "HBOAdria: $chd->{xmltvid}: No 'Series' events found" ) ;
+      next;
+    }
+    progress( "HBOAdria: $chd->{xmltvid}: " . $vwsts->size() . " events found" );
+
+    # browse through Series nodes
+    foreach my $vwst ($vwsts->get_nodelist)
+    {
+
+      my $seriesid = $vwst->findvalue( './/SeriesId' );
+      my $title = $vwst->findvalue( './/Title' );
+      my $season = $vwst->findvalue( './/Season' );
+      my $logline = $vwst->findvalue( './/LogLine' );
+      my $synopsis = $vwst->findvalue( './/Synopsis' );
+
+      my $episodeid = $vwst->findvalue( './/Episodes//Episode//EpisodeId' );
+      my $originalcountry = $vwst->findvalue( './/Episodes//Episode//OriginalCountry' );
+      my $runtime = $vwst->findvalue( './/Episodes//Episode//RunTime' );
+      my $episodenumber = $vwst->findvalue( './/Episodes//Episode//EpisodeNumber' );
+      my $productiondate = $vwst->findvalue( './/Episodes//Episode//ProductionDate' );
+      my $eplogline = $vwst->findvalue( './/Episodes//Episode//LogLine' );
+      my $epsynopsis = $vwst->findvalue( './/Episodes//Episode//Synopsis' );
+      my $epgenre1 = $vwst->findvalue( './/Episodes//Episode//Genre1' );
+      my $epgenre2 = $vwst->findvalue( './/Episodes//Episode//Genre2' );
+      my $epdirector = $vwst->findvalue( './/Episodes//Episode//Director' );
+      my $epcast = $vwst->findvalue( './/Episodes//Episode//Cast' );
+
+      my $epstarttime = $vwst->findvalue( './/Episodes//Episode//Schedules//Schedule//StartTime' );
+      my $epispremiere = $vwst->findvalue( './/Episodes//Episode//Schedules//Schedule//IsPremiere' );
+      my $eplocalrating = $vwst->findvalue( './/Episodes//Episode//Schedules//Schedule//LocalRating' );
+
+      progress("HBOAdria: $chd->{xmltvid}: $epstarttime - $title");
+
+      my $ce = {
+        channel_id => $chd->{id},
+        title      => $title,
+        start_time => $epstarttime,
+      };
+
+      $ce->{schedule_id} = $episodeid if ( $episodeid =~ /\S/ );
+
+      if( $episodenumber gt 0 ){
+        if( $season gt 0 ){
+          $ce->{episode} = sprintf( "%d . %d .", $season - 1, $episodenumber - 1 );
+        } else {
+          $ce->{episode} = sprintf( ". %d .", $episodenumber - 1 );
+        }
+      }
+
+      if( $epsynopsis and ( $epsynopsis !~ /[!! - SYNOPSIS_LEVEL - !!]/ ) ){
+        $ce->{description} = $epsynopsis;
+      }
+
+      if( $epdirector and ( $epdirector !~ /[!! - CREDITS - !!] / ) ){
+        $ce->{directors} = $epdirector;
+      }
+
+      if( $epcast and ( $epcast !~ /[!! - CREDITS - !!] / ) ){
+        $ce->{actors} = $epcast;
+      }
+
+      if( $productiondate and ( $productiondate =~ /(\d\d\d\d)/ ) ){
+        $ce->{production_date} = "$1-01-01";
+      }
+
+      $ce->{aspect} = "4:3";
+
+      if( $epgenre1 =~ /\S/ ){
+        my($program_type, $category ) = $ds->LookupCat( "AXN", $epgenre1 );
+        AddCategory( $ce, $program_type, $category );
+      }
+
+      if( $epgenre2 =~ /\S/ ){
+        my($program_type, $category ) = $ds->LookupCat( "AXN", $epgenre2 );
+        AddCategory( $ce, $program_type, $category );
+      }
+
+      $ce->{rating} = $eplocalrating if ( $eplocalrating =~ /\S/ );
+
+      $dsh->AddProgramme( $ce );
+
+    }
+
+  }
+
+  $dsh->EndBatch( 1 );
+
   return 1;
 }
 
@@ -848,10 +969,17 @@ sub ParseDate
 {
   my( $text ) = @_;
 
-  my( $month, $day, $year );
+#print "$text\n";
+
+  my( $monthname, $dayname, $month, $day, $year );
+
+  # format: 'MONDAY 01 MARCH 2010'
+  if( $text =~ /^\S+\s+\d+\s+\S+\s+\d+$/ ){
+    ( $dayname, $day, $monthname, $year ) = ( $text =~ /^(\S+)\s+(\d+)\s+(\S+)\s+(\d+)$/ );
+    $month = MonthNumber( $monthname, "en" );
 
   # format: '4-1-09'
-  if( $text =~ /^\d+-\d+-\d+$/ ){
+  } elsif( $text =~ /^\d+-\d+-\d+$/ ){
     ( $month, $day, $year ) = ( $text =~ /^(\d+)-(\d+)-(\d+)$/ );
   }
 

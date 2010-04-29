@@ -852,7 +852,7 @@ sub ExportNetworks
       }
     }
 
-    my $outfile = "$self->{Root}$edata->{name}/network-information.xml";
+    my $outfile = "$self->{Root}/$edata->{name}/network-information.xml";
     open( my $fh, '>:encoding(' . $self->{Encoding} . ')', $outfile )
       or logdie( "Conax: cannot write to $outfile" );
 
