@@ -100,6 +100,9 @@ sub trimX {
     $theString =~ s|[[:space:]]+| |g;
     $theString =~ s/^\s+//;
     $theString =~ s/\s+$//;
+    if ($theString eq '') {
+      $theString = undef;
+    }
   }
 
   return $theString;
@@ -141,7 +144,8 @@ sub ImportContent {
   $dsh->StartDate ($year . "-" .$month."-".$day, "02:00");
 
   # loop over 11 weeks of programme tables
-  for (my $woche = 0; $woche < 11; $woche++) {
+  # loop over this+4 weeks
+  for (my $woche = 0; $woche <= 4; $woche++) {
     $table = $te->table (0, $woche);
     my $dtgestern = $dt;
 
@@ -162,43 +166,59 @@ sub ImportContent {
       }
 
       # process programmes
-      for (my $stunderow = 2; $stunderow < $table->row_count(); $stunderow++) {
+      for (my $stunderow = 2; $stunderow <= $table->row_count(); $stunderow++) {
         my @programmerow = $table->row ($stunderow);
+        my $start_time = $programmerow[0];
         my @sendung = split ("\n", $programmerow[$tagspalte]);
 
-        # skip continuations of last programme
-        if (!($sendung[0] =~ /^[[:space:]]*$/)) {
-          if (!($sendung[0] =~ /^[[:space:]]*dito[[:space:]]*$/)) {
-            my ($title, $desc);
-            for (my $i = 0; $i < @sendung; $i++) {
-              if ($i == 0) {
-                $title = $sendung[$i];
+        my ($title, $desc);
+        for (my $i = 0; $i < @sendung; $i++) {
+          if (!$title) {
+            if (!($sendung[$i] =~ /^[[:space:]]*d?i?t?o?[[:space:]]*$/s)) {
+              if ($sendung[$i] =~ /ab 8 Uhr:/) {
+                $start_time = '08:00';
               } else {
-                if (!$desc) {
-                  $desc = $sendung[$i];
-                } else {
-                  $desc = $desc . " " . $sendung[$i];
-                }
+                $title = $sendung[$i];
               }
             }
-            my $start_time = $programmerow[0];
-
-            # trim title
-            $title = trimX ($title);
-
-            my $ce = {
-              start_time => $start_time,
-              title => $title
-            };
-
-            # trim description
-            $desc = trimX ($desc);
-            if ($desc) {
-              $ce->{description} = $desc;
+          } else {
+            if (!$desc) {
+              $desc = $sendung[$i];
+            } else {
+              $desc = $desc . " " . $sendung[$i];
             }
-
-            $dsh->AddProgramme ($ce);
           }
+        }
+        # trim title
+        $title = trimX ($title);
+
+        if ($title) {
+
+          my $ce = {
+            start_time => $start_time,
+            title => $title
+          };
+
+          # trim description
+          $desc = trimX ($desc);
+          if ($desc) {
+            if ($desc =~ /^show \d+:/) {
+              my ($episode) = ($desc =~ /^show (\d+): /);
+              $ce->{episode} = ' . ' . ($episode-1) . ' . ';
+              $desc =~ s/^show \d+: //;
+            } elsif ($desc =~ /^#\d+$/) {
+              my ($episode) = ($desc =~ /^#(\d+)$/);
+              $ce->{episode} = ' . ' . ($episode-1) . ' . ';
+              $desc = undef;
+            } elsif ($desc =~ /^\d+:/) {
+              my ($episode) = ($desc =~ /^(\d+): /);
+              $ce->{episode} = ' . ' . ($episode-1) . ' . ';
+              $desc =~ s/^\d+: //;
+            }
+            $ce->{description} = $desc;
+          }
+
+          $dsh->AddProgramme ($ce);
         }
       }
 
