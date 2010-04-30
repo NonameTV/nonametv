@@ -1,11 +1,11 @@
-package NonameTV::Exporter::Conax;
+package NonameTV::Exporter::Lysis;
 
 use strict;
 use warnings;
 
 =pod
 
-The exporter for Conax (www.conax.com) EPG server.
+The exporter for Lysis from Nagravision (www.nagravision.com) CMS system.
 
 =cut
 
@@ -19,6 +19,7 @@ use Encode qw/encode decode/;
 use Data::HexDump;
 use Text::Truncate;
 use XML::LibXML;
+use Lingua::Translate;
 
 use NonameTV::Exporter;
 use NonameTV::Language qw/LoadLanguage/;
@@ -30,7 +31,7 @@ use base 'NonameTV::Exporter';
 
 =pod
 
-Export data in Conax format.
+Export data in Lysis format.
 
 Options:
 
@@ -96,7 +97,7 @@ sub new {
 
     # Load language strings
     $self->{lngstr} = LoadLanguage( $self->{Language}, 
-                                   "exporter-conax", $ds );
+                                   "exporter-lysis", $ds );
 
     return $self;
 }
@@ -136,7 +137,7 @@ EOH
 
   SetVerbosity( $p->{verbose}, $p->{quiet} );
 
-  StartLogSection( "Conax", 0 );
+  StartLogSection( "Lysis", 0 );
 
   if( $p->{'export-networks'} )
   {
@@ -153,7 +154,7 @@ EOH
   my $exportedlist = $p->{'exportedlist'};
   if( $exportedlist ){
     $self->{exportedlist} = $exportedlist;
-    progress("Conax: The list of exported files will be available in '$exportedlist'");
+    progress("Lysis: The list of exported files will be available in '$exportedlist'");
   }
 
   my $todo = {};
@@ -168,33 +169,27 @@ EOH
     $self->FindUnexportedDays( $todo, $last_update );
   }
 
-  my $equery = "SELECT * from epgservers WHERE `active`=1 AND `type`='Conax'";
+  my $equery = "SELECT * from epgservers WHERE `active`=1 AND `type`='Lysis'";
   $equery .= " AND name='$epgserver'" if $epgserver;
 
   my( $eres, $esth ) = $ds->sa->Sql( $equery );
 
   while( my $edata = $esth->fetchrow_hashref() )
   {
-    progress("Conax: Exporting schedules for services on epg server '$edata->{name}'");
+    progress("Lysis: Exporting schedules for services on epg server '$edata->{name}'");
 
     my $nquery = "SELECT * from networks WHERE epgserver=$edata->{id} AND active=1";
     my( $nres, $nsth ) = $ds->sa->Sql( $nquery );
     while( my $ndata = $nsth->fetchrow_hashref() )
     {
-      my $tquery = "SELECT * from transportstreams WHERE network=$ndata->{id} AND active=1";
-      my( $tres, $tsth ) = $ds->sa->Sql( $tquery );
-      while( my $tdata = $tsth->fetchrow_hashref() )
+      my $squery = "SELECT * from services WHERE network=$ndata->{id} AND active=1";
+      my( $sres, $ssth ) = $ds->sa->Sql( $squery );
+      while( my $sdata = $ssth->fetchrow_hashref() )
       {
-        my $squery = "SELECT * from services WHERE transportstream=$tdata->{id} AND active=1";
-        my( $sres, $ssth ) = $ds->sa->Sql( $squery );
-        while( my $sdata = $ssth->fetchrow_hashref() )
-        {
-          #progress("Conax: Exporting service $ndata->{id}/$tdata->{id}/$sdata->{serviceid} - $sdata->{servicename}");
-          $self->ExportData( $edata, $ndata, $tdata, $sdata, $todo );
-        }
-        $ssth->finish();
+        progress("Lysis: Exporting service $ndata->{id}/$sdata->{serviceid} - $sdata->{servicename}");
+        $self->ExportData( $edata, $ndata, $sdata, $todo );
       }
-      $tsth->finish();
+      $ssth->finish();
     }
     $nsth->finish();
   }
@@ -202,7 +197,7 @@ EOH
 
   $self->WriteState( $update_started );
 
-  EndLogSection( "Conax" );
+  EndLogSection( "Lysis" );
 }
 
 
@@ -291,7 +286,7 @@ sub FindUnexportedDays {
 
 sub ExportData {
   my $self = shift;
-  my( $edata, $ndata, $tdata, $sdata, $todo ) = @_;
+  my( $edata, $ndata, $sdata, $todo ) = @_;
 
   my $ds = $self->{datastore};
 
@@ -304,7 +299,7 @@ sub ExportData {
     my $chd = $ds->sa->Lookup( "channels", { id => $channel } );
 
     foreach my $date (sort keys %{$todo->{$channel}}) {
-      $self->ExportFile( $edata, $ndata, $tdata, $sdata, $chd, $date );
+      $self->ExportFile( $edata, $ndata, $sdata, $chd, $date );
     }
   }
 }
@@ -314,12 +309,12 @@ sub ReadState {
 
   my $ds = $self->{datastore};
  
-  my $last_update = $ds->sa->Lookup( 'state', { name => "conax_last_update" },
+  my $last_update = $ds->sa->Lookup( 'state', { name => "lysis_last_update" },
                                  'value' );
 
   if( not defined( $last_update ) )
   {
-    $ds->sa->Add( 'state', { name => "conax_last_update", value => 0 } );
+    $ds->sa->Add( 'state', { name => "lysis_last_update", value => 0 } );
     $last_update = 0;
   }
 
@@ -332,7 +327,7 @@ sub WriteState {
 
   my $ds = $self->{datastore};
 
-  $ds->sa->Update( 'state', { name => "conax_last_update" }, 
+  $ds->sa->Update( 'state', { name => "lysis_last_update" }, 
                { value => $update_started } );
 }
 
@@ -360,24 +355,6 @@ sub WriteLastEventId {
   my $ds = $self->{datastore};
 
   $ds->sa->Update( 'services', { id => $sid }, { lasteventid => $lastno } );
-}
-
-sub EventStartTime {
-  my( $text ) = @_;
-
-  my( $year, $month, $day, $hour, $min, $sec ) = ( $text =~ /^(\d+)-(\d+)-(\d+)\s+(\d+):(\d+):(\d+)$/ );
-
-  my $dt = DateTime->new(
-                       year => $year,
-                       month => $month,
-                       day => $day,
-                       hour => $hour,
-                       minute => $min,
-                       second => $sec,
-                       time_zone => "Europe/Zagreb"
-  );
-
-  return sprintf( "%04d-%02d-%02d %02d:%02d" , $year, $month, $day, $hour, $min );
 }
 
 sub EventDuration {
@@ -408,7 +385,7 @@ sub EventDuration {
 
   my $duration = $dt2 - $dt1;
 
-  return $duration->delta_minutes;
+  return $duration->in_units( 'minutes' ) * 60;
 }
 
 #######################################################
@@ -453,7 +430,7 @@ sub create_dt
   ( $year, $month, $day ) =
     ( $str =~ /^(\d{4})-(\d{2})-(\d{2})$/ );
 
-  logdie( "Conax: Unknown time format $str" )
+  logdie( "Lysis: Unknown time format $str" )
     unless defined $day;
 
   return DateTime->new(
@@ -465,12 +442,12 @@ sub create_dt
 
 #######################################################
 #
-# Conax-specific methods.
+# Lysis-specific methods.
 #
 
 sub ExportFile {
   my $self = shift;
-  my( $edata, $ndata, $tdata, $sdata, $chd, $date ) = @_;
+  my( $edata, $ndata, $sdata, $chd, $date ) = @_;
 
   my $startdate = $date;
   my $enddate = create_dt( $date, 'UTC' )->add( days => 1 )->ymd('-');
@@ -483,11 +460,18 @@ sub ExportFile {
         ORDER BY start_time", 
       [$chd->{id}, "$startdate 00:00:00", "$enddate 23:59:59"] );
   
-  my ( $odoc, $root ) = $self->CreateWriter( $edata, $ndata, $tdata, $sdata, $chd, $date );
+  my ( $odoc, $root ) = $self->CreateWriter( $edata, $ndata, $sdata, $chd, $date );
 
-  my $svc = $odoc->createElement( 'service' );
-  $svc->setAttribute( 'service-name' => $sdata->{servicename} );
-  $root->appendChild( $svc );
+  my $dp = $odoc->createElement( 'DownloadPeriod' );
+  $dp->setAttribute( 'action' , "override" );
+  $dp->setAttribute( 'serviceRef' , $sdata->{serviceid} );
+  $dp->setAttribute( 'type' , "turnaround" );
+  $root->appendChild( $dp );
+
+  my $per = $odoc->createElement( 'Period' );
+  $per->setAttribute( 'start' , $startdate . "T00:00:00Z" );
+  $per->setAttribute( 'end' , $startdate . "T23:59:59Z" );
+  $dp->appendChild( $per );
 
   my $done = 0;
 
@@ -514,14 +498,14 @@ sub ExportFile {
     {
       # The previous programme ends after the current programme starts.
       # Adjust the end_time of the previous programme.
-      error( "Conax: Adjusted endtime for $chd->{xmltvid}: " . 
+      error( "Lysis: Adjusted endtime for $chd->{xmltvid}: " . 
              "$d1->{end_time} => $d2->{start_time}" );
 
       $d1->{end_time} = $d2->{start_time}
     }        
       
 
-    $self->WriteEntry( $odoc, $svc, $d1, $chd, $lasteventid )
+    $self->WriteEntry( $odoc, $dp, $d1, $chd, $lasteventid )
       unless $d1->{title} eq "end-of-transmission";
 
     if( $d2->{start_time} gt "$startdate 23:59:59" ) {
@@ -542,14 +526,14 @@ sub ExportFile {
     if( (defined( $d1->{end_time})) and
         ($d1->{end_time} ne "0000-00-00 00:00:00") )
     {
-      $self->WriteEntry( $odoc, $svc, $d1, $chd, $lasteventid )
+      $self->WriteEntry( $odoc, $dp, $d1, $chd, $lasteventid )
         unless $d1->{title} eq "end-of-transmission";
 
       $lasteventid++;
     }
     else
     {
-      error( "Conax: Missing end-time for last entry for " .
+      error( "Lysis: Missing end-time for last entry for " .
              "$chd->{xmltvid}_$date" ) 
 	  unless $date gt $self->{LastRequiredDate};
     }
@@ -564,14 +548,14 @@ sub ExportFile {
 sub CreateWriter
 {
   my $self = shift;
-  my( $edata, $ndata, $tdata, $sdata, $chd, $date ) = @_;
+  my( $edata, $ndata, $sdata, $chd, $date ) = @_;
 
   my $xmltvid = $chd->{xmltvid};
 
   my $path = $self->{Root} . "/" . $edata->{name};
-  my $filename = sprintf( "EPG%d_NET%d_TS%d_SID%d_%s.xml", $edata->{id}, $ndata->{nid}, $tdata->{tsid}, $sdata->{serviceid}, $date );
+  my $filename = sprintf( "EPG%d_NET%d_SID%d_%s.xml", $edata->{id}, $ndata->{nid}, $sdata->{serviceid}, $date );
 
-  #progress( "Conax: $filename" );
+  #progress( "Lysis: $filename" );
 
   $self->{writer_path} = $path;
   $self->{writer_filename} = $filename;
@@ -588,15 +572,16 @@ sub CreateWriter
   my $c1 = $odoc->createComment( " Created by Gonix (www.gonix.net) at " . DateTime->now . " " );
   $odoc->appendChild( $c1 );
 
-  my $c2 = $odoc->createComment( " Schedule for '" . $sdata->{servicename} . "' service at EPG server '" . $edata->{name}. "' " );
+  my $c2 = $odoc->createComment( " Schedule for '" . $sdata->{servicename} . "' service at EPG server '" . $edata->{name}. "' ");
   $odoc->appendChild( $c2 );
 
-  my $dtd  = $odoc->createInternalSubset( "event-information", undef, "event-information.dtd" );
+  #my $dtd  = $odoc->createInternalSubset( "event-information", undef, "event-information.dtd" );
 
-  my $root = $odoc->createElement('event-information');
-  $root->setAttribute( 'operator' => $ndata->{name} );
-  $root->setAttribute( 'utc-offset' => "0" );
-  $root->setAttribute( 'utc-polarity' => "POSITIVE" );
+  my $root = $odoc->createElement('ScheduleProvider');
+  $root->setAttribute( 'id' => "1" );
+  $root->setAttribute( 'name' => "Gonix" );
+  $root->setAttribute( 'scheduleDate' => DateTime->now . "Z" );
+  $root->setAttribute( 'xmlns:xsi' => "http://www.w3.org/2001/XMLSchema-instance" );
   $odoc->setDocumentElement($root);
   
   return($odoc, $root);
@@ -619,7 +604,7 @@ sub CloseWriter
   print $fh $docstring;
   close( $fh );
 
-  #progress("Conax: Service schedule exported to $filename");
+  #progress("Lysis: Service schedule exported to $filename");
 
   if( -f "$path/$filename" )
   {
@@ -627,10 +612,10 @@ sub CloseWriter
     if( $? )
     {
       move( "$path/$filename.new", "$path/$filename" );
-      progress( "Conax: Exported $filename" );
+      progress( "Lysis: Exported $filename" );
       if( not $self->{writer_entries} )
       {
-        error( "Conax: $filename is empty" );
+        error( "Lysis: $filename is empty" );
       }
       elsif( $self->{writer_entries} > 0 )
       {
@@ -644,10 +629,10 @@ sub CloseWriter
   else
   {
     move( "$path/$filename.new", "$path/$filename" );
-    progress( "Conax: Exported $filename" );
+    progress( "Lysis: Exported $filename" );
     if( not $self->{writer_entries} )
     {
-      error( "Conax: $filename is empty" );
+      error( "Lysis: $filename is empty" );
     }
     elsif( $self->{writer_entries} > 0 )
     {
@@ -662,7 +647,16 @@ sub CloseWriter
 sub WriteEntry
 {
   my $self = shift;
-  my( $odoc, $svc, $data, $chd, $evno ) = @_;
+  my( $odoc, $parent, $data, $chd, $evno ) = @_;
+
+  Lingua::Translate::config
+  (
+    back_end => 'Google',
+    #api_key  => '',
+    referer  => 'http://www.gonix.net/',
+  );
+
+  my $xl8r = Lingua::Translate->new( src => $chd->{sched_lang}, dest => 'en' );
 
   $self->{writer_entries}++;
 
@@ -674,89 +668,87 @@ sub WriteEntry
   my $end_time = create_dt( $data->{end_time}, "UTC" );
   $end_time->set_time_zone( "Europe/Zagreb" );
   
-  my $starttime = EventStartTime( $data->{start_time} );
   my $duration = EventDuration( $data->{start_time}, $data->{end_time} );
 
-  my $event = $odoc->createElement( 'event' );
-  $event->setAttribute( 'event-id' => $evno );
-  $event->setAttribute( 'start-time' => $starttime );
-  $event->setAttribute( 'duration' => $duration );
-  $event->setAttribute( 'free-ca-mode' => "true" );
-  $svc->appendChild( $event );
+  my $programme = $odoc->createElement( 'Programme' );
+  $programme->setAttribute( 'isCatchUp' => "false" );
+  $programme->setAttribute( 'id' => $data->{schedule_id} || $evno );
+  $programme->setAttribute( 'title' => $data->{title} );
+  $parent->appendChild( $programme );
 
-    my $shevd = $odoc->createElement( 'short-event-descriptor' );
-    $shevd->setAttribute( 'language-code' => "hrv" );
-    $event->appendChild( $shevd );
+    my $per = $odoc->createElement( 'Period' );
+    $per->setAttribute( 'start' , $start_time . "Z" );
+    $per->setAttribute( 'duration' , $duration );
+    $programme->appendChild( $per );
 
-      my $evname = $odoc->createElement( 'event-name' );
+    my $epgdesc;
 
-      my $enctitle;
-      $enctitle = myEncode( $networkcharset, $data->{title} );
-      $evname->appendText( $enctitle );
+    $epgdesc = $odoc->createElement( 'EpgDescription' );
+    $programme->appendChild( $epgdesc );
 
-      $shevd->appendChild( $evname );
+      my $epgel;
 
-      my $shdesc = $odoc->createElement( 'short-description' );
-      if( $data->{description} ){
+      $epgel = $odoc->createElement( 'EpgElement' );
+      $epgel->setAttribute( 'key' , "SeriesId" );
+      $epgel->appendText( $data->{title_id} || 0 );
+      $epgdesc->appendChild( $epgel );
 
-        # the maximum length of the short description is 251
-        my $encshortdesc = myEncode( $networkcharset, $data->{description} );
-        my $trencshortdesc = truncstr( $encshortdesc, 100 );
-        $shdesc->appendText( $trencshortdesc );
-
+      $epgel = $odoc->createElement( 'EpgElement' );
+      $epgel->setAttribute( 'key' , "Episode_Number_Display" );
+      if( $data->{episode} ){
+        my( $epno ) = ( $data->{episode} =~ /^.*\.\s+(\d+)\s+\..*$/ );
+        $epgel->appendText( $epno );
       } else {
-
-        $shdesc->appendText( "-" );
-
+        $epgel->appendText( 0 );
       }
-      $shevd->appendChild( $shdesc );
+      $epgdesc->appendChild( $epgel );
 
-    my $exevd = $odoc->createElement( 'extended-event-descriptor' );
-    $exevd->setAttribute( 'language-code' => "hrv" );
-    $event->appendChild( $exevd );
+      $epgel = $odoc->createElement( 'EpgElement' );
+      $epgel->setAttribute( 'key' , "Rating" );
+      $epgel->appendText( $data->{rating} || 0 );
+      $epgdesc->appendChild( $epgel );
 
-      my $exdesc = $odoc->createElement( 'extended-description' );
-      if( $data->{description} ){
- 
-        # the maximum length of the long description is 251
-        my $enclongdesc = myEncode( $networkcharset, $data->{description} );
-        my $trenclongdesc = truncstr( $enclongdesc, 100000 );
-        $exdesc->appendText( $trenclongdesc );
+      $epgel = $odoc->createElement( 'EpgElement' );
+      $epgel->setAttribute( 'key' , "DVB_Content" );
+# DVBCategory
+      $epgel->appendText( "0:0:0:0" );
+      $epgdesc->appendChild( $epgel );
 
-      } else {
+    # local Epg title and description
+    $epgdesc = $odoc->createElement( 'EpgDescription' );
+    $epgdesc->setAttribute( 'locale' , $chd->{sched_lang} . "_" . uc( $chd->{sched_lang} ) || "en_GB" );
+    $programme->appendChild( $epgdesc );
 
-        $exdesc->appendText( "-" );
+      $epgel = $odoc->createElement( 'EpgElement' );
+      $epgel->setAttribute( 'key' , "Title" );
+      $epgel->appendText( $data->{title} );
+      $epgdesc->appendChild( $epgel );
 
-      }
-      $exevd->appendChild( $exdesc );
+      $epgel = $odoc->createElement( 'EpgElement' );
+      $epgel->setAttribute( 'key' , "Description" );
+      $epgel->appendText( $data->{description} || "" );
+      $epgdesc->appendChild( $epgel );
 
-    my $prd = $odoc->createElement( 'parental-rating-descriptor' );
-    $prd->setAttribute( 'country-code' => "900" );
-    $prd->setAttribute( 'rating' => "4" );
-    $event->appendChild( $prd );
-
-#    if( defined( $data->{category} ) and ($data->{category} =~ /\S/) ){
-#print $data->{program_type} . "\n";
-#print $data->{category} . "\n";
+#    # English Epg title and description
+#    $epgdesc = $odoc->createElement( 'EpgDescription' );
+#    $epgdesc->setAttribute( 'locale' , "en_GB" );
+#    $programme->appendChild( $epgdesc );
 #
-#      my( $dvbcatl1, $dvbcatl2 ) = DVBCategory( $data->{category} , $data->{program_type} );
+#      $epgel = $odoc->createElement( 'EpgElement' );
+#      $epgel->setAttribute( 'key' , "Title" );
+#      $epgel->appendText( $xl8r->translate( $data->{title} ) );
+#      $epgdesc->appendChild( $epgel );
 #
-#print "$dvbcatl1\n";
-#print "$dvbcatl2\n";
-#
-#      my $cdesc = $odoc->createElement( 'content-descriptor' );
-#      $cdesc->setAttribute( 'content-type' => $dvbcatl1 );
-#      $cdesc->setAttribute( 'content-number' => $dvbcatl2 );
-#      $event->appendChild( $cdesc );
-#
-#    } elsif( defined( $chd->{def_pty} ) and ($chd->{def_pty} =~ /\S/) ){
-#
-#      my( $dvbcatl1, $dvbcatl2 ) = DVBCategory( $chd->{def_cat} , $chd->{def_pty} );
-#      my $cdesc = $odoc->createElement( 'content-descriptor' );
-#      $cdesc->setAttribute( 'content-type' => $dvbcatl1 );
-#      $cdesc->setAttribute( 'content-number' => $dvbcatl2 );
-#      $event->appendChild( $cdesc );
-#    }
+#      $epgel = $odoc->createElement( 'EpgElement' );
+#      $epgel->setAttribute( 'key' , "Description" );
+#      $epgel->appendText( $xl8r->translate( "Bok Pero" ) );
+#      $epgdesc->appendChild( $epgel );
+
+# transcoding
+#      my $enctitle;
+#      $enctitle = myEncode( $networkcharset, $data->{title} );
+#      $epgel->appendText( $enctitle );
+
 }
 
 sub ExportFileNameToList
@@ -798,13 +790,13 @@ sub ExportNetworks
 
   while( my $edata = $esth->fetchrow_hashref() )
   {
-    progress("Conax: Exporting network information for epg server '$edata->{name}'");
+    progress("Lysis: Exporting network information for epg server '$edata->{name}'");
 
     my $nquery = "SELECT * from networks WHERE epgserver=$edata->{id} AND active=1";
     my( $nres, $nsth ) = $ds->sa->Sql( $nquery );
     while( my $ndata = $nsth->fetchrow_hashref() )
     {
-      progress("Conax: Exporting network $ndata->{id} ($ndata->{name})");
+      progress("Lysis: Exporting network $ndata->{id} ($ndata->{name})");
 
       my $net = $odoc->createElement( 'network' );
       $net->setAttribute( 'network-id' => $ndata->{id} );
@@ -822,57 +814,31 @@ sub ExportNetworks
       $lt->setAttribute( 'next-time-offset' => '120' );
       $net->appendChild( $lt );
 
-      my $tquery = "SELECT * from transportstreams WHERE network=$ndata->{id} AND active=1";
-      my( $tres, $tsth ) = $ds->sa->Sql( $tquery );
-      while( my $tdata = $tsth->fetchrow_hashref() )
+      my $squery = "SELECT * from services WHERE network=$ndata->{id} AND active=1";
+      my( $sres, $ssth ) = $ds->sa->Sql( $squery );
+      while( my $sdata = $ssth->fetchrow_hashref() )
       {
-        progress("Conax: Adding transport stream $tdata->{id} ($tdata->{description}) to network $ndata->{id}");
+        progress("Lysis: Adding service $sdata->{id} ($sdata->{servicename}) to network $ndata->{id}");
 
-        my $ts = $odoc->createElement( 'transport-stream' );
-        $ts->setAttribute( 'original-network-id' => $tdata->{network} );
-        $ts->setAttribute( 'transport-stream-id' => $tdata->{id} );
-        $ts->setAttribute( 'description' => $tdata->{description} );
-        $ts->setAttribute( 'mux-main-protocol' => $tdata->{muxmainprotocol} );
-        $ts->setAttribute( 'eit-max-bw' => $tdata->{eitmaxbw} );
-        $ts->setAttribute( 'si-max-bw' => $tdata->{simaxbw} );
-
-        my $dsy = $odoc->createElement( 'delivery-system' );
-        $dsy->setAttribute( 'type' => $tdata->{dsystype} );
-        $dsy->setAttribute( 'frequency' => $tdata->{dsysfrequency} );
-        $dsy->setAttribute( 'modulation-scheme-id' => $tdata->{dsysmodulationschemeid} );
-        $dsy->setAttribute( 'fec-outer-scheme-id' => $tdata->{dsysfecouterschemeid} );
-        $dsy->setAttribute( 'fec-inner-scheme-id' => $tdata->{dsysfecinnerschemeid} );
-        $dsy->setAttribute( 'symbol-rate' => $tdata->{dsyssymbolrate} );
-        $ts->appendChild( $dsy );
-
-        my $squery = "SELECT * from services WHERE transportstream=$tdata->{id} AND active=1";
-        my( $sres, $ssth ) = $ds->sa->Sql( $squery );
-        while( my $sdata = $ssth->fetchrow_hashref() )
-        {
-          progress("Conax: Adding service $sdata->{id} ($sdata->{servicename}) to transport stream $tdata->{id}");
-
-          my $srv = $odoc->createElement( 'service' );
-          $srv->setAttribute( 'service-name' => $sdata->{servicename} );
-          $srv->setAttribute( 'logical-channel-number' => $sdata->{logicalchannelnumber} );
-          $srv->setAttribute( 'service-id' => $sdata->{serviceid} );
-          $srv->setAttribute( 'description' => $sdata->{description} );
-          $srv->setAttribute( 'nvod' => $sdata->{nvod} );
-          $srv->setAttribute( 'service-type-id' => $sdata->{servicetypeid} );
-          $ts->appendChild( $srv );
-        }
-
-        $net->appendChild( $ts );
+        my $srv = $odoc->createElement( 'service' );
+        $srv->setAttribute( 'service-name' => $sdata->{servicename} );
+        $srv->setAttribute( 'logical-channel-number' => $sdata->{logicalchannelnumber} );
+        $srv->setAttribute( 'service-id' => $sdata->{serviceid} );
+        $srv->setAttribute( 'description' => $sdata->{description} );
+        $srv->setAttribute( 'nvod' => $sdata->{nvod} );
+        $srv->setAttribute( 'service-type-id' => $sdata->{servicetypeid} );
+        $net->appendChild( $srv );
       }
     }
 
     my $outfile = "$self->{Root}/$edata->{name}/network-information.xml";
     open( my $fh, '>:encoding(' . $self->{Encoding} . ')', $outfile )
-      or logdie( "Conax: cannot write to $outfile" );
+      or logdie( "Lysis: cannot write to $outfile" );
 
     $odoc->toFH( $fh, 1 );
     close( $fh );
 
-    progress("Conax: Network information exported to $outfile");
+    progress("Lysis: Network information exported to $outfile");
   }
 }
 
@@ -897,7 +863,7 @@ sub RemoveOld
   my $ftype = join(',', File::Util->file_type( $self->{Root} . "/" . $dir ) );
     if( $ftype =~ /DIRECTORY/ )
     {
-      progress( "Conax: Removing old files in directory $dir" );
+      progress( "Lysis: Removing old files in directory $dir" );
 
       my @files = glob( $self->{Root} . "/$dir/" . "*" );
       foreach my $file (@files)
@@ -917,7 +883,7 @@ sub RemoveOld
     }
   }
 
-  progress( "Conax: Removed $removed files" ) if( $removed > 0 );
+  progress( "Lysis: Removed $removed files" ) if( $removed > 0 );
 }
 
 sub myEncode

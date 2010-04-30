@@ -3,6 +3,12 @@ package NonameTV::Exporter::Dreampark;
 use strict;
 use warnings;
 
+=pod
+
+The exporter for Dreampark (www.dreampark.com) middleware.
+
+=cut
+
 #use utf8;
 
 use File::Util;
@@ -292,7 +298,7 @@ sub ExportData {
     my $chd = $ds->sa->Lookup( "channels", { id => $channel } );
 
     foreach my $date (sort keys %{$todo->{$channel}}) {
-      my $odoc = $self->CreateWriter( $edata, $ndata, $chd, $date );
+      my $odoc = $self->CreateWriter( $edata, $ndata, $sdata, $chd, $date );
       my $fragment = $odoc->createDocumentFragment();
 
       $self->ExportMetaData( $chd, $odoc, $fragment, $ndata );
@@ -561,7 +567,7 @@ sub ExportFile {
 sub CreateWriter
 {
   my $self = shift;
-  my( $edata, $ndata, $chd, $date ) = @_;
+  my( $edata, $ndata, $sdata, $chd, $date ) = @_;
 
   $self->{xmltvid} = $chd->{xmltvid};
   $self->{epgservername} = $edata->{name};
@@ -578,6 +584,10 @@ sub CreateWriter
 
   my $c1 = $odoc->createComment( " Created by Gonix (www.gonix.net) for " . $edata->{name} . "/" . $ndata->{name} . " at " . DateTime->now . " " );
   $odoc->appendChild( $c1 );
+
+  my $c2 = $odoc->createComment( " Schedule for '" . $sdata->{servicename} . "' service at EPG server '" . $edata->{name}. "' "
+ );
+  $odoc->appendChild( $c2 );
 
   my $dtd  = $odoc->createInternalSubset( "event-information", undef, "event-information.dtd" );
 
