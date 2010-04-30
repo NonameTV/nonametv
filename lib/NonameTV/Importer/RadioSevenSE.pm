@@ -36,9 +36,6 @@ sub new {
       $self->{UrlRoot} = 'http://www.radioseven.se/default.asp?page=tabla';
     }
 
-    my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
-    $self->{datastorehelper} = $dsh;
-
     return $self;
 }
 
@@ -158,7 +155,6 @@ sub ImportContent {
   my( $batch_id, $xmldata, $chd ) = @_;
 
   my $ds = $self->{datastore};
-  my $dsh = $self->{datastorehelper};
 
   # find first <td>.*DAG</td>
   my $firstday = ($$xmldata =~ m|<td>(.*)DAG</td>|);
@@ -191,20 +187,33 @@ sub ImportContent {
     # ERROR
   }
   
-  $dsh->StartDate ($firstdate->ymd, $firstdate->hms);
+  my $start_date = $firstdate->clone->add (days => -1);
 
   foreach my $programme (split(/\n/, $$xmldata)) {
     if ($programme =~ m|[[:digit:]]+ - [[:digit:]]+ ((?!<).)+<br />((?!<).)+<br /><br />|) {
       my ($h1, $h2, $t, $desc) = ($programme =~ m|([[:digit:]]+) - ([[:digit:]]+) (.+)<br />(.+)<br /><br />|);
 
+      my $start_time = $start_date->clone->set_hour ($h1)->set_time_zone ('Europe/Stockholm');
+      my $end_time = $start_date->clone->set_hour ($h2)->set_time_zone ('Europe/Stockholm');
+
+      if (DateTime->compare ($start_time, $end_time) == 1) {
+        $end_time->add (days => 1);
+      }
+
+      $start_time->set_time_zone ('UTC');
+      $end_time->set_time_zone ('UTC');
+
       my $ce = {
-        start_time => $h1.":00",
-        end_time => $h2.":00",
+        channel_id => $chd->{id},
+        start_time => $start_time->ymd ('-') . ' ' . $start_time->hms,
+        end_time => $end_time->ymd ('-') . ' ' . $end_time->hms,
         title => $t,
         description => $desc
       };
 
-      $dsh->AddProgramme( $ce );
+      $ds->AddProgramme( $ce );
+    } elsif ($programme =~ m |DAG|) {
+      $start_date->add (days => 1);
     }
   }
 
