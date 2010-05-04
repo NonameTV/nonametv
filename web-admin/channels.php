@@ -81,6 +81,28 @@ function sql_deleteChannel( $myc , $s )
 {
 	global $debug;
 
+	$q = "DELETE FROM files WHERE channelid='" . $s['id'] . "'";
+	if( $debug ) dbg( "DELETE" , $q );
+	if( !mysql_query( $q , $myc ) ) {
+		print "<h4>Can't delete files for channel " . $s['id'] . "</h4>\n";
+		print mysql_error( $myc ) . "\n";
+		return false;
+	}
+	$q = "DELETE FROM programs WHERE channel_id='" . $s['id'] . "'";
+	if( $debug ) dbg( "DELETE" , $q );
+	if( !mysql_query( $q , $myc ) ) {
+		print "<h4>Can't delete programs for channel " . $s['id'] . "</h4>\n";
+		print mysql_error( $myc ) . "\n";
+		return false;
+	}
+	$q = "DELETE FROM services WHERE dbchid='" . $s['id'] . "'";
+	if( $debug ) dbg( "DELETE" , $q );
+	if( !mysql_query( $q , $myc ) ) {
+		print "<h4>Can't delete services for channel " . $s['id'] . "</h4>\n";
+		print mysql_error( $myc ) . "\n";
+		return false;
+	}
+
 	$tblname = 'channels';
 
 	$q = "DELETE FROM " . $tblname . " WHERE id='" . $s['id'] . "'";
