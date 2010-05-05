@@ -117,7 +117,7 @@ sub ImportContent {
           $desc .= "\n\n";
           $multipleepisodes = 1;
         }
-        if (($episodetitle eq 'Teil') || ($episodetitle eq 'Folge') {
+        if (($episodetitle eq 'Teil') || ($episodetitle eq 'Folge') ){
           $episodetitle = 'Folge ' . $episodenumber;
         }
         $subtitle .= $episodetitle;
