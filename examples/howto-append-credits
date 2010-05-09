@@ -1,0 +1,61 @@
+Xmltv exporter now generate credits events
+
+The Xmltv exporter can now automatically generate the credits event
+at each end of the program.
+
+Here is how to configure this feature:
+
+---------------------------------------------------------------------------
+1.  Add the 'Site' section to the nonametv.conf file.
+---------------------------------------------------------------------------
+
+example:
+
+  Site =>
+  {
+    Name => 'Gonix',
+    CreditsDuration => 5,
+    Credits => '/home/gonix/nonametv/nonametv/',
+    AppendCopyright => 1,
+  },
+
+This defines your site.
+  Name            - the name of the site
+  CreditsDuration - the duration of the credit event, in minutes.
+  Credits         - the path of the directory that contains the site credits
+  AppendCopyright - if set to 1, the 'copyright' event will be appended
+
+---------------------------------------------------------------------------
+2. Create the credits files
+---------------------------------------------------------------------------
+
+The credits files must be created in Site->Credits directory,
+in the <Site->Credits>/credits/sites/<yoursite>/<lang>/ directory.
+
+From which language directory the file will be read depends on the sched_lang of the each channel.
+
+The file names can be:
+  copyright.txt   - the copyright event for the current site
+
+example:
+
+----- cut here -----
+#
+# Gonix copyright event
+#
+TITLE: Created at www.gonix.net
+DESCRIPTION: Schedule is created at www.gonix.net. Any unauthorized use is not permitted. More information at www.gonix.net.
+----- cut here -----
+
+---------------------------------------------------------------------------
+3. Use the --append-credits option to Xmltv exporter to enable this feature
+---------------------------------------------------------------------------
+
+example:
+
+./tools/nonametv-export Xmltv --verbose --append-credits
+
+
+9.5.2010
+Tomica Crnek
+
