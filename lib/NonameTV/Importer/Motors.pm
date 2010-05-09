@@ -15,6 +15,7 @@ use utf8;
 
 use DateTime;
 use Spreadsheet::ParseExcel;
+use Text::CSV;
 use Data::Dumper;
 use File::Temp qw/tempfile/;
 
@@ -39,7 +40,29 @@ sub new {
   return $self;
 }
 
+
 sub ImportContentFile {
+  my $self = shift;
+  my( $file, $chd ) = @_;
+
+  $self->{fileerror} = 0;
+
+  my $channel_id = $chd->{id};
+  my $channel_xmltvid = $chd->{xmltvid};
+  my $dsh = $self->{datastorehelper};
+  my $ds = $self->{datastore};
+
+  if( $file =~ /\.csv$/i ){
+    $self->ImportCSV( $file, $chd );
+  } elsif( $file =~ /\.xls$/i ){
+    $self->ImportXLS( $file, $chd );
+  }
+
+  return;
+}
+
+
+sub ImportXLS {
   my $self = shift;
   my( $file, $chd ) = @_;
 
@@ -51,7 +74,7 @@ sub ImportContentFile {
   my $ds = $self->{datastore};
 
   return if( $file !~ /\.xls$/i );
-  progress( "Motors: $xmltvid: Processing $file" );
+  progress( "Motors XLS: $xmltvid: Processing $file" );
 
   my %columns = ();
   my $date;
@@ -63,7 +86,7 @@ sub ImportContentFile {
   for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
 
     my $oWkS = $oBook->{Worksheet}[$iSheet];
-    progress( "Motors: $chd->{xmltvid}: Processing worksheet: $oWkS->{Name}" );
+    progress( "Motors XLS: $chd->{xmltvid}: Processing worksheet: $oWkS->{Name}" );
 
     # browse through rows
     for(my $iR = $oWkS->{MinRow} ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
@@ -91,7 +114,7 @@ sub ImportContentFile {
           $dsh->StartDate( $date , "05:00" );
           $currdate = $date;
 
-          progress("Motors: Date is $date");
+          progress("Motors XLS: Date is $date");
 
           next;
         }
@@ -115,7 +138,7 @@ sub ImportContentFile {
       # description - column 4 ('PRESSE UK')
       $description = $oWkS->{Cells}[$iR][$columns{'PRESSE UK'}]->Value if $oWkS->{Cells}[$iR][$columns{'PRESSE UK'}];
 
-      progress("Motors: $xmltvid: $time - $title");
+      progress("Motors XLS: $xmltvid: $time - $title");
 
       my $ce = {
         channel_id => $channel_id,
@@ -128,6 +151,95 @@ sub ImportContentFile {
 
       $dsh->AddProgramme( $ce );
     }
+  }
+
+  $dsh->EndBatch( 1 );
+
+  return;
+}
+
+sub ImportCSV {
+  my $self = shift;
+  my( $file, $chd ) = @_;
+
+  $self->{fileerror} = 0;
+
+  my $xmltvid = $chd->{xmltvid};
+  my $channel_id = $chd->{id};
+  my $dsh = $self->{datastorehelper};
+  my $ds = $self->{datastore};
+
+  return if( $file !~ /\.csv$/i );
+  progress( "Motors CSV: $xmltvid: Processing $file" );
+
+  my $date;
+  my $currdate = "x";
+
+  open my $CSVFILE, "<", $file or die $!;
+
+  my $csv = Text::CSV->new( {
+    sep_char => ';',
+    allow_whitespace => 1,
+    blank_is_undef => 1,
+    binary => 1,
+  } );
+
+  # get the column names from the first line
+  my @columns = $csv->column_names( $csv->getline( $CSVFILE ) );
+#foreach my $cl (@columns) {
+#print "$cl\n";
+#}
+
+  # main loop
+  while( my $row = $csv->getline_hr( $CSVFILE ) ){
+
+    # Date
+    if( $row->{'Date de diffusion'} ){
+      $date = ParseDate( $row->{'Date de diffusion'} );
+
+      if( $date and ( $date ne $currdate ) ){
+
+        if( $currdate ne "x" ) {
+          $dsh->EndBatch( 1 );
+        }
+
+        my $batch_id = $xmltvid . "_" . $date;
+        $dsh->StartBatch( $batch_id , $channel_id );
+        $dsh->StartDate( $date , "07:00" );
+        $currdate = $date;
+
+        progress( "Motors CSV: $xmltvid: Date is $date" );
+      }
+    }
+
+    # Time
+    my $time = $row->{'Horaire'};
+    next if not $time;
+    next if ( $time !~ /^\d\d\:\d\d$/ );
+
+    # Title
+    my $title = $row->{'Titre du produit'};
+    next if not $title;
+
+    # Subtitle
+    my $subtitle = $row->{"Titre de l'épisode"};
+
+    # Description
+    my $description = $row->{'PRESSE UK'};
+
+    progress( "Tiji: $xmltvid: $time - $title" );
+
+    my $ce = {
+      channel_id => $channel_id,
+      title => $title,
+      start_time => $time,
+    };
+
+    $ce->{subtitle} = $subtitle if $subtitle;
+    $ce->{description} = $description if $description;
+
+    $dsh->AddProgramme( $ce );
+
   }
 
   $dsh->EndBatch( 1 );

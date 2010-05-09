@@ -7,12 +7,15 @@ use utf8;
 
 use IO::File;
 use DateTime;
+use DateTime::Format::Strptime;
 use XMLTV;
 use File::Copy;
 
 use NonameTV::Exporter;
 use NonameTV::Language qw/LoadLanguage/;
 use NonameTV qw/norm/;
+use NonameTV::Config qw/ReadConfig/;
+use ReadEvent qw/ReadEvent/;
 
 use XMLTV::ValidateFile qw/LoadDtd ValidateFile/;
 
@@ -45,6 +48,9 @@ Options:
   --channel-group <groupname>
     Export data only for the channel group specified.
 
+  --append-credits
+    Append credits after the last event.
+
 =cut 
 
 $XMLTV::ValidateFile::REQUIRE_CHANNEL_ID = 0;
@@ -67,7 +73,7 @@ sub new {
     $self->{LastRequiredDate} = 
       DateTime->today->add( days => $self->{MinDays}-1 )->ymd("-");
 
-    $self->{OptionSpec} = [ qw/export-channels remove-old force-export 
+    $self->{OptionSpec} = [ qw/export-channels remove-old force-export append-credits 
 			    channel-group=s
 			    verbose+ quiet+ help/ ];
 
@@ -79,7 +85,10 @@ sub new {
       'help' => 0,
       'verbose' => 0,
       'quiet' => 0,
+      'append-credits' => 0,
     };
+
+    $self->{conf} = ReadConfig();
 
     LoadDtd( $self->{DtdFile} );
 
@@ -122,6 +131,9 @@ Options:
   --channel-group <groupname>
     Export data only for the channel group specified.
 
+  --append-credits
+    Append credits after the last event.
+
 EOH
 
     return;
@@ -142,6 +154,10 @@ EOH
     my $update_started = time();
     my $last_update = $self->ReadState();
     
+    if( $p->{'append-credits'} ) {
+      $self->{appendcredits} = 1;
+    }
+
     if( $p->{'force-export'} ) {
       $self->FindAll( $todo );
     }
@@ -249,6 +265,12 @@ sub ExportData {
 
   foreach my $channel (keys %{$todo}) {
     my $chd = $ds->sa->Lookup( "channels", { id => $channel } );
+
+    if( $self->{appendcredits} ){
+      if( $self->{conf}->{Site}->{AppendCopyright} eq 1 ){
+        $self->{copyright} = ReadEvent( $chd->{sched_lang}, "copyright.txt" );
+      }
+    }
 
     foreach my $date (sort keys %{$todo->{$channel}}) {
       $self->ExportFile( $chd, $date );
@@ -391,10 +413,34 @@ sub ExportFile {
 
       $d1->{end_time} = $d2->{start_time}
     }        
-      
 
     $self->WriteEntry( $w, $d1, $chd )
       unless $d1->{title} eq "end-of-transmission";
+
+    if( $d1->{end_time} lt $d2->{start_time} )
+    {
+      my $parser = DateTime::Format::Strptime->new( pattern => '%Y-%m-%d %H:%M:%S' );
+      my $dt1 = $parser->parse_datetime( $d1->{end_time} );
+      my $dt2 = $parser->parse_datetime( $d2->{start_time} );
+
+      my $dur = $dt2 - $dt1;
+      if( defined $self->{copyright} and $dur->delta_minutes > 10 and $self->{conf}->{Site}->{AppendCopyright} eq 1 ){
+
+        my $copend = $dt1->clone()->add( minutes => $self->{conf}->{Site}->{CreditsDuration} );
+
+        my $dcop = {
+          start_time => $d1->{end_time},
+          end_time => $copend->ymd() . " " . $copend->hms(),
+          title => $self->{copyright}->{title},
+          description => $self->{copyright}->{description},
+        };
+
+        $self->WriteEntry( $w, $dcop, $chd );
+
+        w "Copyright appended at $dcop->{start_time}";
+      }
+
+    }
 
     if( $d2->{start_time} gt "$startdate 23:59:59" ) {
       $done = 1;
@@ -612,7 +658,7 @@ sub WriteEntry
     $d->{date} = substr( $data->{production_date}, 0, 4 );
   }
 
-  if( $data->{aspect} ne "unknown" )
+  if( defined( $data->{aspect} ) and $data->{aspect} ne "unknown" )
   {
     $d->{video} = { aspect => $data->{aspect} };
   }
@@ -622,24 +668,24 @@ sub WriteEntry
     $d->{video} = { quality => $data->{quality} };
   }
 
-  if( $data->{stereo} =~ /\S/ )
+  if( defined( $data->{stereo} ) and $data->{stereo} =~ /\S/ )
   {
     $d->{audio} = { stereo => $data->{stereo} };
   }
 
-  if( $data->{rating} =~ /\S/ )
+  if( defined( $data->{rating} ) and $data->{rating} =~ /\S/ )
   {
     # the 'MPAA' string should not be hardcoded like it is now
     # it is different for each channel/programmer
     push @{$d->{rating}}, [$data->{rating}, 'MPAA'];
   }
 
-  if( $data->{directors} =~ /\S/ )
+  if( defined( $data->{directors} ) and $data->{directors} =~ /\S/ )
   {
     $d->{credits}->{director} = [split( ", ", $data->{directors})];
   }
 
-  if( $data->{actors} =~ /\S/ )
+  if( defined( $data->{actors} ) and $data->{actors} =~ /\S/ )
   {
     $d->{credits}->{actor} = [split( ", ", $data->{actors})];
     foreach my $actor (@{$d->{credits}->{actor}} ) {
@@ -648,32 +694,32 @@ sub WriteEntry
     }
   }
 
-  if( $data->{writers} =~ /\S/ )
+  if( defined( $data->{writers} ) and $data->{writers} =~ /\S/ )
   {
     $d->{credits}->{writer} = [split( ", ", $data->{writers})];
   }
 
-  if( $data->{adapters} =~ /\S/ )
+  if( defined( $data->{adapters} ) and $data->{adapters} =~ /\S/ )
   {
     $d->{credits}->{adapter} = [split( ", ", $data->{adapters})];
   }
 
-  if( $data->{producers} =~ /\S/ )
+  if( defined( $data->{producers} ) and $data->{producers} =~ /\S/ )
   {
     $d->{credits}->{producer} = [split( ", ", $data->{producers})];
   }
 
-  if( $data->{presenters} =~ /\S/ )
+  if( defined( $data->{presenters} ) and $data->{presenters} =~ /\S/ )
   {
     $d->{credits}->{presenter} = [split( ", ", $data->{presenters})];
   }
 
-  if( $data->{commentators} =~ /\S/ )
+  if( defined( $data->{commentators} ) and $data->{commentators} =~ /\S/ )
   {
     $d->{credits}->{commentator} = [split( ", ", $data->{commentators})];
   }
 
-  if( $data->{guests} =~ /\S/ )
+  if( defined( $data->{guests} ) and $data->{guests} =~ /\S/ )
   {
     $d->{credits}->{guest} = [split( ", ", $data->{guests})];
   }
