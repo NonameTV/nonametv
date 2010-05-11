@@ -16,6 +16,7 @@ example:
     Name => 'Gonix',
     CreditsDuration => 5,
     Credits => '/home/gonix/nonametv/nonametv/',
+    FillHole => 0,
     AppendCopyright => 1,
   },
 
@@ -23,6 +24,8 @@ This defines your site.
   Name            - the name of the site
   CreditsDuration - the duration of the credit event, in minutes.
   Credits         - the path of the directory that contains the site credits
+  FillHole        - if set to 1, fill the whole hole found in the schedule if it is bigger than <CreditsDuration>
+                    if set to 0, generate event that will be <CreditsDuration> minutes long
   AppendCopyright - if set to 1, the 'copyright' event will be appended
 
 ---------------------------------------------------------------------------

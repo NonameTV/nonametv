@@ -424,9 +424,16 @@ sub ExportFile {
       my $dt2 = $parser->parse_datetime( $d2->{start_time} );
 
       my $dur = $dt2 - $dt1;
-      if( defined $self->{copyright} and $dur->delta_minutes > 10 and $self->{conf}->{Site}->{AppendCopyright} eq 1 ){
+      if( defined $self->{copyright}
+        and $dur->delta_minutes > $self->{conf}->{Site}->{CreditsDuration}
+        and $self->{conf}->{Site}->{AppendCopyright} eq 1 ){
 
-        my $copend = $dt1->clone()->add( minutes => $self->{conf}->{Site}->{CreditsDuration} );
+        my $copend;
+        if( $self->{conf}->{Site}->{FillHole} eq 0 ){
+          $copend = $dt1->clone()->add( minutes => $self->{conf}->{Site}->{CreditsDuration} );
+        } else {
+          $copend = $dt2;
+        }
 
         my $dcop = {
           start_time => $d1->{end_time},
