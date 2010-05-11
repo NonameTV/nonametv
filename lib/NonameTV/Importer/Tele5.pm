@@ -102,6 +102,7 @@ sub ImportRTF {
 
     if( $text =~ m|\n\n\n$| ){
       $text =~ s|^\s+||m;
+      $text =~ s|\s+$||m;
       $text =~ s|\n+$||;
 
       # got one block, either a new day or one program
@@ -143,7 +144,6 @@ sub ImportRTF {
         my $ce = {
           channel_id => $chd->{id},
           start_time => $starttime->ymd('-') . ' ' . $starttime->hms(':'),
-          title => $title
         };
 
         # episode number
@@ -157,6 +157,13 @@ sub ImportRTF {
           #error 'episode title: ' . $episodetitle;
           $episodetitle =~ s|\(.*\)||;
           $ce->{subtitle} = $episodetitle;
+        } else {
+          # seems to be a movie, maybe it's a multi part movie
+          if ($title =~ m|Teil|) {
+            my ($partnum) = ($title =~ m|[,-] Teil (\d+)$|);
+            $title =~ s|[,-] Teil \d+$||;
+            $ce->{episode} = ' . . ' . ($partnum - 1);
+          }
         }
 
         # year of production and genre/program type
@@ -177,6 +184,47 @@ sub ImportRTF {
           $ce->{description} = $desc . "\n&copy; by Tele5&reg;";
         }
 
+        # aspect
+        if ($text =~ m|^\s*Bildformat 16:9$|m) {
+          $ce->{aspect} = '16:9';
+        }
+
+        # category override for kids (as we don't have a good category for anime anyway)
+        if ($text =~ m|^\s*KINDERPROGRAMM$|m) {
+          $ce->{category} = 'Kids';
+        }
+
+        # program type movie (hard to guess it from the genre)
+        if ($text =~ m|^\s*Film$|m) {
+          $ce->{program_type} = 'movie';
+        }
+
+        #
+        if ($text =~ m|^\s*Kirchenprogramm$|m) {
+          $ce->{program_type} = 'tvshow';
+        }
+
+        # program_type and category for daily shows
+        if ($title eq 'Homeshopping') {
+          $ce->{program_type} = 'tvshow';
+        } elsif ($title eq 'Making of eines aktuellen Kinofilms') {
+          $ce->{program_type} = 'tvshow';
+          $ce->{category} = 'Movies';
+        } elsif ($title =~ m|^Wir lieben Kino|) {
+          $ce->{program_type} = 'tvshow';
+          $ce->{category} = 'Movies';
+        } elsif ($title =~ m|^Gottschalks Filmkolumne|) {
+          $ce->{program_type} = 'tvshow';
+          $ce->{category} = 'Movies';
+        }
+
+        # directors
+        my ($directors) = ($text =~ m|^\s*Regie:\s*(.*)$|m);
+        if ($directors) {
+          $ce->{directors} = $directors;
+        }
+
+        $ce->{title} = $title;
         $self->{datastore}->AddProgramme ($ce);
       }
       $text = '';
