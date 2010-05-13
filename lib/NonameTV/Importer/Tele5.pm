@@ -35,6 +35,13 @@ sub new {
   my $self  = $class->SUPER::new( @_ );
   bless ($self, $class);
 
+  if (!defined $self->{ServerInDeAtCh}) {
+    warn 'Programme sysnopsis may only be stored on servers in germany, austria and switzerland. Set ServerInDeAtCh to yes or no.';
+    $self->{ServerInDeAtCh} = 'no';
+  }
+  if ($self->{ServerInDeAtCh} eq 'yes') {
+    $self->{KeepDesc} = 1;
+  }
 
   my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
   $self->{datastorehelper} = $dsh;
@@ -179,9 +186,11 @@ sub ImportRTF {
         }
 
         # synopsis
-        my ($desc) = ($text =~ m|^.*\n\n(.*?)$|s);
-        if ($desc) {
-          $ce->{description} = $desc . "\n&copy; by Tele5&reg;";
+        if ($self->{KeepDesc}) {
+          my ($desc) = ($text =~ m|^.*\n\n(.*?)$|s);
+          if ($desc) {
+            $ce->{description} = $desc . "\n&copy; by Tele5&reg;";
+          }
         }
 
         # aspect
