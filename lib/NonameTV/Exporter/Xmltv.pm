@@ -444,7 +444,7 @@ sub ExportFile {
 
         $self->WriteEntry( $w, $dcop, $chd );
 
-        w "Copyright appended at $dcop->{start_time}";
+        w "Copyright appended at $dcop->{start_time} - $dcop->{end_time}";
       }
 
     }

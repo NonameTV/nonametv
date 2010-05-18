@@ -30,6 +30,13 @@ use NonameTV::Importer::BaseFile;
 
 use base 'NonameTV::Importer::BaseFile';
 
+# File types
+use constant {
+  FT_UNKNOWN  => 0,  # unknown
+  FT_FLATXLS  => 1,  # flat xls file
+  FT_GRIDXLS  => 2,  # xls file with grid
+};
+
 sub new {
   my $proto = shift;
   my $class = ref($proto) || $proto;
@@ -54,18 +61,62 @@ sub ImportContentFile {
   my $ds = $self->{datastore};
 
   if( $file =~ /\.xml$/i ){
-    $self->ImportXML( $file, $channel_id, $channel_xmltvid );
+    $self->ImportXML( $file, $chd );
   } elsif( $file =~ /\.xls$/i ){
-    $self->ImportXLS( $file, $channel_id, $channel_xmltvid );
+    my $ft = CheckFileFormat( $file );
+    if( $ft eq FT_FLATXLS ){
+      $self->ImportFlatXLS( $file, $chd );
+    } elsif( $ft eq FT_GRIDXLS ){
+      $self->ImportGridXLS( $file, $chd );
+    } else {
+      error( "FOX: Unknown file format: $file" );
+    }
+
   }
 
   return;
 }
 
+sub CheckFileFormat
+{
+  my( $file ) = @_;
+
+  # Only process .xls files.
+  return if( $file !~ /\.xls$/i );
+
+  my $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
+  return FT_UNKNOWN if( ! $oBook );
+  return FT_UNKNOWN if( ! $oBook->{SheetCount} );
+
+  # Grid XLS
+  # if sheet[0] -> cell[0][1] = "^FOX" => FT_GRIDXLS
+  for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
+    my $oWkS = $oBook->{Worksheet}[$iSheet];
+    if( $oWkS->{Name} =~ /^\d+/ ){
+      my $oWkC = $oWkS->{Cells}[0][1];
+      if( $oWkC and $oWkC->Value =~ /^FOX/ ){
+        return FT_GRIDXLS;
+      }
+    }
+  }
+
+  # Flat XLS
+  # if sheet[0] -> cell[0][0] = "^time slot" => FT_FLATXLS
+  for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
+    my $oWkS = $oBook->{Worksheet}[$iSheet];
+    my $oWkC = $oWkS->{Cells}[0][0];
+    if( $oWkC and $oWkC->Value =~ /^Time Slot/ ){
+      return FT_FLATXLS;
+    }
+  }
+
+  return FT_UNKNOWN;
+}
+
 sub ImportXML
 {
   my $self = shift;
-  my( $file, $channel_id, $channel_xmltvid ) = @_;
+  my( $file, $chd ) = @_;
 
   my $dsh = $self->{datastorehelper};
   my $ds = $self->{datastore};
@@ -78,7 +129,7 @@ sub ImportXML
   my $dayoff = 0;
   my $year = DateTime->today->year();
 
-  progress( "FOX XML: $channel_xmltvid: Processing XML $file" );
+  progress( "FOX XML: $chd->{xmltvid}: Processing XML $file" );
   
   my( $month, $firstday ) = ExtractDate( $file );
   if( not defined $firstday ) {
@@ -111,13 +162,13 @@ sub ImportXML
 
     # the name of the worksheet
     my $dayname = $wks->getAttribute('ss:Name');
-    progress("FOX XML: $channel_xmltvid: processing worksheet named '$dayname'");
+    progress("FOX XML: $chd->{xmltvid}: processing worksheet named '$dayname'");
 
     # the path should point exactly to one worksheet
     my $rows = $wks->findnodes( ".//ss:Row" );
   
     if( $rows->size() == 0 ) {
-      error( "FOX XML: $channel_xmltvid: No Rows found in worksheet '$dayname'" ) ;
+      error( "FOX XML: $chd->{xmltvid}: No Rows found in worksheet '$dayname'" ) ;
       return;
     }
 
@@ -162,12 +213,12 @@ sub ImportXML
 	  $dsh->EndBatch( 1 );
         }
 
-        my $batch_id = $channel_xmltvid . "_" . $date;
-        $dsh->StartBatch( $batch_id , $channel_id );
+        my $batch_id = $chd->{xmltvid} . "_" . $date;
+        $dsh->StartBatch( $batch_id , $chd->{id} );
         $dsh->StartDate( $date , "06:00" );
         $currdate = $date;
 
-        progress("FOX XML: $channel_xmltvid: Date is: $date");
+        progress("FOX XML: $chd->{xmltvid}: Date is: $date");
       }
 
       if( not defined( $starttime ) ) {
@@ -178,10 +229,10 @@ sub ImportXML
       eval{ $crotitle = decode( "iso-8859-2", $crotitle ); };
       #$title = decode( "iso-8859-2", $title );
 
-      progress( "FOX XML: $channel_xmltvid: $starttime - $title" );
+      progress( "FOX XML: $chd->{xmltvid}: $starttime - $title" );
 
       my $ce = {
-        channel_id => $channel_id,
+        channel_id => $chd->{id},
         title => $crotitle || $title,
         subtitle => $title,
         start_time => $starttime->hms(':'),
@@ -206,10 +257,10 @@ sub ImportXML
   return;
 }
 
-sub ImportXLS
+sub ImportFlatXLS
 {
   my $self = shift;
-  my( $file, $channel_id, $channel_xmltvid ) = @_;
+  my( $file, $chd ) = @_;
 
   my $dsh = $self->{datastorehelper};
   my $ds = $self->{datastore};
@@ -226,11 +277,11 @@ sub ImportXLS
   my $date;
   my $currdate = "x";
 
-  progress( "FOX XLS: $channel_xmltvid: Processing XLS $file" );
+  progress( "FOX FlatXLS: $chd->{xmltvid}: Processing flat XLS $file" );
 
   my( $month, $firstday ) = ExtractDate( $file );
   if( not defined $firstday ) {
-    error( "FOX XLS: $file: Unable to extract date from file name" );
+    error( "FOX FlatXLS: $file: Unable to extract date from file name" );
     next;
   }
   if( $month lt DateTime->today->month() ){
@@ -246,14 +297,14 @@ sub ImportXLS
   $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
 
   if( not defined( $oBook ) ) {
-    error( "FOX XLS: $file: Failed to parse xls" );
+    error( "FOX FlatXLS: $file: Failed to parse xls" );
     return;
   }
 
   for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
 
     $oWkS = $oBook->{Worksheet}[$iSheet];
-    progress("FOX XLS: $channel_xmltvid: processing worksheet named '$oWkS->{Name}'");
+    progress("FOX FlatXLS: $chd->{xmltvid}: processing worksheet named '$oWkS->{Name}'");
 
     # read the rows with data
     for(my $iR = $oWkS->{MinRow} ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
@@ -313,12 +364,12 @@ sub ImportXLS
 	  $dsh->EndBatch( 1 );
         }
 
-        my $batch_id = $channel_xmltvid . "_" . $date;
-        $dsh->StartBatch( $batch_id , $channel_id );
+        my $batch_id = $chd->{xmltvid} . "_" . $date;
+        $dsh->StartBatch( $batch_id , $chd->{id} );
         $dsh->StartDate( $date , "06:00" );
         $currdate = $date;
 
-        progress("FOX XLS: $channel_xmltvid: Date is: $date");
+        progress("FOX FlatXLS: $chd->{xmltvid}: Date is: $date");
       }
 
       if( not defined( $starttime ) ) {
@@ -335,10 +386,10 @@ sub ImportXLS
 #my $str = decode( "iso-8859-2", $crotitle );
 #print "CROTITLE: $str\n";
 
-      progress( "FOX XLS: $channel_xmltvid: $starttime - $title" );
+      progress( "FOX FlatXLS: $chd->{xmltvid}: $starttime - $title" );
 
       my $ce = {
-        channel_id => $channel_id,
+        channel_id => $chd->{id},
         title => $crotitle || $title,
         subtitle => $title,
         start_time => $starttime->hms(':'),
@@ -361,6 +412,141 @@ sub ImportXLS
   $dsh->EndBatch( 1 );
 
   return;
+}
+
+sub ImportGridXLS
+{
+  my $self = shift;
+  my( $file, $chd ) = @_;
+
+  my $dsh = $self->{datastorehelper};
+  my $ds = $self->{datastore};
+
+  progress( "FOX GridXLS: $chd->{xmltvid}: Processing flat XLS $file" );
+
+  my $date;
+  my $currdate = "x";
+
+  my $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
+
+  if( not defined( $oBook ) ) {
+    error( "FOX GridXLS: $file: Failed to parse xls" );
+    return;
+  }
+
+  for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
+
+    my $oWkS = $oBook->{Worksheet}[$iSheet];
+    progress("FOX GridXLS: $chd->{xmltvid}: processing worksheet named '$oWkS->{Name}'");
+
+    # browse through columns
+    for(my $iC = $oWkS->{MinCol} ; defined $oWkS->{MaxCol} && $iC <= $oWkS->{MaxCol} ; $iC++) {
+      # browse through rows
+      for(my $iR = $oWkS->{MinRow} ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
+
+        my $oWkC = $oWkS->{Cells}[$iR][$iC];
+        next if( ! $oWkC );
+        next if( ! $oWkC->Value );
+#print $oWkC->Value . "\n";
+        my $text = $oWkC->Value;
+
+        if( isDate( $text ) ){
+
+          $date = ParseDate( $text );
+
+          if( $date ne $currdate ) {
+            if( $currdate ne "x" ) {
+              $dsh->EndBatch( 1 );
+            }
+
+            my $batch_id = $chd->{xmltvid} . "_" . $date;
+            $dsh->StartBatch( $batch_id , $chd->{id} );
+            $dsh->StartDate( $date , "06:00" );
+            $currdate = $date;
+
+            progress("FOX GridXLS: $chd->{xmltvid}: Date is: $date");
+          }
+          next;
+        }
+
+        if( $text =~ /^\d+:\d+$/ ){
+
+          # time
+          my $time = $text;
+
+          # origtitle from $iC + 1
+          $oWkC = $oWkS->{Cells}[$iR][$iC+1];
+          next if( ! $oWkC );
+          next if( ! $oWkC->Value );
+          my $origtitle = $oWkC->Value;
+
+          # crotitle from $iC + 2
+          $oWkC = $oWkS->{Cells}[$iR][$iC+2];
+          next if( ! $oWkC );
+          next if( ! $oWkC->Value );
+          my $crotitle = $oWkC->Value;
+
+          # genre from $iC + 3
+          $oWkC = $oWkS->{Cells}[$iR][$iC+3];
+          next if( ! $oWkC );
+          next if( ! $oWkC->Value );
+          my $genre = $oWkC->Value;
+
+          progress( "FOX GridXLS: $chd->{xmltvid}: $time - $origtitle" );
+
+          my $ce = {
+            channel_id => $chd->{id},
+            title => $crotitle || $origtitle,
+            subtitle => $origtitle,
+            start_time => $time,
+          };
+
+          if( $genre ){
+            my($program_type, $category ) = $ds->LookupCat( 'FOX', $genre );
+            AddCategory( $ce, $program_type, $category );
+          }
+
+          $dsh->AddProgramme( $ce );
+
+        } # if time
+      } # next row
+    } # next column
+
+    $dsh->EndBatch( 1 );
+
+  } # next sheet
+
+  return;
+}
+
+sub isDate {
+  my ( $text ) = @_;
+
+#print ">$text<\n";
+
+  # format 'Friday\n26.06.'
+  if( $text =~ /^(sunday|monday|tuesday|wednesday|thursday|friday|saturday)\n\d+\.\d+\.$/i ){
+    return 1;
+  }
+
+  return 0;
+}
+
+sub ParseDate {
+  my ( $text ) = @_;
+
+#print ">$text<\n";
+
+  my( $dayname, $day, $month );
+
+  # format 'Friday\n26.06.'
+  if( $text =~ /^(sunday|monday|tuesday|wednesday|thursday|friday|saturday)\n\d+\.\d+\.$/i ){
+    ( $dayname, $day, $month ) = ( $text =~ /^(\S+)\n(\d+)\.(\d+)\.$/i );
+  }
+
+  my $year = DateTime->today->year();
+
+  return sprintf( '%d-%02d-%02d', $year, $month, $day );
 }
 
 sub ExtractDate {
