@@ -139,7 +139,7 @@ sub ImportFull
 
     } elsif( isTitle( $text ) ){
 
-      ( $time, $title ) = ParseTitle( $text );
+      # start of a new programme, write out last one and go ahead
 
       $state = ST_FHEAD;
 
@@ -161,29 +161,10 @@ sub ImportFull
 
     }
 
-    # after subinfo line there comes
-    # some text with information about the program
-    if( $state eq ST_FSUBINFO ){
-
-      $subinfo .= $text . "\n";
-
-    } elsif( $state eq ST_FDESCSHORT ){
-
-      $shortdesc .= $text . "\n";
-
-    } elsif( $state eq ST_FDESCLONG ){
-
-      $longdesc .= $text . "\n";
-
-    } elsif( $state eq ST_FADDINFO ){
-
-      $addinfo .= $text . "\n";
-
-    }
-
+    # did we collect one full programme?
     if( ( $state eq ST_FDATE or $state eq ST_FHEAD ) and $time and $title and ( $subinfo or $longdesc ) ){
 
-      my $aspect = "4:3";
+      my $aspect = undef;
       if( $title =~ /16:9/ ){
         $aspect = "16:9";
       }
@@ -194,14 +175,16 @@ sub ImportFull
       }
 
       my $quality;
+      my ($subtitle, $genre, $directors, $actors);
+      if ( defined ($subinfo)) {
       if( $subinfo =~ /Dieses Programm wurde in HD produziert/ ){
         $quality = "HDTV";
       }
+      ( $subtitle, $genre, $directors, $actors ) = ParseExtraInfo( $subinfo );
+     }
 
      $title =~ s/stereo.*$//i;
      $title =~ s/16:9.*$//i;
-
-      my ( $subtitle, $genre, $directors, $actors ) = ParseExtraInfo( $subinfo );
 
       $shortdesc =~ s/^\[Kurz\]// if $shortdesc;
       $longdesc =~ s/^\[Lang\]// if $longdesc;
@@ -232,6 +215,19 @@ sub ImportFull
       $addinfo = undef;
     }
 
+    # after subinfo line there comes
+    # some text with information about the program
+    if ( $state eq ST_FHEAD ) {
+      ( $time, $title ) = ParseTitle( $text );
+    } elsif( $state eq ST_FSUBINFO ){
+      $subinfo .= $text . "\n";
+    } elsif( $state eq ST_FDESCSHORT ){
+      $shortdesc .= $text . "\n";
+    } elsif( $state eq ST_FDESCLONG ){
+      $longdesc .= $text . "\n";
+    } elsif( $state eq ST_FADDINFO ){
+      $addinfo .= $text . "\n";
+    }
   }
 
   $dsh->EndBatch( 1 );
