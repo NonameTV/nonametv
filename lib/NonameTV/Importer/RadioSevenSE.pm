@@ -1,6 +1,7 @@
 package NonameTV::Importer::RadioSevenSE;
 
 use strict;
+use utf8;
 use warnings;
 
 =pod
@@ -52,7 +53,7 @@ sub FilterContent {
   my( $cref, $chd ) = @_;
 
   # fix buggy html
-  $$cref =~ s|charset=charset=|charset=|g;
+  #$$cref =~ s|charset=charset=|charset=|g;
 
   # fix CRLF line endings
   $$cref =~ s|||g;
@@ -157,32 +158,28 @@ sub ImportContent {
   my $ds = $self->{datastore};
 
   # find first <td>.*DAG</td>
-  my $firstday = ($$xmldata =~ m|<td>(.*)DAG</td>|);
+  my ($firstday) = ($$xmldata =~ m|<td>(\S+DAG)</td>|);
 
   # find start DateTime
-  #my $firstday = $hierkommtshin;
-  $firstday =~ s|\n||g;
-#  $firstday =~ s|^[[:space:]]*||g;
-#  $firstday =~ s|[[:space:]]*$||g;
-  $firstday = lc ($firstday);
   switch ($firstday) {
-    case "måndag" { $firstday=1 }
-    case "tisdag" { $firstday=2 }
-    case "onsdag" { $firstday=3 }
-    case "torsdag" { $firstday=4 }
-    case "fredag" { $firstday=5 }
-    case "lördag" { $firstday=6 }
-    case "söndag" { $firstday=7 }
-    else { print $firstday }
+    case /M.+NDAG/ { $firstday=1 }
+    case "TISDAG" { $firstday=2 }
+    case "ONSDAG" { $firstday=3 }
+    case "TORSDAG" { $firstday=4 }
+    case "FREDAG" { $firstday=5 }
+    case /L.+RDAG/ { $firstday=6 }
+    case /S.+NDAG/ { $firstday=7 }
+    else { f ($firstday . ': could not parse day'); return 0 }
   }
 
   my $today = DateTime->today (time_zone => 'Europe/Stockholm');
   my $firstdate = $today->clone ();
+
   if ($today->day_of_week == $firstday) {
-  } elsif ($today->day_of_week()%7 == $firstday+1%7) {
-    $firstdate->add (day => 1);
-  } elsif ($today->day_of_week()%7 == $firstday-1%7) {
-    $firstdate->sub (day => 1);
+  } elsif ($today->day_of_week()%7 == ($firstday+1)%7) {
+    $firstdate->add (days => 1);
+  } elsif ($today->day_of_week()%7 == ($firstday-1)%7) {
+    $firstdate->add (days => -1);
   } else {
     # ERROR
   }
