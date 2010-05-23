@@ -14,7 +14,7 @@ See xxx for instructions.
 use HTML::TableExtract;
 use IO::Uncompress::Gunzip qw(gunzip $GunzipError) ;
 
-#use NonameTV::Log qw/d p w f/;
+use NonameTV::Log qw/w f/;
 use NonameTV qw/Html2Xml/;
 
 use base 'NonameTV::Importer::BaseDaily';
@@ -114,7 +114,13 @@ sub ImportContent {
 
     my ( $hour, $minute ) = ( $row[0] =~ m|(\d+):(\d+) Uhr| );
 
-    from_to($row[1], "iso-8859-1", "utf8");
+    eval {
+      from_to($row[1], "iso-8859-1", "utf8");
+    };
+    if ($@) {
+      w ($hour . ':' . $minute . ': could not convert text to utf8');
+      f ($@);
+    }
     $row[1] =~ s|\n\s*\n|\n|sg;
     $row[1] =~ s|^\s*||m;
     $row[1] =~ s|\s*$||m;
