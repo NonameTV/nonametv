@@ -256,101 +256,226 @@ sub ImportFlatXLS
 sub ImportGridXLS
 {
   my $self = shift;
-  my( $file, $channel_id, $channel_xmltvid ) = @_;
+  my( $file, $channel_id, $xmltvid ) = @_;
 
   my $dsh = $self->{datastorehelper};
   my $ds = $self->{datastore};
 
-  my $coltime = 1;
-  my $currdate = "x";
+  # Only process .xls files.
+  return if( $file !~ /\.xls$/i );
+  progress( "NGCHD GridXLS: $xmltvid: Processing $file" );
 
-  progress( "NGCHD Grid XLS: $channel_xmltvid: Processing $file" );
+  my $monthname;
+  my $month;
+  my $year;
 
-  my( $oBook, $oWkS, $oWkC );
-  $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
-
-  if( not defined( $oBook ) ) {
-    error( "NGCHD Grid XLS: $file: Failed to parse xls" );
+  # find the year and month from the filename
+  # format: 'NatGeo HD JULY 2010 Schedule.xls'
+  if( $file =~ /(january|february|march|aprul|may|june|july|august|september|october|november|december)/i ){
+    $monthname = $1;
+    $month = MonthNumber( $monthname, 'en' );
+  }
+  if( $file =~ /(20\d{2})/i ){
+    $year = $1;
+  }
+  if( ! $month or ! $year ){
+    error( "NGCHD GridXLS: $xmltvid: Error extracting month and year from filename" );
     return;
   }
 
+  my $coltime = 0;  # the time is in the column no. 0
+  my $firstcol = 1;  # first column - monday
+  my $lastcol = 7;  # last column - sunday
+  my $firstrow = 0;  # schedules are starting from this row
+
+  my @shows = ();
+  my ( $firstdate, $lastdate );
+
+  my $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
+
+  my $dayno = 0;
+
+  # main loop
   for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
 
-    $oWkS = $oBook->{Worksheet}[$iSheet];
+    my $oWkS = $oBook->{Worksheet}[$iSheet];
 
-    if( $oWkS->{Name} =~ /^Hoja/ ){
-	progress("NGCHD Grid XLS: $channel_xmltvid: skipping worksheet named '$oWkS->{Name}'");
-	next;
+    if( $oWkS->{Name} !~ /^WK/i ){
+      progress( "NGCHD GridXLS: $xmltvid: Skipping worksheet: $oWkS->{Name}" );
+      next;
     }
+    progress( "NGCHD GridXLS: $xmltvid: Processing worksheet: $oWkS->{Name}" );
 
-    progress("NGCHD Grid XLS: $channel_xmltvid: processing worksheet named '$oWkS->{Name}'");
+#    ( $firstdate, $lastdate ) = ParsePeriod( $oWkS->{Name} );
+#    progress( "NGCHD GridXLS: $xmltvid: Importing data for period from " . $firstdate->ymd("-") . " to " . $lastdate->ymd("-") );
+#    my $period = $lastdate - $firstdate;
+#    my $spreadweeks = int( $period->delta_days / 7 ) + 1;
+#    if( $period->delta_days > 6 ){
+#      progress( "NGCHD GridXLS: $xmltvid: Schedules scheme will spread accross $spreadweeks weeks" );
+#    }
 
-    # read the columns from 4 to 10
-    for(my $iC = 3 ; $iC <= 9 ; $iC++) {
+    # browse through columns
+    for(my $iC = $firstcol ; $iC <= $lastcol ; $iC++) {
 
-      # get the date from the row 5
-      $oWkC = $oWkS->{Cells}[4][$iC];
-      next if( ! $oWkC );
-      next if( ! $oWkC->Value );
-      my( $month, $day, $year ) = ( $oWkC->Value =~ /^(\d+)-(\d+)-(\d+)$/ );
-      $year += 2000 if $year < 100;
-      my $date = sprintf( "%04d-%02d-%02d", $year, $month, $day );
+print "kolona $iC dayno $dayno\n";
 
-      if( $date ne $currdate ) {
-        if( $currdate ne "x" ) {
-          $dsh->EndBatch( 1 );
+      # browse through rows
+      # start at row firstrow
+      for(my $iR = $firstrow ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
+
+        my $oWkC = $oWkS->{Cells}[$iR][$iC];
+        next if( ! $oWkC );
+        next if( ! $oWkC->Value );
+        my $text = $oWkC->Value;
+#print "$iR $iC >$text<\n";
+
+        if( isDate( $text ) ){
+
+          my $day = ParseDate($text);
+          next if( ! $day );
+
+          if( $dayno eq 0 ){
+            if( $day eq 1 ){
+              $dayno = $day;
+              $firstdate = sprintf( "%04d-%02d-%02d", $year, $month, $day ) if not $firstdate;
+              $lastdate = sprintf( "%04d-%02d-%02d", $year, $month, $day );
+            } else {
+              progress( "NGCHD GridXLS: $xmltvid: Skipping day from the previous month: $day" );
+            }
+          } else {
+            $dayno = $day;
+            $firstdate = sprintf( "%04d-%02d-%02d", $year, $month, $day ) if not $firstdate;
+            $lastdate = sprintf( "%04d-%02d-%02d", $year, $month, $day );
+          }
+print "DAY $day DAYNO $dayno\n";
+
+print "FD $firstdate LD $lastdate\n";
         }
 
-        my $batch_id = $channel_xmltvid . "_" . $date;
-        $dsh->StartBatch( $batch_id , $channel_id );
-        $dsh->StartDate( $date , "08:00" );
-        $currdate = $date;
+        next if( $dayno eq 0 );
 
-        progress("NGCHD Grid XLS: $channel_xmltvid: Date is: $date");
-      }
+        my $title = $text;
 
-      # read the rows starting from 6
-      for(my $iR = 5 ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
-
-        # get the title from the current column
-        $oWkC = $oWkS->{Cells}[$iR][$iC];
-        next if( ! $oWkC );
-        next if( ! $oWkC->Value );
-        my $title = $oWkC->Value;
-
-        # get the title from the column $coltime
+        # fetch the time from $coltime column
         $oWkC = $oWkS->{Cells}[$iR][$coltime];
         next if( ! $oWkC );
-        next if( ! $oWkC->Value );
         my $time = $oWkC->Value;
+        next if( ! $time );
 
-        progress( "NGCHD Grid XLS: $channel_xmltvid: $time - $title" );
-
-        my $ce = {
-          channel_id => $channel_id,
-          title => $title,
+        my $show = {
           start_time => $time,
+          title => $title,
         };
+        @{$shows[$dayno - 1]} = () if not $shows[$dayno - 1];
+        push( @{$shows[$dayno - 1]} , $show );
 
-        $dsh->AddProgramme( $ce );
+        # find to how many columns this column spreads to the right
+        # all these days have the same show at this time slot
+        for( my $c = $iC + 1 ; $c <= $lastcol ; $c++) {
+          $oWkC = $oWkS->{Cells}[$iR][$c];
+          if( ! $oWkC->Value ){
+            @{$shows[ $dayno - 1 + ($c - $iC) ]} = () if not $shows[ $dayno - 1 + ($c - $iC) ];
+            push( @{$shows[ $dayno - 1 + ($c - $iC) ]} , $show );
+          } else {
+            last;
+          }
+        }
 
       } # next row
 
     } # next column
 
-  } # next sheet
+    FlushData( $dsh, $firstdate, $lastdate, $channel_id, $xmltvid, @shows );
+    undef $firstdate;
+    undef $lastdate;
+
+  } # next worksheet
+
+  return;
+}
+
+sub FlushData {
+  my ( $dsh, $firstdate, $lastdate, $channel_id, $xmltvid, @shows ) = @_;
+
+print "FlushData firstdate: $firstdate\n";
+print "FlushData lastdate:  $lastdate\n";
+
+  my( $year, $month, $day ) = ( $firstdate =~ /^(\d{4})-(\d{2})-(\d{2})$/ );
+  my $fdt = DateTime->new( year   => $year,
+                           month  => $month,
+                           day    => $day,
+                           hour   => 0,
+                           minute => 0,
+                           second => 0,
+                           time_zone => 'Europe/Zagreb',
+  );
+  ( $year, $month, $day ) = ( $lastdate =~ /^(\d{4})-(\d{2})-(\d{2})$/ );
+  my $ldt = DateTime->new( year   => $year,
+                           month  => $month,
+                           day    => $day,
+                           hour   => 0,
+                           minute => 0,
+                           second => 0,
+                           time_zone => 'Europe/Zagreb',
+  );
+
+print "FlushData First DATE $fdt\n";
+print "FlushData Last  DATE $ldt\n";
+
+  my $date = $fdt;
+  my $currdate = "x";
+
+  # run through the shows
+  foreach my $dayshows ( @shows ) {
+
+    progress( "NGCHD GridXLS: $xmltvid: Date is " . $date->ymd() );
+
+    if( $date ne $currdate ) {
+
+      if( $currdate ne "x" ){
+        $dsh->EndBatch( 1 );
+      }
+
+      my $batch_id = "${xmltvid}_" . $date->ymd();
+      $dsh->StartBatch( $batch_id, $channel_id );
+      $dsh->StartDate( $date->ymd(), "06:00" );
+      $currdate = $date->clone();
+    }
+
+    foreach my $s ( @{$dayshows} ) {
+
+      progress( "NGCHD GridXLS: $xmltvid: $s->{start_time} - $s->{title}" );
+
+      my $ce = {
+        channel_id => $channel_id,
+        start_time => $s->{start_time},
+        title => $s->{title},
+      };
+
+      $dsh->AddProgramme( $ce );
+
+    } # next show in the day
+
+    # increment the date
+    $date->add( days => 1 );
+    last if( $date gt $ldt );
+
+  } # next day
 
   $dsh->EndBatch( 1 );
 
-  return;
 }
 
 sub isDate
 {
   my ( $text ) = @_;
 
+#print "isDate >$text<\n";
+
   # the format is '01-10-08'
   if( $text =~ /^\d{2}-\d{2}-\d{2}$/ ){
+    return 1;
+  } elsif( $text =~ /^(sunday|monday|tuesday|wednesday|thursday|friday|saturday)\s+\d+$/i ){
     return 1;
   }
 
@@ -361,12 +486,15 @@ sub ParseDate
 {
   my ( $dinfo ) = @_;
 
-  my( $day, $month, $year );
+  my( $dayname, $day, $month, $year );
 
   if( $dinfo =~ /^\d{4}-\d{2}-\d{2}$/ ){ # the format is '2010-04-25'
     ( $year, $month, $day ) = ( $dinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
   } elsif( $dinfo =~ /^\d+-\d+-\d+$/ ){ # the format is '01-10-08'
     ( $day, $month, $year ) = ( $dinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
+  } elsif( $dinfo =~ /^(sunday|monday|tuesday|wednesday|thursday|friday|saturday)\s+(\d+)$/i ){
+    ( $dayname, $day ) = ( $dinfo =~ /^(\S+)\s+(\d+)$/ );
+    return $day;
   }
 
   return undef if( ! $year );

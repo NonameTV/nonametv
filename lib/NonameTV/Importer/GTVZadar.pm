@@ -97,8 +97,6 @@ sub ImportContentFile
 
       if( $date ) {
 
-        progress("GTVZadar: $xmltvid: Date is $date");
-
         if( $date ne $currdate ) {
 
           if( $currdate ne "x" ){
@@ -109,6 +107,8 @@ sub ImportContentFile
           $dsh->StartBatch( $batch_id, $channel_id );
           $dsh->StartDate( $date , "00:00" ); 
           $currdate = $date;
+          progress("GTVZadar: $xmltvid: Date is $date");
+
         }
       }
 

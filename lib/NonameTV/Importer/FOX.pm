@@ -437,6 +437,7 @@ sub ImportGridXLS
   for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
 
     my $oWkS = $oBook->{Worksheet}[$iSheet];
+print "iSheet $iSheet\n";
     progress("FOX GridXLS: $chd->{xmltvid}: processing worksheet named '$oWkS->{Name}'");
 
     # browse through columns
@@ -512,9 +513,9 @@ sub ImportGridXLS
       } # next row
     } # next column
 
-    $dsh->EndBatch( 1 );
-
   } # next sheet
+
+  $dsh->EndBatch( 1 );
 
   return;
 }

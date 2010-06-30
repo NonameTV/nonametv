@@ -372,7 +372,6 @@ sub FlushData {
   my $date = $firstdate;
   my $currdate = "x";
 
-print "FlushData 1\n";
   # run through the shows
   foreach my $dayshows ( @shows ) {
 
