@@ -624,7 +624,7 @@ Convert month name to month number
 sub MonthNumber {
   my( $monthname , $lang ) = @_;
 
-  my( @months_1, @months_2, @months_3, @months_4, @months_5, @months_6 );
+  my( @months_1, @months_2, @months_3, @months_4, @months_5, @months_6, @months_7 );
 
   if( $lang =~ /^en$/ ){
     @months_1 = qw/jan feb mar apr may jun jul aug sep oct nov dec/;
@@ -633,6 +633,7 @@ sub MonthNumber {
     @months_4 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
     @months_5 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
     @months_6 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
+    @months_7 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
   } elsif( $lang =~ /^de$/ ){
     @months_1 = qw/jan feb mar apr may jun jul aug sep oct nov dec/;
     @months_2 = qw/Januar Februar März April Mai Juni Juli August September Oktober November Dezember/;
@@ -640,6 +641,7 @@ sub MonthNumber {
     @months_4 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
     @months_5 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
     @months_6 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
+    @months_7 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
   } elsif( $lang =~ /^hr$/ ){
     @months_1 = qw/sij vel ozu tra svi lip srp kol ruj lis stu pro/;
     @months_2 = qw/sijecanj veljaca ozujak travanj svibanj lipanj srpanj kolovoz rujan listopad studeni prosinac/;
@@ -647,6 +649,7 @@ sub MonthNumber {
     @months_4 = qw/sijeÃ¨a veljače ožujka travnja svibnja lipnja srpnja kolovoza rujna listopada studenog prosinca/;
     @months_5 = qw/siječnja veljace mart april maj juni srpnja kolovoza rujna listopada studenog prosinca/;
     @months_6 = qw/siječanj veljace ozujka travnja svibnja lipnja srpnja kolovoza rujna listopada studenog prosinca/;
+    @months_7 = qw/jan feb mar apr maj jun jul aug sep okt nov dec/;
   } elsif( $lang =~ /^sr$/ ){
     @months_1 = qw/jan feb mar apr maj jun jul aug sep okt nov dec/;
     @months_2 = qw/januar februar mart april maj jun juli avgust septembar oktobar novembar decembar/;
@@ -654,6 +657,7 @@ sub MonthNumber {
     @months_4 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
     @months_5 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
     @months_6 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
+    @months_7 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
   } elsif( $lang =~ /^it$/ ){
     @months_1 = qw/gen feb mar apr mag giu lug ago set ott nov dic/;
     @months_2 = qw/gennaio febbraio marzo aprile maggio giugno luglio agosto settembre ottobre novembre dicembre/;
@@ -661,6 +665,7 @@ sub MonthNumber {
     @months_4 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
     @months_5 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
     @months_6 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
+    @months_7 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
   } elsif( $lang =~ /^fr$/ ){
     @months_1 = qw/jan fav mar avr mai jui jul aou sep oct nov dec/;
     @months_2 = qw/JANVIER FÉVRIER mars avril mai juin juillet Août septembre octobre novembre DÉCEMBRE/;
@@ -668,6 +673,7 @@ sub MonthNumber {
     @months_4 = qw/1 Février 3 4 5 6 7 8 9 10 11 12/;
     @months_5 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
     @months_6 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
+    @months_7 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
   } elsif( $lang =~ /^ru$/ ){
     @months_1 = qw/jan fav mar aprelja maja jui jul aou
  sep oct nov dec/;
@@ -676,6 +682,7 @@ sub MonthNumber {
     @months_4 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
     @months_5 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
     @months_6 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
+    @months_7 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
   }
 
   my %monthnames = ();
@@ -702,6 +709,10 @@ sub MonthNumber {
 
   for( my $i = 0; $i < scalar(@months_6); $i++ ){
     $monthnames{$months_6[$i]} = $i+1;
+  }
+
+  for( my $i = 0; $i < scalar(@months_7); $i++ ){
+    $monthnames{$months_7[$i]} = $i+1;
   }
 
   my $month = $monthnames{$monthname};

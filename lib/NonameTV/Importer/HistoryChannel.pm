@@ -1,4 +1,4 @@
-package NonameTV::Importer::History;
+package NonameTV::Importer::HistoryChannel;
 
 use strict;
 use warnings;
@@ -50,11 +50,11 @@ sub ImportContentFile {
   my $ds = $self->{datastore};
 
   if( $file =~ /\.zip$/i ){
-    #$self->UnzipArchive( $file, $chd );
+    $self->UnzipArchive( $file, $chd );
   } elsif( $file =~ /\.xls$/i ){
     $self->ImportXLS( $file, $chd );
   } else {
-    error( "History: $xmltvid: Unknown file format: $file" );
+    error( "HistoryChannel: $xmltvid: Unknown file format: $file" );
   }
 
   return;
@@ -73,27 +73,27 @@ sub UnzipArchive {
   # Only process .zip files.
   return if( $file !~ /\.zip$/i );
 
-  progress( "History: $xmltvid: Processing $file" );
+  progress( "HistoryChannel: $xmltvid: Processing $file" );
 
   # Unzip files
-  progress( "History: $xmltvid: Extracting files from zip file $file" );
+  progress( "HistoryChannel: $xmltvid: Extracting files from zip file $file" );
 
   my $dirname = dirname( $file );
   chdir $dirname;
 
   my $zip = Archive::Zip->new();
   unless ( $zip->read( $file ) == AZ_OK ) {
-    error( "History: $xmltvid: Error while reading $file" );
+    error( "HistoryChannel: $xmltvid: Error while reading $file" );
   }
 
   my @members = $zip->memberNames();
   foreach my $member (@members) {
-    progress( "History: $xmltvid: Extracting $member" );
+    progress( "HistoryChannel: $xmltvid: Extracting $member" );
     $zip->extractMemberWithoutPaths( $member );
   }
 
   my $res = $zip->Extract( -quiet );
-  error( "History: $xmltvid: Error $res while extracting from $file" ) if ( $res );
+  error( "HistoryChannel: $xmltvid: Error $res while extracting from $file" ) if ( $res );
 
   return;
 }
@@ -111,7 +111,7 @@ sub ImportXLS {
   # Only process .xls files.
   return if( $file !~ /\.xls$/i );
 
-  progress( "History: $xmltvid: Processing $file" );
+  progress( "HistoryChannel: $xmltvid: Processing $file" );
 
   my %columns = ();
   my $date;
@@ -119,6 +119,11 @@ sub ImportXLS {
 
   my $batch_id = $xmltvid . "_" . $file;
   $ds->StartBatch( $batch_id , $channel_id );
+
+  my $fileyear;
+  if( $file =~ /\s+2\d{3}\s+/ ){
+    ( $fileyear ) = ( $file =~ /\s+(2\d{3})\s+/ );
+  }
 
   my $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
 
@@ -128,7 +133,7 @@ sub ImportXLS {
     my $oWkS = $oBook->{Worksheet}[$iSheet];
 
     next if( $oWkS->{Name} !~ /Croatian/i );
-    progress( "History: $chd->{xmltvid}: Processing worksheet: $oWkS->{Name}" );
+    progress( "HistoryChannel: $chd->{xmltvid}: Processing worksheet: $oWkS->{Name}" );
 
     # browse through rows
     for(my $iR = $oWkS->{MinRow} ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
@@ -148,7 +153,7 @@ sub ImportXLS {
       my $oWkC = $oWkS->{Cells}[$iR][$columns{'DATE'}];
       next if( ! $oWkC );
       next if( ! $oWkC->Value );
-      $date = ParseDate( $oWkC->Value );
+      $date = ParseDate( $fileyear, $oWkC->Value );
       next if( ! $date );
 
       # starttime - column ('START TIME')
@@ -200,13 +205,14 @@ sub ImportXLS {
       $oWkC = $oWkS->{Cells}[$iR][$columns{'Croatian Titles (max 40)'}];
       next if( ! $oWkC );
       my $crotitle = $oWkC->Value if( $oWkC->Value );
+      next if( ! $crotitle );
 
       # croatian description - column ('Croatian description (max 120)')
       $oWkC = $oWkS->{Cells}[$iR][$columns{'Croatian description (max 120)'}];
       next if( ! $oWkC );
       my $crodesc = $oWkC->Value;
 
-      progress("History: $xmltvid: $starttime - $title");
+      progress("HistoryChannel: $xmltvid: $starttime - $title");
 
       my $ce = {
         channel_id   => $channel_id,
@@ -235,7 +241,7 @@ sub ImportXLS {
 
 sub ParseDate
 {
-  my ( $dinfo ) = @_;
+  my ( $fy, $dinfo ) = @_;
 
 #print "$dinfo\n";
 
@@ -245,18 +251,18 @@ sub ParseDate
     ( $month, $day, $year ) = ( $dinfo =~ /(\d+)-(\d+)-(\d+)/ );
   } elsif( $dinfo =~ /\d+-\S+/ ){
     ( $day, $monthname ) = ( $dinfo =~ /(\d+)-(\S+)/ );
-    #$month = MonthNumber( $monthname, "hr" );
-    $month =8;
-    $year = 2009;
+    $month = MonthNumber( $monthname, "hr" );
   }
 
-  return undef if( ! $year);
+  if( ! $year ){
+    if( $fy ){
+      $year = $fy;
+    } else {
+      $year = DateTime->today->year;
+    }
+  }
 
   $year+= 2000 if $year< 100;
-#print "$day\n";
-#print "$month\n";
-#print "$monthname\n";
-#print "$year\n";
 
   my $dt = DateTime->new( year   => $year,
                           month  => $month,

@@ -97,9 +97,9 @@ sub ImportFlatXLS
             $foundcolumns = 1 if( $oWkS->{Cells}[$iR][$iC]->Value =~ /PROGRAMME TITLE\/SLOT NAME/ );
           }
         }
-foreach my $cl (%columns) {
-print "$cl\n";
-}
+#foreach my $cl (%columns) {
+#print "$cl\n";
+#}
         %columns = () if( $foundcolumns eq 0 );
 
         next;
@@ -161,6 +161,22 @@ print "$cl\n";
       next if( ! $oWkC->Value );
       my $episodetitle = $oWkC->Value;
 
+      # Genre id
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'dvb genre id (number) XX (DVBG)'}];
+      my $genreid = $oWkC->Value if( $oWkC and $oWkC->Value );
+
+      # Genre name
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'DVB GENRE NAME (30 chr)  (GENR)'}];
+      my $genrename = $oWkC->Value if( $oWkC and $oWkC->Value );
+
+      # SubGenre id
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'dvb subgenre id (Number)  XX (DVBS)'}];
+      my $subgenreid = $oWkC->Value if( $oWkC and $oWkC->Value );
+
+      # SubGenre name
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'DVB Sub-Genre Name (30 char) (SUBG)'}];
+      my $subgenrename = $oWkC->Value if( $oWkC and $oWkC->Value );
+
       # Rating
       $oWkC = $oWkS->{Cells}[$iR][$columns{'Censorship code (was called dvb parental rating)'}];
       next if( ! $oWkC );
@@ -173,6 +189,14 @@ print "$cl\n";
       next if( ! $oWkC->Value );
       my $synopsis = $oWkC->Value;
 
+      # Production year
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'YEAR (of production) (4 chr) (YEAR)'}];
+      my $productionyear = $oWkC->Value if( $oWkC and $oWkC->Value );
+
+      # Language
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'LANGUAGE'}];
+      my $language = $oWkC->Value if( $oWkC and $oWkC->Value );
+
       progress( "EEntertainmentTV FlatXLS: $chd->{xmltvid}: $time - $title" );
 
       my $ce = {
@@ -184,11 +208,17 @@ print "$cl\n";
       $ce->{schedule_id} = $id if ( $id =~ /\S/ );
       $ce->{subtitle} = $episodetitle if $episodetitle;
       $ce->{description} = $synopsis if $synopsis;
+      $ce->{aspect} = "4:3";
+      $ce->{rating} = $rating if ( $rating =~ /\S/ );
 
-#      if( $genre1 ){
-#        my($program_type, $category ) = $ds->LookupCat( 'EEntertainmentTV', $genre1 );
-#        AddCategory( $ce, $program_type, $category );
-#      }
+      if( $genrename ){
+        my($program_type, $category ) = $ds->LookupCat( 'EEntertainmentTV', $genrename );
+        AddCategory( $ce, $program_type, $category );
+      }
+
+      if( $productionyear and ( $productionyear =~ /(\d\d\d\d)/ ) ){
+        $ce->{production_date} = "$1-01-01";
+      }
 
       $dsh->AddProgramme( $ce );
 

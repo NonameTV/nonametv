@@ -32,9 +32,11 @@ use base 'NonameTV::Importer::BaseFile';
 
 # File types
 use constant {
-  FT_UNKNOWN  => 0,  # unknown
-  FT_FLATXLS  => 1,  # flat xls file
-  FT_GRIDXLS  => 2,  # xls file with grid
+  FT_UNKNOWN     => 0,  # unknown
+  FT_FLATXLS     => 1,  # flat xls file
+  FT_GRIDXLS     => 2,  # xls file with grid
+  FT_AIRSINGLE   => 3,  # flat xls file
+  FT_AIRCOMBINED => 4,  # flat xls file
 };
 
 sub new {
@@ -62,6 +64,10 @@ sub ImportContentFile {
 
   if( $file =~ /\.xml$/i ){
     $self->ImportXML( $file, $chd );
+  } elsif( $file =~ /Fox\s+C\s+i\s+L\s+.*\.xls$/i ){
+    $self->ImportAirCombined( $file, $chd );
+  } elsif( $file =~ /Fox\s+(Crime|Life).*\.xls$/i ){
+    $self->ImportAirSingle( $file, $chd );
   } elsif( $file =~ /\.xls$/i ){
     my $ft = CheckFileFormat( $file );
     if( $ft eq FT_FLATXLS ){
@@ -257,6 +263,197 @@ sub ImportXML
   return;
 }
 
+sub ImportAirCombined
+{
+  my $self = shift;
+  my( $file, $chd ) = @_;
+
+  my $dsh = $self->{datastorehelper};
+  my $ds = $self->{datastore};
+
+  my %columns = ();
+  my $date;
+  my $currdate = "x";
+
+  progress( "FOX AirCombined: $chd->{xmltvid}: Processing flat XLS $file" );
+
+  my $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
+
+  if( not defined( $oBook ) ) {
+    error( "FOX AirCombined: $file: Failed to parse xls" );
+    return;
+  }
+
+  for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
+
+    my $oWkS = $oBook->{Worksheet}[$iSheet];
+
+    if( ( $chd->{xmltvid} =~ /crime/i and $oWkS->{Name} !~ /crime/i )
+      or ( $chd->{xmltvid} =~ /life/i and $oWkS->{Name} !~ /life/i ) ){
+      progress("FOX AirCombined: $chd->{xmltvid}: skipping worksheet named '$oWkS->{Name}'");
+      next;
+    }
+    progress("FOX AirCombined: $chd->{xmltvid}: processing worksheet named '$oWkS->{Name}'");
+
+    for(my $iR = $oWkS->{MinRow} ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
+
+      # check date
+      if( $oWkS->{Cells}[$iR][1] and $oWkS->{Cells}[$iR][2] ){
+        if( $oWkS->{Cells}[$iR][1]->Value =~ /AIRING HOURS FOR/ and isDate( $oWkS->{Cells}[$iR][2]->Value ) ){
+
+          $date = ParseDate( $oWkS->{Cells}[$iR][2]->Value );
+
+          if( $date ne $currdate ) {
+            if( $currdate ne "x" ) {
+              $dsh->EndBatch( 1 );
+            }
+
+            my $batch_id = $chd->{xmltvid} . "_" . $date;
+            $dsh->StartBatch( $batch_id , $chd->{id} );
+            $dsh->StartDate( $date , "06:00" );
+            $currdate = $date;
+
+            progress("FOX AirCombined: $chd->{xmltvid}: Date is: $date");
+          }
+          next;
+        }
+      }
+
+      my $oWkC;
+
+      # Time
+      $oWkC = $oWkS->{Cells}[$iR][1];
+      next if( ! $oWkC );
+      next if( ! $oWkC->Value );
+      my $time = ParseTime( $oWkC->Value );
+      next if( ! $time );
+
+      # ENG Title
+      $oWkC = $oWkS->{Cells}[$iR][2];
+      next if( ! $oWkC );
+      next if( ! $oWkC->Value );
+      my $engtitle = $oWkC->Value;
+      next if( ! $engtitle );
+
+      # CRO Title
+      $oWkC = $oWkS->{Cells}[$iR][3];
+      next if( ! $oWkC );
+      next if( ! $oWkC->Value );
+      my $crotitle = $oWkC->Value;
+      next if( ! $crotitle );
+
+      progress( "FOX AirCombined: $chd->{xmltvid}: $time - $engtitle" );
+
+      my $ce = {
+        channel_id => $chd->{id},
+        title => $crotitle || $engtitle,
+        subtitle => $engtitle || $crotitle,
+        start_time => $time,
+      };
+
+      $dsh->AddProgramme( $ce );
+    }
+
+  }
+
+  $dsh->EndBatch( 1 );
+
+  return;
+}
+
+sub ImportAirSingle
+{
+  my $self = shift;
+  my( $file, $chd ) = @_;
+
+  my $dsh = $self->{datastorehelper};
+  my $ds = $self->{datastore};
+
+  my %columns = ();
+  my $date;
+  my $currdate = "x";
+
+  progress( "FOX AirSingle: $chd->{xmltvid}: Processing flat XLS $file" );
+
+  my $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
+
+  if( not defined( $oBook ) ) {
+    error( "FOX AirSingle: $file: Failed to parse xls" );
+    return;
+  }
+
+  for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
+
+    my $oWkS = $oBook->{Worksheet}[$iSheet];
+
+    progress("FOX AirSingle: $chd->{xmltvid}: processing worksheet named '$oWkS->{Name}'");
+
+    for(my $iR = $oWkS->{MinRow} ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
+
+      # check date
+      if( $oWkS->{Cells}[$iR][1] and $oWkS->{Cells}[$iR][3] ){
+        if( $oWkS->{Cells}[$iR][1]->Value =~ /On Date:/ and isDate( $oWkS->{Cells}[$iR][3]->Value ) ){
+
+          $date = ParseDate( $oWkS->{Cells}[$iR][3]->Value );
+
+          if( $date ne $currdate ) {
+            if( $currdate ne "x" ) {
+              $dsh->EndBatch( 1 );
+            }
+
+            my $batch_id = $chd->{xmltvid} . "_" . $date;
+            $dsh->StartBatch( $batch_id , $chd->{id} );
+            $dsh->StartDate( $date , "06:00" );
+            $currdate = $date;
+
+            progress("FOX AirSingle: $chd->{xmltvid}: Date is: $date");
+          }
+          next;
+        }
+      }
+
+      my $oWkC;
+
+      # Time
+      $oWkC = $oWkS->{Cells}[$iR][1];
+      next if( ! $oWkC );
+      next if( ! $oWkC->Value );
+      my $time = ParseTime( $oWkC->Value );
+      next if( ! $time );
+
+      # ENG Title
+      $oWkC = $oWkS->{Cells}[$iR][3];
+      next if( ! $oWkC );
+      next if( ! $oWkC->Value );
+      my $engtitle = $oWkC->Value;
+      next if( ! $engtitle );
+
+      # CRO Title
+      $oWkC = $oWkS->{Cells}[$iR][4];
+      next if( ! $oWkC );
+      next if( ! $oWkC->Value );
+      my $crotitle = $oWkC->Value;
+      next if( ! $crotitle );
+
+      progress( "FOX AirSingle: $chd->{xmltvid}: $time - $engtitle" );
+
+      my $ce = {
+        channel_id => $chd->{id},
+        title => $crotitle || $engtitle,
+        subtitle => $engtitle || $crotitle,
+        start_time => $time,
+      };
+
+      $dsh->AddProgramme( $ce );
+    }
+
+  }
+
+  $dsh->EndBatch( 1 );
+
+  return;
+}
+
 sub ImportFlatXLS
 {
   my $self = shift;
@@ -437,7 +634,6 @@ sub ImportGridXLS
   for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
 
     my $oWkS = $oBook->{Worksheet}[$iSheet];
-print "iSheet $iSheet\n";
     progress("FOX GridXLS: $chd->{xmltvid}: processing worksheet named '$oWkS->{Name}'");
 
     # browse through columns
@@ -523,10 +719,16 @@ print "iSheet $iSheet\n";
 sub isDate {
   my ( $text ) = @_;
 
-#print ">$text<\n";
+#print "isDate >$text<\n";
 
   # format 'Friday\n26.06.'
   if( $text =~ /^(sunday|monday|tuesday|wednesday|thursday|friday|saturday)\n\d+\.\d+\.$/i ){
+    return 1;
+
+  } elsif( $text =~ /^\d+-\d+-\d+$/i ){
+    return 1;
+
+  } elsif( $text =~ /^\d+\.\d+\.\d+\.$/i ){
     return 1;
   }
 
@@ -536,18 +738,43 @@ sub isDate {
 sub ParseDate {
   my ( $text ) = @_;
 
-#print ">$text<\n";
+#print "ParseDate >$text<\n";
 
-  my( $dayname, $day, $month );
+  my( $dayname, $day, $month, $year );
 
   # format 'Friday\n26.06.'
   if( $text =~ /^(sunday|monday|tuesday|wednesday|thursday|friday|saturday)\n\d+\.\d+\.$/i ){
     ( $dayname, $day, $month ) = ( $text =~ /^(\S+)\n(\d+)\.(\d+)\.$/i );
+    $year = DateTime->today->year();
+
+  } elsif( $text =~ /^\d+-\d+-\d+$/i ){
+    ( $month, $day, $year ) = ( $text =~ /^(\d+)-(\d+)-(\d+)$/i );
+
+  } elsif( $text =~ /^\d+\.\d+\.\d+\.$/i ){
+    ( $day, $month, $year ) = ( $text =~ /^(\d+)\.(\d+)\.(\d+)\.$/i );
   }
 
-  my $year = DateTime->today->year();
+  $year += 2000 if $year lt 100;
 
   return sprintf( '%d-%02d-%02d', $year, $month, $day );
+}
+
+sub ParseTime {
+  my ( $text ) = @_;
+
+#print ">$text<\n";
+
+  my( $hour, $min, $sec );
+
+  if( $text =~/^\d+:\d+$/ ){
+    ( $hour, $min ) = ( $text =~/^(\d+):(\d+)$/ );
+  } elsif( $text =~/^\d+:\d+:\d+$/ ){
+    ( $hour, $min, $sec ) = ( $text =~/^(\d+):(\d+):(\d+)$/ );
+  } else {
+    return undef;
+  }
+
+  return sprintf( '%02d:%02d', $hour, $min );
 }
 
 sub ExtractDate {

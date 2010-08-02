@@ -19,6 +19,7 @@ use Spreadsheet::ParseExcel;
 use NonameTV qw/norm AddCategory MonthNumber/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/progress error/;
+use NonameTV::Config qw/ReadConfig/;
 
 use NonameTV::Importer::BaseFile;
 
@@ -30,10 +31,40 @@ sub new {
   my $self  = $class->SUPER::new( @_ );
   bless ($self, $class);
 
+  defined( $self->{UrlRoot} ) or die "You must specify UrlRoot";
+
+  $self->{MaxDays} = 10 unless defined $self->{MaxDays};
+
+  my $conf = ReadConfig();
+  $self->{FileStore} = $conf->{FileStore};
+
   my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
   $self->{datastorehelper} = $dsh;
 
   return $self;
+}
+
+sub Object2Url {
+  my $self = shift;
+  my( $objectname, $chd ) = @_;
+
+  my( $date ) = ($objectname =~ /_(.*)/);
+print "$date\n";
+
+  my $url = $self->{UrlRoot} . '?todo=search&r1=XML'
+    . '&firstdate=' . $date
+    . '&lastdate=' . $date
+    . '&channel=' . $chd->{grabber_info};
+
+  return( $url, undef );
+}
+
+sub ContentExtension {
+  return 'xml';
+}
+
+sub FilteredExtension {
+  return 'xml';
 }
 
 sub ImportContentFile {
@@ -261,6 +292,39 @@ sub ParseDate {
   $year += 2000 if $year < 100;
 
   return sprintf( '%d-%02d-%02d', $year, $month, $day );
+}
+
+sub UpdateFiles {
+  my( $self ) = @_;
+
+  # the url to fetch data from is in the format
+  # ftp://press@194.29.226.161/01-EPG/01-DVL_Pan_Europe/01-ORI/2010/09 September/PlaylistSave_20100925_TOP_ORI.xls
+  # UrlRoot = ftp://press@194.29.226.161/01-EPG/01-DVL_Pan_Europe/01-ORI/
+  # GrabberInfo = <empty>
+
+  foreach my $data ( @{$self->ListChannels()} ) {
+
+    my $xmltvid = $data->{xmltvid};
+
+    my $today = DateTime->today;
+
+    # do it for MaxDays in advance
+    for(my $day=0; $day <= $self->{MaxDays} ; $day++) {
+
+      my $dt = $today->clone->add( days => $day );
+
+      my $filename = sprintf( "PlaylistSave_%s%s%s_TOP_ORI.xls", $dt->strftime( '%Y' ), $dt->strftime( '%m' ), $dt->strftime( '%d' ) );
+      my $url = sprintf( "%s/%s/%s %s/%s", $self->{UrlRoot}, $dt->strftime( '%Y' ), $dt->strftime( '%m' ), $dt->strftime( '%B' ), $filename );
+      progress("DaVinciLearning: $xmltvid: Fetching xls file from $url");
+      url_get( $url, $self->{FileStore} . '/' . $xmltvid . '/' . $filename );
+    }
+  }
+}
+
+sub url_get {
+  my( $url, $file ) = @_;
+
+  qx[curl -s -S -z "$file" -o "$file" "$url"];
 }
 
 1;

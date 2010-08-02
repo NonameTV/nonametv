@@ -165,9 +165,9 @@ sub ImportContent
       $ce->{program_type} = 'series';
     }
 
-    my($program_type, $category ) = $ds->LookupCat( "HRT", $genre );
+    #my($program_type, $category ) = $ds->LookupCat( "HRT", $genre );
 
-    AddCategory( $ce, $program_type, $category );
+    #AddCategory( $ce, $program_type, $category );
 
     if( defined( $production_year ) and ($production_year =~ /(\d\d\d\d)/) )
     {

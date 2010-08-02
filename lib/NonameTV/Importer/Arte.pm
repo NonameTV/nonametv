@@ -48,6 +48,7 @@ sub ImportContentFile
   return if( $file !~ /\.doc$/i );
 
   my $doc = File2Xml( $file );
+print "$doc\n";
 
   if( not defined( $doc ) )
   {

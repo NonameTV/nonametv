@@ -5,234 +5,227 @@ use warnings;
 
 =pod
 
-Importer for data from KapNet (www.kupitv.hr) channel. 
+Importer for data from KapNet. 
+One file per channel and 4-day period downloaded from their site.
+The downloaded file is in xml-format.
 
 Features:
 
 =cut
 
-use POSIX qw/strftime/;
 use DateTime;
-use Spreadsheet::ParseExcel;
-use DateTime::Format::Excel;
+use XML::LibXML;
+use Encode qw/encode decode/;
 
 use NonameTV qw/MyGet norm AddCategory/;
-use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/progress error/;
-use NonameTV::Config qw/ReadConfig/;
 
-use NonameTV::Importer::BaseFile;
+use NonameTV::Importer::BaseOne;
 
-use base 'NonameTV::Importer::BaseFile';
+use base 'NonameTV::Importer::BaseOne';
 
 sub new {
-  my $proto = shift;
-  my $class = ref($proto) || $proto;
-  my $self  = $class->SUPER::new( @_ );
-  bless ($self, $class);
+    my $proto = shift;
+    my $class = ref($proto) || $proto;
+    my $self  = $class->SUPER::new( @_ );
+    bless ($self, $class);
 
-  my $conf = ReadConfig();
+    defined( $self->{UrlRoot} ) or die "You must specify UrlRoot";
 
-  $self->{FileStore} = $conf->{FileStore};
-
-  my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
-  $self->{datastorehelper} = $dsh;
-
-  return $self;
+    return $self;
 }
 
-sub ImportContentFile
+sub ImportContent
 {
   my $self = shift;
-  my( $file, $chd ) = @_;
 
-  $self->{fileerror} = 0;
+  my( $batch_id, $cref, $chd ) = @_;
 
-  my $channel_id = $chd->{id};
-  my $channel_xmltvid = $chd->{xmltvid};
-  my $dsh = $self->{datastorehelper};
   my $ds = $self->{datastore};
+  $ds->{SILENCE_END_START_OVERLAP}=1;
 
-  if( $file =~ /\.xls$/i ){
-    $self->ImportXLS( $file, $chd );
+  my $xml = XML::LibXML->new;
+  my $doc;
+  eval { $doc = $xml->parse_string($$cref); };
+  if( $@ ne "" )
+  {
+    error( "$batch_id: Failed to parse $@" );
+    return 0;
   }
-
-  return;
-}
-
-sub ImportXLS
-{
-  my $self = shift;
-  my( $file, $chd ) = @_;
-
-  my $dsh = $self->{datastorehelper};
-  my $ds = $self->{datastore};
-
-  my %columns = ();
-  my $date;
-  my $currdate = "x";
-
-  progress( "KapNet: $chd->{xmltvid}: Processing XLS $file" );
-
-  my( $oBook, $oWkS, $oWkC );
-  $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
-
-  if( not defined( $oBook ) ) {
-    error( "KapNet: $file: Failed to parse xls" );
-    return;
-  }
-
-  if( not $oBook->{SheetCount} ){
-    error( "KapNet: $file: No worksheets found in file" );
-    return;
-  }
-
-  for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
-
-    $oWkS = $oBook->{Worksheet}[$iSheet];
-    if( $oWkS->{Name} =~ /AM(\s+|\/)PM/ ){
-      progress("KapNet: $chd->{xmltvid}: Skipping worksheet named '$oWkS->{Name}'");
+  
+  # Find all "programme"-entries.
+  my $ns = $doc->find( "//programme" );
+  
+  foreach my $sc ($ns->get_nodelist)
+  {
+    
+    #
+    # start time
+    #
+    my $start = $self->create_dt( $sc->findvalue( './@start' ) );
+    if( not defined $start )
+    {
+      error( "$batch_id: Invalid starttime '" . $sc->findvalue( './@start' ) . "'. Skipping." );
       next;
     }
 
-    progress("KapNet: $chd->{xmltvid}: Processing worksheet named '$oWkS->{Name}'");
+    #
+    # end time
+    #
+    my $end = $self->create_dt( $sc->findvalue( './@stop' ) );
+    if( not defined $end )
+    {
+      error( "$batch_id: Invalid endtime '" . $sc->findvalue( './@stop' ) . "'. Skipping." );
+      next;
+    }
+    
+    #
+    # title, subtitle
+    #
+    my $title;
+#    eval{ $title = decode( "utf-8", $sc->getElementsByTagName('title') ); };
+#    if( $@ ne "" ){
+#      error( "Failed to decode title $@" );
+#    }
+    $title = $sc->getElementsByTagName('title');
+    my $org_title = $sc->getElementsByTagName('sub-title');
+    my $subtitle = $sc->getElementsByTagName('sub-title');
+    
+    #
+    # description
+    #
+    my $desc  = $sc->getElementsByTagName('desc');
+    
+    #
+    # genre
+    #
+    my $genre = norm($sc->getElementsByTagName( 'category' ));
 
-    $date = ParseDate( $oWkS->{Name} );
-    next if( ! $date );
+    #
+    # url
+    #
+    my $url = $sc->getElementsByTagName( 'url' );
 
-    if( $date ne $currdate ) {
+    #
+    # production year
+    #
+    my $production_year = $sc->getElementsByTagName( 'date' );
 
-      if( $currdate ne "x" ) {
-        $dsh->EndBatch( 1 );
+    #
+    # episode number
+    #
+    my $episode = undef;
+    if( $sc->getElementsByTagName( 'episode-num' ) ){
+      my $ep_nr = int( $sc->getElementsByTagName( 'episode-num' ) );
+      my $ep_se = 0;
+      if( ($ep_nr > 0) and ($ep_se > 0) )
+      {
+        $episode = sprintf( "%d . %d .", $ep_se-1, $ep_nr-1 );
       }
-
-      my $batch_id = $chd->{xmltvid} . "_" . $date;
-      $dsh->StartBatch( $batch_id , $chd->{id} );
-      $dsh->StartDate( $date , "00:00" );
-      $currdate = $date;
-
-      progress("KapNet: $chd->{xmltvid}: Date is: $date");
+      elsif( $ep_nr > 0 )
+      {
+        $episode = sprintf( ". %d .", $ep_nr-1 );
+      }
     }
 
-    # read the rows with data
-    for(my $iR = $oWkS->{MinRow} ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
+    # The director and actor info are children of 'credits'
+    my $directors = $sc->getElementsByTagName( 'director' );
+    my $actors = $sc->getElementsByTagName( 'actor' );
+    my $writers = $sc->getElementsByTagName( 'writer' );
+    my $adapters = $sc->getElementsByTagName( 'adapter' );
+    my $producers = $sc->getElementsByTagName( 'producer' );
+    my $presenters = $sc->getElementsByTagName( 'presenter' );
+    my $commentators = $sc->getElementsByTagName( 'commentator' );
+    my $guests = $sc->getElementsByTagName( 'guest' );
 
-      if( not defined $columns{'TIME'} ){
+    progress("KapNet: $chd->{xmltvid}: $start - $title");
 
-        # the column names are stored in the 1st or 2nd row
-        # so read them and store their column positions
-        # for further findvalue() calls
+    my $ce = {
+      channel_id   => $chd->{id},
+      title        => norm($title) || norm($org_title),
+      start_time   => $start->ymd("-") . " " . $start->hms(":"),
+      end_time     => $end->ymd("-") . " " . $end->hms(":"),
+    };
 
-        for(my $iC = $oWkS->{MinCol} ; defined $oWkS->{MaxCol} && $iC <= $oWkS->{MaxCol} ; $iC++) {
+#    $ce->{subtitle} = $subtitle if $subtitle;
+#    $ce->{description} = $desc if $desc;
+#    #$ce->{#aspect} = $? "16:9" : "4:3", 
+#    $ce->{directors} = $directors if $directors;
+#    $ce->{actors} = $actors if $actors;
+#    $ce->{writers} = $writers if $writers;
+#    $ce->{adapters} = $adapters if $adapters;
+#    $ce->{producers} = $producers if $producers;
+#    $ce->{presenters} = $presenters if $presenters;
+#    $ce->{commentators} = $commentators if $commentators;
+#    $ce->{guests} = $guests if $guests;
+#    $ce->{url} = $url if $url;
 
-          if( $oWkS->{Cells}[$iR][$iC] ){
+    if( defined( $episode ) and ($episode =~ /\S/) )
+    {
+      $ce->{episode} = norm($episode);
+      $ce->{program_type} = 'series';
+    }
 
-            $columns{$oWkS->{Cells}[$iR][$iC]->Value} = $iC;
+    if( $genre ){
+      #my($program_type, $category ) = $ds->LookupCat( "KapNet", $genre );
+      #AddCategory( $ce, $program_type, $category );
+    }
 
-            # other possible names of the columns
-            $columns{'TIME'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Satnica$/ );
-            $columns{'TITLE'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Naziv TV sadr/ );
-            $columns{'DESCRIPTION'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Kratak opis/ );
+    if( defined( $production_year ) and ($production_year =~ /(\d\d\d\d)/) )
+    {
+      $ce->{production_date} = "$1-01-01";
+    }
 
-            next;
-          }
-        }
-#foreach my $cl (%columns) {
-#print "$cl\n";
-#}
-      }
-      
-      # start time
-      $oWkC = $oWkS->{Cells}[$iR][$columns{'TIME'}];
-      next if( ! $oWkC );
-      next if( ! $oWkC->Value );
-
-      my $time = ParseTime( $oWkC->Value );
-      if( not defined( $time ) ) {
-        error( "Invalid start-time '$date' '" . $oWkC->Value . "'. Skipping." );
-        next;
-      }
-
-      # Title
-      $oWkC = $oWkS->{Cells}[$iR][$columns{'TITLE'}];
-      next if( ! $oWkC );
-      next if( ! $oWkC->Value );
-      my $title = $oWkC->Value;
-      next if( ! $title );
-
-      # Description
-      my $description;
-      if( $columns{'DESCRIPTION'} ){
-        $oWkC = $oWkS->{Cells}[$iR][$columns{'DESCRIPTION'}];
-        $description = $oWkC->Value if ( $oWkC and $oWkC->Value );
-      }
-
-      progress( "KapNet: $chd->{xmltvid}: $time - $title" );
-
-      my $ce = {
-        channel_id => $chd->{id},
-        title => $title,
-        start_time => $time,
-      };
-
-      $ce->{description} = $description if $description;
-
-      $dsh->AddProgramme( $ce );
-
-    } # next row
-
-    %columns = ();
-
-  } # next sheet
-
-  $dsh->EndBatch( 1 );
-
-  return;
+    $ds->AddProgramme( $ce );
+  }
+  
+  # Success
+  return 1;
 }
 
-sub ParseDate
+sub create_dt
 {
-  my( $text ) = @_;
+  my $self = shift;
+  my( $str ) = @_;
+  
+  my $year = substr( $str , 0 , 4 );
+  my $month = substr( $str , 4 , 2 );
+  my $day = substr( $str , 6 , 2 );
+  my $hour = substr( $str , 8 , 2 );
+  my $minute = substr( $str , 10 , 2 );
+  my $second = substr( $str , 12 , 2 );
+  my $offset = substr( $str , 15 , 5 );
 
-#print "DATE >$text<\n";
-
-  my( $day, $month, $year );
-
-  if( $text =~ /^\d{5}$/ ){
-    my $dt = DateTime::Format::Excel->parse_datetime( $text );
-    $year = $dt->year;
-    $month = $dt->month;
-    $day = $dt->day;
-  } elsif( $text =~ /^\d+\.\d+\.\d+\.$/ ){ # format '18.12.2009.'
-    ( $day, $month, $year ) = ( $text =~ /^(\d+)\.(\d+)\.(\d+)\.$/ );
-  } else {
+  if( not defined $year )
+  {
     return undef;
   }
-
-  return sprintf( "%04d-%02d-%02d", $year, $month, $day );
+  
+  my $dt = DateTime->new( year   => $year,
+                          month  => $month,
+                          day    => $day,
+                          hour   => $hour,
+                          minute => $minute,
+                          second => $second,
+                          time_zone => 'Europe/Zagreb',
+                          );
+  
+  $dt->set_time_zone( "UTC" );
+  
+  return $dt;
 }
 
-sub ParseTime
+sub FetchDataFromSite
 {
-  my( $text ) = @_;
+  my $self = shift;
+  my( $batch_id, $data ) = @_;
 
-#print "TIME >$text<\n";
+  my $url = $self->{UrlRoot};
 
-  my( $hour, $min, $sec );
+  progress("KapNet: Fetching data from: $url" );
 
-  if( $text =~ /^\d+$/ ){ # Excel time
-    my $dt = DateTime::Format::Excel->parse_datetime( $text );
-    $hour = $dt->hour;
-    $min = $dt->min;
-  } elsif( $text =~ /^\d+:\d+$/ ){
-    ( $hour, $min ) = ( $text =~ /^(\d+):(\d+)$/ );
-  } elsif( $text =~ /^\d{2}:\d{2}:\d{2}:\d{2}$/ ){
-    ( $hour, $min ) = ( $text =~ /^(\d{2}):(\d{2}):\d{2}:\d{2}$/ );
-  } else {
-    return undef;
-  }
-
-  return sprintf( "%02d:%02d", $hour, $min );
+  my( $content, $code ) = MyGet( $url );
+  return( $content, $code );
 }
 
 1;

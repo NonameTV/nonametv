@@ -58,6 +58,7 @@ sub ImportFull
   
   # Find all div-entries.
   my $ns = $doc->find( "//div" );
+print "$doc\n==================================\n";
   
   if( $ns->size() == 0 )
   {
@@ -86,15 +87,16 @@ sub ImportFull
   
   foreach my $div ($ns->get_nodelist)
   {
+
     # Ignore English titles in National Geographic.
     next if $div->findvalue( '@name' ) =~ /title in english/i;
 
     my( $text ) = norm( $div->findvalue( './/text()' ) );
     next if $text eq "";
 
-    my $type;
+print "$text\n";
 
-#print "$text\n";
+    my $type;
 
     if( isDate( $text ) ){
 
@@ -226,7 +228,7 @@ sub ImportFull
 sub isDate {
   my ( $text ) = @_;
 
-#print "isDate: >$text<\n";
+print "isDate: >$text<\n";
 
   # format 'Samstag, 21.11.2009'
   if( $text =~ /^(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag),\s+\d+\.\d+\.\d+$/i ){
