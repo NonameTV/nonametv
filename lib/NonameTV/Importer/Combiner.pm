@@ -323,7 +323,7 @@ use NonameTV qw/MyGet ParseXmltv/;
 
 use NonameTV::Importer::BaseDaily;
 
-use NonameTV::Log qw/progress error/;
+use NonameTV::Log qw/d progress error/;
 
 use NonameTV::Importer;
 
@@ -521,7 +521,7 @@ sub BuildDay
       delete $e2{start_dt};
       $e2{end_time} = $e2{stop_dt}->ymd('-') . " " . $e2{stop_dt}->hms(':');
       delete $e2{stop_dt};
-      progress ("match $e2{title} at $e2{start_time} or " . $pspan->min);
+      d ("match $e2{title} at $e2{start_time} or " . $pspan->min);
 
       $e2{channel_id} = $chd->{id};
 

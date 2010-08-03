@@ -21,7 +21,7 @@ use XML::LibXML;
 
 use NonameTV qw/AddCategory MyGet norm ParseXml/;
 use NonameTV::DataStore::Helper;
-use NonameTV::Log qw/p progress w f/;
+use NonameTV::Log qw/d p progress w f/;
 
 use NonameTV::Importer::BaseDaily;
 
@@ -426,7 +426,7 @@ sub parse_subtitle
   } elsif (($subtitle =~ m|^\d+\. |) && ($sce->{title} =~ m|^Die wunderbare Reise des kleinen Nils Holgersson mit den Wildgänsen$|)) {
     $subtitle =~ s|^\d+\. ||;
   } else {
-    progress ("unhandled subtitle: $subtitle");
+    d ("unhandled subtitle: $subtitle");
   }
 
   return $subtitle;

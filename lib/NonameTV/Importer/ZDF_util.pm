@@ -15,7 +15,7 @@ use XML::LibXML;
 use Switch;
 
 use NonameTV qw/ParseXml norm AddCategory/;
-use NonameTV::Log qw/progress w error/;
+use NonameTV::Log qw/d progress w error/;
 
 BEGIN {
     use Exporter   ();
@@ -142,7 +142,7 @@ sub ParseData
       # attributes
       my $attribute = $as->getElementsByTagName( 'attribute' );
 
-      progress("$chd->{xmltvid}: $starttime - $title");
+      d ("$chd->{xmltvid}: $starttime - $title");
 
       my %ce = (
         start_time  => $starttime->ymd("-") . " " . $starttime->hms(":"),
