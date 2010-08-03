@@ -746,7 +746,7 @@ sub ExportChannelList
 
   my $result = "";
 
-  my $odoc = XML::LibXML::Document->new( "1.0", "iso-8859-1" );
+  my $odoc = XML::LibXML::Document->new( "1.0", $self->{Encoding} );
   my $root = $odoc->createElement('tv');
   $root->setAttribute( 'generator-info-name', 'nonametv' );
   $odoc->setDocumentElement($root);
@@ -764,6 +764,7 @@ sub ExportChannelList
     my $ch = $odoc->createElement( 'channel' );
     $ch->setAttribute( id => $data->{xmltvid} );
     my $dn = $odoc->createElement( 'display-name' );
+    # FIXME why not $data->{sched_lang}?
     $dn->setAttribute( 'lang', $self->{Language} );
     $dn->appendText( $data->{display_name} ); 
     $ch->appendChild( $dn );
@@ -792,9 +793,10 @@ sub ExportChannelList
   {
     $outfile = "$self->{Root}channels.xml";
   }
-  open( my $fh, '>:encoding(' . $self->{Encoding} . ')', $outfile )
+  open( my $fh, '>', $outfile )
     or die( "Xmltv: cannot write to $outfile" );
 
+  binmode( $fh );
   $odoc->toFH( $fh, 1 );
   close( $fh );
 
