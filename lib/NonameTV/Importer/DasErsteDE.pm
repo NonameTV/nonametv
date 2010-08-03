@@ -16,6 +16,7 @@ use utf8;
 use warnings;
 
 use DateTime;
+use Encode qw/from_to/;
 use Switch;
 use XML::LibXML;
 
@@ -95,6 +96,10 @@ sub FilterContent {
 
   $$cref =~ s|<Pressetext>([^<]*)</Pressetext>|<Pressetext xml:space="preserve">$1</Pressetext>|g;
   $$cref =~ s|&#13;&#10;|\n|g;
+
+  # header says utf-8 but it's really windows-1252 in entities
+  $$cref =~ s|&#(\d+);|chr($1)|eg;
+  from_to ($$cref, "windows-1252", "utf-8");
 
   my $doc = ParseXml( $cref );
  
@@ -185,11 +190,15 @@ sub ImportContent {
     };
 
     my $desc  = $pgm->findvalue( 'Pressetext' );
+    # cleanup some characters
+    # ellipsis
+    $desc =~ s|…|...|g;
+    # quotation mark
+    $desc =~ s|„|\"|g;
+    # turn space before elipsis into non-breaking space (german usage)
+    $desc =~ s| \.\.\.$| ...|;
     # strip running time
     $desc =~ s|^Laufzeit:\s+\d+ Min[^<]*\n\n||;
-    $desc =~ s||\"|g;
-    # replace 
-    $desc =~ s||...|g;
     # keep the short description only
     my @descs = split (/\n\Q*\E\n/, $desc);
     $desc = $descs[0];
