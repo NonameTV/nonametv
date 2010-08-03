@@ -203,7 +203,7 @@ sub ImportContent {
           $desc = trimX ($desc);
           if ($desc) {
             if ($desc =~ /^show \d+:/) {
-              my ($episode) = ($desc =~ /^show (\d+): /);
+              my ($episode) = ($desc =~ /^show (\d+):/);
               $ce->{episode} = ' . ' . ($episode-1) . ' . ';
               $desc =~ s/^show \d+: //;
             } elsif ($desc =~ /^#\d+$/) {
