@@ -117,7 +117,7 @@ print "$text\n";
           my $batch_id = $chd->{xmltvid} . "_" . $date;
           $dsh->StartBatch( $batch_id , $chd->{id} );
         }
-        $dsh->StartDate( $date , "05:00" );
+        $dsh->StartDate( $date , "03:00" );
         $currdate = $date;
 
         progress("Arte: $chd->{xmltvid}: Date is: $date");
