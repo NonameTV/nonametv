@@ -136,6 +136,13 @@ sub ParseData
         next;
       }
 
+      # FIXME bugged day switchover on ZDFinfo files
+      # the first starttime >= midnight is one day early
+      my $fixedstart = $starttime->clone->add (days => 1);
+      if (DateTime->compare ($fixedstart, $endtime) <= 0) {
+        $starttime->add (days => 1);
+      }
+
       # duration
       my $dauermin = $as->getElementsByTagName( 'dauermin' );
 
