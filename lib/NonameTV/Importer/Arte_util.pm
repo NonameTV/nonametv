@@ -65,7 +65,7 @@ sub ImportFull
     return;
   }
 
-  if ($filename =~ m/.*\.doc/i) {
+  if ($filename =~ m/\.doc$/i) {
     progress( "Arte: $chd->{xmltvid}: Processing $filename" );
     $have_batch = 0;
   } else {
