@@ -43,12 +43,9 @@ sub ImportContentFile
   my $self = shift;
   my( $file, $chd ) = @_;
 
-#return if( $chd->{xmltvid} !~ /disceur\.tv\.gonix\.net/ );
-
   return if( $file !~ /\.doc$/i );
 
   my $doc = File2Xml( $file );
-print "$doc\n";
 
   if( not defined( $doc ) )
   {

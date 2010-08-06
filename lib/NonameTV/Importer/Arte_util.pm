@@ -58,7 +58,6 @@ sub ImportFull
   
   # Find all div-entries.
   my $ns = $doc->find( "//div" );
-print "$doc\n==================================\n";
   
   if( $ns->size() == 0 )
   {
@@ -66,7 +65,7 @@ print "$doc\n==================================\n";
     return;
   }
 
-  if ($filename =~ m/.*\.doc/) {
+  if ($filename =~ m/.*\.doc/i) {
     progress( "Arte: $chd->{xmltvid}: Processing $filename" );
     $have_batch = 0;
   } else {
@@ -93,8 +92,6 @@ print "$doc\n==================================\n";
 
     my( $text ) = norm( $div->findvalue( './/text()' ) );
     next if $text eq "";
-
-print "$text\n";
 
     my $type;
 
@@ -228,8 +225,6 @@ print "$text\n";
 sub isDate {
   my ( $text ) = @_;
 
-print "isDate: >$text<\n";
-
   # format 'Samstag, 21.11.2009'
   if( $text =~ /^(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag),\s+\d+\.\d+\.\d+$/i ){
     return 1;
@@ -248,11 +243,6 @@ sub ParseDate
   if( $text =~ /^(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag),\s+\d+\.\d+\.\d+$/i ){
     ( $weekday, $day, $month, $year ) = ( $text =~ /^(\S+),\s+(\d+)\.(\d+)\.(\d+)$/ );
   }
-
-#print "WDAY: >$weekday<\n";
-#print "DAY : >$day<\n";
-#print "MON : >$month<\n";
-#print "YEAR: >$year<\n";
 
   return sprintf( '%d-%02d-%02d', $year, $month, $day );
 }
@@ -292,28 +282,21 @@ sub ParseExtraInfo
 {
   my( $text ) = @_;
 
-#print "ParseExtraInfo >$text<\n";
-
   my( $subtitle, $genre, $directors, $actors, $aspect, $stereo );
 
   my @lines = split( /\n/, $text );
   foreach my $line ( @lines ){
-#print "LINE $line\n";
-
     if( $line =~ /^\[\d\d:\d\d\]\s+\S+,\s*Wiederholung/i ){
       ( $genre ) = ($line =~ /^\[\d\d:\d\d\]\s+(\S+),\s*Wiederholung/i );
-#print "GENRE $genre\n";
     }
 
     if( $line =~ /^Regie:\s*.*$/i ){
       ( $directors ) = ( $line =~ /^Regie:\s*(.*)$/i );
       $directors =~ s/;.*$//;
-#print "DIRECTORS $directors\n";
     }
 
     if( $line =~ /^Mit:\s*.*$/i ){
       ( $actors ) = ( $line =~ /^Mit:\s*(.*)$/i );
-#print "ACTORS $actors\n";
     }
 
     $aspect = "4:3";
