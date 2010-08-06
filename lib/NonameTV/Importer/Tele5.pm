@@ -16,8 +16,6 @@ Features:
 
 =cut
 
-use utf8;
-
 use DateTime;
 use RTF::Tokenizer;
 
@@ -97,6 +95,10 @@ sub ImportRTF {
   my $gotbatch;
   my $laststart;
 
+  my $copyrightstring = "\n" . chr(169) . ' by Tele5' . chr(174);
+  from_to ($copyrightstring, "windows-1252", "utf8");
+  
+
   while( my ( $type, $arg, $param ) = $tokenizer->get_token( ) ){
 
     last if $type eq 'eof';
@@ -133,7 +135,7 @@ sub ImportRTF {
 #        d "DAY: $text";
       } else { 
         d "TEXT: $text";
-        from_to ($text, "iso-8859-1", "utf8");
+        from_to ($text, "windows-1252", "utf8");
 
         # start_time and title
         my ($hour, $minute, $title) = ($text =~ m |^\s*(\d{2}):(\d{2})\s+(.*)$|m);
@@ -192,7 +194,7 @@ sub ImportRTF {
         if ($self->{KeepDesc}) {
           my ($desc) = ($text =~ m|^.*\n\n(.*?)$|s);
           if ($desc) {
-            $ce->{description} = $desc . "\n© by Tele5®";
+            $ce->{description} = $desc . $copyrightstring;
           }
         }
 
