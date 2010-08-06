@@ -189,7 +189,7 @@ sub ImportRTF {
         if ($self->{KeepDesc}) {
           my ($desc) = ($text =~ m|^.*\n\n(.*?)$|s);
           if ($desc) {
-            $ce->{description} = $desc . "\n&copy; by Tele5&reg;";
+            $ce->{description} = $desc . "\n© by Tele5®";
           }
         }
 
