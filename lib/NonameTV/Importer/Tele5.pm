@@ -22,7 +22,7 @@ use DateTime;
 use RTF::Tokenizer;
 
 use NonameTV::DataStore::Helper;
-use NonameTV::Log qw/d progress error/;
+use NonameTV::Log qw/d progress error f/;
 use NonameTV qw/AddCategory MonthNumber norm/;
 
 use NonameTV::Importer::BaseFile;
@@ -137,6 +137,9 @@ sub ImportRTF {
 
         # start_time and title
         my ($hour, $minute, $title) = ($text =~ m |^\s*(\d{2}):(\d{2})\s+(.*)$|m);
+        if (!defined ($hour)) {
+          f ('program without start time');
+        }
         my $starttime = $currdate->clone();
         $starttime->set_hour ($hour);
         $starttime->set_minute ($minute);
