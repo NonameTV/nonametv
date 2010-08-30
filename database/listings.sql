@@ -112,7 +112,7 @@ CREATE TABLE `admins` (
   `username` varchar(32) NOT NULL,
   `password` varchar(32) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-INSERT INTO `admins` (username, password) VALUES (`nonametv`, ``);
+INSERT INTO `admins` (username, password) VALUES ('nonametv', '');
 
 DROP TABLE IF EXISTS `epgservers`;
 CREATE TABLE `epgservers` (
