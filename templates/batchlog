@@ -24,6 +24,14 @@
     </div>
   [% END %]
 
+  <h1>Files</h1>
+  [% FOREACH error = files %]
+    <div>
+    <h2>[% error.filename %]</h2>
+    <pre>[% error.message %]</pre>
+    </div>
+  [% END %]
+
 </body>
 </html>
 

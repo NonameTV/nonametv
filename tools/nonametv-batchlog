@@ -22,6 +22,7 @@ my $ds = NonameTV::DataStore->new( $conf->{DataStore} );
 my $data = { 
   errors => [],
   warnings => [],
+  files => [],
 };
 
 # Retrieve a list of all batches that have been aborted due to errors.
@@ -41,6 +42,17 @@ $sth->finish();
 while( my $d = $sth->fetchrow_hashref() )
 {
   push @{$data->{warnings}}, $d;
+}
+
+$sth->finish();
+
+# Retrieve a list of all files with that generated a message
+( $res, $sth ) = $ds->sa->Sql( 
+        "select * from files where message!='' order by channelid, filename" );
+
+while( my $d = $sth->fetchrow_hashref() )
+{
+  push @{$data->{files}}, $d;
 }
 
 $sth->finish();
