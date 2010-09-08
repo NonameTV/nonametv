@@ -139,12 +139,19 @@ sub ParseData
       # FIXME bugged day switchover on ZDFinfo files
       # the first starttime >= midnight is one day early
       my $fixedstart = $starttime->clone->add (days => 1);
-      if (DateTime->compare ($fixedstart, $endtime) <= 0) {
+      if (DateTime->compare ($fixedstart, $endtime) < 0) {
         $starttime->add (days => 1);
+        w( "$batch_id: Garbled start date (one day early) for programme id $id - Adjusting." );
       }
 
       # duration
-      my $dauermin = $as->getElementsByTagName( 'dauermin' );
+      my $dauermin = $as->findvalue( 'dauermin' );
+
+      # FIXME bugged programme on ZDFneo files, length 0 but end-start is one day
+      if ($dauermin eq '0') {
+        w( "$batch_id: Zero length programme id $id - Skipping." );
+        next;
+      }
 
       # attributes
       my $attribute = $as->getElementsByTagName( 'attribute' );
