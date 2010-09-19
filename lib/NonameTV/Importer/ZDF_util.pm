@@ -15,7 +15,7 @@ use XML::LibXML;
 use Switch;
 
 use NonameTV qw/ParseXml norm AddCategory/;
-use NonameTV::Log qw/d progress w error/;
+use NonameTV::Log qw/d p progress w error/;
 
 BEGIN {
     use Exporter   ();
@@ -61,7 +61,7 @@ sub ParseData
     );
 
     # the id of the program
-    my $id  = $sc->findvalue( './id ' );
+    my $id  = $sc->findvalue( './id' );
 
     # the title
     my $title = $sc->findvalue( './programm//sendetitel' );
@@ -324,7 +324,8 @@ sub clean_sendetitel
     }
     $title =~ s| \(\d+/\d+\)$||;
   } elsif ($title =~ m| \(\d+\)$|) {
-    my $episodenr = ($title =~ m| \((\d+)\)$|);
+    my ($episodenr) = ($title =~ m| \((\d+)\)$|);
+    p ("parsing episode number $episodenr from title \"$title\"");
     $sce->{episode} = ". " . ($episodenr-1) . " .";
     $title =~ s| \(\d+\)$||;
   }
