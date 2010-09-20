@@ -62,9 +62,11 @@ sub ImportContentFile {
   my $dsh = $self->{datastorehelper};
   my $ds = $self->{datastore};
 
+#return if ( $channel_xmltvid !~ /foxlife/ );
+
   if( $file =~ /\.xml$/i ){
     $self->ImportXML( $file, $chd );
-  } elsif( $file =~ /Fox\s+C\s+i\s+L\s+.*\.xls$/i ){
+  } elsif( $file =~ /Fox\s+C\s*(i|&)\s*L\s+.*\.xls$/i ){
     $self->ImportAirCombined( $file, $chd );
   } elsif( $file =~ /Fox\s+(Crime|Life).*\.xls$/i ){
     $self->ImportAirSingle( $file, $chd );
@@ -272,6 +274,7 @@ sub ImportAirCombined
   my $ds = $self->{datastore};
 
   my %columns = ();
+  my $colok = 0;
   my $date;
   my $currdate = "x";
 
@@ -295,48 +298,93 @@ sub ImportAirCombined
     }
     progress("FOX AirCombined: $chd->{xmltvid}: processing worksheet named '$oWkS->{Name}'");
 
+    if( $oWkS->{Name} =~ /^Fox.*\d+[\.|_|-]\d+[\.|_|-]\d+/i ){
+      my( $day, $month, $year ) = ( $oWkS->{Name} =~ /^Fox.*(\d+)[\.|_|-](\d+)[\.|_|-](\d+)/i );
+      $year += 2000 if $year lt 100;
+      $date = sprintf( '%04d-%02d-%02d', $year, $month, $day );
+    }
+
     for(my $iR = $oWkS->{MinRow} ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
+
+      my $oWkC;
 
       # check date
       if( $oWkS->{Cells}[$iR][1] and $oWkS->{Cells}[$iR][2] ){
         if( $oWkS->{Cells}[$iR][1]->Value =~ /AIRING HOURS FOR/ and isDate( $oWkS->{Cells}[$iR][2]->Value ) ){
-
           $date = ParseDate( $oWkS->{Cells}[$iR][2]->Value );
-
-          if( $date ne $currdate ) {
-            if( $currdate ne "x" ) {
-              $dsh->EndBatch( 1 );
-            }
-
-            my $batch_id = $chd->{xmltvid} . "_" . $date;
-            $dsh->StartBatch( $batch_id , $chd->{id} );
-            $dsh->StartDate( $date , "06:00" );
-            $currdate = $date;
-
-            progress("FOX AirCombined: $chd->{xmltvid}: Date is: $date");
-          }
-          next;
+print "DATE $date\n";
         }
       }
 
-      my $oWkC;
+      # check date
+      if( $oWkS->{Cells}[$iR][1] and $oWkS->{Cells}[$iR][1]->Value =~ /On Date:/ ){
+print "DATE IN TEXT\n";
+        for(my $iC = $oWkS->{MinCol} ; defined $oWkS->{MaxCol} && $iC <= $oWkS->{MaxCol} ; $iC++) {
+
+          $oWkC = $oWkS->{Cells}[$iR][$iC];
+          next if ( ! $oWkC );
+          next if ( ! $oWkC->Value );
+
+          if( isDate( $oWkS->{Cells}[$iR][$iC]->Value ) ){
+            $date = ParseDate( $oWkS->{Cells}[$iR][$iC]->Value );
+print "DATE $date\n";
+            next;
+          }
+        }
+      }
+print "DATE $date\n";
+
+      if( $date ne $currdate ) {
+        if( $currdate ne "x" ) {
+          $dsh->EndBatch( 1 );
+        }
+
+        my $batch_id = $chd->{xmltvid} . "_" . $date;
+        $dsh->StartBatch( $batch_id , $chd->{id} );
+        $dsh->StartDate( $date , "06:00" );
+        $currdate = $date;
+
+        progress("FOX AirCombined: $chd->{xmltvid}: Date is: $date");
+        next;
+      }
+
+      if( not %columns ){
+
+        for(my $iC = $oWkS->{MinCol} ; defined $oWkS->{MaxCol} && $iC <= $oWkS->{MaxCol} ; $iC++) {
+          if( $oWkS->{Cells}[$iR][$iC] ){
+            my $colname = norm($oWkS->{Cells}[$iR][$iC]->Value);
+            $columns{$colname} = $iC;
+
+            $columns{'Start Time'} = $iC if( $colname =~ /Start Time bg/i );
+            $columns{'Title'} = $iC if( $colname =~ /ORIGINAL TITLE/i );
+            $columns{'CROATIAN TITLE'} = $iC if( $colname =~ /Cro Title/i );
+
+            $colok = 1 if( $colname =~ /Start Time/i );
+          }
+        }
+#foreach my $cl (%columns) {
+#print "$cl\n";
+#}
+        %columns = () if not $colok;
+        next;
+      }
 
       # Time
-      $oWkC = $oWkS->{Cells}[$iR][1];
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'Start Time'}];
       next if( ! $oWkC );
       next if( ! $oWkC->Value );
       my $time = ParseTime( $oWkC->Value );
       next if( ! $time );
 
       # ENG Title
-      $oWkC = $oWkS->{Cells}[$iR][2];
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'Title'}];
       next if( ! $oWkC );
       next if( ! $oWkC->Value );
       my $engtitle = $oWkC->Value;
       next if( ! $engtitle );
 
       # CRO Title
-      $oWkC = $oWkS->{Cells}[$iR][3];
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'CROATIAN TITLE'}];
       next if( ! $oWkC );
       next if( ! $oWkC->Value );
       my $crotitle = $oWkC->Value;
@@ -369,9 +417,8 @@ sub ImportAirSingle
   my $dsh = $self->{datastorehelper};
   my $ds = $self->{datastore};
 
-  my %columns = ();
-  my $date;
   my $currdate = "x";
+  my %columns = ();
 
   progress( "FOX AirSingle: $chd->{xmltvid}: Processing flat XLS $file" );
 
@@ -388,31 +435,40 @@ sub ImportAirSingle
 
     progress("FOX AirSingle: $chd->{xmltvid}: processing worksheet named '$oWkS->{Name}'");
 
+    my $date;
+
     for(my $iR = $oWkS->{MinRow} ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
 
+      my $oWkC;
+
       # check date
-      if( $oWkS->{Cells}[$iR][1] and $oWkS->{Cells}[$iR][3] ){
-        if( $oWkS->{Cells}[$iR][1]->Value =~ /On Date:/ and isDate( $oWkS->{Cells}[$iR][3]->Value ) ){
+      if( $oWkS->{Cells}[$iR][1] and $oWkS->{Cells}[$iR][1]->Value =~ /On Date:/ ){
+        for(my $iC = $oWkS->{MinCol} ; defined $oWkS->{MaxCol} && $iC <= $oWkS->{MaxCol} ; $iC++) {
 
-          $date = ParseDate( $oWkS->{Cells}[$iR][3]->Value );
+          $oWkC = $oWkS->{Cells}[$iR][$iC];
+          next if ( ! $oWkC );
+          next if ( ! $oWkC->Value );
 
-          if( $date ne $currdate ) {
-            if( $currdate ne "x" ) {
-              $dsh->EndBatch( 1 );
+          if( isDate( $oWkS->{Cells}[$iR][$iC]->Value ) ){
+
+            $date = ParseDate( $oWkS->{Cells}[$iR][$iC]->Value );
+
+            if( $date ne $currdate ) {
+              if( $currdate ne "x" ) {
+                $dsh->EndBatch( 1 );
+              }
+
+              my $batch_id = $chd->{xmltvid} . "_" . $date;
+              $dsh->StartBatch( $batch_id , $chd->{id} );
+              $dsh->StartDate( $date , "06:00" );
+              $currdate = $date;
+
+              progress("FOX AirSingle: $chd->{xmltvid}: Date is: $date");
             }
-
-            my $batch_id = $chd->{xmltvid} . "_" . $date;
-            $dsh->StartBatch( $batch_id , $chd->{id} );
-            $dsh->StartDate( $date , "06:00" );
-            $currdate = $date;
-
-            progress("FOX AirSingle: $chd->{xmltvid}: Date is: $date");
+            next;
           }
-          next;
         }
       }
-
-      my $oWkC;
 
       # Time
       $oWkC = $oWkS->{Cells}[$iR][1];
@@ -730,6 +786,9 @@ sub isDate {
 
   } elsif( $text =~ /^\d+\.\d+\.\d+\.$/i ){
     return 1;
+
+  } elsif( $text =~ /^On date:\s+\d+\.\d+\.\d+/i ){
+    return 1;
   }
 
   return 0;
@@ -752,6 +811,9 @@ sub ParseDate {
 
   } elsif( $text =~ /^\d+\.\d+\.\d+\.$/i ){
     ( $day, $month, $year ) = ( $text =~ /^(\d+)\.(\d+)\.(\d+)\.$/i );
+
+  } elsif( $text =~ /^On date:\s+\d+\.\d+\.\d+/i ){
+    ( $day, $month, $year ) = ( $text =~ /^On date:\s+(\d+)\.(\d+)\.(\d+)/i );
   }
 
   $year += 2000 if $year lt 100;

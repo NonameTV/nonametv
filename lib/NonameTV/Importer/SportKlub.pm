@@ -65,8 +65,7 @@ sub ImportContentFile {
   my $dsh = $self->{datastorehelper};
   my $ds = $self->{datastore};
 
-#return if ( $file !~ /SportKlub Feb 2009 \.xls/ );
-#return if( $file !~ /\/EPG/ );
+return if ( $file !~ /\.doc/ );
 
   if( $file =~ /\.zip$/i ){
     #$self->UnzipArchive( $file, $chd );

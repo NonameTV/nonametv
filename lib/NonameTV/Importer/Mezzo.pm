@@ -123,10 +123,13 @@ sub ImportXLS
             $columns{'DATE'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^DATES$/ );
             $columns{'TIME'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^TIMES$/ );
             $columns{'TIME'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^HOURS$/ );
+            $columns{'TIME'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^HEURE$/ );
             $columns{'TIME'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^HEURES$/ );
             $columns{'LENGTH'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^LENGHTS$/ );
+            $columns{'LENGTH'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^DUREE$/ );
             $columns{'LENGTH'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^DUREES$/ );
             $columns{'TITLE'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^TITLES$/ );
+            $columns{'TITLE'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^TITRE$/ );
             $columns{'TITLE'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^TITRES$/ );
             $columns{'DESCRIPTION'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^DESCRIPTIONS$/ );
             $columns{'DESCRIPTION'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^SYNOPSIS$/ );
@@ -136,9 +139,9 @@ sub ImportXLS
             $columns{'DIRECTOR'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^REALISATEURS$/ );
           }
 
-#foreach my $cl (%columns) {
-#print "$cl\n";
-#}
+foreach my $cl (%columns) {
+print ">$cl<\n";
+}
           next;
         }
       }
@@ -183,10 +186,10 @@ sub ImportXLS
       next if( ! $title );
 
       # Length
-      $oWkC = $oWkS->{Cells}[$iR][$columns{'LENGTH'}];
-      next if( ! $oWkC );
-      next if( ! $oWkC->Value );
-      my $duration = $oWkC->Value;
+      #$oWkC = $oWkS->{Cells}[$iR][$columns{'LENGTH'}];
+      #next if( ! $oWkC );
+      #next if( ! $oWkC->Value );
+      #my $duration = $oWkC->Value;
 
       # Description
       my $description;
@@ -253,7 +256,7 @@ sub ParseDate
 {
   my( $dateinfo ) = @_;
 
-#print ">$dateinfo<\n";
+print ">$dateinfo<\n";
 
   my( $month, $day, $year );
 

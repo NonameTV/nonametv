@@ -110,6 +110,7 @@ sub ImportXLS {
 
   # Only process .xls files.
   return if( $file !~ /\.xls$/i );
+#return if( $xmltvid !~ /crime/i );
 
   progress( "HistoryChannel: $xmltvid: Processing $file" );
 
@@ -141,7 +142,19 @@ sub ImportXLS {
       # get the names of the columns from the 1st row
       if( not %columns ){
         for(my $iC = $oWkS->{MinCol} ; defined $oWkS->{MaxCol} && $iC <= $oWkS->{MaxCol} ; $iC++) {
+
+          next if( ! $oWkS->{Cells}[$iR][$iC] );
+          next if( ! $oWkS->{Cells}[$iR][$iC]->Value );
+
           $columns{norm($oWkS->{Cells}[$iR][$iC]->Value)} = $iC;
+
+          $columns{'DATE'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /DATE/i );
+          $columns{'STARTTIME'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /START TIME/i );
+          $columns{'ENDTIME'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /END TIME/i );
+          $columns{'TITLE'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /PROGRAMME TITLE/i );
+          $columns{'CROTITLE'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Croatian Titles/i );
+          $columns{'DESCRIPTION'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Long description/i );
+          $columns{'CRODESCRIPTION'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Croatian description/i );
         }
 #foreach my $cl (%columns) {
 #print "$cl\n";
@@ -149,22 +162,24 @@ sub ImportXLS {
         next;
       }
 
+      my $oWkC;
+
       # date - column 0 ('DATE')
-      my $oWkC = $oWkS->{Cells}[$iR][$columns{'DATE'}];
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'DATE'}];
       next if( ! $oWkC );
       next if( ! $oWkC->Value );
       $date = ParseDate( $fileyear, $oWkC->Value );
       next if( ! $date );
 
       # starttime - column ('START TIME')
-      $oWkC = $oWkS->{Cells}[$iR][$columns{'START TIME'}];
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'STARTTIME'}];
       next if( ! $oWkC );
       next if( ! $oWkC->Value );
       my $starttime = create_dt( $date , $oWkC->Value );
       next if( ! $starttime );
 
       # endtime - column ('END TIME')
-      $oWkC = $oWkS->{Cells}[$iR][$columns{'END TIME'}];
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'ENDTIME'}];
       next if( ! $oWkC );
       next if( ! $oWkC->Value );
       my $endtime = create_dt( $date , $oWkC->Value );
@@ -180,19 +195,19 @@ sub ImportXLS {
       my $duration = $oWkC->Value if( $oWkC->Value );
 
       # title - column ('PROGRAMME TITLE (max 40 characters)')
-      $oWkC = $oWkS->{Cells}[$iR][$columns{'PROGRAMME TITLE (max 40 characters)'}];
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'TITLE'}];
       next if( ! $oWkC );
       next if( ! $oWkC->Value );
       my $title = $oWkC->Value;
       next if( ! $title );
 
       # short description - column ('Short Description (max 100 characters)')
-      $oWkC = $oWkS->{Cells}[$iR][$columns{'Short Description (max 100 characters)'}];
-      next if( ! $oWkC );
-      my $shortdesc = $oWkC->Value;
+      #$oWkC = $oWkS->{Cells}[$iR][$columns{'Short Description (max 100 characters)'}];
+      #next if( ! $oWkC );
+      #my $shortdesc = $oWkC->Value;
 
       # long description - column ('Long Description (max 235 characters)')
-      $oWkC = $oWkS->{Cells}[$iR][$columns{'Long Description (max 235 characters)'}];
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'DESCRIPTION'}];
       next if( ! $oWkC );
       my $longdesc = $oWkC->Value;
 
@@ -202,13 +217,13 @@ sub ImportXLS {
       my $rating = $oWkC->Value if( $oWkC->Value );
 
       # crotitle - column ('Croatian Titles (max 40)')
-      $oWkC = $oWkS->{Cells}[$iR][$columns{'Croatian Titles (max 40)'}];
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'CROTITLE'}];
       next if( ! $oWkC );
       my $crotitle = $oWkC->Value if( $oWkC->Value );
       next if( ! $crotitle );
 
       # croatian description - column ('Croatian description (max 120)')
-      $oWkC = $oWkS->{Cells}[$iR][$columns{'Croatian description (max 120)'}];
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'CRODESCRIPTION'}];
       next if( ! $oWkC );
       my $crodesc = $oWkC->Value;
 
@@ -252,6 +267,11 @@ sub ParseDate
   } elsif( $dinfo =~ /\d+-\S+/ ){
     ( $day, $monthname ) = ( $dinfo =~ /(\d+)-(\S+)/ );
     $month = MonthNumber( $monthname, "hr" );
+  } elsif( $dinfo =~ /\d+ \S+/ ){
+    ( $day, $monthname ) = ( $dinfo =~ /(\d+) (\S+)/ );
+    $month = MonthNumber( $monthname, "hr" );
+  } else {
+    return undef;
   }
 
   if( ! $year ){

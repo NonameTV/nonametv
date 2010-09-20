@@ -332,6 +332,7 @@ print "kolona $iC dayno $dayno\n";
         if( isDate( $text ) ){
 
           my $day = ParseDate($text);
+print "DAY $day DAYNO $dayno\n";
           next if( ! $day );
 
           if( $dayno eq 0 ){
@@ -361,6 +362,7 @@ print "FD $firstdate LD $lastdate\n";
         next if( ! $oWkC );
         my $time = $oWkC->Value;
         next if( ! $time );
+        next if( $time !~ /\d+:\d+/ );
 
         my $show = {
           start_time => $time,
@@ -477,6 +479,8 @@ sub isDate
     return 1;
   } elsif( $text =~ /^(sunday|monday|tuesday|wednesday|thursday|friday|saturday)\s+\d+$/i ){
     return 1;
+  } elsif( $text =~ /^(ponedjeljak|utorak|srijeda|Četvrtak|petak|subota|nedjelja)\s+\d+$/i ){
+    return 1;
   }
 
   return 0;
@@ -493,6 +497,9 @@ sub ParseDate
   } elsif( $dinfo =~ /^\d+-\d+-\d+$/ ){ # the format is '01-10-08'
     ( $day, $month, $year ) = ( $dinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
   } elsif( $dinfo =~ /^(sunday|monday|tuesday|wednesday|thursday|friday|saturday)\s+(\d+)$/i ){
+    ( $dayname, $day ) = ( $dinfo =~ /^(\S+)\s+(\d+)$/ );
+    return $day;
+  } elsif( $dinfo =~ /^(ponedjeljak|utorak|srijeda|Četvrtak|petak|subota|nedjelja)\s+(\d+)$/i ){
     ( $dayname, $day ) = ( $dinfo =~ /^(\S+)\s+(\d+)$/ );
     return $day;
   }
