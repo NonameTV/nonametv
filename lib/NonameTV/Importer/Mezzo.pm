@@ -137,6 +137,25 @@ sub ImportXLS
             $columns{'GENRE'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^GENRES$/ );
             $columns{'DIRECTOR'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^DIRECTORS$/ );
             $columns{'DIRECTOR'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^REALISATEURS$/ );
+
+            $columns{'YEAR'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Année de production$/ );
+            $columns{'YEAR'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^AnnÈe de production$/ );
+            $columns{'DATE'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Date de programmation$/ );
+            $columns{'DATE'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Date de Programmation$/ );
+            $columns{'DURATION'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Durée de Prog\. \(hh:mm:ss\)$/ );
+            $columns{'DURATION'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^DurÈe de Prog\. \(hh:mm:ss\)$/ );
+            $columns{'DURATION'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Durée réelle$/ );
+            $columns{'GENRE'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Genre$/ );
+            $columns{'TIME'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Heure de d/ );
+            $columns{'TIME'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Heure de début$/ );
+            $columns{'TIME'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Heure de début arrondie$/ );
+            $columns{'TIME'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Heure de dÈbut arrondie$/ );
+            $columns{'DIRECTOR'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Réalisateurs$/ );
+            $columns{'DIRECTOR'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^RÈalisateurs$/ );
+            $columns{'DESCRIPTION'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Résumé long$/ );
+            $columns{'DESCRIPTION'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^RÈsumÈ long$/ );
+            $columns{'TITLE'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Titre$/ );
+            $columns{'TITLE'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Titre presse$/ );
           }
 
 foreach my $cl (%columns) {

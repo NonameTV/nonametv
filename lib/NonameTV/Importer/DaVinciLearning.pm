@@ -314,17 +314,17 @@ sub UpdateFiles {
       my $dt = $today->clone->add( days => $day );
 
       my $filename = sprintf( "PlaylistSave_%s%s%s_TOP_ORI.xls", $dt->strftime( '%Y' ), $dt->strftime( '%m' ), $dt->strftime( '%d' ) );
-      my $url = sprintf( "%s/%s/%s %s/%s", $self->{UrlRoot}, $dt->strftime( '%Y' ), $dt->strftime( '%m' ), $dt->strftime( '%B' ), $filename );
+      my $url = sprintf( "%s/%s/%s %s/daily/%s", $self->{UrlRoot}, $dt->strftime( '%Y' ), $dt->strftime( '%m' ), $dt->strftime( '%B' ), $filename );
       progress("DaVinciLearning: $xmltvid: Fetching xls file from $url");
-      url_get( $url, $self->{FileStore} . '/' . $xmltvid . '/' . $filename );
+      url_get( $url , $self->{FileStore} . '/' . $xmltvid . '/' . $filename );
     }
   }
 }
 
 sub url_get {
-  my( $url, $file ) = @_;
+  my( $url, $destination ) = @_;
 
-  qx[curl -s -S -z "$file" -o "$file" "$url"];
+  qx[curl -s -S -z "$destination" -o "$destination" "$url"];
 }
 
 1;

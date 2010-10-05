@@ -64,7 +64,7 @@ sub ImportContentFile {
   my $dsh = $self->{datastorehelper};
   my $ds = $self->{datastore};
 
-#return if ( $chd->{xmltvid} !~ /reality/ );
+#return if ( $chd->{xmltvid} !~ /extreme/ );
 
   my $ft = CheckFileFormat( $file );
 
@@ -241,7 +241,7 @@ sub ImportFlatXLS
 
     my $oWkS = $oBook->{Worksheet}[$iSheet];
 
-    if( $chd->{xmltvid} =~ /extreme/ and $oWkS->{Name} !~ /ENG/ ){
+    if( $chd->{xmltvid} =~ /extreme/ and $oWkS->{Name} !~ /ENG/i ){
       next;
     }
 
@@ -289,9 +289,9 @@ sub ImportFlatXLS
 
         }
 
-foreach my $cl (%columns) {
-print "COL >$cl<\n";
-}
+#foreach my $cl (%columns) {
+#print "COL >$cl<\n";
+#}
         next;
       }
 
@@ -405,7 +405,7 @@ sub ParseDate
 
   $dinfo =~ s/^\s*//;
   $dinfo =~ s/\s*$//;
-#print ">$dinfo<\n";
+print ">$dinfo<\n";
 
   my( $day, $month, $year );
 

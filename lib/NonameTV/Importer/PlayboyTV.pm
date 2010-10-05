@@ -301,6 +301,8 @@ sub isDate {
     return 1;
   } elsif( $text =~ /^\d+\.\d+\.\d+$/i ){ # format '01.02.2010'
     return 1;
+  } elsif( $text =~ /^(sunday|monday|tuesday|wednesday|thursday|friday|saturday)\d+\s+(january|february|march|april|may|june|july|august|september|october|november|december)\s+\d+$/i ){ # format 'MONDAY18 OCTOBER 2010'
+    return 1;
   }
 
   return 0;
@@ -310,7 +312,7 @@ sub ParseDate
 {
   my( $text, $lang ) = @_;
 
-  my( $day, $month, $monthname, $year );
+  my( $dayname, $day, $month, $monthname, $year );
 
   if( $lang =~ /^en$/ ){
 
@@ -321,6 +323,9 @@ sub ParseDate
       $month = MonthNumber( $monthname, "en" );
     } elsif( $text =~ /^\d+\.\d+\.\d+$/i ){ # try '01.02.2010'
       ( $day, $month, $year ) = ( $text =~ /^(\d+)\.(\d+)\.(\d+)$/ );
+    } elsif( $text =~ /^(sunday|monday|tuesday|wednesday|thursday|friday|saturday)\d+\s+(january|february|march|april|may|june|july|august|september|october|november|december)\s+\d+$/i ){
+      ( $dayname, $day, $monthname, $year ) = ( $text =~ /^(\S+)(\d+)\s+(\S+)\s+(\d+)$/i );
+      $month = MonthNumber( $monthname, "en" );
     }
 
   } else {

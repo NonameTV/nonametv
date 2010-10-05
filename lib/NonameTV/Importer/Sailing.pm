@@ -55,15 +55,18 @@ sub ImportContentFile {
 
 #return if( $file !~ /palinsesto Aprile 2010/i );
 
-  my $ft = $self->CheckFileFormat( $file, $chd );
-print "FT $ft " . %{$self->{columns}} . "\n";
-  if( $ft eq FT_FLATXLS ){
-    $self->ImportFlatXLS( $file, $chd );
-  } elsif( $ft eq FT_GRIDXLS ){
-    $self->ImportGridXLS( $file, $chd );
-  } else {
-    error( "Sailing: $chd->{xmltvid}: Unknown file format of $file" );
-  }
+#  my $ft = $self->CheckFileFormat( $file, $chd );
+#print "FT $ft " . %{$self->{columns}} . "\n";
+#  if( $ft eq FT_FLATXLS ){
+#    $self->ImportFlatXLS( $file, $chd );
+#  } elsif( $ft eq FT_GRIDXLS ){
+#    $self->ImportGridXLS( $file, $chd );
+#  } else {
+#    error( "Sailing: $chd->{xmltvid}: Unknown file format of $file" );
+#    $self->ImportFlatXLS( $file, $chd );
+#  }
+
+  $self->ImportFlatXLS( $file, $chd );
 
   return;
 }
@@ -149,13 +152,23 @@ sub ImportFlatXLS
 {
   my $self = shift;
   my( $file, $chd ) = @_;
+print "ImportFlatXLS\n";
 
   my $xmltvid=$chd->{xmltvid};
   my $channel_id = $chd->{id};
   my $dsh = $self->{datastorehelper};
   my $ds = $self->{datastore};
 
-  my %columns = %{$self->{columns}};
+#  my %columns = %{$self->{columns}};
+#  if( ! %columns ){
+    my %columns;
+    $columns{'DATE'} = 0;
+    $columns{'TIME'} = 1;
+    $columns{'TITLE'} = 2;
+    $columns{'DESCRIPTION'} = 3;
+    $columns{'LENGTH'} = 4;
+#  }
+print "1\n";
 
   # Only process .xls files.
   return if $file !~  /\.xls$/i;

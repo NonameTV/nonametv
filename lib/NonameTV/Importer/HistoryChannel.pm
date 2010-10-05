@@ -110,7 +110,7 @@ sub ImportXLS {
 
   # Only process .xls files.
   return if( $file !~ /\.xls$/i );
-#return if( $xmltvid !~ /crime/i );
+#return if( $xmltvid !~ /historychannelhd/i );
 
   progress( "HistoryChannel: $xmltvid: Processing $file" );
 
@@ -266,12 +266,17 @@ sub ParseDate
     ( $month, $day, $year ) = ( $dinfo =~ /(\d+)-(\d+)-(\d+)/ );
   } elsif( $dinfo =~ /\d+-\S+/ ){
     ( $day, $monthname ) = ( $dinfo =~ /(\d+)-(\S+)/ );
-    $month = MonthNumber( $monthname, "hr" );
   } elsif( $dinfo =~ /\d+ \S+/ ){
     ( $day, $monthname ) = ( $dinfo =~ /(\d+) (\S+)/ );
-    $month = MonthNumber( $monthname, "hr" );
   } else {
     return undef;
+  }
+
+  if( ! $month and $monthname ){
+    $month = MonthNumber( $monthname, "hr" );
+    if( ! $month ){
+      $month = MonthNumber( $monthname, "en" );
+    }
   }
 
   if( ! $year ){

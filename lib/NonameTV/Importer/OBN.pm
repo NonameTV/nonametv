@@ -161,9 +161,9 @@ sub isDate {
 #print ">$text<\n";
 
   # format 'subota, 21.studeni 2009.'
-  if( $text =~ /^(ponedjeljak|utorak|srijeda|ČETVRTAK|petak|subota|nedjelja),\s*\d+\.\s*(siječanj|veljače|mart|april|maj|juni|srpanj|kolovoz|rujan|listopad|studeni|prosinac)\s*\d+\.$/i ){
+  if( $text =~ /^(ponedjeljak|utorak|srijeda|ČETVRTAK|petak|subota|nedjelja),\s*\d+\.\s*(siječanj|veljače|mart|april|maj|juni|juli|august|septembar|oktobar|novembar|decembar)\s*\d+\.$/i ){
     return 1;
-  } elsif( $text =~ /^(ponedjeljak|utorak|srijeda|ČETVRTAK|petak|subota|nedjelja),\s*\d+\.\s*(siječanj|veljače|mart|april|maj|juni|srpanj|kolovoz|rujan|listopad|studeni|prosinac)$/i ){ # format 'SUBOTA, 21. studeni'
+  } elsif( $text =~ /^(ponedjeljak|utorak|srijeda|ČETVRTAK|petak|subota|nedjelja),\s*\d+\.\s*(siječanj|veljače|mart|april|maj|juni|juli|august|septembar|oktobar|novembar|decembar)$/i ){ # format 'SUBOTA, 21. studeni'
     return 1;
   }
 
@@ -178,9 +178,9 @@ sub ParseDate {
   my( $dayname, $day, $monthname, $year );
 
   # format 'subota, 21.studeni 2009.'
-  if( $text =~ /^(ponedjeljak|utorak|srijeda|ČETVRTAK|petak|subota|nedjelja),\s*\d+\.\s*(siječanj|veljače|mart|april|maj|juni|srpanj|kolovoz|rujan|listopad|studeni|prosinac)\s*\d+\.$/i ){
+  if( $text =~ /^(ponedjeljak|utorak|srijeda|ČETVRTAK|petak|subota|nedjelja),\s*\d+\.\s*(siječanj|veljače|mart|april|maj|juni|juli|august|septembar|oktobar|novembar|decembar)\s*\d+\.$/i ){
     ( $dayname, $day, $monthname, $year ) = ( $text =~ /^(\S+),\s*(\d+)\.\s*(\S+)\s*(\d+)\.$/i )
-  } elsif( $text =~ /^(ponedjeljak|utorak|srijeda|ČETVRTAK|petak|subota|nedjelja),\s*\d+\.\s*(siječanj|veljače|mart|april|maj|juni|srpanj|kolovoz|rujan|listopad|studeni|prosinac)$/i ){ # format 'SUBOTA, 21. studeni'
+  } elsif( $text =~ /^(ponedjeljak|utorak|srijeda|ČETVRTAK|petak|subota|nedjelja),\s*\d+\.\s*(siječanj|veljače|mart|april|maj|juni|juli|august|septembar|oktobar|novembar|decembar)$/i ){ # format 'SUBOTA, 21. studeni'
     ( $dayname, $day, $monthname ) = ( $text =~ /^(\S+),\s*(\d+)\.\s*(\S+)$/i );
     $year = DateTime->today->year();
   }

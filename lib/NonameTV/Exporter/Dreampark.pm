@@ -176,6 +176,7 @@ EOH
   while( my $edata = $esth->fetchrow_hashref() )
   {
     progress("Dreampark: Exporting schedules for services on epg server '$edata->{name}'");
+    $self->{epgserver} = $edata->{name};
 
     my $nquery = "SELECT * from networks WHERE epgserver=$edata->{id} AND active=1";
     my( $nres, $nsth ) = $ds->sa->Sql( $nquery );

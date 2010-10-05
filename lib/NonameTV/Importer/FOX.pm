@@ -25,6 +25,7 @@ use File::Temp qw/tempfile/;
 use NonameTV qw/norm AddCategory MonthNumber/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/progress error/;
+use NonameTV::Config qw/ReadConfig/;
 
 use NonameTV::Importer::BaseFile;
 
@@ -44,6 +45,15 @@ sub new {
   my $class = ref($proto) || $proto;
   my $self  = $class->SUPER::new( @_ );
   bless ($self, $class);
+
+  defined( $self->{UrlRoot} ) or die "You must specify UrlRoot";
+
+  $self->{MinMonths} = 1 unless defined $self->{MinMonths};
+  $self->{MaxMonths} = 12 unless defined $self->{MaxMonths};
+
+  my $conf = ReadConfig();
+
+  $self->{FileStore} = $conf->{FileStore};
 
   my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
   $self->{datastorehelper} = $dsh;
@@ -172,7 +182,7 @@ sub ImportXML
     my $dayname = $wks->getAttribute('ss:Name');
     progress("FOX XML: $chd->{xmltvid}: processing worksheet named '$dayname'");
 
-    # the path should point exactly to one worksheet
+    # the grabber_data should point exactly to one worksheet
     my $rows = $wks->findnodes( ".//ss:Row" );
   
     if( $rows->size() == 0 ) {
@@ -913,6 +923,48 @@ sub create_dt {
   #$dt->set_time_zone( "UTC" );
 
   return $dt;
+}
+
+sub UpdateFiles {
+  my( $self ) = @_;
+
+  # get current month name
+  my $year = DateTime->today->strftime( '%g' );
+
+  # the url to fetch data from
+  # is in the format http://newsroom.zonemedia.net/Files/Schedules/CLPE1009L01.xls
+  # UrlRoot = http://newsroom.zonemedia.net/Files/Schedules/
+  # GrabberInfo = <empty>
+
+  foreach my $data ( @{$self->ListChannels()} ) {
+
+    my $xmltvid = $data->{xmltvid};
+
+    my $today = DateTime->today;
+
+    # do it for MaxMonths in advance
+    for(my $month=0; $month <= $self->{MaxMonths} ; $month++) {
+
+      my $dt = $today->clone->add( months => $month );
+
+      # grabber_info contains parts separateb by ;
+      # 0 - path
+      # 1 - filename prefix
+      my @grabber_data = split(/;/, $data->{grabber_info} );
+
+      my $url = $self->{UrlRoot} . "/" . $grabber_data[0];
+      my $filename = $grabber_data[1] . "%20" . $dt->strftime( '%m' ) . "." . $dt->strftime( '%Y' ) . ".xls";
+
+      progress("ZoneMedia: $xmltvid: Fetching xls file from $url/$filename");
+      file_get( $url . "/" . $filename, $self->{FileStore} . '/' . $xmltvid . '/' . $filename );
+    }
+  }
+}
+
+sub file_get {
+  my( $url, $file ) = @_;
+
+  qx[curl -s -S -z "$file" -o "$file" "$url"];
 }
 
 1;

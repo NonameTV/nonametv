@@ -18,7 +18,7 @@ use Text::CSV;
 use Data::Dumper;
 use File::Temp qw/tempfile/;
 
-use NonameTV qw/norm AddCategory/;
+use NonameTV qw/norm AddCategory MonthNumber/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/progress error/;
 
@@ -76,9 +76,14 @@ sub ImportContentFile {
 
   # get the column names from the first line
   my @columns = $csv->column_names( $csv->getline( $CSVFILE ) );
+  if( ! @columns or ( @columns[0] =~ /UNDEF/ ) ){
+    progress( "LuxeTV: $xmltvid: No column names" );
+    @columns = $csv->column_names( 'Date', 'Time', 'Duration', 'Title', 'Episode', 'Synopsis', 'Genre' );
+  }
 #foreach my $c (@columns) {
-#print "$c\n";
+#print ">$c<\n";
 #}
+
 
   # main loop
   while( my $row = $csv->getline_hr( $CSVFILE ) ){
@@ -178,12 +183,17 @@ sub ImportContentFile {
 
 sub ParseDate {
   my( $text ) = @_;
-  my( $day , $month , $year );
 
   return undef if( ! $text );
+#print "ParseDate >$text<\n";
+
+  my( $day , $month , $year, $monthname );
 
   if( $text =~ /^\d\d\/\d\d\/\d\d$/ ){
     ( $day , $month , $year ) = ( $text =~ /^(\d\d)\/(\d\d)\/(\d\d)$/ );
+  } elsif( $text =~ /^(\d+)-(\S+)-(\d+)$/ ){ # Format: "30-Nov-10"
+    ( $day , $monthname , $year ) = ( $text =~ /^(\d+)-(\S+)-(\d+)$/ );
+    $month = MonthNumber( $monthname, "en" );
   } else {
     return undef;
   }
@@ -208,12 +218,17 @@ sub ParseTime {
 
 #print "$tinfo\n";
 
-  return undef if ( $tinfo !~ /^\d\d\:\d\d\:\d\d\s+(AM|PM)$/ );
+  my( $hour, $min, $sec, $ampm );
 
-  my( $hour, $min, $sec, $ampm ) = ( $tinfo =~ /^(\d\d)\:(\d\d)\:(\d\d)\s+(\S+)$/ );
-
-  $hour += 12 if( $ampm eq "PM" );
-  $hour = 0 if( $hour eq 24 );
+  if ( $tinfo =~ /^\d\d\:\d\d\:\d\d\s+(AM|PM)$/ ){
+    ( $hour, $min, $sec, $ampm ) = ( $tinfo =~ /^(\d\d)\:(\d\d)\:(\d\d)\s+(\S+)$/ );
+    $hour += 12 if( $ampm eq "PM" );
+    $hour = 0 if( $hour eq 24 );
+  } elsif ( $tinfo =~ /^\d+:\d+:\d+$/ ){
+    ( $hour, $min, $sec ) = ( $tinfo =~ /^(\d+)\:(\d+)\:(\d+)$/ );
+  } else {
+    return undef;
+  }
 
   return sprintf( "%02d:%02d", $hour, $min );
 }

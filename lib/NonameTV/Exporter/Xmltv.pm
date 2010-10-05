@@ -425,6 +425,7 @@ sub ExportFile {
 
       my $dur = $dt2 - $dt1;
       if( defined $self->{copyright}
+        and $chd->{allowcredits}
         and $dur->delta_minutes > $self->{conf}->{Site}->{CreditsDuration}
         and $self->{conf}->{Site}->{AppendCopyright} eq 1 ){
 

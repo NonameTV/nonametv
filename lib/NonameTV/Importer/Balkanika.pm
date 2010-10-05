@@ -146,7 +146,7 @@ sub FlushData
 
   if( @data ){
     foreach my $element (@data) {
-      progress("NovaTV: $chd->{xmltvid}: $element->{start_time} - $element->{title}");
+      progress("Balkanika: $chd->{xmltvid}: $element->{start_time} - $element->{title}");
       $dsh->AddProgramme( $element );
     }
   }
