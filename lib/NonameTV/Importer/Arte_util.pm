@@ -19,7 +19,7 @@ use XML::LibXML;
 use NonameTV qw/MyGet File2Xml norm/;
 use NonameTV::DataStore::Helper;
 use NonameTV::DataStore::Updater;
-use NonameTV::Log qw/progress error/;
+use NonameTV::Log qw/d progress w error/;
 
 BEGIN {
     use Exporter   ();
@@ -148,6 +148,11 @@ sub ImportFull
 
     # did we collect one full programme?
     if( ( $state eq ST_FDATE or $state eq ST_FHEAD ) and $time and $title and ( $subinfo or $longdesc ) ){
+      my $ce = {
+        channel_id => $chd->{id},
+        start_time => $time,
+      };
+
 
       # strip duration
       $title =~ s/\s+\d+\s+min\.\s*$//i;
@@ -164,46 +169,34 @@ sub ImportFull
         $title =~ s/\s+stereo\s*$//i;
       }
 
-     # parse episode number
-     my $episode;
-     if ($title =~ m|\s*\(\d+/\d+\)\s*$|) {
-       my ($episodenum, $episodecount) = ($title =~ m|\s*\((\d+)/(\d+)\)\s*$|);
-       $episode = '. ' . ($episodenum-1) . '/' . ($episodecount) . ' .';
-       $title =~ s|\s*\(\d+/\d+\)\s*$||;
-     } elsif ($title =~ m|\s*\(\d+\)\s*$|) {
-       my ($episodenum) = ($title =~ m|\s*\((\d+)\)\s*$|);
-       $episode = '. ' . ($episodenum-1) . ' .';
-       $title =~ s|\s*\(\d+\)\s*$||;
-     }
-
-      my $quality;
-      my ($subtitle, $genre, $directors, $actors);
-      if ( defined ($subinfo)) {
-      if( $subinfo =~ /Dieses Programm wurde in HD produziert/ ){
-        $quality = "HDTV";
+      # parse episode number
+      my $episode;
+      if ($title =~ m|\s*\(\d+/\d+\)\s*$|) {
+        my ($episodenum, $episodecount) = ($title =~ m|\s*\((\d+)/(\d+)\)\s*$|);
+        $episode = '. ' . ($episodenum-1) . '/' . ($episodecount) . ' .';
+        $title =~ s|\s*\(\d+/\d+\)\s*$||;
+      } elsif ($title =~ m|\s*\(\d+\)\s*$|) {
+        my ($episodenum) = ($title =~ m|\s*\((\d+)\)\s*$|);
+        $episode = '. ' . ($episodenum-1) . ' .';
+        $title =~ s|\s*\(\d+\)\s*$||;
       }
-      ( $subtitle, $genre, $directors, $actors ) = ParseExtraInfo( $subinfo );
-     }
+      $ce->{episode} = $episode if $episode;
+      $ce->{title} = $title;
+      d( "Arte: $chd->{xmltvid}: $time - $title" );
+
+
+      if ( defined ($subinfo)) {
+        ParseExtraInfo( \$ce, $subinfo );
+      }
 
       $shortdesc =~ s/^\[Kurz\]// if $shortdesc;
       $longdesc =~ s/^\[Lang\]// if $longdesc;
-
-      progress( "Arte: $chd->{xmltvid}: $time - $title" );
-
-      my $ce = {
-        channel_id => $chd->{id},
-        title => $title,
-        start_time => $time,
-      };
-
-      $ce->{subtitle} = $subtitle if $subtitle;
       $ce->{description} = $longdesc if $longdesc;
-      $ce->{directors} = $directors if $directors;
-      $ce->{actors} = $actors if $actors;
+
+
       $ce->{aspect} = $aspect if $aspect;
-      $ce->{quality} = $quality if $quality;
       $ce->{stereo} = $stereo if $stereo;
-      $ce->{episode} = $episode if $episode;
+
 
       $dsh->AddProgramme( $ce );
 
@@ -286,7 +279,7 @@ sub isSubTitle
 {
   my( $text ) = @_;
 
-  if( $text =~ /^\[\d\d:\d\d\]\s+\S+/ ){
+  if( $text =~ m/^\[\d{2}:\d{2}\]\s+\S+/ ){
     return 1;
   }
 
@@ -295,33 +288,126 @@ sub isSubTitle
 
 sub ParseExtraInfo
 {
-  my( $text ) = @_;
+  my( $ce, $text ) = @_;
 
-  my( $subtitle, $genre, $directors, $actors, $aspect, $stereo );
+  my $seengenre = undef;
+  my $genre = undef;
 
+  # join back together lines that got split due to length
+  $text =~ s/,\n/, /g;
   my @lines = split( /\n/, $text );
   foreach my $line ( @lines ){
-    if( $line =~ /^\[\d\d:\d\d\]\s+\S+,\s*Wiederholung/i ){
-      ( $genre ) = ($line =~ /^\[\d\d:\d\d\]\s+(\S+),\s*Wiederholung/i );
+    if( $line =~ m/^\[\d{2}:\d{2}\]/ ){
+      # strip the time
+      $line =~ s|^\[\d{2}:\d{2}\]\s+||;
+
+      # is it an episodetitle?
+      if( $line =~ m|^\(\d+\):| ) {
+        my ($episodenum, $episodetitle) = ($line =~ m|^\((\d+)\):\s*(.*?)\s*|);
+        if (!defined ($$ce->{episode})) {
+          $$ce->{episode} = '. ' . ($episodenum-1) . ' .';
+        }
+        if (defined ($episodetitle)) {
+          $$ce->{subtitle} = $episodetitle;
+        }
+        next;
+      }
+
+      # first line is it a repeat?
+      if ($line =~ m/, Wiederholung vom \d+\.\d+\.$/) {
+        ($genre) = ($line =~ m|^(.*), Wiederholung vom \d+\.\d+\.$|);
+        $seengenre = 1;
+        next;
+      }
+
+      # strip dub, premiere
+      $line =~ s|, Synchronfassung$||;
+      $line =~ s|, Erstausstrahlung$||;
+      $line =~ s|, Synchronfassung$||;
+      $line =~ s|, Originalfassung mit Untertiteln||;
+      # is it the genre?
+      # genre, contries year, producing stations
+      if( $line =~ m|^[^,]+,[^,]+\s+\d{4},[^,]+$| ) {
+      } else {
+        # then it must be the subtitle
+        $$ce->{subtitle} = $line;
+        next;
+      }
     }
 
-    if( $line =~ /^Regie:\s*.*$/i ){
-      ( $directors ) = ( $line =~ /^Regie:\s*(.*)$/i );
-      $directors =~ s/;.*$//;
+    if( $line =~ /^Dieses Programm wurde in HD produziert\.$/ ){
+      $$ce->{quality} = 'HDTV';
+      next;
     }
 
-    if( $line =~ /^Mit:\s*.*$/i ){
-      ( $actors ) = ( $line =~ /^Mit:\s*(.*)$/i );
+    if( $line =~ /^ARTE stellt diesen Beitrag auch/ ){
+      # strip reference to ARTE+7 video on demand
+      next;
     }
 
-    $aspect = "4:3";
-    $aspect = "16:9" if( $line =~ /16:9/i );
+    if( $line =~ /^ARTE strahlt diesen Film auch in einer untertitelten Fassung f/ ){
+      # strip subtitle for hard of hearing
+      next;
+    }
 
-    $stereo = "stereo" if( $line =~ /stereo/i );
+    if( $line =~ /^ARTE strahlt diesen Film auch in einer H/ ){
+      # strip audio for the blind
+      next;
+    }
 
+    # not the first line, maybe still a repeat? (copy from above)
+    if ($line =~ m/, Wiederholung vom \d+\.\d+\.$/) {
+      ($genre) = ($line =~ m|^(.*), Wiederholung vom \d+\.\d+\.$|);
+      $seengenre = 1;
+      next;
+    }
+
+    # parse actors
+    if( $line =~ /^Mit:\s+.*$/ ){
+      my ( $actor ) = ( $line =~ /^Mit:\s+(.*)$/ );
+      # remove name of role, not yet supported
+      my @actors = split( ', ', $actor );
+      foreach my $person (@actors) {
+        $person =~ s|\s+-\s+\(.*\)$||;
+      }
+      $$ce->{actors} = join( ', ', @actors);
+      next;
+    }
+
+    if( $line =~ m|^Themenabend:| ) {
+       next;
+    }
+
+    # parse credits
+    if( $line =~ /^\S+:\s+.*$/ ){
+      my @credits = split( '; ', $line );
+      foreach my $credit (@credits) {
+        my ($job, $people) = ($credit =~ m|^(\S+):\s*(.*)$|);
+        if ($job eq 'Regie') {
+          $$ce->{directors} = $people;
+        } else {
+          d( "unhandled job $job" );
+        }
+      }
+      # FIXME split at ; and handle more roles the just directors
+      next;
+    }
+
+
+    # strip dub, premiere
+    $line =~ s|, Synchronfassung$||;
+    $line =~ s|, Erstausstrahlung$||;
+    $line =~ s|, Synchronfassung$||;
+    $line =~ s|, Originalfassung mit Untertiteln||;
+    # is it the genre?
+    # genre, contries year, producing stations
+    if( $line =~ m|^[^,]+,[^,]+\s+\d{4},[^,]+$| ) {
+      next;
+    }
+
+
+    w( "unhandled subinfo: $line" );
   }
-
-  return( $subtitle, $genre, $directors, $actors );
 }
 
 1;
