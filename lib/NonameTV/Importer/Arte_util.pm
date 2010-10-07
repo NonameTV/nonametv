@@ -149,15 +149,32 @@ sub ImportFull
     # did we collect one full programme?
     if( ( $state eq ST_FDATE or $state eq ST_FHEAD ) and $time and $title and ( $subinfo or $longdesc ) ){
 
+      # strip duration
+      $title =~ s/\s+\d+\s+min\.\s*$//i;
+
       my $aspect = undef;
-      if( $title =~ /16:9/ ){
+      if( $title =~ /\s+16:9\s*$/ ){
         $aspect = "16:9";
+        $title =~ s/\s+16:9\s*$//i;
       }
 
       my $stereo = undef;
-      if( $title =~ /stereo/i ){
+      if( $title =~ /\s+stereo\s*$/i ){
         $stereo = "stereo";
+        $title =~ s/\s+stereo\s*$//i;
       }
+
+     # parse episode number
+     my $episode;
+     if ($title =~ m|\s*\(\d+/\d+\)\s*$|) {
+       my ($episodenum, $episodecount) = ($title =~ m|\s*\((\d+)/(\d+)\)\s*$|);
+       $episode = '. ' . ($episodenum-1) . '/' . ($episodecount) . ' .';
+       $title =~ s|\s*\(\d+/\d+\)\s*$||;
+     } elsif ($title =~ m|\s*\(\d+\)\s*$|) {
+       my ($episodenum) = ($title =~ m|\s*\((\d+)\)\s*$|);
+       $episode = '. ' . ($episodenum-1) . ' .';
+       $title =~ s|\s*\(\d+\)\s*$||;
+     }
 
       my $quality;
       my ($subtitle, $genre, $directors, $actors);
@@ -167,9 +184,6 @@ sub ImportFull
       }
       ( $subtitle, $genre, $directors, $actors ) = ParseExtraInfo( $subinfo );
      }
-
-     $title =~ s/stereo.*$//i;
-     $title =~ s/16:9.*$//i;
 
       $shortdesc =~ s/^\[Kurz\]// if $shortdesc;
       $longdesc =~ s/^\[Lang\]// if $longdesc;
@@ -189,6 +203,7 @@ sub ImportFull
       $ce->{aspect} = $aspect if $aspect;
       $ce->{quality} = $quality if $quality;
       $ce->{stereo} = $stereo if $stereo;
+      $ce->{episode} = $episode if $episode;
 
       $dsh->AddProgramme( $ce );
 
