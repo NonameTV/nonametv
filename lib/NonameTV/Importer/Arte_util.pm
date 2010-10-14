@@ -16,7 +16,7 @@ use utf8;
 use DateTime;
 use XML::LibXML;
 
-use NonameTV qw/MyGet File2Xml norm/;
+use NonameTV qw/AddCategory File2Xml MyGet norm/;
 use NonameTV::DataStore::Helper;
 use NonameTV::DataStore::Updater;
 use NonameTV::Log qw/d progress w error/;
@@ -186,7 +186,7 @@ sub ImportFull
 
 
       if ( defined ($subinfo)) {
-        ParseExtraInfo( \$ce, $subinfo );
+        ParseExtraInfo( \$dsh->{ds}, \$ce, $subinfo );
       }
 
       $shortdesc =~ s/^\[Kurz\]// if $shortdesc;
@@ -288,10 +288,11 @@ sub isSubTitle
 
 sub ParseExtraInfo
 {
-  my( $ce, $text ) = @_;
+  my( $ds, $ce, $text ) = @_;
 
   my $seengenre = undef;
   my $genre = undef;
+  my $productiondate = undef;
 
   # join back together lines that got split due to length
   $text =~ s/,\n/, /g;
@@ -328,7 +329,8 @@ sub ParseExtraInfo
       $line =~ s|, Originalfassung mit Untertiteln||; # yes, it's not the last
       # is it the genre?
       # genre, contries year, producing stations
-      if( $line =~ m|^[^,]+,[^,]+\s+\d{4},[^,]+$| ) {
+      if( ($genre, $productiondate) = ( $line =~ m|^([^,]+)\s*,[^,]+\s+(\d{4}),[^,]+$| ) ) {
+        $seengenre = 1;
       } else {
         # then it must be the subtitle
         $$ce->{subtitle} = $line;
@@ -438,15 +440,17 @@ sub ParseExtraInfo
     $line =~ s|, Originalfassung mit Untertiteln||; # yes, it's not the last
     # is it the genre?
     # genre, contries year, producing stations
-    if( $line =~ m|^[^,]+,[^,]+\s+\d{4},[^,]+$| ) {
+    if( ($genre, $productiondate) = ($line =~ m|^([^,]+)\s*,[^,]+\s+(\d{4}),[^,]+$| ) ) {
+      $seengenre = 1;
       next;
     }
     # genre, contries year
-    if( $line =~ m|^[^,]+,[^,]+\s+\d{4}$| ) {
+    if( ($genre, $productiondate) = ($line =~ m|^([^,]+)\s*,[^,]+\s+(\d{4})$| ) ) {
+      $seengenre = 1;
       next;
     }
     # contries year, producing stations
-    if( $line =~ m|[^,]+\s+\d{4},[^,]+$| ) {
+    if( ($productiondate) = ($line =~ m|[^,]+\s+(\d{4}),[^,]+$| ) ) {
       next;
     }
 
@@ -457,6 +461,15 @@ sub ParseExtraInfo
 
 
     w( "unhandled subinfo: $line" );
+  }
+
+  if( defined( $productiondate ) ) {
+    $$ce->{production_date} = $productiondate . '-01-01';
+  }
+
+  if( defined( $genre) ) {
+    my ( $program_type, $categ ) = $$ds->LookupCat( "Arte_genre", $genre );
+    AddCategory( $$ce, $program_type, $categ );
   }
 }
 
