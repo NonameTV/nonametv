@@ -303,7 +303,7 @@ sub ParseExtraInfo
 
       # is it an episodetitle?
       if( $line =~ m|^\(\d+\):| ) {
-        my ($episodenum, $episodetitle) = ($line =~ m|^\((\d+)\):\s*(.*?)\s*|);
+        my ($episodenum, $episodetitle) = ($line =~ m|^\((\d+)\):\s*(.*?)\s*$|);
         if (!defined ($$ce->{episode})) {
           $$ce->{episode} = '. ' . ($episodenum-1) . ' .';
         }
@@ -323,8 +323,9 @@ sub ParseExtraInfo
       # strip dub, premiere
       $line =~ s|, Synchronfassung$||;
       $line =~ s|, Erstausstrahlung$||;
+      $line =~ s|, Schwerpunkt: [^,]+$||;
       $line =~ s|, Synchronfassung$||;
-      $line =~ s|, Originalfassung mit Untertiteln||;
+      $line =~ s|, Originalfassung mit Untertiteln||; # yes, it's not the last
       # is it the genre?
       # genre, contries year, producing stations
       if( $line =~ m|^[^,]+,[^,]+\s+\d{4},[^,]+$| ) {
@@ -359,6 +360,12 @@ sub ParseExtraInfo
     if ($line =~ m/, Wiederholung vom \d+\.\d+\.$/) {
       ($genre) = ($line =~ m|^(.*), Wiederholung vom \d+\.\d+\.$|);
       $seengenre = 1;
+      next;
+    }
+    if ($line =~ m/^Wiederholung vom \d+\.\d+\.$/) {
+      next;
+    }
+    if ($line =~ m/^Wiederholung vom \d+\. \d+\. \d{4}$/) {
       next;
     }
 
@@ -407,6 +414,14 @@ sub ParseExtraInfo
         } elsif ($job eq 'Kostüme') {
         } elsif ($job eq 'Ausstattung') {
         } elsif ($job eq 'Regieassistenz') {
+        } elsif ($job eq 'Restaurierung') {
+        } elsif ($job eq 'Licht') {
+        } elsif ($job eq 'Fernsehregie') {
+        } elsif ($job eq 'Inszenierung') {
+        } elsif ($job eq 'Chor') {
+        } elsif ($job eq 'Herstellungsleitung') {
+        } elsif ($job eq 'Buch/Autor') {
+          $$ce->{writers} = $people;
         } else {
           d( "unhandled job $job" );
         }
@@ -415,15 +430,28 @@ sub ParseExtraInfo
       next;
     }
 
-
     # strip dub, premiere
     $line =~ s|, Synchronfassung$||;
     $line =~ s|, Erstausstrahlung$||;
+    $line =~ s|, Schwerpunkt: [^,]+$||;
     $line =~ s|, Synchronfassung$||;
-    $line =~ s|, Originalfassung mit Untertiteln||;
+    $line =~ s|, Originalfassung mit Untertiteln||; # yes, it's not the last
     # is it the genre?
     # genre, contries year, producing stations
     if( $line =~ m|^[^,]+,[^,]+\s+\d{4},[^,]+$| ) {
+      next;
+    }
+    # genre, contries year
+    if( $line =~ m|^[^,]+,[^,]+\s+\d{4}$| ) {
+      next;
+    }
+    # contries year, producing stations
+    if( $line =~ m|[^,]+\s+\d{4},[^,]+$| ) {
+      next;
+    }
+
+    # FIXME has title (incl. part number), origtitle, partnumber: empty episode title
+    if( $line =~ m|^\(\d+\):$| ) {
       next;
     }
 
