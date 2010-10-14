@@ -22,7 +22,7 @@ program_type
 use DateTime;
 use Encode;
 
-use NonameTV qw/MyGet expand_entities AddCategory norm/;
+use NonameTV qw/AddCategory norm/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/progress error/;
 
@@ -43,6 +43,9 @@ sub new {
 
     my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
     $self->{datastorehelper} = $dsh;
+
+    # flag to enable decoding according to charset in Content-Type header
+    $self->{cc}->{wantdecode} = 1;
 
     return $self;
 }
@@ -79,8 +82,7 @@ sub ImportContent {
   # Decode the string into perl's internal format.
   # see perldoc Encode
 
-#  my $str = decode( "utf-8", $$cref );
-  my $str = decode( "iso-8859-1", $$cref );
+  my $str = decode( "utf-8", $$cref );
 
   my @rows = split("\n", $str );
 

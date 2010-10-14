@@ -3,9 +3,9 @@ package NonameTV::ContentCache;
 use strict;
 
 use Digest::MD5 qw/md5_hex/;
-use Encode qw(encode_utf8 is_utf8);
+use Encode qw(encode_utf8 from_to is_utf8);
 
-use NonameTV::Log qw/w/;
+use NonameTV::Log qw/w d/;
 
 =pod
 
@@ -267,7 +267,18 @@ sub GetUrl {
   }
 
   my $res = $self->{ua}->get( $surl );
-  
+
+  if( defined( $self->{wantdecode} ) ) {
+    if( defined( $res->header( 'Content-Type' ) ) ) {
+      # Content-Type: text/plain;charset=windows-1250
+      # Content-Type: text/plain;charset=windows-1252
+      if ((my ($encoding) = ($res->header( 'Content-Type' ) =~ m|;charset=(\S+)$| ))) {
+        d( "decoding $encoding into utf-8" );
+        from_to( ${$res->content_ref}, $encoding, 'utf-8' );
+      }
+    }
+  }
+
   if( $res->is_success ) {
     return ($res->content_ref, undef);
   }
