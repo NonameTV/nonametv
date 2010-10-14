@@ -378,13 +378,35 @@ sub ParseExtraInfo
        next;
     }
 
-    # parse credits
+    # parse credits (all but actors)
     if( $line =~ /^\S+:\s+.*$/ ){
       my @credits = split( '; ', $line );
       foreach my $credit (@credits) {
         my ($job, $people) = ($credit =~ m|^(\S+):\s*(.*)$|);
         if ($job eq 'Regie') {
           $$ce->{directors} = $people;
+        } elsif ($job eq 'Buch') {
+          $$ce->{writers} = $people;
+        } elsif ($job eq 'Kamera') {
+        } elsif ($job eq 'Schnitt') {
+        } elsif ($job eq 'Ton') {
+        } elsif ($job eq 'Musik') {
+        } elsif ($job eq 'Produzent') {
+          $$ce->{producers} = $people;
+        } elsif ($job eq 'Produktion') {
+        } elsif ($job eq 'Redaktion') {
+        } elsif ($job eq 'Moderation') {
+          $$ce->{presenters} = $people;
+        } elsif ($job eq 'Gast') {
+          $$ce->{Guests} = $people;
+        } elsif ($job eq 'Dirigent') {
+        } elsif ($job eq 'Orchester') {
+        } elsif ($job eq 'Choreografie') {
+        } elsif ($job eq 'Komponist') {
+        } elsif ($job eq 'Maske') {
+        } elsif ($job eq 'Kostüme') {
+        } elsif ($job eq 'Ausstattung') {
+        } elsif ($job eq 'Regieassistenz') {
         } else {
           d( "unhandled job $job" );
         }
