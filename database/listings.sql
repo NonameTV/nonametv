@@ -172,3 +172,17 @@ CREATE TABLE `services` (
   `lasteventid` int(11) NOT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `jobs`;
+CREATE TABLE `jobs` (
+  `type` varchar(20) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `starttime` datetime NOT NULL,
+  `deleteafter` datetime NOT NULL,
+  `duration` varchar(20) NOT NULL,
+  `success` tinyint NOT NULL,
+  `message` mediumtext,
+  `lastok` datetime default '0000-00-00 00:00:00',
+  `lastfail` datetime default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`type`, `name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
