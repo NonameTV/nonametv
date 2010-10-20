@@ -79,7 +79,7 @@ sub new {
 
   eval {
     require WWW::Mechanize;
-    $self->{ua} = WWW::Mechanize->new();
+    $self->{ua} = WWW::Mechanize->new( onerror => \&d );
   };
 
   if( not defined $self->{ua} ) {

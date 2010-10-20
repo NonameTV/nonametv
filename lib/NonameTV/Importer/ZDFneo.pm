@@ -14,7 +14,7 @@ Same format as DreiSat.
 
 use DateTime;
 
-use NonameTV::Log qw/progress w error/;
+use NonameTV::Log qw/d progress w error/;
 
 use NonameTV::Importer::DreiSat;
 
@@ -53,10 +53,13 @@ sub Object2Url {
   }
 
   my $url = sprintf( "http://pressetreff.zdf.de/Public/ZDFneo-PD/%d.KW-%s-%s.xml", $week, $firstday, $lastday );
+  my $firstdayother = $first->day().'.'.$first->month().'.';
+  my $lastdayother = $last->day().'.'.$last->month();
+  my $urlother = sprintf( "http://pressetreff.zdf.de/Public/ZDFneo-PD/%d.KW-%s-%s.xml", $week, $firstdayother, $lastdayother );
 
-  progress("ZDF: fetching data from $url");
+  d( "ZDF: fetching data from $url\nor $urlother" );
 
-  return( $url, undef );
+  return( [$url, $urlother], undef );
 }
 
 #
