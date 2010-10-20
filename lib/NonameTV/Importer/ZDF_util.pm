@@ -323,6 +323,10 @@ sub clean_sendetitel
       $sce->{episode} = ". . " . ($episodenr-1) . "/" . $episodecnt;
     }
     $title =~ s| \(\d+/\d+\)$||;
+  } elsif ($title =~ m| \(\d+\) - \(\d+\)$|) {
+    my ($episodenrfirst, $episodenrlast) = ($title =~ m| \((\d+)\) - \((\d+)\)$|);
+    w ("parsing (and ignoring) episode numbers $episodenrfirst-$episodenrlast from title \"$title\"");
+    $title =~ s| \(\d+\) - \(\d+\)||;
   } elsif ($title =~ m| \(\d+\)$|) {
     my ($episodenr) = ($title =~ m| \((\d+)\)$|);
     p ("parsing episode number $episodenr from title \"$title\"");
