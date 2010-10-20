@@ -11,7 +11,7 @@ See xxx for instructions.
 
 =cut
 
-#use NonameTV::Log qw/d p w f/;
+use NonameTV::Log qw/f/;
 use NonameTV qw/ParseXml/;
 
 use base 'NonameTV::Importer::BaseWeekly';
@@ -49,9 +49,24 @@ sub FilterContent {
   my $self = shift;
   my( $cref, $chd ) = @_;
 
-  $cref =~ s|http://www.kika-presse.de/scripts/media/export/dtd/kika_programmWoche.dtd|http://www.kika-presse.de/media/export/dtd/kika_programmWoche.dtd|;
+  $$cref =~ s|$||g;
+  $$cref =~ s|http://www.kika-presse.de/scripts/media/export/dtd/kika_programmWoche.dtd|http://www.kika-presse.de/media/export/dtd/kika_programmWoche.dtd|;
+  # misescaped entities
+  $$cref =~ s|&amp;#(\d+);|&#$1;|g;
+  # convert misencoded entities (always unicode, never anything else in xml!)
+  $$cref =~ s|&#x80;|&#x20AC;|g; # Euro
+  $$cref =~ s|&#x82;|'|g;
+  $$cref =~ s|&#x84;|"|g;
+  $$cref =~ s|&#x85;|...|g;
+  $$cref =~ s|&#x91;|'|g;
+  $$cref =~ s|&#x92;|'|g;
+  $$cref =~ s|&#x93;|"|g;
+  $$cref =~ s|&#x94;|"|g;
+  $$cref =~ s|&#x96;|-|g;
+  $$cref =~ s|&#x97;|-|g;
+  $$cref =~ s|&#x99;|&#x2122;|g; # TM
 
-  return( \$cref, undef);
+  return( $cref, undef);
 }
 
 sub ContentExtension {
@@ -66,17 +81,17 @@ sub ImportContent {
   my $self = shift;
   my ($batch_id, $cref, $chd) = @_;
 
-  my $doc = ParseXml ($$cref);
+  my $doc = ParseXml ($cref);
   
   if (not defined ($doc)) {
-    error ("$batch_id: Failed to parse.");
+    f ("$batch_id: Failed to parse.");
     return 0;
   }
 
   # The data really looks like this...
   my $ns = $doc->find ('//ProgrammTag');
   if( $ns->size() == 0 ) {
-    error ("$batch_id: No data found");
+    f ("$batch_id: No data found");
     return 0;
   }
 
