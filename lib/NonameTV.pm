@@ -39,7 +39,7 @@ BEGIN {
 }
 our @EXPORT_OK;
 
-my $wvhtml = '/usr/bin/wvHtml --charset=utf8';
+my $wvhtml = 'wvHtml --charset=utf-8';
 # my $wvhtml = '/usr/bin/wvHtml';
 
 my $ua = LWP::UserAgent->new( agent => "Grabber from http://tv.swedb.se", 
@@ -522,6 +522,9 @@ sub ParseXmltv {
     my $url = $pgm->findvalue( 'url' );
 
     my $aspect = $pgm->findvalue( 'video/aspect' );
+    my $quality = $pgm->findvalue( 'video/quality' );
+
+    my $stereo = $pgm->findvalue( 'audio/stereo' );
 
     my @actors;
     my $ns = $pgm->find( ".//actor" );
@@ -577,6 +580,15 @@ sub ParseXmltv {
     if( $aspect =~ /\S/ ) {
       $e{aspect} = $aspect;
     }
+
+    if( $quality =~ /\S/ ) {
+      $e{quality} = $quality;
+    }
+
+    if( $stereo =~ /\S/ ) {
+      $e{stereo} = $stereo;
+    }
+
 
     if( scalar( @directors ) > 0 ) {
       $e{directors} = join ", ", @directors;
