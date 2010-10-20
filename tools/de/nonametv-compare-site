@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# Copy data from the public site to a local directory
+# and compare it with the locally generated data.
+rsync -a --delete acheron.geijersson.com:public_html/xmltv/ /var/local/nonametv/xmltv_site/
+rm -rf /tmp/xmltv_compare
+mkdir -p /tmp/xmltv_compare
+cd /tmp/xmltv_compare
+/home/mattias/development/nonametv/tools/nonametv-xmltv-compare /var/local/nonametv/xmltv_site /var/local/nonametv/xmltv_staging
+

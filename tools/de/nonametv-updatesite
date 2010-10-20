@@ -1,0 +1,16 @@
+#!/bin/sh
+
+NROOT=/home/nonametv/var
+
+tools/nonametv-export Xmltv --export-channels $1 $2 $3
+tools/nonametv-export Xmltv $1 $2 $3
+#tools/nonametv-export Json --export-channels $1 $2 $3
+#tools/nonametv-export Json $1 $2 $3
+
+tools/de/nonametv-xmltv-genhtml $NROOT/xmltv_staging .
+rsync examples/displayfile.html $NROOT/xmltv_staging
+rsync examples/listing.xsl $NROOT/xmltv_staging
+rsync examples/de/index.html $NROOT/xmltv_staging
+
+RSYNC_RSH=ssh
+tools/de/nonametv-upload $1 $2 $3

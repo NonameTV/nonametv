@@ -1,0 +1,17 @@
+#!/bin/sh
+
+getmail -q -rkanal9.rc
+getmail -q -rngcsverige.rc
+
+# These importers are disabled but we fetch mail for them anyway
+getmail -q -rdr.rc
+getmail -q -rdiscovery.rc
+getmail -q -raftonbladet.rc
+getmail -q -rexpressen.rc
+getmail -q -rtv-data-swedb.se.rc
+getmail -q -respn.rc
+
+# Mail is additionally delivered to the tv-data account.
+
+tools/se/nonametv-filter-mail
+tools/se/nonametv-parse-maildir

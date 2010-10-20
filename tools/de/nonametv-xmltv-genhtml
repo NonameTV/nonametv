@@ -1,0 +1,215 @@
+#!/usr/bin/perl -w
+
+use strict;
+
+use FindBin;
+use lib "$FindBin::Bin/../../lib";
+
+use NonameTV::Factory qw/CreateDataStore/;
+
+use File::Copy;
+
+# How large an empty xmltv-file can be.
+use constant EMPTY_SIZE => 140;
+
+if( scalar( @ARGV ) != 2 )
+{
+  print << 'EODOC';
+nonametv-xmltv-genhtml <outputdir> <installationdir>
+
+Generate a table with data for each day and channel. The .xml.gz-files
+should be located in <dir> and the table will be written to 
+<dir>/00index.html.
+
+<installationdir> should be the basedir for a nonametv installation.
+
+Furthermore, the program generates a file 00logos.html that contains
+a list of all channels and shows their logos.
+
+If the result of nonametv-xmltv-genhtml is identical to the previous
+content of 00index.html, the original file will be left untouched.
+
+EODOC
+
+  exit 1;
+}
+
+my( $dir, $installdir ) = @ARGV;
+
+my $ds = CreateDataStore();
+
+# Build list of files
+my %files;
+
+foreach my $file ( glob("$dir/*.xml.gz") )
+{
+  my( $name ) = ($file =~ m%/([^/]+_\d{4}-\d{2}-\d{2}).xml.gz%);
+  $files{$name} = "X" if defined $name;
+}
+
+foreach my $file (keys %files)
+{
+  if( -s( "$dir/$file.xml.gz" ) < EMPTY_SIZE  )
+  {
+    # File is empty.
+    $files{$file} = "E";
+    next;
+  }
+}
+
+my @channels;
+my %dates;
+
+my $ch = $ds->sa->LookupMany( "channels", { export => 1 }, ['xmltvid'] );
+
+foreach my $c (@{$ch}) {
+  push @channels, $c->{xmltvid};
+}
+ 
+foreach my $file (keys %files)
+{
+  my( $channel, $date ) = split( "_", $file );
+  $dates{$date} = 1;
+}
+
+open OUT, "> $dir/00index.html.new" 
+  or die "Failed to open output file: $@";
+
+print OUT << "EOHEAD";
+<html>
+<head>
+<style type="text/css">
+  .X {  text-align: center; }
+  .E {  text-align: center; background-color: grey; }
+</style>
+</head>
+<body>
+<h1>Schedules</h1>
+<table>
+<thead>
+  <tr>
+    <td>Channel</td>
+EOHEAD
+
+foreach my $date (sort keys %dates)
+{
+  my( $s ) = ($date =~ m/(\d\d-\d\d)$/);
+  print OUT "    <td>$s</td>\n";
+}
+
+print OUT << "EOD";
+  </tr>
+</thead>
+<tbody>
+
+EOD
+
+foreach my $channel (@channels)
+{
+  print OUT << "EOD";
+<tr>
+  <td>$channel</td>
+
+EOD
+
+  foreach my $date (sort keys %dates)
+  {
+    my $file = "${channel}_$date";
+    $files{$file} = ' ' unless defined $files{$file};
+
+    if( $files{$file} eq 'U' )
+    {
+      print OUT "<td class='$files{$file}'><a href='$file.diff'>$files{$file}</a></td>";
+    }
+    else
+    {
+      print OUT "<td class='$files{$file}'><a href='displayfile.html?$file'>$files{$file}</a></td>";
+    }
+  }
+
+  print OUT "</tr>\n";
+}
+
+print OUT << "EOD";
+
+</tbody>
+</table>
+</body>
+</html>
+
+EOD
+
+close(OUT);
+
+update_if_changed( "$dir/00index.html.new", "$dir/00index.html" );
+
+open OUT, "> $dir/00logos.html.new" 
+  or die "Failed to open output file: $@";
+
+print OUT << "EOHEAD";
+<html>
+<head>
+
+<script language="JavaScript">
+function changeBg(col)
+{
+  document.bgColor = col;
+}
+
+</script>
+
+</head>
+<body>
+<h1>Logos</h1>
+Background: 
+<a href="javascript:changeBg('#ffffff')">White</a>
+<a href="javascript:changeBg('#dddddd')">Light grey</a>
+<a href="javascript:changeBg('#333333')">Dark grey</a>
+<a href="javascript:changeBg('#000000')">Black</a>
+<a href="javascript:changeBg('#0000dd')">Dark blue</a>
+
+<table>
+  
+EOHEAD
+
+foreach my $channel (@channels)
+{
+  print OUT << "EOREC";
+<tr>
+  <td>$channel</td>
+  <td><img src="http://xmltv.spaetfruehstuecken.org/chanlogos/$channel.png"></td>
+  <td><img src="http://xmltv.spaetfruehstuecken.org/chanlogos/44x44/$channel.png"></td>
+  <td><img src="http://xmltv.spaetfruehstuecken.org/chanlogos/16x16/$channel.png"></td>
+</tr>
+
+EOREC
+
+}
+
+print OUT << "EOFOOT";
+</table>
+</body>
+</html>
+
+EOFOOT
+
+close(OUT);
+
+update_if_changed( "$dir/00logos.html.new", "$dir/00logos.html" );
+
+system( "zcat $dir/channels.xml.gz | xsltproc $installdir/examples/channel-list.xsl - > $dir/channels.html.new" );
+
+update_if_changed( "$dir/channels.html.new", "$dir/channels.html" );
+
+sub update_if_changed {
+  my( $new, $old ) = @_;
+
+  system("diff $new $old > /dev/null 2>&1");
+  if( $? ) {
+    move( "$new", "$old" );
+  }
+  else {
+    unlink( "$new" );
+  }
+}
+

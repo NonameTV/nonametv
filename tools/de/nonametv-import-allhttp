@@ -1,0 +1,37 @@
+#!/bin/sh
+
+# NONAMETV=nonametv-import
+NONAMETV="tools/nonametv-import"
+
+#$NONAMETV Kanal5 $1 $2 $3
+#$NONAMETV Kanal9 $1 $2 $3
+$NONAMETV Viasat $1 $2 $3
+#$NONAMETV Viasat_dev $1 $2 $3
+#$NONAMETV TV4 $1 $2 $3
+#$NONAMETV Svt $1 $2 $3
+#$NONAMETV CanalPlus $1 $2 $3
+#$NONAMETV CanalPlusPPV $1 $2 $3
+#$NONAMETV Mtve $1 $2 $3
+#$NONAMETV Nonstop $1 $2 $3
+#$NONAMETV NASN $1 $2 $3
+#$NONAMETV DR $1 $2 $3
+#$NONAMETV Axess $1 $2 $3
+#$NONAMETV SverigesRadio $1 $2 $3
+#$NONAMETV Eurosport $1 $2 $3
+
+$NONAMETV Arte_http $1 $2 $3
+$NONAMETV DasErsteDE $1 $2 $3
+$NONAMETV DRadioDE $1 $2 $3
+$NONAMETV DRadioWissenDE $1 $2 $3
+$NONAMETV DreiSat $1 $2 $3
+$NONAMETV KiKaDE $1 $2 $3
+$NONAMETV RadioSevenSE $1 $2 $3
+$NONAMETV RadioXDE $1 $2 $3
+$NONAMETV TechnoBaseFM $1 $2 $3
+#$NONAMETV Tele5 $1 $2 $3
+$NONAMETV ZDF $1 $2 $3
+$NONAMETV ZDFneo $1 $2 $3
+#$NONAMETV ZDFinfo $1 $2 $3
+
+fetch -o /home/nonametv/var/channels/tv_grab/ok54.xml http://programm.ok54.de/xmltv/
+$NONAMETV TVGrabXX $1 $2 $3

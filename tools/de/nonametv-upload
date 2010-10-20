@@ -1,0 +1,19 @@
+#!/bin/sh
+
+NROOT=/home/nonametv/var
+SC_OPT=-qq
+V=false
+
+if [ $1z = '--verbosez' ]
+then
+  SC_OPT=
+  V=true
+fi
+$V && echo "Local rsync"
+rsync -c --delete -r $NROOT/xmltv_staging/ $NROOT/xmltv/
+#rsync -c --delete -r $NROOT/json_staging/ $NROOT/json/
+
+#$V && echo "tv.swedb.se"
+#sitecopy --update $SC_OPT tv.swedb.se
+
+tools/nonametv-upload xmltv1
