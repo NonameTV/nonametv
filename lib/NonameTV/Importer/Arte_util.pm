@@ -91,6 +91,8 @@ sub ImportFull
     next if $div->findvalue( '@name' ) =~ /title in english/i;
 
     my( $text ) = norm( $div->findvalue( './/text()' ) );
+    # strip strange " * " in front of paragraph
+    $text =~ s|^\s*\*\s+||;
     next if $text eq "";
 
     my $type;
