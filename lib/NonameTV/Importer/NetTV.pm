@@ -42,8 +42,6 @@ sub ImportContentFile {
   my $self = shift;
   my( $file, $chd ) = @_;
 
-  my( $oBook, $oWkS, $oWkC );
-
   $self->{fileerror} = 0;
 
   my $xmltvid=$chd->{xmltvid};
@@ -53,9 +51,13 @@ sub ImportContentFile {
 
   # Only process .xls files
   return if $file !~  /\.xls$/i;
+#return if $file !~  /18\.10/i;
+
   progress( "NetTV: Processing $file" );
   
-  $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
+  my $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
+
+  my $date;
 
   my $kada;
   my $batch_id;
@@ -65,84 +67,73 @@ sub ImportContentFile {
 
   for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
 
-    $oWkS = $oBook->{Worksheet}[$iSheet];
+    my $oWkS = $oBook->{Worksheet}[$iSheet];
 
     # process only the sheet with the name PPxle
-    next if ( $oWkS->{Name} !~ /PPxle/ );
+    #next if ( $oWkS->{Name} !~ /PPxle/ );
 
     progress( "NetTV: Processing worksheet: $oWkS->{Name}" );
 
     for(my $iR = $oWkS->{MinRow} ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
-    #for(my $iR = 1 ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
 
-      # Time Slot
-      $oWkC = $oWkS->{Cells}[$iR][0];
-      if( $oWkC ){
-        $kada = $oWkC->Value;
-      }
+      # Date
+      my $oWkC = $oWkS->{Cells}[$iR][0];
+      next if( ! $oWkC );
+      next if( ! $oWkC->Value );
 
-      # next if kada is empty
-      next if ( ! $kada );
+      if( isDate( $oWkC->Value ) ){
 
-      # check if date or time is in the first column
-      if( $kada =~ /^\d\d\.\d\d\.\d\d$/ ){ # row with the date
-        ( $day , $month , $year ) = ( $kada =~ /(\d\d)\.(\d\d)\.(\d\d)/ );
-        $year += 2000;
-      } elsif ( $kada =~ /^\d\d\.\d\d$/ ){ # row with the time of the show
-        ( $hour , $min ) = ( $kada =~ /(\d\d)\.(\d\d)/ );
-      } else {
-        next;
-      }
+        $date = ParseDate( $oWkC->Value );
+        next if( ! $date );
 
-      next if( ! $day );
-      next if( ! $hour );
+        if( $date ne $currdate ) {
+          if( $currdate ne "x" ) {
+            $dsh->EndBatch( 1 );
+          }
 
-      my $starttime = create_dt( $day , $month , $year , $hour , $min );
-      my $date = $starttime->ymd('-');
+          my $batch_id = $xmltvid . "_" . $date;
+          $dsh->StartBatch( $batch_id , $channel_id );
+          $dsh->StartDate( $date , "06:00" );
+          $currdate = $date;
 
-      if( $date ne $currdate ) {
-        if( $currdate ne "x" ) {
-          $dsh->EndBatch( 1 );
+          progress("NetTV FLAT: $chd->{xmltvid}: Date is: $date");
+          next;
         }
 
-        my $batch_id = $xmltvid . "_" . $date;
-        $dsh->StartBatch( $batch_id , $channel_id );
-        $dsh->StartDate( $date , "06:00" );
-        $currdate = $date;
       }
+
+      # time
+      $oWkC = $oWkS->{Cells}[$iR][0];
+      next if( ! $oWkC );
+      next if( ! $oWkC->Value );
+      my $time = $oWkC->Value;
+      next if( $time !~ /^\d\d\.\d\d$/ );
+      $time =~ s/\./:/;
 
       # Title
       $oWkC = $oWkS->{Cells}[$iR][1];
-      if( $oWkC ){
-        $title = $oWkC->Value;
-      }
+      next if( ! $oWkC );
+      next if( ! $oWkC->Value );
+      my $title = $oWkC->Value;
       next if( ! $title );
 
       # Genre
-      my $genre = undef;
       $oWkC = $oWkS->{Cells}[$iR][2];
-      if( $oWkC ){
-        $genre = $oWkC->Value;
-      }
+      my $genre = $oWkC->Value if( $oWkC and $oWkC->Value );
 
       # Episode
-      my $episode = undef;
       $oWkC = $oWkS->{Cells}[$iR][3];
-      if( $oWkC ){
-        $episode = $oWkC->Value;
-      }
+      my $episode = $oWkC->Value if( $oWkC and $oWkC->Value );
 
       # Premiere
       $oWkC = $oWkS->{Cells}[$iR][4];
-      if( $oWkC ){
-        $premiere = $oWkC->Value;
-      }
+      my $premiere = $oWkC->Value if( $oWkC and $oWkC->Value );
 
-      progress( "NetTV: $xmltvid: $starttime - $title" );
+      progress( "NetTV: $xmltvid: $time - $title" );
 
       my $ce = {
         channel_id => $channel_id,
-        start_time => $starttime->hms(':'),
+        start_time => $time,
         title => $title,
       };
 
@@ -178,6 +169,36 @@ sub ImportContentFile {
   } # next worksheet
 
   return;
+}
+
+sub isDate
+{
+  my( $text ) = @_;
+
+#print ">$text<\n";
+
+  if( $text =~ /^\d+\.\d+\.\d+$/ ){
+    return 1;
+  }
+
+  return 0;
+}
+
+sub ParseDate
+{
+  my( $text ) = @_;
+
+#print ">$text<\n";
+
+  my( $day, $month, $year );
+
+  if( $text =~ /^\d+\.\d+\.\d+$/ ){
+    ( $day, $month, $year ) = ( $text =~ /^(\d+)\.(\d+)\.(\d+)$/ );
+  }
+
+  $year += 2000 if $year lt 100;
+
+  return sprintf( "%04d-%02d-%02d", $year, $month, $day );
 }
 
 sub create_dt

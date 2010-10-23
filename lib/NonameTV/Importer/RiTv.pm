@@ -18,7 +18,9 @@ use utf8;
 
 use POSIX;
 use DateTime;
+use DateTime::Format::Excel;
 use XML::LibXML;
+use Spreadsheet::ParseExcel;
 #use Text::Capitalize qw/capitalize_title/;
 
 use NonameTV qw/MyGet Wordfile2Xml Htmlfile2Xml norm AddCategory/;
@@ -57,6 +59,8 @@ sub ImportContentFile {
     $self->ImportXML( $file, $channel_id, $xmltvid );
   } elsif( $file =~ /\.doc$/i ){
     $self->ImportDOC( $file, $channel_id, $xmltvid );
+  } elsif( $file =~ /\.xls$/i ){
+    $self->ImportFlatXLS( $file, $chd );
   }
 
   return;
@@ -180,6 +184,97 @@ sub ImportDOC
   return;
 }
 
+
+sub ImportFlatXLS
+{
+  my $self = shift;
+  my( $file, $chd ) = @_;
+
+  my $dsh = $self->{datastorehelper};
+  my $ds = $self->{datastore};
+
+  my $coldate = 1;
+  my $coltime = 0;
+  my $coltitle = 1;
+
+  my $date;
+  my $currdate = "x";
+
+  progress( "RiTv FlatXLS: $chd->{xmltvid}: Processing flat XLS $file" );
+
+  my( $oBook, $oWkS, $oWkC );
+  $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
+
+  if( not defined( $oBook ) ) {
+    error( "RiTv FlatXLS: $file: Failed to parse xls" );
+    return;
+  }
+
+  for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
+
+    $oWkS = $oBook->{Worksheet}[$iSheet];
+    progress("RiTv FlatXLS: $chd->{xmltvid}: processing worksheet named '$oWkS->{Name}'");
+
+    # read the rows with data
+    for(my $iR = $oWkS->{MinRow} ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
+
+      # Date
+      $oWkC = $oWkS->{Cells}[$iR][$coldate];
+      if( $oWkC and $oWkC->Value ){
+
+        if( isDate( $oWkC->Value ) ){
+          $date = ParseDate( $oWkC->Value );
+
+          if( $date ne $currdate ) {
+            if( $currdate ne "x" ) {
+	      $dsh->EndBatch( 1 );
+            }
+
+            my $batch_id = $chd->{xmltvid} . "_" . $date;
+            $dsh->StartBatch( $batch_id , $chd->{id} );
+            $dsh->StartDate( $date , "06:00" );
+            $currdate = $date;
+
+            progress("RiTv FlatXLS: $chd->{xmltvid}: Date is: $date");
+          }
+          next;
+        }
+      }
+
+      # Time
+      $oWkC = $oWkS->{Cells}[$iR][$coltime];
+      next if( ! $oWkC );
+      next if( ! $oWkC->Value );
+      my $time = ParseTime( $oWkC->Value );
+      next if( ! $time );
+
+      # Title
+      $oWkC = $oWkS->{Cells}[$iR][$coltitle];
+      next if( ! $oWkC );
+      next if( ! $oWkC->Value );
+      my $title = $oWkC->Value;
+      next if( ! $title );
+
+      progress( "RiTv FlatXLS: $chd->{xmltvid}: $time - $title" );
+
+      my $ce = {
+        channel_id => $chd->{id},
+        title => $title,
+        start_time => $time,
+      };
+
+      $dsh->AddProgramme( $ce );
+
+    } # next row
+
+  } # next worksheet
+
+  $dsh->EndBatch( 1 );
+
+  return;
+}
+
+
 sub FlushDayData {
   my ( $xmltvid, $dsh , @data ) = @_;
 
@@ -196,8 +291,12 @@ sub FlushDayData {
 sub isDate {
   my ( $text ) = @_;
 
+#print ">$text<\n";
+
   # format 'RASPORED PROGRAMA ZA PETAK 18.07.2008.'
   if( $text =~ /^RASPORED PROGRAMA ZA (ponedjeljak|utorak|srijedu|Četvrtak|petak|subotu|nedjelju)\s*\d+\.\d+\.\d+\.\s*$/i ){
+    return 1;
+  } elsif( $text =~ /^\d{5}$/i ){
     return 1;
   }
 
@@ -207,9 +306,37 @@ sub isDate {
 sub ParseDate {
   my( $text ) = @_;
 
-  my( $dayname, $day, $month, $year ) = ( $text =~ /^RASPORED PROGRAMA ZA (\S+)\s*(\d+)\.(\d+)\.(\d+)\.\s*$/ );
+  my( $dayname, $day, $month, $year );
+
+  if( $text =~ /^RASPORED PROGRAMA ZA (\S+)\s*(\d+)\.(\d+)\.(\d+)\.\s*$/ ){
+    ( $dayname, $day, $month, $year ) = ( $text =~ /^RASPORED PROGRAMA ZA (\S+)\s*(\d+)\.(\d+)\.(\d+)\.\s*$/ );
+  } elsif( $text =~ /^\d{5}$/ ){
+    my $dt = DateTime::Format::Excel->parse_datetime( $text );
+    $year = $dt->year;
+    $month = $dt->month;
+    $day = $dt->day;
+  }
 
   return sprintf( '%d-%02d-%02d', $year, $month, $day );
+}
+
+sub ParseTime
+{
+  my( $text ) = @_;
+
+#print "TIME >$text<\n";
+
+  my( $hour, $min, $sec );
+
+  if( $text =~ /^0\.\d+$/){ # format '0.377962962962964'
+    my $daysecs = int( 86400 * $text );
+    $hour = int( $daysecs / 3600 );
+    $min =  int( ( $daysecs - ( $hour * 3600 ) ) / 60 );
+  } else {
+    return undef;
+  }
+
+  return sprintf( "%02d:%02d", $hour, $min );
 }
 
 sub isShow {

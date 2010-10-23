@@ -187,8 +187,14 @@ sub FlushDayData {
 sub isDate {
   my ( $text ) = @_;
 
+#print ">$text<\n";
+
   # format '___ Petak ______________________________________ 11.07.2008. ___'
   if( $text =~ /^_*\s*(ponedjeljak|utorak|srijeda|Četvrtak|petak|subota|nedjelja)\s*_*\s*\d+\.\d+\.\d+\.\s*_*$/i ){
+    return 1;
+
+  # format '____ 05.11.2010. ___ Petak ____________________________________________________'
+  } elsif( $text =~ /^_*\s*\d+\.\d+\.\d+\.\s*_*\s*(ponedjeljak|utorak|srijeda|Četvrtak|petak|subota|nedjelja)\s*_*$/ ){
     return 1;
   }
 
@@ -198,7 +204,17 @@ sub isDate {
 sub ParseDate {
   my( $text ) = @_;
 
-  my( $dayname, $day, $month, $year ) = ( $text =~ /^_*\s*(\S+)\s*_*\s*(\d+)\.(\d+)\.(\d+)\.\s*_*$/ );
+  my( $dayname, $day, $month, $year );
+
+  # format '___ Petak ______________________________________ 11.07.2008. ___'
+  if( $text =~ /^_*\s*(ponedjeljak|utorak|srijeda|Četvrtak|petak|subota|nedjelja)\s*_*\s*\d+\.\d+\.\d+\.\s*_*$/i ){
+    ( $dayname, $day, $month, $year ) = ( $text =~ /^_*\s*(\S+)\s*_*\s*(\d+)\.(\d+)\.(\d+)\.\s*_*$/ );
+
+  # format '____ 05.11.2010. ___ Petak ____________________________________________________'
+  } elsif( $text =~ /^_*\s*\d+\.\d+\.\d+\.\s*_*\s*(ponedjeljak|utorak|srijeda|Četvrtak|petak|subota|nedjelja)\s*_*$/ ){
+    ( $day, $month, $year, $dayname ) = ( $text =~ /^_*\s*(\d+)\.(\d+)\.(\d+)\.\s*_*\s*(\S+)\s*_*$/ );
+  }
+
 
   return sprintf( '%d-%02d-%02d', $year, $month, $day );
 }

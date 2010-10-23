@@ -75,6 +75,7 @@ sub ImportContentFile {
           # columns alternate names
           $columns{'Title CRO'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Cro Title/i );
           $columns{'Title CRO'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Title$/i );
+          $columns{'Title CRO'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Naslov_CRO$/i );
         }
         next;
       }

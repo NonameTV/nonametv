@@ -428,7 +428,6 @@ sub ImportAirSingle
   my $ds = $self->{datastore};
 
   my $currdate = "x";
-  my %columns = ();
 
   progress( "FOX AirSingle: $chd->{xmltvid}: Processing flat XLS $file" );
 
@@ -445,6 +444,7 @@ sub ImportAirSingle
 
     progress("FOX AirSingle: $chd->{xmltvid}: processing worksheet named '$oWkS->{Name}'");
 
+    my %columns = ( "Day" =>0, "Hour" =>1, "English Title" => 2, "Croatian Title" => 3, "Genre" =>4 );
     my $date;
 
     for(my $iR = $oWkS->{MinRow} ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
@@ -480,22 +480,70 @@ sub ImportAirSingle
         }
       }
 
+      # Date
+      $oWkC = $oWkS->{Cells}[$iR][0];
+      next if( ! $oWkC );
+      next if( ! $oWkC->Value );
+      if( isDate( $oWkC->Value ) ){
+        $date = ParseDate( $oWkC->Value );
+
+        if( $date ne $currdate ) {
+          if( $currdate ne "x" ) {
+            $dsh->EndBatch( 1 );
+          }
+
+          my $batch_id = $chd->{xmltvid} . "_" . $date;
+          $dsh->StartBatch( $batch_id , $chd->{id} );
+          $dsh->StartDate( $date , "06:00" );
+          $currdate = $date;
+
+          progress("FOX AirSingle: $chd->{xmltvid}: Date is: $date");
+        }
+        next;
+      }
+      next if( ! $date );
+
+      # columns
+      my %tmpcolumns = ();
+      for(my $iC = $oWkS->{MinCol} ; defined $oWkS->{MaxCol} && $iC <= $oWkS->{MaxCol} ; $iC++) {
+        $oWkC = $oWkS->{Cells}[$iR][$iC];
+        next if( ! $oWkC );
+        next if( ! $oWkC->Value );
+        $tmpcolumns{$oWkC->Value} = $iC;
+
+      }
+      my $colmatch = 0;
+      foreach my $cl (%tmpcolumns){
+        if(
+          ( $cl =~ /Day/ ) or
+          ( $cl =~ /Hour/ ) or
+          ( $cl =~ /English Title/ ) or
+          ( $cl =~ /Croatian Title/ ) or
+          ( $cl =~ /Genre/ ) ){
+          $colmatch++;
+#print "$cl\n";
+        }
+      }
+      if( $colmatch ge 3 ){
+        %columns = %tmpcolumns;
+      }
+
       # Time
-      $oWkC = $oWkS->{Cells}[$iR][1];
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'Hour'}];
       next if( ! $oWkC );
       next if( ! $oWkC->Value );
       my $time = ParseTime( $oWkC->Value );
       next if( ! $time );
 
       # ENG Title
-      $oWkC = $oWkS->{Cells}[$iR][3];
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'English Title'}];
       next if( ! $oWkC );
       next if( ! $oWkC->Value );
       my $engtitle = $oWkC->Value;
       next if( ! $engtitle );
 
       # CRO Title
-      $oWkC = $oWkS->{Cells}[$iR][4];
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'Croatian Title'}];
       next if( ! $oWkC );
       next if( ! $oWkC->Value );
       my $crotitle = $oWkC->Value;
