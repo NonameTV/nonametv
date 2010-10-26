@@ -10,11 +10,11 @@ See xxx for instructions.
 
 =cut
 
+use Encode qw/decode/;
 use HTML::Entities;
 use HTML::TableExtract;
 use HTML::Parse;
 use IO::Uncompress::Gunzip qw(gunzip $GunzipError) ;
-use Unicode::String;
 
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/p w f/;
@@ -57,9 +57,9 @@ sub FilterContent {
   gunzip $gzcref => \$cref
     or die "gunzip failed: $GunzipError\n";
 
-  # FIXME convert latin1 to utf-8 to HTML
-  $cref = Unicode::String::latin1 ($cref)->utf8 ();
-  $cref = encode_entities ($cref, "\200-\377");
+  # FIXME convert latin1/cp1252 to utf-8 to HTML
+  $cref = decode( 'windows-1252', $cref );
+  $cref = encode_entities( $cref, "\x80-\xff" );
 
   # cut away frame around tables
   $cref =~ s|^.+\"0Woche\"> +(<table.+/table>)\n +</div></body>.*$|<html><body><div>$1</div></body></html>|s;
@@ -120,6 +120,7 @@ sub ImportContent {
     keep_html => 0
   );
 
+  $$cref = decode_entities( $$cref );
   $te->parse($$cref);
 
   my $table = $te->table(0,0);
