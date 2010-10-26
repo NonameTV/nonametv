@@ -7,10 +7,10 @@ package NonameTV::Importer::Downconverter;
 # grabber_info is: original channel id, [<flag>][, <flag>]
 # flag can be:
 #   quality - to set or delete the quality parameter
-#             -quality - delete the quality value
+#             quality - delete the quality value
 #             quality=HDTV - set the quality value to HDTV
 #   aspect - set or delete the aspect parameter
-#             -aspect - delete the aspect value
+#             aspect - delete the aspect value
 #             aspect=16:9 - set the aspect value to 16:9
 #
 
@@ -69,14 +69,14 @@ sub ImportContent {
 
     foreach my $flag (@flags) {
       # quality
-      if( $flag eq '-quality' ) {
+      if( $flag eq 'quality' ) {
         delete $e->{quality};
       } elsif( $flag =~ /^quality=/ ) {
         my @flagvalue = split(/=/, $flag );
         $e->{quality} = $flagvalue[1];
       }
       # aspect
-      if( $flag eq '-aspect' ) {
+      elsif( $flag eq 'aspect' ) {
         delete $e->{aspect};
       } elsif( $flag =~ /^aspect=/ ) {
         my @flagvalue = split(/=/, $flag );
