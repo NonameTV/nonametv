@@ -2,8 +2,8 @@ package NonameTV::Importer::DasErsteDE;
 
 =pod
 
-This importer imports data from SvT's press site. The data is fetched
-as one html-file per day and channel.
+This importer imports data from DasErste's press site. The data is fetched
+as one xml-file per day and channel.
 
 Features:
 
@@ -20,7 +20,7 @@ use Encode qw/from_to/;
 use Switch;
 use XML::LibXML;
 
-use NonameTV qw/AddCategory MyGet norm ParseXml/;
+use NonameTV qw/AddCategory norm ParseXml/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/d p progress w f/;
 
