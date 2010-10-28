@@ -1,6 +1,7 @@
 #!/bin/sh
 
-tools/nonametv-import DisneyChannel $1 $2 $3
-tools/nonametv-import Discovery $1 $2 $3
-
+#tools/nonametv-import DisneyChannel $1 $2 $3
+#tools/nonametv-import Discovery $1 $2 $3
+tools/nonametv-import Tele5 $1 $2 $3
+tools/nonametv-import ZDFino $1 $2 $3
 
