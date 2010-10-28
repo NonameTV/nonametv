@@ -2,7 +2,6 @@ package NonameTV::Importer::DRadioDE;
 
 use strict;
 use warnings;
-use Encode qw/from_to/;
 
 =pod
 
@@ -11,6 +10,7 @@ See xxx for instructions.
 
 =cut
 
+use Encode;
 use HTML::TableExtract;
 use IO::Uncompress::Gunzip qw(gunzip $GunzipError) ;
 
@@ -52,6 +52,8 @@ sub FilterContent {
     or die "gunzip failed: $GunzipError\n";
 
   $cref =~ s/\r//g;
+  $cref =~ s/encoding="iso-8859-1"/encoding="windows-1252"/g;
+  $cref =~ s/charset=iso-8859-1"/charset=windows-1252"/g;
 
   my $doc = Html2Xml ($cref);
   if( not defined $doc ) {
@@ -114,17 +116,18 @@ sub ImportContent {
 
     my ( $hour, $minute ) = ( $row[0] =~ m|(\d+):(\d+) Uhr| );
 
-    eval {
-      from_to($row[1], "iso-8859-1", "utf8");
-    };
-    if ($@) {
-      w ($hour . ':' . $minute . ': could not convert text to utf8');
-      f ($@);
-    }
     $row[1] =~ s|\n\s*\n|\n|sg;
     $row[1] =~ s|^\s*||m;
     $row[1] =~ s|\s*$||m;
     $row[1] =~ s|^\n||s;
+
+    # FIXME sometimes upstream provides really messed up encoding, e.g in
+    # latvian names. Interestingly they get them right in the articles but
+    # wrong in the program guide
+
+    # FIXME I'm not sure why utf-8 bytes work, but perl characters don't.
+    # I thought it should be the other way around.
+    $row[1] = encode( 'utf-8', $row[1] );
 
     my ( $title ) = ( $row[1] =~ m|^(.*)$|m );
     my ( $desc ) = ( $row[1] =~ m|\n(.+)$|s );
