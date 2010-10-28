@@ -81,6 +81,7 @@ sub ImportXML
   # as each day is in one worksheet, other days are
   # calculated as the offset from the first one
 
+#return if ( $file !~ /221010/ );
   progress( "FOX XML: $chd->{xmltvid}: Processing XML $file" );
 
   my $batch_id = $chd->{xmltvid} . "_" . $file;
@@ -91,17 +92,17 @@ sub ImportXML
   eval { $doc = $xml->parse_file($file); };
   if( $@ ne "" )
   {
-    error( "RTLTV: $chd->{xmltvid}: Failed to parse $@" );
+    error( "MediaTravel: $chd->{xmltvid}: Failed to parse $@" );
     return 0;
   }
   
   # Find all "programme"-entries.
   my $ns = $doc->find( "//programme" );
   if( $ns->size() == 0 ) {
-    error( "RTLTV: $chd->{xmltvid}: No 'programme' blocks found" ) ;
+    error( "MediaTravel: $chd->{xmltvid}: No 'programme' blocks found" ) ;
     return 0;
   }
-  progress( "RTLTV: $chd->{xmltvid}: " . $ns->size() . " programme blocks found" );
+  progress( "MediaTravel: $chd->{xmltvid}: " . $ns->size() . " programme blocks found" );
 
   foreach my $sc ($ns->get_nodelist)
   {
@@ -112,7 +113,7 @@ sub ImportXML
     my $start = $sc->findvalue( './@start' );
     if( not defined $start )
     {
-      error( "RTLTV: $chd->{xmltvid}: Invalid starttime '" . $sc->findvalue( './@start' ) . "'. Skipping." );
+      error( "MediaTravel: $chd->{xmltvid}: Invalid starttime '" . $sc->findvalue( './@start' ) . "'. Skipping." );
       next;
     }
 
@@ -122,7 +123,7 @@ sub ImportXML
     my $stop = $sc->findvalue( './@stop' );
     if( not defined $stop )
     {
-      error( "RTLTV: $chd->{xmltvid}: Invalid stoptime '" . $sc->findvalue( './@stop' ) . "'. Skipping." );
+      error( "MediaTravel: $chd->{xmltvid}: Invalid stoptime '" . $sc->findvalue( './@stop' ) . "'. Skipping." );
       next;
     }
 
@@ -138,7 +139,7 @@ sub ImportXML
     my $description = $sc->findvalue( 'desc' );
     my $url = $sc->findvalue( 'url' );
 
-    progress("RTLTV: $chd->{xmltvid}: $startdate $starttime - $title");
+    progress("MediaTravel: $chd->{xmltvid}: $startdate $starttime - $title");
 
     my $ce = {
       channel_id => $chd->{id},
@@ -151,7 +152,7 @@ sub ImportXML
     $ce->{url} = $url if $url;
 
 #    if( $genre ){
-#      my($program_type, $category ) = $ds->LookupCat( "RTLTV", norm($genre) );
+#      my($program_type, $category ) = $ds->LookupCat( "MediaTravel", norm($genre) );
 #      AddCategory( $ce, $program_type, $category );
 #    }
 

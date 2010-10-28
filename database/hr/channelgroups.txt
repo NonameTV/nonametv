@@ -1,12 +1,13 @@
 HRV,"Hrvatski programi",1,id,0
-SPORT,"Sportski programi",3,display_name,0
-NEWS,Vijesti,7,display_name,0
 FILM,"Filmski programi",2,display_name,0
+SPORT,"Sportski programi",3,display_name,0
 MUSIC,"Glazbeni programi",4,display_name,0
 CHILD,"Programi za djecu",5,display_name,0
+DOCUM,"Dokumentarni programi",6,display_name,0
+NEWS,Vijesti,7,display_name,0
 ADULT,"Programi za odrasle",8,display_name,0
-DOCS,"Dokumentarni programi",6,display_name,0
-MISC,"Razni programi",9,display_name,0
+REGION,"Regionalni programi",9,display_name,0
+MISC,"Razni programi",15,display_name,0
+HD,"HD programi",20,display_name,1
 RADIO,"Radijski kanali",100,id,0
 TEST,"Testni kanali",255,id,1
-HD,"HD programi",10,display_name,1

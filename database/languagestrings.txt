@@ -18,10 +18,6 @@ exporter-xmltv,episode_part,dio,hr
 exporter-xmltv,episode_number,epizoda,hr
 exporter-xmltv,episode_season,sezona,hr
 exporter-xmltv,of,od,hr
-exporter-xmltv,episode_part,Teil,de
-exporter-xmltv,episode_number,Folge,de
-exporter-xmltv,episode_season,Staffel,de
-exporter-xmltv,of,von,de
 listchannels,title,"This is the title of your channel listing page.",en
 listchannels,headertext,"Put whatever you want here. It will be displayed on the top of the channel list.",en
 listchannels,channel,Channel,en
@@ -112,3 +108,83 @@ programdetails,nowon,"Trenutno na",hr
 programdetails,nowon,"Now on",en
 programdetails,starttime,"Vrijeme početka",hr
 programdetails,starttime,"Start time",en
+exporter-dreampark,episode_part,part,en
+exporter-dreampark,episode_number,episode,en
+exporter-dreampark,episode_season,season,en
+exporter-dreampark,of,of,en
+exporter-dreampark,episode_part,Part,sv
+exporter-dreampark,episode_number,Del,sv
+exporter-dreampark,episode_season,"sÃ¤song",sv
+exporter-dreampark,of,av,sv
+exporter-dreampark,episode_part,dio,hr
+exporter-dreampark,episode_number,epizoda,hr
+exporter-dreampark,episode_season,sezona,hr
+exporter-dreampark,of,od,hr
+exporter-conax,episode_part,part,en
+exporter-conax,episode_number,episode,en
+exporter-conax,episode_season,season,en
+exporter-conax,of,of,en
+exporter-conax,episode_part,Part,sv
+exporter-conax,episode_number,Del,sv
+exporter-conax,episode_season,"sÃ¤song",sv
+exporter-conax,of,av,sv
+exporter-conax,episode_part,dio,hr
+exporter-conax,episode_number,epizoda,hr
+exporter-conax,episode_season,sezona,hr
+exporter-conax,of,od,hr
+listnetworks,type,Type,en
+listnetworks,type,Tip,hr
+listtses,tsid,"TS id",en
+listtses,tsid,"TS id",hr
+listtses,active,Active,en
+listtses,active,Aktivan,hr
+listtses,description,Description,en
+listtses,description,Opis,hr
+listtses,title,"Transport streams on network",en
+listtses,title,"Transportni streamovi na mreži",hr
+listservices,tsid,"TS id",en
+listservices,tsid,"TS id",hr
+listservices,active,Active,en
+listservices,active,Aktivan,hr
+listservices,description,Description,en
+listservices,description,Opis,hr
+listservices,serviceid,"Service id",en
+listservices,serviceid,"Service id",hr
+listservices,servicename,"Operator service name",en
+listservices,servicename,"Naziv servisa kod operatera",hr
+listservices,addnewservice,"Add new service",en
+listservices,addnewservice,"Dodaj novi servis",hr
+listservices,title,"Services on network",en
+listservices,title,"Servisi na mreži",hr
+listepgservers,addnewepgserver,"Add new EPG server",en
+listepgservers,addnewepgserver,"Dodaj novi EPG server",hr
+listtses,addnewts,"Add new TS",en
+listtses,addnewts,"Dodaj novi transportni stream",hr
+listservices,nntvchannel,"Gonix channel",en
+listservices,nntvchannel,"Gonix kanal",hr
+listtses,nodvbcnetworks,"No DVB networks found on this server",en
+listtses,nodvbcnetworks,"Ovaj server ne poslužuje ni jednu DVB mrežu",hr
+exporter-lysis,episode_part,part,en
+exporter-lysis,episode_number,episode,en
+exporter-lysis,episode_season,season,en
+exporter-lysis,of,of,en
+exporter-lysis,episode_part,Part,sv
+exporter-lysis,episode_number,Del,sv
+exporter-lysis,episode_season,"sÃ¤song",sv
+exporter-lysis,of,av,sv
+exporter-lysis,episode_part,dio,hr
+exporter-lysis,episode_number,epizoda,hr
+exporter-lysis,episode_season,sezona,hr
+exporter-lysis,of,od,hr
+exporter-xmltv2,episode_part,part,en
+exporter-xmltv2,episode_number,episode,en
+exporter-xmltv2,episode_season,season,en
+exporter-xmltv2,of,of,en
+exporter-xmltv2,episode_part,Part,sv
+exporter-xmltv2,episode_number,Del,sv
+exporter-xmltv2,episode_season,"sÃ¤song",sv
+exporter-xmltv2,of,av,sv
+exporter-xmltv2,episode_part,dio,hr
+exporter-xmltv2,episode_number,epizoda,hr
+exporter-xmltv2,episode_season,sezona,hr
+exporter-xmltv2,of,od,hr

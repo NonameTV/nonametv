@@ -23,6 +23,7 @@ CREATE TABLE `channels` (
   `sched_lang` varchar(4) NOT NULL default '',
   `empty_ok` tinyint(1) NOT NULL default '0',
   `url` varchar(100) default NULL,
+  `allowcredits` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -64,7 +65,7 @@ CREATE TABLE `programs` (
   `episode` varchar(20) default NULL,
   `production_date` date default NULL,
   `aspect` enum('unknown','4:3','16:9') NOT NULL default 'unknown',
-  `quality` varchar(40) default NULL,
+  `quality` varchar(40) NOT NULL,
   `stereo` varchar(40) NOT NULL,
   `rating` varchar(20) NOT NULL,
   `directors` text NOT NULL,
@@ -80,6 +81,7 @@ CREATE TABLE `programs` (
   `url_image_thumbnail` varchar(100) default NULL,
   `url_image_icon` varchar(100) default NULL,
   PRIMARY KEY  (`channel_id`,`start_time`),
+  KEY `channel_id` (`channel_id`,`start_time`),
   KEY `batch` (`batch_id`,`start_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -107,82 +109,75 @@ CREATE TABLE `languagestrings` (
   `language` varchar(4) NOT NULL default ''
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `admins`;
-CREATE TABLE `admins` (
-  `username` varchar(32) NOT NULL,
-  `password` varchar(32) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-INSERT INTO `admins` (username, password) VALUES ('nonametv', '');
-
 DROP TABLE IF EXISTS `epgservers`;
 CREATE TABLE `epgservers` (
-  `id` int(11) NOT NULL auto_increment,
-  `active` tinyint(4) NOT NULL default '0',
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `active` tinyint(1) unsigned NOT NULL default '0',
   `name` varchar(100) NOT NULL default '',
   `description` varchar(100) NOT NULL default '',
   `vendor` varchar(100) NOT NULL default '',
   `type` varchar(100) NOT NULL default '',
-  PRIMARY KEY  (`id`)
+  UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `dvb_cat`;
+CREATE TABLE `dvb_cat` (
+  `category` varchar(20) NOT NULL default '',
+  `dvb_category` varchar(20) NOT NULL,
+  PRIMARY KEY  (`category`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `networks`;
 CREATE TABLE `networks` (
-  `id` int(11) NOT NULL auto_increment,
-  `epgserver` int(11) NOT NULL,
-  `nit` int(11) NOT NULL,
-  `active` tinyint(4) NOT NULL default '0',
-  `name` varchar(100) NOT NULL default '',
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `nid` int(11) NOT NULL,
+  `active` tinyint(1) unsigned NOT NULL default '0',
+  `epgserver` int(11) unsigned NOT NULL,
+  `name` varchar(100) NOT NULL,
   `operator` varchar(100) NOT NULL default '',
   `description` varchar(100) NOT NULL default '',
   `charset` varchar(100) NOT NULL default '',
-  PRIMARY KEY  (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-DROP TABLE IF EXISTS `transportstreams`;
-CREATE TABLE `transportstreams` (
-  `id` int(11) NOT NULL,
-  `network` int(11) NOT NULL,
-  `tsid` int(11) NOT NULL,
-  `active` int(11) NOT NULL,
-  `description` varchar(256) NOT NULL,
-  `muxmainprotocol` int(11) NOT NULL,
-  `eitmaxbw` int(11) NOT NULL,
-  `simaxbw` int(11) NOT NULL,
-  `dsystype` int(11) NOT NULL,
-  `dsysfrequency` int(11) NOT NULL,
-  `dsysmodulationschemeid` int(11) NOT NULL,
-  `dsysfecouterschemeid` int(11) NOT NULL,
-  `dsysfecinnerschemeid` int(11) NOT NULL,
-  `dsyssymbolrate` int(11) NOT NULL,
-  PRIMARY KEY  (`id`)
+  `type` enum('DVB-C','DVB-S','DVB-T','IPTV','GENERIC') NOT NULL,
+  UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `services`;
 CREATE TABLE `services` (
-  `id` int(11) NOT NULL,
-  `transportstream` int(11) NOT NULL,
-  `active` int(11) NOT NULL,
-  `serviceid` int(11) NOT NULL,
-  `servicename` varchar(256) NOT NULL,
-  `logicalchannelnumber` int(11) NOT NULL,
-  `description` varchar(256) NOT NULL,
-  `nvod` int(11) NOT NULL,
-  `servicetypeid` int(11) NOT NULL,
-  `dbchid` int(11) NOT NULL,
-  `lasteventid` int(11) NOT NULL,
-  PRIMARY KEY  (`id`)
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `dbchid` int(11) unsigned NOT NULL,
+  `active` tinyint(1) unsigned NOT NULL default '0',
+  `network` int(11) unsigned NOT NULL,
+  `transportstream` int(11) unsigned NOT NULL,
+  `servicename` varchar(100) NOT NULL default '',
+  `logicalchannelnumber` int(11) unsigned NOT NULL,
+  `serviceid` int(11) unsigned NOT NULL,
+  `description` varchar(100) NOT NULL default '',
+  `sourceaddress` varchar(32) NOT NULL,
+  `sourceport` int(10) unsigned NOT NULL,
+  `pidvideo` int(10) unsigned NOT NULL,
+  `pidaudio` int(10) unsigned NOT NULL,
+  `nvod` varchar(100) NOT NULL,
+  `servicetypeid` int(11) unsigned NOT NULL,
+  `lasteventid` int(11) unsigned NOT NULL,
+  UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `jobs`;
-CREATE TABLE `jobs` (
-  `type` varchar(20) NOT NULL,
-  `name` varchar(100) NOT NULL,
-  `starttime` datetime NOT NULL,
-  `deleteafter` datetime NOT NULL,
-  `duration` varchar(20) NOT NULL,
-  `success` tinyint NOT NULL,
-  `message` mediumtext,
-  `lastok` datetime default '0000-00-00 00:00:00',
-  `lastfail` datetime default '0000-00-00 00:00:00',
-  PRIMARY KEY  (`type`, `name`)
+DROP TABLE IF EXISTS `transportstreams`;
+CREATE TABLE `transportstreams` (
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `tsid` int(11) NOT NULL,
+  `active` tinyint(1) unsigned NOT NULL default '0',
+  `network` int(11) unsigned NOT NULL,
+  `description` varchar(100) NOT NULL default '',
+  `muxmainprotocol` varchar(100) NOT NULL default '',
+  `eitmaxbw` varchar(100) NOT NULL default '',
+  `simaxbw` varchar(100) NOT NULL default '',
+  `dsystype` varchar(100) NOT NULL,
+  `dsysfrequency` varchar(100) NOT NULL,
+  `dsysmodulationschemeid` varchar(100) NOT NULL,
+  `dsysfecouterschemeid` varchar(100) NOT NULL,
+  `dsysfecinnerschemeid` varchar(100) NOT NULL,
+  `dsyssymbolrate` varchar(100) NOT NULL,
+  UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+

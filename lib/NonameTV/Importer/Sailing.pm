@@ -55,16 +55,16 @@ sub ImportContentFile {
 
 #return if( $file !~ /palinsesto Aprile 2010/i );
 
-#  my $ft = $self->CheckFileFormat( $file, $chd );
-#print "FT $ft " . %{$self->{columns}} . "\n";
-#  if( $ft eq FT_FLATXLS ){
-#    $self->ImportFlatXLS( $file, $chd );
-#  } elsif( $ft eq FT_GRIDXLS ){
-#    $self->ImportGridXLS( $file, $chd );
-#  } else {
-#    error( "Sailing: $chd->{xmltvid}: Unknown file format of $file" );
-#    $self->ImportFlatXLS( $file, $chd );
-#  }
+  my $ft = $self->CheckFileFormat( $file, $chd );
+print "FT $ft " . %{$self->{columns}} . "\n";
+  if( $ft eq FT_FLATXLS ){
+    $self->ImportFlatXLS( $file, $chd );
+  } elsif( $ft eq FT_GRIDXLS ){
+    $self->ImportGridXLS( $file, $chd );
+  } else {
+    error( "Sailing: $chd->{xmltvid}: Unknown file format of $file" );
+    $self->ImportFlatXLS( $file, $chd );
+  }
 
   $self->ImportFlatXLS( $file, $chd );
 
@@ -84,9 +84,9 @@ sub CheckFileFormat
 
   # the flat sheet file which sometimes uses
 
-  my %columns = ();
-
   progress( "Sailing: $chd->{xmltvid}: Checking file format for $file" );
+
+  my %columns = ();
 
   for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
 
@@ -97,7 +97,7 @@ sub CheckFileFormat
     # try to read the columns
     # if column names are present -> flat xls file
 
-    for(my $iR = $oWkS->{MinRow} ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
+    for(my $iR = $oWkS->{MinRow} ; $iR <= 10 ; $iR++) {
 
       # get the names of the columns from the 1st row
       if( not %columns ){
@@ -108,41 +108,42 @@ sub CheckFileFormat
           next if( ! $oWkC );
           next if( ! $oWkC->Value );
 
-#print "$iR $iC " . $oWkS->{Cells}[$iR][$iC]->Value . "\n";
-
-          #$columns{norm($oWkS->{Cells}[$iR][$iC]->Value)} = $iC;
+          $columns{$oWkS->{Cells}[$iR][$iC]->Value} = $iC;
 
           # columns alternate names
-          $columns{'DATE'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Date$/i );
-          $columns{'DATE'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Data$/i );
+          $columns{'DATE'} = $iC if( norm($oWkS->{Cells}[$iR][$iC]->Value) =~ /^Date$/i );
+          $columns{'DATE'} = $iC if( norm($oWkS->{Cells}[$iR][$iC]->Value) =~ /^Data$/i );
 
-          $columns{'TIME'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Time$/i );
-          $columns{'TIME'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Ora$/i );
+          $columns{'TIME'} = $iC if( norm($oWkS->{Cells}[$iR][$iC]->Value) =~ /^Time$/i );
+          $columns{'TIME'} = $iC if( norm($oWkS->{Cells}[$iR][$iC]->Value) =~ /^Ora$/i );
 
-          $columns{'TITLE'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Name of the episode$/i );
-          $columns{'TITLE'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Name of episode$/i );
-          $columns{'TITLE'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Codice$/i );
+          $columns{'TITLE'} = $iC if( norm($oWkS->{Cells}[$iR][$iC]->Value) =~ /^Name of the episode$/i );
+          $columns{'TITLE'} = $iC if( norm($oWkS->{Cells}[$iR][$iC]->Value) =~ /^Name of episode$/i );
+          $columns{'TITLE'} = $iC if( norm($oWkS->{Cells}[$iR][$iC]->Value) =~ /^Codice$/i );
 
-          $columns{'DESCRIPTION'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Description$/i );
-          $columns{'DESCRIPTION'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Descrizione$/i );
+          $columns{'DESCRIPTION'} = $iC if( norm($oWkS->{Cells}[$iR][$iC]->Value) =~ /^Description$/i );
+          $columns{'DESCRIPTION'} = $iC if( norm($oWkS->{Cells}[$iR][$iC]->Value) =~ /^Descrizione$/i );
 
-          $columns{'LENGTH'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Length$/i );
-          $columns{'LENGTH'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Durata$/i );
+          $columns{'LENGTH'} = $iC if( norm($oWkS->{Cells}[$iR][$iC]->Value) =~ /^Length$/i );
+          $columns{'LENGTH'} = $iC if( norm($oWkS->{Cells}[$iR][$iC]->Value) =~ /^Durata$/i );
+
+          if( ! $columns{'DATE'} and isDate( $oWkC->Value ) ){
+            $columns{'DATE'} = $iC;
+          } elsif( ! $columns{'TIME'} and isTime( $oWkC->Value ) ){
+            $columns{'TIME'} = $iC;
+          } elsif( defined $columns{'DATE'} and defined $columns{'TIME'} and ! $columns{'TITLE'} ){
+            $columns{'TITLE'} = $iC;
+          }
         }
-
-#print "A\n";
-        if( defined $columns{'DATE'} and defined $columns{'TIME'} ){
-foreach my $col (%columns) {
-print "$col\n";
-}
-          %{$self->{columns}} = %columns;
-          return FT_FLATXLS;
-        }
-#print "B\n";
       }
-#print "C\n";
-    }
-#print "D\n";
+
+      if( defined $columns{'DATE'} and defined $columns{'TIME'} and defined $columns{'TITLE'} ){
+        %{$self->{columns}} = %columns;
+        return FT_FLATXLS;
+      }
+
+      %columns = ();
+    } # next row
   }
 
   return FT_UNKNOWN;
@@ -152,23 +153,16 @@ sub ImportFlatXLS
 {
   my $self = shift;
   my( $file, $chd ) = @_;
-print "ImportFlatXLS\n";
 
   my $xmltvid=$chd->{xmltvid};
   my $channel_id = $chd->{id};
   my $dsh = $self->{datastorehelper};
   my $ds = $self->{datastore};
 
-#  my %columns = %{$self->{columns}};
-#  if( ! %columns ){
-    my %columns;
-    $columns{'DATE'} = 0;
-    $columns{'TIME'} = 1;
-    $columns{'TITLE'} = 2;
-    $columns{'DESCRIPTION'} = 3;
-    $columns{'LENGTH'} = 4;
-#  }
-print "1\n";
+  my %columns = %{$self->{columns}};
+#foreach my $col (%columns) {
+#print "$col\n";
+#}
 
   # Only process .xls files.
   return if $file !~  /\.xls$/i;
@@ -370,6 +364,33 @@ sub ImportGridXLS
   $dsh->EndBatch( 1 );
 
   return;
+}
+
+sub isDate
+{
+  my ( $text ) = @_;
+
+  $text = norm( $text );
+
+  # format '01/10/2010'
+  if( $text =~ /^\d{2}\/\d{2}\/\d{4}$/ ){
+    return 1;
+  }
+
+  return 0;
+}
+
+sub isTime
+{
+  my ( $text ) = @_;
+
+  $text = norm( $text );
+
+  if( $text =~ /^\d{2}:\d{2}$/ ){
+    return 1;
+  }
+
+  return 0;
 }
 
 sub ParseDate
