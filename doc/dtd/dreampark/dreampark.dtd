@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+  DATES:
+  All dates/times should be given in UTC according to ISO 8601 with the
+  following format: "yyyy-mm-ddThh:mm:ssZ"
+  
+  Example: 2005-02-18T11:43:12Z  
+-->
+
+<!-- Root element of document -->
+<!ELEMENT epg (meta,programs)>
+<!-- generatedAt is the time when the document was generated -->
+<!ATTLIST epg generatedAt NMTOKEN #REQUIRED>
+
+<!-- Container of all meta data -->
+<!ELEMENT meta (genres,contentTypes,channels)>
+
+<!--
+  Element name is used to describe name of content types and genres in
+  localized way 
+  
+  @lang is given using ISO 639 (http://www.w3.org/WAI/ER/IG/ert/iso639.htm)
+  2-letter codes
+-->
+<!ELEMENT name (#PCDATA)>
+<!ATTLIST name lang NMTOKEN #REQUIRED>
+
+<!--
+  A list of content types. Gives hints about the content not normally
+  categorized by genre (such as if a program contains violence or naked scenes) 
+  
+  These are referenced from inside program elements via contentTypeRef elements
+  
+  Localized using name elements (see above)
+  -->
+<!ELEMENT contentTypes (contentType+)>
+<!ELEMENT contentType (name+)>
+<!ATTLIST contentType id NMTOKEN #REQUIRED>
+
+<!--
+  A list of genres that categorizes the content of each program 
+  (drama, action thriller etc...)
+  
+  These are referenced from inside program elements via genreRef elements
+  
+  Localized using name elements (see above)  
+-->
+<!ELEMENT genres (genre+)>
+<!ELEMENT genre (name*)>
+<!ATTLIST genre	id NMTOKEN #REQUIRED>
+
+<!-- Channel element list container -->
+<!ELEMENT channels (channel+)>
+
+<!-- Has an id and a name and contains a list of programs -->
+<!ELEMENT channel EMPTY>
+<!ATTLIST channel 
+	id NMTOKEN #REQUIRED
+	name CDATA #REQUIRED>
+
+<!-- program element container -->
+<!ELEMENT programs (program+)>
+
+<!-- program element describes each show 
+  @duration = the length of the program in minutes
+  @id = identifier that uniquely identifies the program
+  @channel = reference to channel id declared in previous channels element
+  @image = url to where an image that belongs to the program resides
+  @rating = Age limit
+  @ratio = Widescreen, letterbox etc as a string
+  @stereo = boolean
+  @surround = 
+  -->
+<!ELEMENT program (contentTypeRefs|credits|descriptions|genreRefs|series)*>
+<!ATTLIST program
+	duration NMTOKEN #REQUIRED
+	id NMTOKEN #REQUIRED
+  channel NMTOKEN #REQUIRED
+	image CDATA #REQUIRED
+	originalTitle CDATA #REQUIRED
+	productionCountry CDATA #REQUIRED
+	productionYear NMTOKEN #REQUIRED
+	rating NMTOKEN #REQUIRED
+	ratio NMTOKEN #REQUIRED
+	startTime NMTOKEN #REQUIRED
+	stereo NMTOKEN #REQUIRED
+	surround NMTOKEN #REQUIRED>
+
+<!-- contentTypeRef container element -->
+<!ELEMENT contentTypeRefs (contentTypeRef+)>
+<!-- References (with @id) a contentType element -->
+<!ELEMENT contentTypeRef EMPTY>
+<!ATTLIST contentTypeRef id NMTOKEN #REQUIRED>
+
+<!-- genreRef container element -->
+<!ELEMENT genreRefs (genreRef+)>
+<!-- References (with @id) a genre element -->
+<!ELEMENT genreRef EMPTY>
+<!ATTLIST genreRef id NMTOKEN #REQUIRED>
+
+<!-- Used if the program belongs to a series. @id can be used to identify several programs
+  in the same serie (possibly to create lists of programs belonging to the same serie). 
+  @episode gives the episode number and @season the season number
+-->
+<!ELEMENT series EMPTY>
+<!ATTLIST series
+	episode NMTOKEN #REQUIRED
+	id NMTOKEN #REQUIRED
+	season NMTOKEN #REQUIRED
+>
+
+<!-- Provides a localized description of each program. Each description element
+  provides the same data in different languages. -->
+<!ELEMENT descriptions (description+)>
+<!-- @lang = Current language
+     @title = The local name of the program -->
+<!ELEMENT description (shortSynopsis,synopsis)>
+<!ATTLIST description
+	lang NMTOKEN #REQUIRED
+	title CDATA #REQUIRED
+	rating NMTOKEN #IMPLIED>
+<!ELEMENT shortSynopsis (#PCDATA)>
+<!ELEMENT synopsis (#PCDATA)>
+
+<!ELEMENT credits (director+,actor+)>
+<!ELEMENT director (#PCDATA)>
+<!ELEMENT actor (#PCDATA)>
+<!-- @role is the name of the character the current actor has 
+  in the program/movie/series -->
+<!ATTLIST actor role CDATA #IMPLIED>
+
