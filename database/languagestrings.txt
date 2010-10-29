@@ -18,6 +18,10 @@ exporter-xmltv,episode_part,dio,hr
 exporter-xmltv,episode_number,epizoda,hr
 exporter-xmltv,episode_season,sezona,hr
 exporter-xmltv,of,od,hr
+exporter-xmltv,episode_part,Teil,de
+exporter-xmltv,episode_number,Folge,de
+exporter-xmltv,episode_season,Staffel,de
+exporter-xmltv,of,von,de
 listchannels,title,"This is the title of your channel listing page.",en
 listchannels,headertext,"Put whatever you want here. It will be displayed on the top of the channel list.",en
 listchannels,channel,Channel,en

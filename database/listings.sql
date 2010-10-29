@@ -81,7 +81,6 @@ CREATE TABLE `programs` (
   `url_image_thumbnail` varchar(100) default NULL,
   `url_image_icon` varchar(100) default NULL,
   PRIMARY KEY  (`channel_id`,`start_time`),
-  KEY `channel_id` (`channel_id`,`start_time`),
   KEY `batch` (`batch_id`,`start_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -181,3 +180,9 @@ CREATE TABLE `transportstreams` (
   UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `admins`;
+CREATE TABLE `admins` (
+  `username` varchar(32) NOT NULL,
+  `password` varchar(32) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+INSERT INTO `admins` (username, password) VALUES ('nonametv', '');
