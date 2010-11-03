@@ -91,6 +91,7 @@ sub ImportFull
     next if $div->findvalue( '@name' ) =~ /title in english/i;
 
     my( $text ) = norm( $div->findvalue( './/text()' ) );
+
     # strip strange " * " in front of paragraph
     $text =~ s|^\s*\*\s+||;
     next if $text eq "";
@@ -137,15 +138,22 @@ sub ImportFull
     } elsif( $text =~ /^\[Kurz\]$/i ){
 
       $state = ST_FDESCSHORT;
+      next;
 
     } elsif( $text =~ /^\[Lang\]$/i ){
 
       $state = ST_FDESCLONG;
+      next;
 
     } elsif( $text =~ /^\[Zusatzinfo\]$/i ){
 
       $state = ST_FADDINFO;
+      next;
 
+    } elsif( $text =~ /^ARTE stellt.*bereit\.$/ ){
+      $state = ST_FADDINFO;
+    } elsif( $text =~ /^Dieses Programm wurde in HD produziert\.$/ ){
+      $state = ST_FADDINFO;
     }
 
     # did we collect one full programme?
@@ -187,12 +195,13 @@ sub ImportFull
       d( "Arte: $chd->{xmltvid}: $time - $title" );
 
 
+      if ( defined ($addinfo)) {
+        ParseExtraInfo( \$dsh->{ds}, \$ce, $addinfo );
+      }
       if ( defined ($subinfo)) {
         ParseExtraInfo( \$dsh->{ds}, \$ce, $subinfo );
       }
 
-      $shortdesc =~ s/^\[Kurz\]// if $shortdesc;
-      $longdesc =~ s/^\[Lang\]// if $longdesc;
       $ce->{description} = $longdesc if $longdesc;
 
 
@@ -360,6 +369,12 @@ sub ParseExtraInfo
       next;
     }
 
+    if( $line =~ m|unter: www\.arte\.tv/| )
+    {
+      # strip generic links
+      next;
+    }
+
     # not the first line, maybe still a repeat? (copy from above)
     if ($line =~ m/, Wiederholung vom \d+\.\d+\.$/) {
       ($genre) = ($line =~ m|^(.*), Wiederholung vom \d+\.\d+\.$|);
@@ -394,7 +409,9 @@ sub ParseExtraInfo
       my @credits = split( '; ', $line );
       foreach my $credit (@credits) {
         my ($job, $people) = ($credit =~ m|^(\S+):\s*(.*)$|);
-        if ($job eq 'Regie') {
+        if (!defined $job) {
+          w("credits are not : $credit");
+        } elsif ($job eq 'Regie') {
           $$ce->{directors} = $people;
         } elsif ($job eq 'Buch') {
           $$ce->{writers} = $people;
@@ -462,7 +479,7 @@ sub ParseExtraInfo
     }
 
 
-    w( "unhandled subinfo: $line" );
+    d( "unhandled subinfo: $line" );
   }
 
   if( defined( $productiondate ) ) {

@@ -47,13 +47,15 @@ tools/de/nonametv-updatesite $Q
 # somewhere.
 $d perl -I lib tools/nonametv-export Xmltv --force-export --verbose 
 
-# Update the Combiner-channels as well.
-$d perl -I lib tools/nonametv-import Combiner $Q
-$h perl -I lib tools/nonametv-import Combiner --short-grab $Q
-
 # Update the Downvonverter-channels as well.
 $d perl -I lib tools/nonametv-import Downconverter $Q
 $h perl -I lib tools/nonametv-import Downconverter --short-grab $Q
+
+tools/de/nonametv-updatesite $Q
+
+# Update the Combiner-channels as well.
+$d perl -I lib tools/nonametv-import Combiner $Q
+$h perl -I lib tools/nonametv-import Combiner --short-grab $Q
 
 $d perl -I lib tools/nonametv-import Timeshifter $Q
 $h perl -I lib tools/nonametv-import Timeshifter --short-grab $Q
