@@ -38,6 +38,7 @@ dvb_cat
 networks
 services
 transportstreams
+admins
 
 EOHELP
 
@@ -78,6 +79,7 @@ sub dump_structure {
       batches channels channelgroups files
       programs state trans_cat languagestrings
       epgservers dvb_cat networks services transportstreams
+      admins
       /;
 
   my $command = "--add-drop-table --no-data " . join( " ", @tables );
@@ -99,6 +101,9 @@ sub dump_structure {
   # on some systems but not on others and it messes up
   # real changes.
   $output =~ s( AUTO_INCREMENT=\d+)()gm;
+
+  # add admin for web frontend
+  $output .= "INSERT INTO `admins` (username, password) VALUES ('nonametv', '');\n";
 
   open( OUT, "> $outfile" ) or die "Failed to write to $outfile";
   print OUT $output;
