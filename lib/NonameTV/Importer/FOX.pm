@@ -75,22 +75,23 @@ sub ImportContentFile {
 #return if ( $channel_xmltvid !~ /foxlife/ );
 
   if( $file =~ /\.xml$/i ){
-    $self->ImportXML( $file, $chd );
+    #$self->ImportXML( $file, $chd );
   } elsif( $file =~ /Fox\s+C\s*(i|&)\s*L\s+.*\.xls$/i ){
-    $self->ImportAirCombined( $file, $chd );
+    #$self->ImportAirCombined( $file, $chd );
   } elsif( $file =~ /Fox\s+(Crime|Life).*\.xls$/i ){
     $self->ImportAirSingle( $file, $chd );
   } elsif( $file =~ /\.xls$/i ){
-    my $ft = CheckFileFormat( $file );
-    if( $ft eq FT_FLATXLS ){
-      $self->ImportFlatXLS( $file, $chd );
-    } elsif( $ft eq FT_GRIDXLS ){
-      $self->ImportGridXLS( $file, $chd );
-    } else {
-      error( "FOX: Unknown file format: $file" );
-    }
-
+#    my $ft = CheckFileFormat( $file );
+#    if( $ft eq FT_FLATXLS ){
+#      $self->ImportFlatXLS( $file, $chd );
+#    } elsif( $ft eq FT_GRIDXLS ){
+#      $self->ImportGridXLS( $file, $chd );
+#    } else {
+#      error( "FOX: Unknown file format: $file" );
+#    }
+#
   }
+
 
   return;
 }
@@ -444,48 +445,69 @@ sub ImportAirSingle
 
     progress("FOX AirSingle: $chd->{xmltvid}: processing worksheet named '$oWkS->{Name}'");
 
-    my %columns = ( "Day" =>0, "Hour" =>1, "English Title" => 2, "Croatian Title" => 3, "Genre" =>4 );
+    my %defcolumns = ( "Day" =>0, "Hour" =>1, "English Title" => 2, "Croatian Title" => 3, "Genre" =>4 );
+    my %columns;
     my $date;
 
     for(my $iR = $oWkS->{MinRow} ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
 
       my $oWkC;
 
-      # check date
-      if( $oWkS->{Cells}[$iR][1] and $oWkS->{Cells}[$iR][1]->Value =~ /On Date:/ ){
+      if( not %columns ){
+        # the column names are stored in the first row
+        # so read them and store their column positions
+        # for further findvalue() calls
+
         for(my $iC = $oWkS->{MinCol} ; defined $oWkS->{MaxCol} && $iC <= $oWkS->{MaxCol} ; $iC++) {
+          if( $oWkS->{Cells}[$iR][$iC] ){
+            $columns{$oWkS->{Cells}[$iR][$iC]->Value} = $iC;
 
-          $oWkC = $oWkS->{Cells}[$iR][$iC];
-          next if ( ! $oWkC );
-          next if ( ! $oWkC->Value );
-
-          if( isDate( $oWkS->{Cells}[$iR][$iC]->Value ) ){
-
-            $date = ParseDate( $oWkS->{Cells}[$iR][$iC]->Value );
-
-            if( $date ne $currdate ) {
-              if( $currdate ne "x" ) {
-                $dsh->EndBatch( 1 );
-              }
-
-              my $batch_id = $chd->{xmltvid} . "_" . $date;
-              $dsh->StartBatch( $batch_id , $chd->{id} );
-              $dsh->StartDate( $date , "06:00" );
-              $currdate = $date;
-
-              progress("FOX AirSingle: $chd->{xmltvid}: Date is: $date");
-            }
-            next;
+	    #$columns{'Day'} = $iC if ( $oWkS->{Cells}[$iR][$iC]->Value =~ /Day/ );
           }
         }
+
+foreach my $cl (%columns) {
+print ">$cl<\n";
+}
+        next;
       }
 
+      # check date
+#      if( $oWkS->{Cells}[$iR][1] and $oWkS->{Cells}[$iR][1]->Value =~ /On Date:/ ){
+#        for(my $iC = $oWkS->{MinCol} ; defined $oWkS->{MaxCol} && $iC <= $oWkS->{MaxCol} ; $iC++) {
+#
+#          $oWkC = $oWkS->{Cells}[$iR][$iC];
+#          next if ( ! $oWkC );
+#          next if ( ! $oWkC->Value );
+#
+#          if( isDate( $oWkS->{Cells}[$iR][$iC]->Value ) ){
+#
+#            $date = ParseDate( $oWkS->{Cells}[$iR][$iC]->Value );
+#
+#            if( $date ne $currdate ) {
+#              if( $currdate ne "x" ) {
+#                $dsh->EndBatch( 1 );
+#              }
+#
+#              my $batch_id = $chd->{xmltvid} . "_" . $date;
+#              $dsh->StartBatch( $batch_id , $chd->{id} );
+#              $dsh->StartDate( $date , "06:00" );
+#              $currdate = $date;
+#
+#              progress("FOX AirSingle: $chd->{xmltvid}: Date is: $date");
+#            }
+#            next;
+#          }
+#        }
+#      }
+
       # Date
-      $oWkC = $oWkS->{Cells}[$iR][0];
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'Date'}];
       next if( ! $oWkC );
       next if( ! $oWkC->Value );
       if( isDate( $oWkC->Value ) ){
         $date = ParseDate( $oWkC->Value );
+print "DATE $currdate $date\n";
 
         if( $date ne $currdate ) {
           if( $currdate ne "x" ) {
@@ -499,35 +521,39 @@ sub ImportAirSingle
 
           progress("FOX AirSingle: $chd->{xmltvid}: Date is: $date");
         }
-        next;
+        #next;
       }
       next if( ! $date );
 
       # columns
-      my %tmpcolumns = ();
-      for(my $iC = $oWkS->{MinCol} ; defined $oWkS->{MaxCol} && $iC <= $oWkS->{MaxCol} ; $iC++) {
-        $oWkC = $oWkS->{Cells}[$iR][$iC];
-        next if( ! $oWkC );
-        next if( ! $oWkC->Value );
-        $tmpcolumns{$oWkC->Value} = $iC;
-
-      }
-      my $colmatch = 0;
-      foreach my $cl (%tmpcolumns){
-        if(
-          ( $cl =~ /Day/ ) or
-          ( $cl =~ /Hour/ ) or
-          ( $cl =~ /English Title/ ) or
-          ( $cl =~ /Croatian Title/ ) or
-          ( $cl =~ /Genre/ ) ){
-          $colmatch++;
+#      my %tmpcolumns = ();
+#      for(my $iC = $oWkS->{MinCol} ; defined $oWkS->{MaxCol} && $iC <= $oWkS->{MaxCol} ; $iC++) {
+#        $oWkC = $oWkS->{Cells}[$iR][$iC];
+#        next if( ! $oWkC );
+#        next if( ! $oWkC->Value );
+#        $tmpcolumns{$oWkC->Value} = $iC;
+#
+#      }
+#      my $colmatch = 0;
+#      foreach my $cl (%tmpcolumns){
+#        if(
+#          ( $cl =~ /Day/ ) or
+#          ( $cl =~ /Hour/ ) or
+#          ( $cl =~ /English Title/ ) or
+#          ( $cl =~ /Croatian Title/ ) or
+#          ( $cl =~ /Genre/ ) ){
+#          $colmatch++;
 #print "$cl\n";
-        }
-      }
-      if( $colmatch ge 3 ){
-        %columns = %tmpcolumns;
-      }
+#        }
+#      }
+#      if( $colmatch ge 3 ){
+#        %columns = %tmpcolumns;
+#      }
 
+#print "finalne kolone ------------------------\n";
+#foreach my $cl (%columns) {
+#print "$cl\n";
+#}
       # Time
       $oWkC = $oWkS->{Cells}[$iR][$columns{'Hour'}];
       next if( ! $oWkC );
@@ -630,9 +656,9 @@ sub ImportFlatXLS
             $columns{$oWkS->{Cells}[$iR][$iC]->Value} = $iC;
           }
         }
-#foreach my $cl (%columns) {
-#print "$cl\n";
-#}
+foreach my $cl (%columns) {
+print "$cl\n";
+}
         next;
       }
 
@@ -882,7 +908,7 @@ sub ParseDate {
 sub ParseTime {
   my ( $text ) = @_;
 
-#print ">$text<\n";
+print "ParseTime >$text<\n";
 
   my( $hour, $min, $sec );
 

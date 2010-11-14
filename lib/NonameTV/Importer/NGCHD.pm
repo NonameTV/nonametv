@@ -88,7 +88,8 @@ sub CheckFileFormat
         my $oWkC = $oWkS->{Cells}[$iR][$iC];
         next if( ! $oWkC );
         next if( ! $oWkC->Value );
-        return FT_FLATXLS if( $oWkC->Value =~ /^PROGRAM\/ Emisión $/ );
+#print "$iR $iC " . $oWkC->Value . "\n";
+        return FT_FLATXLS if( $oWkC->Value =~ /^PROGRAM\// );
       }
     }
   }
@@ -101,6 +102,7 @@ sub CheckFileFormat
         my $oWkC = $oWkS->{Cells}[$iR][$iC];
         next if( ! $oWkC );
         next if( ! $oWkC->Value );
+#print "$iR $iC " . $oWkC->Value . "\n";
         return FT_GRIDXLS if( $oWkC->Value =~ /NATIONAL GEOGRAPHIC CHANNEL HD/ );
       }
     }
@@ -151,11 +153,11 @@ sub ImportFlatXLS
           if( $oWkS->{Cells}[$iR][$iC] ){
             $columns{ norm($oWkS->{Cells}[$iR][$iC]->Value) } = $iC;
 
-            if( $oWkS->{Cells}[$iR][$iC]->Value =~ /CET-1/ ){
+            if( $oWkS->{Cells}[$iR][$iC]->Value =~ /CET/ ){
               $columns{DATE} = $iC;
             }
 
-            if( $oWkS->{Cells}[$iR][$iC]->Value =~ /PROGRAM\/\s+Emis/ ){
+            if( $oWkS->{Cells}[$iR][$iC]->Value =~ /PROGRAM\// ){
               $columns{PROGRAM} = $iC;
               $found = 1;
             }
@@ -212,12 +214,12 @@ sub ImportFlatXLS
       my $program = $oWkC->Value;
 
       # SERIE
-      $oWkC = $oWkS->{Cells}[$iR][$columns{'SERIE'}];
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'SERIE'}] if $columns{'SERIE'};
       next if( ! $oWkC );
       my $serie = $oWkC->Value;
 
       # EPISODE TITLE
-      $oWkC = $oWkS->{Cells}[$iR][$columns{'EPISODE TITLE'}];
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'EPISODE TITLE'}] if $columns{'EPISODE TITLE'};
       next if( ! $oWkC );
       my $episodetitle = $oWkC->Value;
 

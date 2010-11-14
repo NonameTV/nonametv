@@ -337,6 +337,8 @@ sub ParseTime {
 
   if( $text =~ /^\[\d+\]:\d+:\d+$/ ){ # format '[00]:00:30'
     ( $hour , $min, $sec ) = ( $text =~ /^\[(\d+)\]:(\d+):(\d+)$/ );
+  } elsif( $text =~ /^\d+:\d+:\d+$/ ){ # format '00:00:30'
+    ( $hour , $min, $sec ) = ( $text =~ /^(\d+):(\d+):(\d+)$/ );
   } elsif( $text =~ /^\d+:\d+$/ ){
     ( $hour , $min ) = ( $text =~ /^(\d+):(\d+)$/ );
   } elsif( $text =~ /^0\.\d+$/){ # format '0.377962962962964'

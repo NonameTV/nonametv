@@ -509,7 +509,7 @@ sub ParseXmltv {
     my $start_dt = create_dt( $start );
 
     my $stop = $pgm->findvalue( '@stop' );
-    my $stop_dt = create_dt( $stop );
+    my $stop_dt = create_dt( $stop ) if $stop;
 
     my $title = $pgm->findvalue( 'title' );
     my $subtitle = $pgm->findvalue( 'sub-title' );
@@ -528,24 +528,25 @@ sub ParseXmltv {
 
     my @actors;
     my $ns = $pgm->find( ".//actor" );
-
     foreach my $act ($ns->get_nodelist) {
       push @actors, $act->findvalue(".");
     }
 
     my @directors;
     $ns = $pgm->find( ".//director" );
-
     foreach my $dir ($ns->get_nodelist) {
       push @directors, $dir->findvalue(".");
     }
     
     my %e = (
       start_dt => $start_dt,
-      stop_dt => $stop_dt,
       title => $title,
       description => $desc,
     );
+
+    if( $stop =~ /\S/ ) {
+      $e{stop_dt} = $stop_dt;
+    }
 
     if( $subtitle =~ /\S/ ) {
       $e{subtitle} = $subtitle;
@@ -589,7 +590,6 @@ sub ParseXmltv {
       $e{stereo} = $stereo;
     }
 
-
     if( scalar( @directors ) > 0 ) {
       $e{directors} = join ", ", @directors;
     }
@@ -597,7 +597,6 @@ sub ParseXmltv {
     if( scalar( @actors ) > 0 ) {
       $e{actors} = join ", ", @actors;
     }
-
     
     push @d, \%e;
   }
