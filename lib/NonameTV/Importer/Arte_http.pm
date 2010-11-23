@@ -57,7 +57,7 @@ sub Object2Url {
 
   my( $year, $week ) = ( $objectname =~ /(\d+)-(\d+)$/ );
 
-  my $url = sprintf( "http://w3.artepro.com/popup/download_texte.cfm?Filelist=%d/%d,", $year, $week);
+  my $url = sprintf( "http://w3.artepro.com/popup/download_texte.cfm?Filelist=%d/%02d,", $year, $week);
 
   p ($self->{Type} . ": fetching data from $url");
 
