@@ -312,6 +312,8 @@ sub ParseDate
 {
   my( $text, $lang ) = @_;
 
+#print "ParseDate: >$text<\n";
+
   my( $dayname, $day, $month, $monthname, $year );
 
   if( $lang =~ /^en$/ ){
@@ -324,7 +326,7 @@ sub ParseDate
     } elsif( $text =~ /^\d+\.\d+\.\d+$/i ){ # try '01.02.2010'
       ( $day, $month, $year ) = ( $text =~ /^(\d+)\.(\d+)\.(\d+)$/ );
     } elsif( $text =~ /^(sunday|monday|tuesday|wednesday|thursday|friday|saturday)\d+\s+(january|february|march|april|may|june|july|august|september|october|november|december)\s+\d+$/i ){
-      ( $dayname, $day, $monthname, $year ) = ( $text =~ /^(\S+)(\d+)\s+(\S+)\s+(\d+)$/i );
+      ( $dayname, $day, $monthname, $year ) = ( $text =~ /^(sunday|monday|tuesday|wednesday|thursday|friday|saturday)(\d+)\s+(\S+)\s+(\d+)$/i );
       $month = MonthNumber( $monthname, "en" );
     }
 

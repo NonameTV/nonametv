@@ -526,16 +526,64 @@ sub ParseXmltv {
 
     my $stereo = $pgm->findvalue( 'audio/stereo' );
 
+    my @directors;
+    $ns = $pgm->find( ".//director" );
+    foreach my $dir ($ns->get_nodelist) {
+      push @directors, $dir->findvalue(".");
+    }
+    
     my @actors;
     my $ns = $pgm->find( ".//actor" );
     foreach my $act ($ns->get_nodelist) {
       push @actors, $act->findvalue(".");
     }
 
-    my @directors;
-    $ns = $pgm->find( ".//director" );
+    my @writers;
+    $ns = $pgm->find( ".//writer" );
     foreach my $dir ($ns->get_nodelist) {
-      push @directors, $dir->findvalue(".");
+      push @writers, $dir->findvalue(".");
+    }
+
+    my @adapters;
+    $ns = $pgm->find( ".//adapter" );
+    foreach my $dir ($ns->get_nodelist) {
+      push @adapters, $dir->findvalue(".");
+    }
+    
+    my @producers;
+    $ns = $pgm->find( ".//producer" );
+    foreach my $dir ($ns->get_nodelist) {
+      push @producers, $dir->findvalue(".");
+    }
+    
+    my @composers;
+    $ns = $pgm->find( ".//composer" );
+    foreach my $dir ($ns->get_nodelist) {
+      push @composers, $dir->findvalue(".");
+    }
+    
+    my @editors;
+    $ns = $pgm->find( ".//editor" );
+    foreach my $dir ($ns->get_nodelist) {
+      push @editors, $dir->findvalue(".");
+    }
+    
+    my @presenters;
+    $ns = $pgm->find( ".//presenter" );
+    foreach my $dir ($ns->get_nodelist) {
+      push @presenters, $dir->findvalue(".");
+    }
+    
+    my @commentators;
+    $ns = $pgm->find( ".//commentator" );
+    foreach my $dir ($ns->get_nodelist) {
+      push @commentators, $dir->findvalue(".");
+    }
+    
+    my @guests;
+    $ns = $pgm->find( ".//guest" );
+    foreach my $dir ($ns->get_nodelist) {
+      push @guests, $dir->findvalue(".");
     }
     
     my %e = (
@@ -596,6 +644,38 @@ sub ParseXmltv {
 
     if( scalar( @actors ) > 0 ) {
       $e{actors} = join ", ", @actors;
+    }
+    
+    if( scalar( @writers ) > 0 ) {
+      $e{writers} = join ", ", @writers;
+    }
+    
+    if( scalar( @adapters ) > 0 ) {
+      $e{adapters} = join ", ", @adapters;
+    }
+    
+    if( scalar( @producers ) > 0 ) {
+      $e{producers} = join ", ", @producers;
+    }
+    
+    if( scalar( @composers ) > 0 ) {
+      $e{composers} = join ", ", @composers;
+    }
+    
+    if( scalar( @editors ) > 0 ) {
+      $e{editors} = join ", ", @editors;
+    }
+    
+    if( scalar( @presenters ) > 0 ) {
+      $e{presenters} = join ", ", @presenters;
+    }
+    
+    if( scalar( @commentators ) > 0 ) {
+      $e{commentators} = join ", ", @commentators;
+    }
+    
+    if( scalar( @guests ) > 0 ) {
+      $e{guests} = join ", ", @guests;
     }
     
     push @d, \%e;

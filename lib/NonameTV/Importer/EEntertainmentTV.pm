@@ -94,6 +94,14 @@ sub ImportFlatXLS
           if( $oWkS->{Cells}[$iR][$iC] ){
             $columns{$oWkS->{Cells}[$iR][$iC]->Value} = $iC;
 
+            $columns{'CHANNEL'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Channel/ );
+
+            $columns{'DATE'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Schedule date \(DD\/MM\/YY\)/ );
+
+            $columns{'TIME'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /SCHEDULED TIME 24 HOUR CLOCK \(HH:MM\) CET/ );
+
+            $columns{'DURATION'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /SCHEDULED DURATION \(HH:MM\)/ );
+
             $foundcolumns = 1 if( $oWkS->{Cells}[$iR][$iC]->Value =~ /PROGRAMME TITLE\/SLOT NAME/ );
           }
         }
@@ -106,11 +114,11 @@ sub ImportFlatXLS
       }
 
       # Channel
-      $oWkC = $oWkS->{Cells}[$iR][$columns{'Channel'}];
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'CHANNEL'}];
       my $channel = $oWkC->Value;
 
       # Date
-      $oWkC = $oWkS->{Cells}[$iR][$columns{'Schedule date (DD/MM/YY)'}];
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'DATE'}];
       if( $oWkC and $oWkC->Value ){
 
         if( isDate( $oWkC->Value ) ){
@@ -132,13 +140,13 @@ sub ImportFlatXLS
       }
 
       # Time
-      $oWkC = $oWkS->{Cells}[$iR][$columns{'SCHEDULED TIME 24 HOUR CLOCK (HH:MM) CET/CAT'}];
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'TIME'}];
       next if( ! $oWkC );
       next if( ! $oWkC->Value );
       my $time = $oWkC->Value;
 
       # Duration
-      $oWkC = $oWkS->{Cells}[$iR][$columns{'SCHEDULED DURATION (HH:MM)'}];
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'DURATION'}];
       next if( ! $oWkC );
       next if( ! $oWkC->Value );
       my $duration = $oWkC->Value;

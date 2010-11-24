@@ -222,6 +222,7 @@ sub ImportFlatXLS
       next if( ! $oWkC );
       next if( ! $oWkC->Value );
       my $time = $oWkC->Value;
+      $time =~ s/\s//;
 
       # Title
       $oWkC = $oWkS->{Cells}[$iR][$coltitle];
@@ -304,6 +305,8 @@ sub ParseShow {
   if( $text =~ /^\d{2}:\d{2} \S+.*$/i ){
     ( $time, $title ) = ( $text =~ /^(\d{2}:\d{2}) (\S+.*)$/i );
   }
+
+  $time =~ s/\s//;
 
   return( $time, $title, undef, undef );
 }

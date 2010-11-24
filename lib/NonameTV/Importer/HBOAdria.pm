@@ -22,6 +22,7 @@ use HTML::Parse;
 use HTML::FormatText;
 use XML::LibXML;
 use Spreadsheet::ParseExcel;
+use IMDB::Film;
 
 use NonameTV qw/MyGet norm AddCategory MonthNumber/;
 use NonameTV::DataStore::Helper;
@@ -496,6 +497,8 @@ sub ImportXLS
       $ce->{directors} = $directors if $directors;
       $ce->{actors} = $actors if $actors;
 
+      QueryIMDB( $origtitle, $ce );
+
       $dsh->AddProgramme( $ce );
 
     } # next row
@@ -634,6 +637,8 @@ sub ImportXML_HBOAdria
       $ce->{url_image_main} = $mainpromoimage if ( $mainpromoimage =~ /\S/ );
       $ce->{url_image_thumbnail} = $thumbnailimage if ( $thumbnailimage =~ /\S/ );
       $ce->{url_image_icon} = $halfpromoimage if ( $halfpromoimage =~ /\S/ );
+
+      QueryIMDB( $originaltitle, $ce );
 
       push( @ces , $ce );
     }
@@ -910,6 +915,8 @@ sub ImportXML_AXN
 
       $ce->{rating} = $eplocalrating if ( $eplocalrating =~ /\S/ );
 
+      QueryIMDB( $title, $ce );
+
       $dsh->AddProgramme( $ce );
 
     }
@@ -1059,6 +1066,103 @@ sub create_dt
   my $edt = $sdt->clone->add( minutes => $du );
 
   return( $sdt, $edt );
+}
+
+sub QueryIMDB {
+  my( $title , $ce ) = @_;
+
+return;
+  my $film = new IMDB::Film( crit => $title );
+  if($film->status) {
+
+    print "\n--------------------------\n";
+
+    print "Title: ".$film->title()."\n";
+
+    print "Kind: ".$film->kind()."\n";
+
+    print "Year: ".$film->year()."\n";
+
+    print "Connections: ".$film->connections()."\n";
+
+    print "Companies: ".$film->full_companies()."\n";
+
+    print "Company: ".$film->company()."\n";
+
+#    foreach my $episode ( @{$film->episodes()} ){
+#      print "Episode: $episode->{id} $episode->{title} $episode->{season} $episode->{episode} $episode->{date} $episode->{plot}\n";
+#    }
+
+#    foreach my $episodeof ( @{$film->episodeof()} ){
+#      print "Episode: $episodeof->{id} $episodeof->{title} $episodeof->{year}\n";
+#    }
+
+    print "Cover: ".$film->cover()."\n";
+
+    foreach my $director ( @{$film->directors()} ){
+      print "Director: $director->{id} $director->{name}\n";
+    }
+
+    foreach my $writer ( @{$film->writers()} ){
+      print "Writer: $writer->{id} $writer->{name}\n";
+    }
+
+    foreach my $genre ( @{$film->genres()} ){
+      print "Genre: $genre\n";
+    }
+
+    print "Tagline: ".$film->tagline()."\n";
+
+    print "Plot: ".$film->plot()."\n";
+
+    print "Storyline: ".$film->storyline()."\n";
+
+    print "Rating: ".$film->rating()."\n";
+
+    foreach my $actor ( @{$film->cast()} ){
+      print "Actor: $actor->{id} $actor->{name} $actor->{role}\n";
+    }
+
+    print "Duration: ".$film->duration()."\n";
+
+    print "Country: ".$film->country()."\n";
+
+    print "Langguage: ".$film->language()."\n";
+
+    print "Aka: ".$film->also_known_as()."\n";
+
+    print "Trivia: ".$film->trivia()."\n";
+
+    print "Goofs: ".$film->goofs()."\n";
+
+    print "Awards: ".$film->awards()."\n";
+
+    print "MPAA: ".$film->mpaa_info()."\n";
+
+    print "Aspect: ".$film->aspect_ratio()."\n";
+
+    print "Summary: ".$film->summary()."\n";
+
+    print "Certifications: ".$film->certifications()."\n";
+
+    print "Full plot: ".$film->full_plot()."\n";
+
+    foreach my $site ( @{$film->official_sites()} ){
+      print "Site: $site->{title} $site->{url}\n";
+    }
+
+    foreach my $releasedate ( @{$film->release_dates()} ){
+      print "Country: $releasedate->{country} $releasedate->{date} $releasedate->{info}\n";
+    }
+
+    print "--------------------------\n";
+
+    if( $film->title() eq $title ){
+print "OK ZA UPDATE !!!\n";
+    }
+  }
+
+  return;
 }
 
 sub UpdateFiles {

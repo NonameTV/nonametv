@@ -143,8 +143,14 @@ sub ImportContentFile
 sub isDate {
   my ( $text ) = @_;
 
+#print "isDate >$text<\n";
+
   # format 'petak 17.10.'
   if( $text =~ /^(ponedjeljak|utorak|srijeda|ČETVRTAK|petak|subota|nedjelja)\s+\d+\.\d+\.*$/i ){
+    return 1;
+
+  # format 'petak 17. 10. 2010.'
+  } elsif( $text =~ /^(ponedjeljak|utorak|srijeda|ČETVRTAK|petak|subota|nedjelja)\s+\d+\.\s*\d+\.\s*\d+\.*.*$/i ){
     return 1;
   }
 
@@ -154,9 +160,17 @@ sub isDate {
 sub ParseDate {
   my( $text ) = @_;
 
-  my( $dayname, $day, $month ) = ( $text =~ /^(\S+)\s+(\d+)\.(\d+)\.*$/ );
+  my( $dayname, $day, $month, $year );
 
-  my $year = DateTime->today->year();
+  # format 'petak 17.10.'
+  if( $text =~ /^(ponedjeljak|utorak|srijeda|ČETVRTAK|petak|subota|nedjelja)\s+\d+\.\d+\.*$/i ){
+    ( $dayname, $day, $month ) = ( $text =~ /^(\S+)\s+(\d+)\.(\d+)\.*$/ );
+    $year = DateTime->today->year();
+  } elsif( $text =~ /^(ponedjeljak|utorak|srijeda|ČETVRTAK|petak|subota|nedjelja)\s+\d+\.\s*\d+\.\s*\d+\.*.*$/i ){
+    ( $dayname, $day, $month, $year ) = ( $text =~ /^(\S+)\s+(\d+)\.\s*(\d+)\.\s*(\d+)\.*.*$/i );
+  }
+
+  $year += 2000 if $year lt 100;
 
   return sprintf( '%d-%02d-%02d', $year, $month, $day );
 }

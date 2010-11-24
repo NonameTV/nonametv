@@ -108,7 +108,7 @@ sub CheckFileFormat
           next if( ! $oWkC );
           next if( ! $oWkC->Value );
 
-          $columns{$oWkS->{Cells}[$iR][$iC]->Value} = $iC;
+          $columns{norm($oWkS->{Cells}[$iR][$iC]->Value)} = $iC;
 
           # columns alternate names
           $columns{'DATE'} = $iC if( norm($oWkS->{Cells}[$iR][$iC]->Value) =~ /^Date$/i );
@@ -160,9 +160,9 @@ sub ImportFlatXLS
   my $ds = $self->{datastore};
 
   my %columns = %{$self->{columns}};
-#foreach my $col (%columns) {
-#print "$col\n";
-#}
+foreach my $col (%columns) {
+print "$col\n";
+}
 
   # Only process .xls files.
   return if $file !~  /\.xls$/i;
@@ -177,15 +177,18 @@ sub ImportFlatXLS
 
     my $oWkS = $oBook->{Worksheet}[$iSheet];
 
-    progress( "Sailing: $chd->{xmltvid}: Checking worksheet: $oWkS->{Name}" );
+    progress( "Sailing: $chd->{xmltvid}: Processing worksheet: $oWkS->{Name}" );
 
     for(my $iR = $oWkS->{MinRow} ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
+print "$iR\n";
 
       # date
       my $oWkC = $oWkS->{Cells}[$iR][$columns{'DATE'}];
+print "$oWkC\n";
       next if( ! $oWkC );
       next if( ! $oWkC->Value );
       $date = ParseDate( $oWkC->Value );
+print "DATE $date\n";
       next if( ! $date );
 
       if( $date ne $currdate ){
@@ -200,13 +203,21 @@ sub ImportFlatXLS
 
         progress("Sailing FlatXLS: $xmltvid: Date is: $date");
       }
+print "1\n";
 
       # time
+print "kolona TIME je " . $columns{'TIME'} . "\n";
       $oWkC = $oWkS->{Cells}[$iR][$columns{'TIME'}];
+print "$oWkC\n";
+print "a\n";
       next if( ! $oWkC );
+print "b\n";
       next if( ! $oWkC->Value );
-      my $time = $oWkC->Value;
+print "c\n";
+      my $time = norm($oWkC->Value);
+print "d\n";
       next if( ! $time );
+print "TIME $time\n";
 
       # title
       $oWkC = $oWkS->{Cells}[$iR][$columns{'TITLE'}];
@@ -214,6 +225,7 @@ sub ImportFlatXLS
       next if( ! $oWkC->Value );
       my $title = $oWkC->Value;
       next if( ! $title );
+print "TITLE $title\n";
 
       # description
       my $description;
@@ -397,7 +409,8 @@ sub ParseDate
 {
   my ( $dinfo ) = @_;
 
-#print ">$dinfo<\n";
+  $dinfo = norm($dinfo);
+print ">$dinfo<\n";
 
   my( $dayname, $day, $monthname, $month, $year );
 

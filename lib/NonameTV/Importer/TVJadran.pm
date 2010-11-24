@@ -168,19 +168,21 @@ sub ImportSchemaDOC
 #print ">$text<\n";
 
     # the month should be extracted from the text in format 'OD 01.10.2008.godine'
-    if( $text =~ /^OD \d{2}\.\d{2}\.\d{4}\.godine$/i ){
+    # or 'STUPA NA SNAGU:  01.10.2008.'
+    if( ( $text =~ /^OD \d{2}\.\d{2}\.\d{4}\.godine$/i )
+     or ( $text =~ /^STUPA NA SNAGU: \d{2}\.\d{2}\.\d{4}\.$/i ) ){
 
       ( $dtstart, $firstdate, $lastdate ) = ParsePeriod( $text );
 
     }
 
     # next day on dayname
-    if( $text =~ /^ponedjeljak|utorak|srijeda|ČETVRTAK|petak|subota|nedjelja$/i ){
+    if( $text =~ /^ponedjeljak|utorak|srijeda|ČETVRTAK|petak|subota|nedjelja/i ){
 
       # find the index of the day in the week
       my @days = qw/PONEDJELJAK UTORAK SRIJEDA ČETVRTAK PETAK SUBOTA NEDJELJA/;
       for( my $i = 0; $i < scalar(@days); $i++ ){
-        if( $days[$i] eq $text ){
+        if( $text =~ /$days[$i]/ ){
           $dayno = $i;
         }
       }
@@ -217,12 +219,17 @@ sub ImportSchemaDOC
 sub ParsePeriod {
   my ( $text ) = @_;
 
-#print ">$text<\n";
+print ">$text<\n";
 
   my @days = qw/Monday Tuesday Wednesday Thursday Friday Saturday Sunday/;
 
   # format 'OD 01.10.2008.godine'
-  my( $month, $year ) = ( $text =~ /^OD \d+\.(\d+)\.(\d+)\.godine$/i );
+  my( $firstday, $month, $year );
+  if( $text =~ /^OD \d{2}\.\d{2}\.\d{4}\.godine$/i ){
+    ( $firstday, $month, $year ) = ( $text =~ /^OD (\d+)\.(\d+)\.(\d+)\.godine$/i );
+  } elsif( $text =~ /^STUPA NA SNAGU: \d{2}\.\d{2}\.\d{4}\.$/i ){
+    ( $firstday, $month, $year ) = ( $text =~ /^STUPA NA SNAGU: (\d{2})\.(\d{2})\.(\d{4})\.$/i );
+  }
 
   if( not $month or not $year ){
     error("Error while parsing period from '$text'");
@@ -231,7 +238,7 @@ sub ParsePeriod {
 
   my $firstdate = DateTime->new( year   => $year,
                                  month  => $month,
-                                 day    => 1,
+                                 day    => $firstday,
                                  hour   => 0,
                                  minute => 0,
                                  second => 0,
@@ -239,7 +246,7 @@ sub ParsePeriod {
   );
 
   # find the name of the first day of the month
-  my $firstday = $firstdate->day_name;
+  my $firstdayname = $firstdate->day_name;
 
   # find the name of the last day of the month
   my $lastdate = DateTime->last_day_of_month( year => $year, month => $month );
@@ -248,7 +255,7 @@ sub ParsePeriod {
   # find the offset, or how many days it spreads to previous month
   my $offset = -1;
   for( my $i = 0; $i < scalar(@days); $i++ ){
-    if( $days[$i] eq $firstday ){
+    if( $days[$i] eq $firstdayname ){
       $offset = $i;
     }
   }
@@ -268,6 +275,7 @@ sub SpreadWeeks {
 
   for( my $w = 1; $w < $spreadweeks; $w++ ){
     for( my $d = 0; $d < 7; $d++ ){
+      next if( ! $shows[$d] );
       my @tmpshows = @{$shows[$d]};
       @{$shows[ ( $w * 7 ) + $d ]} = @tmpshows;
     }
@@ -279,6 +287,8 @@ sub SpreadWeeks {
 sub FlushData {
   my ( $dsh, $dtstart, $firstdate, $lastdate, $channel_id, $xmltvid, @shows ) = @_;
 
+print "FlushData\n";
+
   my $date = $dtstart;
   my $currdate = "x";
 
@@ -288,11 +298,11 @@ sub FlushData {
   # run through the shows
   foreach my $dayshows ( @shows ) {
 
-    if( $date < $firstdate or $date > $lastdate ){
-      progress( "TVJadran: $xmltvid: Date " . $date->ymd("-") . " is outside of the month " . $firstdate->month_name . " -> skipping" );
-      $date->add( days => 1 );
-      next;
-    }
+#    if( $date < $firstdate or $date > $lastdate ){
+#      progress( "TVJadran: $xmltvid: Date " . $date->ymd("-") . " is outside of the month " . $firstdate->month_name . " -> skipping" );
+#      $date->add( days => 1 );
+#      next;
+#    }
 
     progress( "TVJadran: $xmltvid: Date is " . $date->ymd("-") );
 
@@ -435,7 +445,7 @@ sub ImportTXT
   my $dsh = $self->{datastorehelper};
   my $ds = $self->{datastore};
 
-  progress( "Z1 TXT: $xmltvid: Processing $file" );
+  progress( "TVJadran TXT: $xmltvid: Processing $file" );
 
   open(HTMLFILE, $file);
   my @lines = <HTMLFILE>;
@@ -463,13 +473,13 @@ print ">$text<\n";
         $dsh->StartDate( $date , "06:00" );
         $currdate = $date;
 
-        progress("Z1 TXT: $xmltvid: Date is: $date");
+        progress("TVJadran TXT: $xmltvid: Date is: $date");
       }
     } elsif( $date and isShow( $text ) ) {
 
       my( $time, $title, $genre, $ep_no, $ep_se ) = ParseShow( $text );
 
-      progress("Z1 TXT: $xmltvid: $time - $title");
+      progress("TVJadran TXT: $xmltvid: $time - $title");
 
       my $ce = {
         channel_id => $channel_id,
@@ -478,7 +488,7 @@ print ">$text<\n";
       };
 
       if( $genre ){
-        my($program_type, $category ) = $ds->LookupCat( 'Z1', $genre );
+        my($program_type, $category ) = $ds->LookupCat( 'TVJadran', $genre );
         AddCategory( $ce, $program_type, $category );
       }
 
@@ -524,6 +534,8 @@ sub ParseDate {
 sub isShow {
   my ( $text ) = @_;
 
+#print "isShow >$text<\n";
+
   # format '15,30 Zap skola,  crtana serija  ( 3/52)'
   if( $text =~ /^\d+[\,|\:]\d+\s+\S+/i ){
     return 1;
@@ -535,14 +547,16 @@ sub isShow {
 sub ParseShow {
   my( $text ) = @_;
 
+#print "ParseShow >$text<\n";
+
   my( $hour, $min, $title, $genre );
 
-#  if( $text =~ /\,.*/ ){
-#    ( $genre ) = ( $text =~ /\,\s*(.*)$/ );
-#    $text =~ s/\,.*//;
-#  }
-
   ( $hour, $min, $title ) = ( $text =~ /^(\d+)[\,|\:](\d+)\s+(.*)$/ );
+
+  if( $title =~ /\,\s/ ){
+    ( $genre ) = ( $title =~ /\,\s*(.*)$/ );
+    $title =~ s/\,.*//;
+  }
 
   return( $hour . ":" . $min , $title , $genre );
 }
