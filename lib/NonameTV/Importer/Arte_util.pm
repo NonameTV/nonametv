@@ -198,6 +198,7 @@ sub ImportFull
       if ( defined ($addinfo)) {
         ParseExtraInfo( \$dsh->{ds}, \$ce, $addinfo );
       }
+
       if ( defined ($subinfo)) {
         ParseExtraInfo( \$dsh->{ds}, \$ce, $subinfo );
       }
@@ -404,13 +405,19 @@ sub ParseExtraInfo
        next;
     }
 
+    # parse attention (which looks like credits)
+    if( $line =~ m|Achtung:| ) {
+      $line =~ s|\s*\(Achtung:.*\)$||;
+      $line =~ s|\s*Achtung:.*$||;
+    }
+
     # parse credits (all but actors)
     if( $line =~ /^\S+:\s+.*$/ ){
       my @credits = split( '; ', $line );
       foreach my $credit (@credits) {
         my ($job, $people) = ($credit =~ m|^(\S+):\s*(.*)$|);
         if (!defined $job) {
-          w("credits are not : $credit");
+          w("parse error, credits are no credits: $credit");
         } elsif ($job eq 'Regie') {
           $$ce->{directors} = $people;
         } elsif ($job eq 'Buch') {
