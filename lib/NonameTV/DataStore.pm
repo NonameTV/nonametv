@@ -7,6 +7,7 @@ use NonameTV::Log qw/d p w f/;
 use SQLAbstraction::mysql;
 
 use Carp qw/confess/;
+use DateTime::Format::Strptime;
 
 use Storable qw/dclone/;
 use Encode qw/decode_utf8/;
@@ -628,6 +629,83 @@ sub sa {
   my $self = shift;
 
   return $self->{sa};
+}
+
+=item ParsePrograms
+
+Replacement for fetching our own export and parsing with ParseXmltv.
+Returns an array of hashrefs just like ParseXmltv.
+Parameter is a batch name. (file name of the export without .xml.gz)
+
+=cut
+
+sub ParsePrograms {
+  my $self;
+  my $res;
+  my $sth;
+
+  my $parser = DateTime::Format::Strptime->new( pattern => '%Y-%m-%d %H:%M:%S' );
+
+    # replacement for ParseXmltv on our own Export
+    # FIXME only works for programmes with end_time
+       $self     = shift;
+    my $batch_id = shift;
+    my( $xmltv_id, $date ) = ($batch_id =~ m|^(.*)_([-\d]+)$|);
+    my $next_date = $parser->parse_datetime( $date . ' 00:00:00' )->add( days => 1 )->ymd('-');
+
+    ( $res, $sth ) = $self->sa->Sql( "
+        SELECT p.* from programs p, channels c
+        WHERE (c.xmltvid = ?)
+          and (p.channel_id = c.id) 
+          and (p.start_time >= ?)
+          and (p.start_time <= ?) 
+        ORDER BY start_time asc, end_time desc", 
+      [$xmltv_id, $date . ' 00:00:00', $next_date . ' 23:59:59'] );
+  
+  my @result;
+
+  my $done;
+  my $ce = $sth->fetchrow_hashref();
+  if( !defined( $ce ) ) {
+    return undef;
+  }
+  while( my $next_ce = $sth->fetchrow_hashref() ) {
+    # Break look once we have got the whole day?
+    if( $ce->{start_time} gt $date . ' 23:59:59' ) {
+      $done = 1;
+      last;
+    }
+    if( $ce->{aspect} eq 'unknown' ) {
+      delete $ce->{aspect};
+    }
+    foreach my $key (keys %$ce) {
+      if( !defined( $ce->{$key} )) {
+        delete $ce->{$key};
+      } elsif( $ce->{$key} eq '' ){
+        delete $ce->{$key};
+      } elsif( $ce->{$key} eq '0000-00-00 00:00:00') {
+        delete $ce->{$key};
+      }
+    }
+
+    $ce->{start_dt} = $parser->parse_datetime( $ce->{start_time} );
+    delete $ce->{start_time};
+
+    if( exists( $ce->{end_time} )) {
+      $ce->{stop_dt} = $parser->parse_datetime( $ce->{end_time} );
+      delete $ce->{end_time};
+    } else {
+      $ce->{stop_dt} = $parser->parse_datetime( $next_ce->{start_time} );
+    }
+
+    push (@result, $ce);
+    $ce = $next_ce;
+  }
+
+  if( !defined( $done )) {
+  }
+
+  return \@result;
 }
 
 =back 

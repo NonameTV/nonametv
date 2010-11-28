@@ -373,6 +373,9 @@ sub ExportFile {
   d "Generating";
 
   my $startdate = $date;
+  # We read two days to find the end_time of the last programme of
+  # the first day by looking at the start_time of the first programme
+  # of the second day.
   my $enddate = create_dt( $date, 'UTC' )->add( days => 1 )->ymd('-');
 
   my( $res, $sth ) = $self->{datastore}->sa->Sql( "
@@ -401,7 +404,7 @@ sub ExportFile {
     if( (not defined( $d1->{end_time})) or
         ($d1->{end_time} eq "0000-00-00 00:00:00") )
     {
-      # Fill in missing end_time on the previous entry with the start-time
+      # Fill in missing end_time on the previous entry with the start_time
       # of the current entry
       $d1->{end_time} = $d2->{start_time}
     }

@@ -41,22 +41,22 @@ $d perl -I lib/ tools/nonametv-export Xmltv --remove-old
 #$d perl -I lib/ tools/nonametv-export Json --remove-old
 $d tools/nonametv-icon-update --quiet --unattended
 
-tools/de/nonametv-updatesite $Q
 
 # This shouldn't produce any output, but there seems to be a bug
 # somewhere.
 $d perl -I lib tools/nonametv-export Xmltv --force-export --verbose 
 
+#tools/de/nonametv-updatesite $Q # not needed anymore
 # Update the Downvonverter-channels as well.
 $d perl -I lib tools/nonametv-import Downconverter $Q
 $h perl -I lib tools/nonametv-import Downconverter --short-grab $Q
 
 tools/de/nonametv-updatesite $Q
-
 # Update the Combiner-channels as well.
 $d perl -I lib tools/nonametv-import Combiner $Q
 $h perl -I lib tools/nonametv-import Combiner --short-grab $Q
 
+#tools/de/nonametv-updatesite $Q # not needed anymore
 $d perl -I lib tools/nonametv-import Timeshifter $Q
 $h perl -I lib tools/nonametv-import Timeshifter --short-grab $Q
 

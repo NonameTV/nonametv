@@ -18,11 +18,9 @@ use strict;
 use warnings;
 
 use DateTime;
-use XML::LibXML;
-use Compress::Zlib;
 
 use NonameTV qw/MyGet ParseXmltv norm/;
-use NonameTV::Log qw/progress error/;
+use NonameTV::Log qw/progress w error/;
 
 use NonameTV::Importer::BaseDaily;
 
@@ -34,7 +32,9 @@ sub new {
     my $self  = $class->SUPER::new( @_ );
     bless ($self, $class);
 
-    defined( $self->{UrlRoot} ) or die "You must specify UrlRoot";
+    if( defined( $self->{UrlRoot} ) ) {
+      w( 'UrlRoot is deprecated as we read directly from our database now.' );
+    }
 
     return $self;
 }
@@ -48,10 +48,10 @@ sub ImportContent {
   my $ds = $self->{datastore};
   my $dsh = $self->{datastorehelper};
 
-  my( undef, @flags ) = split( /,\s*/, $chd->{grabber_info} );
+  my( $orig_channel, @flags ) = split( /,\s*/, $chd->{grabber_info} );
+  my( $date ) = ($batch_id =~ /_(.*)/);
 
-  my $xmldata = Compress::Zlib::memGunzip( $cref );
-  my $data = ParseXmltv( \$xmldata );
+  my $data = $ds->ParsePrograms( $orig_channel . '_' . $date );
 
   foreach my $e (@{$data})
   {
@@ -93,16 +93,7 @@ sub ImportContent {
 
 sub FetchDataFromSite
 {
-  my $self = shift;
-  my( $batch_id, $data ) = @_;
-
-  my( $date ) = ($batch_id =~ /_(.*)/);
-
-  my( $org_channel ) = split( /,\s*/, $data->{grabber_info} );
-
-  my $url = $self->{UrlRoot} . $org_channel . "_" . $date . ".xml.gz";
-  my( $content, $code ) = MyGet( $url );
-  return( $content, $code );
+  return( '', undef );
 }
 
 1;
