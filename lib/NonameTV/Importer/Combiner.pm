@@ -259,6 +259,10 @@ $channel_data{ "arteeinsextra.ard.de" } =
       [ 
         {
           day => 1,
+	  time => '0000-0300',
+        },
+        {
+          day => 1,
 	  time => '1400-0300',
         },
         {
