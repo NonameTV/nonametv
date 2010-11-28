@@ -39,6 +39,7 @@ networks
 services
 transportstreams
 admins
+augmenterrules
 
 EOHELP
 
@@ -65,6 +66,7 @@ dump_table( $ds, "epgservers", "$datadir/$country/epgservers.txt" );
 dump_table( $ds, "networks", "$datadir/$country/networks.txt" );
 dump_table( $ds, "services", "$datadir/$country/services.txt" );
 dump_table( $ds, "transportstreams", "$datadir/$country/transportstreams.txt" );
+dump_table( $ds, "augmenterrules", "$datadir/$country/augmenterrules.txt" );
 
 sub dump_structure {
   my( $outfile ) = @_;
@@ -79,7 +81,7 @@ sub dump_structure {
       batches channels channelgroups files
       programs state trans_cat languagestrings
       epgservers dvb_cat networks services transportstreams
-      admins
+      admins augmenterrules
       /;
 
   my $command = "--add-drop-table --no-data " . join( " ", @tables );
