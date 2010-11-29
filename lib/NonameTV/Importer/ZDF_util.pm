@@ -110,8 +110,14 @@ sub ParseData
     # whole description (ZDF/ZDFneo)
     my $wholedesc = $sc->findvalue( './programm//pressetext' );
 
-    # moderation
-    my $moderation = $sc->findvalue( './programm//moderation' );
+    # darsteller, beteiligte, stab
+    ParsePeople( \%sce, 'actors',     $sc, './programm//besetzung/darsteller' );
+    ParsePeople( \%sce, 'writers',    $sc, './programm//drehbuch' );
+    ParsePeople( \%sce, 'producers',  $sc, './programm//filmvon' );
+    ParsePeople( \%sce, 'guests',     $sc, './programm//gast' );
+    ParsePeople( \%sce, 'presenters', $sc, './programm//moderation' );
+    ParsePeople( \%sce, 'directors',  $sc, './programm//regie' );
+    ParsePeople( \%sce, 'writers',    $sc, './programm//stab/person[funktion=buch]' );
 
     # there can be more than one broadcast times
     # so we have to find each 'ausstrahlung'
@@ -527,6 +533,30 @@ sub ParseWeek
   my $week = substr ($ns, 0, 4) . "-" . substr ($ns, 4, 2);
 
   return $week;
+}
+
+# call with sce, target field, sendung element, xpath expression
+# e.g. ParsePeople( \%sce, 'actors', $sc, './programm//besetzung/darsteller' );
+# e.g. ParsePeople( \%sce, 'writers', $sc, './programm//stab/person[funktion=buch]' );
+sub ParsePeople
+{
+  my( $ce, $field, $root, $xpath) = @_;
+
+  my @people;
+  my $nodes = $root->findnodes( $xpath );
+  foreach my $node ($nodes->get_nodelist) {
+    my $person = $node->string_value();
+    if( $person ne '' ) {
+      push( @people, $person );
+    }
+  }
+  if( scalar( @people ) > 0 ) {
+    if( defined( $ce->{$field} ) ) {
+      $ce->{$field} = join( ', ', $ce->{$field}, @people );
+    } else {
+      $ce->{$field} = join( ', ', @people );
+    }
+  }
 }
 
 1;
