@@ -11,17 +11,14 @@ See xxx for instructions.
 =cut
 
 use Encode qw/decode/;
-use HTML::Entities;
 use HTML::TableExtract;
 use HTML::Parse;
 use IO::Uncompress::Gunzip qw(gunzip $GunzipError) ;
 
-use NonameTV::DataStore::Helper;
-use NonameTV::Log qw/p w f/;
-
 use NonameTV qw/Html2Xml/;
-
+use NonameTV::DataStore::Helper;
 use NonameTV::Importer::BaseOne;
+use NonameTV::Log qw/d p w f/;
 
 use base 'NonameTV::Importer::BaseOne';
 
@@ -59,13 +56,13 @@ sub FilterContent {
 
   # FIXME convert latin1/cp1252 to utf-8 to HTML
   $cref = decode( 'windows-1252', $cref );
-  $cref = encode_entities( $cref, "\x80-\xff" );
 
   # cut away frame around tables
   $cref =~ s|^.+\"0Woche\"> +(<table.+/table>)\n +</div></body>.*$|<html><body><div>$1</div></body></html>|s;
 
   # remove hyperlinks
-#  $cref =~ s|<a href((?!>).)+>(((?!</a>).)*)</a>|$1|g;
+  $cref =~ s|<a href[^>]+>||g;
+  $cref =~ s|</a>||g;
 
   # turn &nbsp; into space
   $cref =~ s|&nbsp;| |g;
@@ -76,6 +73,7 @@ sub FilterContent {
   # remove class and id
   $cref =~ s| class=\"((?!\").)*\"||g;
   $cref =~ s| id=\"((?!\").)*\"||g;
+  $cref =~ s| target=\"((?!\").)*\"||g;
 
   my $doc = Html2Xml ($cref);
   $cref = $doc->toStringHTML ();
@@ -120,7 +118,7 @@ sub ImportContent {
     keep_html => 0
   );
 
-  $$cref = decode_entities( $$cref );
+  $$cref = decode( 'windows-1252', $$cref );
   $te->parse($$cref);
 
   my $table = $te->table(0,0);
@@ -194,6 +192,7 @@ sub ImportContent {
         $title = trimX ($title);
 
         if ($title) {
+          d( "$start_time $title" );
 
           my $ce = {
             start_time => $start_time,
