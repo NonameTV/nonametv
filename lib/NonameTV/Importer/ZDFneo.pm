@@ -57,9 +57,14 @@ sub Object2Url {
   my $lastdayother = $last->day().'.'.$last->month();
   my $urlother = sprintf( "http://pressetreff.zdf.de/Public/ZDFneo-PD/%d.KW-%s-%s.xml", $week, $firstdayother, $lastdayother );
 
-  d( "ZDF: fetching data from $url\nor $urlother" );
+  # and another format, same as the first with leading zeroes
+  # http://pressetreff.zdf.de/Public/ZDFneo-PD/1.KW-1.-7.01.2011.xml
+  my $lastdaythird = sprintf( "%d.%02d.%d", $last->day(), $last->month(), $last->year() );
+  my $urlthird = sprintf( "http://pressetreff.zdf.de/Public/ZDFneo-PD/%d.KW-1.-7.01.2011.xml", $week, $firstday, $lastdaythird );
 
-  return( [$url, $urlother], undef );
+  d( "ZDF: fetching data from $url\nor $urlother\nor $urlthird" );
+
+  return( [$url, $urlother, $urlthird], undef );
 }
 
 #
