@@ -13,8 +13,14 @@ cd $PROOT
 if [ $1x = --weeklyx ]
 then
   # Run weekly commands.
-  perl -I lib tools/nonametv-remove-old
+  #perl -I lib tools/nonametv-remove-old # Tele5 wants daily removal of their texts
   tools/de/nonametv-import-allhttp --remove-old
+
+  # move away old files after 6 weeks
+  tools/nonametv-filestore-moveold --all --leavedays 42
+  perl -I lib/ tools/nonametv-import Tele5 --remove-missing
+  perl -I lib/ tools/nonametv-import ZDFinfo --remove-missing
+
   exit
 fi
 
@@ -29,6 +35,8 @@ then
   # Run hourly commands
   h=
 fi
+
+$d perl -I lib tools/nonametv-remove-old # Tele5 wants daily removal of their texts
 
 #tools/de/nonametv-process-mail
 
