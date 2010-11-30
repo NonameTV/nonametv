@@ -435,7 +435,7 @@ sub clean_untertitel
     progress ("parsing producer from subtitle: " . $subtitle);
     my ($format, $producer) = ($subtitle =~ m|^(\S+) von (\S+ \S+)$|);
 
-    AddCredits( $sce, 'producers', [$producer] );
+    AddCredits( $sce, 'producers', ($producer) );
 
     # programme format is mostly reported in genre, too. so just reuse that
     my ( $program_type, $categ ) = $ds->LookupCat( "DreiSat_genre", $format );
@@ -447,7 +447,7 @@ sub clean_untertitel
     progress ("parsing producers from subtitle: " . $subtitle);
     my ($format, $producer1, $producer2) = ($subtitle =~ m|^(\S+) von (\S+ \S+) und (\S+ \S+)$|);
 
-    AddCredits( $sce, 'producers', [$producer1, $producer2] );
+    AddCredits( $sce, 'producers', ($producer1, $producer2) );
 
     # programme format is mostly reported in genre, too. so just reuse that
     my ( $program_type, $categ ) = $ds->LookupCat( "DreiSat_genre", $format );
@@ -481,8 +481,7 @@ sub clean_untertitel
   if ($subtitle =~ m|Moderation: .*$|) {
     progress ('parsing presenters from subtitle: ' . $subtitle);
     my ($presenter) = ($subtitle =~ m|Moderation: (.*)$|);
-    $subtitle =~ s|\s*Film von .*$||;
-    $subtitle =~ s|\s*Ein$||;
+    $subtitle =~ s|\s*Moderation: .*$||;
     if( $subtitle eq '' ) {
       $subtitle = undef;
     }
