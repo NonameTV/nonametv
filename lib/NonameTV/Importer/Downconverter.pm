@@ -20,7 +20,7 @@ use warnings;
 use DateTime;
 
 use NonameTV qw/MyGet ParseXmltv norm/;
-use NonameTV::Log qw/progress w error/;
+use NonameTV::Log qw/d w/;
 
 use NonameTV::Importer::BaseDaily;
 
@@ -57,13 +57,13 @@ sub ImportContent {
   {
     $e->{channel_id} = $chd->{id};
 
-    $e->{start_dt}->set_time_zone( "UTC" );
-    $e->{start_time} = $e->{start_dt}->ymd('-') . " " . 
+    $e->{start_dt}->set_time_zone( 'UTC' );
+    $e->{start_time} = $e->{start_dt}->ymd('-') . ' ' . 
         $e->{start_dt}->hms(':');
     delete $e->{start_dt};
 
-    $e->{stop_dt}->set_time_zone( "UTC" );
-    $e->{end_time} = $e->{stop_dt}->ymd('-') . " " . 
+    $e->{stop_dt}->set_time_zone( 'UTC' );
+    $e->{end_time} = $e->{stop_dt}->ymd('-') . ' ' . 
         $e->{stop_dt}->hms(':');
     delete $e->{stop_dt};
 
@@ -93,7 +93,7 @@ sub ImportContent {
 
 sub FetchDataFromSite
 {
-  return( '', undef );
+  return( '', 1 );
 }
 
 1;

@@ -49,16 +49,16 @@ sub ImportContent {
 
   foreach my $e (@{$data})
   {
-    $e->{start_dt}->set_time_zone( "UTC" );
+    $e->{start_dt}->set_time_zone( 'UTC' );
     $e->{start_dt}->add( minutes => $delta );
 
-    $e->{stop_dt}->set_time_zone( "UTC" );
+    $e->{stop_dt}->set_time_zone( 'UTC' );
     $e->{stop_dt}->add( minutes => $delta );
     
-    $e->{start_time} = $e->{start_dt}->ymd('-') . " " . 
+    $e->{start_time} = $e->{start_dt}->ymd('-') . ' ' . 
         $e->{start_dt}->hms(':');
     delete $e->{start_dt};
-    $e->{end_time} = $e->{stop_dt}->ymd('-') . " " . 
+    $e->{end_time} = $e->{stop_dt}->ymd('-') . ' ' . 
         $e->{stop_dt}->hms(':');
     delete $e->{stop_dt};
     $e->{channel_id} = $chd->{id};
@@ -72,7 +72,7 @@ sub ImportContent {
 
 sub FetchDataFromSite
 {
-  return( '', undef );
+  return( '', 1 );
 }
 
 1;
