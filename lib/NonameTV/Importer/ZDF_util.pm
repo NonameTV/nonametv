@@ -111,13 +111,13 @@ sub ParseData
     my $wholedesc = $sc->findvalue( './programm//pressetext' );
 
     # darsteller, beteiligte, stab
-    ParsePeople( \%sce, 'actors',     $sc, './programm//besetzung/darsteller' );
-    ParsePeople( \%sce, 'writers',    $sc, './programm//drehbuch' );
-    ParsePeople( \%sce, 'producers',  $sc, './programm//filmvon' );
-    ParsePeople( \%sce, 'guests',     $sc, './programm//gast' );
-    ParsePeople( \%sce, 'presenters', $sc, './programm//moderation' );
-    ParsePeople( \%sce, 'directors',  $sc, './programm//regie' );
-    ParsePeople( \%sce, 'writers',    $sc, './programm//stab/person[funktion=buch]' );
+    ParseCredits( \%sce, 'actors',     $sc, './programm//besetzung/darsteller' );
+    ParseCredits( \%sce, 'writers',    $sc, './programm//drehbuch' );
+    ParseCredits( \%sce, 'producers',  $sc, './programm//filmvon' );
+    ParseCredits( \%sce, 'guests',     $sc, './programm//gast' );
+    ParseCredits( \%sce, 'presenters', $sc, './programm//moderation' );
+    ParseCredits( \%sce, 'directors',  $sc, './programm//regie' );
+    ParseCredits( \%sce, 'writers',    $sc, './programm//stab/person[funktion=buch]' );
 
     # there can be more than one broadcast times
     # so we have to find each 'ausstrahlung'
@@ -435,11 +435,7 @@ sub clean_untertitel
     progress ("parsing producer from subtitle: " . $subtitle);
     my ($format, $producer) = ($subtitle =~ m|^(\S+) von (\S+ \S+)$|);
 
-    if ($sce->{producers}) {
-      $sce->{producers} = join (", ", $sce->{producers}, $producer);
-    } else {
-      $sce->{producers} = $producer;
-    }
+    AddCredits( $sce, 'producers', [$producer] );
 
     # programme format is mostly reported in genre, too. so just reuse that
     my ( $program_type, $categ ) = $ds->LookupCat( "DreiSat_genre", $format );
@@ -451,17 +447,55 @@ sub clean_untertitel
     progress ("parsing producers from subtitle: " . $subtitle);
     my ($format, $producer1, $producer2) = ($subtitle =~ m|^(\S+) von (\S+ \S+) und (\S+ \S+)$|);
 
-    if ($sce->{producers}) {
-      $sce->{producers} = join (", ", $sce->{producers}, $producer1, $producer2);
-    } else {
-      $sce->{producers} = join (", ", $producer1, $producer2);
-    }
+    AddCredits( $sce, 'producers', [$producer1, $producer2] );
 
     # programme format is mostly reported in genre, too. so just reuse that
     my ( $program_type, $categ ) = $ds->LookupCat( "DreiSat_genre", $format );
     AddCategory( $sce, $program_type, $categ );
 
     return undef;
+  }
+
+  # ZDF Infokanal appends producers to the episode title
+  if ($subtitle =~ m|Film von .*$|) {
+    progress ('parsing producer from subtitle: ' . $subtitle);
+    my ($producer) = ($subtitle =~ m|Film von (.*)$|);
+    $subtitle =~ s|\s*Film von .*$||;
+    $subtitle =~ s|\s*Ein$||;
+    if( $subtitle eq '' ) {
+      $subtitle = undef;
+    }
+
+    # split at "und"
+    my @producers = split( '\s+und\s+', $producer );
+    # join with comma and split again (to handle three producers)
+    $producer = join( ', ', @producers );
+    @producers = split( ',\s*', $producer );
+
+    AddCredits( $sce, 'producers', @producers );
+
+    return $subtitle;
+  }
+
+  # ZDF Infokanal appends presenters to the episode title
+  if ($subtitle =~ m|Moderation: .*$|) {
+    progress ('parsing presenters from subtitle: ' . $subtitle);
+    my ($presenter) = ($subtitle =~ m|Moderation: (.*)$|);
+    $subtitle =~ s|\s*Film von .*$||;
+    $subtitle =~ s|\s*Ein$||;
+    if( $subtitle eq '' ) {
+      $subtitle = undef;
+    }
+
+    # split at "und"
+    my @presenters = split( '\s+und\s+', $presenter);
+    # join with comma and split again (to handle three presenters)
+    $presenter = join( ', ', @presenters);
+    @presenters = split( ',\s*', $presenter );
+
+    AddCredits( $sce, 'presenters', @presenters);
+
+    return $subtitle;
   }
 
   # possible false positives / more data
@@ -536,9 +570,9 @@ sub ParseWeek
 }
 
 # call with sce, target field, sendung element, xpath expression
-# e.g. ParsePeople( \%sce, 'actors', $sc, './programm//besetzung/darsteller' );
-# e.g. ParsePeople( \%sce, 'writers', $sc, './programm//stab/person[funktion=buch]' );
-sub ParsePeople
+# e.g. ParseCredits( \%sce, 'actors', $sc, './programm//besetzung/darsteller' );
+# e.g. ParseCredits( \%sce, 'writers', $sc, './programm//stab/person[funktion=buch]' );
+sub ParseCredits
 {
   my( $ce, $field, $root, $xpath) = @_;
 
@@ -550,6 +584,14 @@ sub ParsePeople
       push( @people, $person );
     }
   }
+
+  AddCredits( $ce, $field, @people );
+}
+
+sub AddCredits
+{
+  my( $ce, $field, @people) = @_;
+
   if( scalar( @people ) > 0 ) {
     if( defined( $ce->{$field} ) ) {
       $ce->{$field} = join( ', ', $ce->{$field}, @people );
