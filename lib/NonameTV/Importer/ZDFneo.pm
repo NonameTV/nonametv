@@ -60,7 +60,7 @@ sub Object2Url {
   # and another format, same as the first with leading zeroes
   # http://pressetreff.zdf.de/Public/ZDFneo-PD/1.KW-1.-7.01.2011.xml
   my $lastdaythird = sprintf( "%d.%02d.%d", $last->day(), $last->month(), $last->year() );
-  my $urlthird = sprintf( "http://pressetreff.zdf.de/Public/ZDFneo-PD/%d.KW-1.-7.01.2011.xml", $week, $firstday, $lastdaythird );
+  my $urlthird = sprintf( "http://pressetreff.zdf.de/Public/ZDFneo-PD/%d.KW-%s-%s.xml", $week, $firstday, $lastdaythird );
 
   d( "ZDF: fetching data from $url\nor $urlother\nor $urlthird" );
 
