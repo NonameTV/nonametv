@@ -39,7 +39,7 @@ sub Object2Url {
     return (undef, 'Grabber info must contain path!');
   }
 
-  my $url = 'http://www.kika-presse.de/media/export/text' . $year . 'pw' . $week . '.xml';
+  my $url = sprintf( 'http://www.kika-presse.de/media/export/text%dpw%02d.xml', $year , $week );
 
   # Only one url to look at and no error
   return ([$url], undef);
