@@ -23,7 +23,7 @@ use XML::LibXML;
 use Encode qw/encode decode/;
 
 use NonameTV qw/norm AddCategory ParseXmltv/;
-use NonameTV::Log qw/progress error/;
+use NonameTV::Log qw/d progress error/;
 use NonameTV::Config qw/ReadConfig/;
 use NonameTV::DataStore::Helper;
 
@@ -129,7 +129,7 @@ sub ImportContent
       $e->{start_time} = $time;
     }
 
-    progress("TVGrabXX: $chd->{xmltvid}: $e->{start_time} - $e->{title}");
+    d( "TVGrabXX: $chd->{xmltvid}: $e->{start_time} - $e->{title}" );
 
     if( $needhelper ){
       $dsh->AddProgramme($e);

@@ -15,7 +15,7 @@ use XML::LibXML;
 use Switch;
 
 use NonameTV qw/ParseXml norm AddCategory/;
-use NonameTV::Log qw/d p progress w error/;
+use NonameTV::Log qw/d p w error/;
 
 BEGIN {
     use Exporter   ();
@@ -52,7 +52,7 @@ sub ParseData
     error( "$batch_id: No 'sendung' blocks found" );
     return 0;
   }
-  progress("Found " . $ns->size() . " shows");
+  p( "Found " . $ns->size() . " shows" );
   
   foreach my $sc ($ns->get_nodelist)
   {
@@ -335,7 +335,7 @@ sub clean_sendetitel
     $title =~ s| \(\d+\) - \(\d+\)||;
   } elsif ($title =~ m| \(\d+\)$|) {
     my ($episodenr) = ($title =~ m| \((\d+)\)$|);
-    p ("parsing episode number $episodenr from title \"$title\"");
+    d ("parsing episode number $episodenr from title \"$title\"");
     $sce->{episode} = ". " . ($episodenr-1) . " .";
     $title =~ s| \(\d+\)$||;
   }
@@ -432,7 +432,7 @@ sub clean_untertitel
   # Film von Sandra Schlittenhardt, Faika Kalac,
   #
   if ($subtitle =~ m|^Film\S* von \S+ \S+$|) {
-    progress ("parsing producer from subtitle: " . $subtitle);
+    d( "parsing producer from subtitle: " . $subtitle );
     my ($format, $producer) = ($subtitle =~ m|^(\S+) von (\S+ \S+)$|);
 
     AddCredits( $sce, 'producers', ($producer) );
@@ -444,7 +444,7 @@ sub clean_untertitel
     return undef;
   }
   if ($subtitle =~ m|^Film\S* von \S+ \S+ und \S+ \S+$|) {
-    progress ("parsing producers from subtitle: " . $subtitle);
+    d( "parsing producers from subtitle: " . $subtitle );
     my ($format, $producer1, $producer2) = ($subtitle =~ m|^(\S+) von (\S+ \S+) und (\S+ \S+)$|);
 
     AddCredits( $sce, 'producers', ($producer1, $producer2) );
@@ -458,7 +458,7 @@ sub clean_untertitel
 
   # ZDF Infokanal appends producers to the episode title
   if ($subtitle =~ m|Film von .*$|) {
-    progress ('parsing producer from subtitle: ' . $subtitle);
+    d( 'parsing producer from subtitle: ' . $subtitle );
     my ($producer) = ($subtitle =~ m|Film von (.*)$|);
     $subtitle =~ s|\s*Film von .*$||;
     $subtitle =~ s|\s*Ein$||;
@@ -479,7 +479,7 @@ sub clean_untertitel
 
   # ZDF Infokanal appends presenters to the episode title
   if ($subtitle =~ m|Moderation: .*$|) {
-    progress ('parsing presenters from subtitle: ' . $subtitle);
+    d( 'parsing presenters from subtitle: ' . $subtitle );
     my ($presenter) = ($subtitle =~ m|Moderation: (.*)$|);
     $subtitle =~ s|\s*Moderation: .*$||;
     if( $subtitle eq '' ) {
