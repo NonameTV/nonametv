@@ -396,10 +396,8 @@ sub ParseExtraInfo
     if( $line =~ /^Mit:\s+.*$/ ){
       my ( $actor ) = ( $line =~ /^Mit:\s+(.*)$/ );
       # remove name of role, not yet supported
+      $actor =~ s|\s+-\s+\(.*?\)||g;
       my @actors = split( ', ', $actor );
-      foreach my $person (@actors) {
-        $person =~ s|\s+-\s+\(.*\)$||;
-      }
       $$ce->{actors} = join( ', ', @actors);
       next;
     }
