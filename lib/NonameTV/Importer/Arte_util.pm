@@ -177,6 +177,9 @@ sub ImportFull
       if( $title =~ /\s+stereo\s*$/i ){
         $stereo = "stereo";
         $title =~ s/\s+stereo\s*$//i;
+      } elsif( $title =~ /\s+dolby\s*$/i ){
+        $stereo = "dolby digital"; # FIXME it means Dolby Digital 2.0 / AC3 2.0 here
+        $title =~ s/\s+dolby\s*$//i;
       }
 
       # parse episode number
