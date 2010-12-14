@@ -6,13 +6,19 @@ use Encode qw/from_to/;
 
 =pod
 
-channels: Tele5
-country: Germany
+Channels: Tele5 and all SWR channels
+Country: Germany
 
-Import data from Richtext-files delivered via e-mail.
-Each file is for one week.
+Import data from Richtext-files delivered via e-mail or web.
+There is a seperate file for each channel/week.
 
 Features:
+ * do not store descriptive texts outside of german speaking area for Tele5
+ * split SWR Fernsehen into it's three regional variants
+
+Grabber Info: name, variant
+ * Name of channel in files (as a safe guard)
+ * Name of regional variant (BW, RP, SR) for channel SWR FS
 
 =cut
 
@@ -20,7 +26,7 @@ use DateTime;
 use RTF::Tokenizer;
 
 use NonameTV::DataStore::Helper;
-use NonameTV::Log qw/d progress error f/;
+use NonameTV::Log qw/d progress w error f/;
 use NonameTV qw/AddCategory MonthNumber norm/;
 
 use NonameTV::Importer::BaseFile;
@@ -41,9 +47,6 @@ sub new {
     $self->{KeepDesc} = 1;
   }
 
-  my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
-  $self->{datastorehelper} = $dsh;
-
   return $self;
 }
 
@@ -53,12 +56,18 @@ sub ImportContentFile {
 
   $self->{fileerror} = 0;
 
-return if ( $file !~ /Tele_5_Pw_[[:digit:]]+A\.rtf/i );
+  my @grabber_info = split( /,\s*/, $chd->{grabber_info} );
+  $self->{channel_name} = shift( @grabber_info );
+  if( $self->{channel_name} eq 'SWR' ) {
+    $self->{region_name} = shift( @grabber_info );
+#    # needed as regional programs may start together but have different running times which we don't get
+#    $self->{datastore}->{SILENCE_END_START_OVERLAP} = 1;
+  }
 
-  my $channel_id = $chd->{id};
-  my $channel_xmltvid = $chd->{xmltvid};
-  my $dsh = $self->{datastorehelper};
-  my $ds = $self->{datastore};
+  my $regexp = $self->{channel_name} . '_Pw_[[:digit:]]+A\.rtf';
+  $regexp =~ s|\s|_|g;
+
+return if ( $file !~ /$regexp/i );
 
   $self->ImportRTF ($file, $chd);
 
@@ -75,8 +84,10 @@ sub ImportRTF {
 
   my $xmltvid=$chd->{xmltvid};
   my $channel_id = $chd->{id};
-  my $dsh = $self->{datastorehelper};
   my $ds = $self->{datastore};
+
+  my $channel_name = $self->{channel_name};
+  my $region_name = $self->{region_name};
 
   my $tokenizer = RTF::Tokenizer->new( file => $file );
 
@@ -95,18 +106,50 @@ sub ImportRTF {
   my $gotbatch;
   my $laststart;
 
-  my $copyrightstring = "\n" . chr(169) . ' by Tele5' . chr(174);
+  my $infooter = 0;
+  my $grouplevel = 0;
+
+  my $copyrightstring;
+  if( $channel_name eq 'Tele 5' ) {
+    $copyrightstring = "\n" . chr(169) . ' by Tele5' . chr(174);
+  } else {
+    $copyrightstring = '';
+  }
   from_to ($copyrightstring, "windows-1252", "utf8");
   
 
   while( my ( $type, $arg, $param ) = $tokenizer->get_token( ) ){
 
-    last if $type eq 'eof';
+#    last if( $type eq 'eof' );
 
     if( ( $type eq 'control' ) and ( $arg eq 'par' ) ){
       $text .= "\n";
-    } elsif( $type eq 'text' ){
+    } elsif( ( $type eq 'control' ) and ( ( $arg eq '*' ) or ( $arg eq 'fonttbl' ) or ( $arg eq 'footer' ) or ( $arg eq 'header' ) ) ){
+      d( 'footerstart' );
+      $text .= "\n";
+      if( $infooter == 0 ) {
+        $infooter = $grouplevel;
+      }
+    } elsif( ( $type eq 'group' ) ){
+      if( $arg == 0 ) {
+        if( $grouplevel == $infooter ) {
+          d( 'footerend' );
+          $infooter = 0;
+          $text = '';
+        }
+        $grouplevel -= 1;
+      } elsif( $arg == 1 ) {
+        $grouplevel += 1;
+      } else {
+        e( 'error in group handling' );
+      }
+    } elsif( $type eq 'eof' ){
+      $text .= "\n\n";
+    } elsif( ( $type eq 'text' ) and ( $infooter == 0 ) ){
       $text .= ' ' . $arg;
+      d( 'text:' . $arg );
+    } else {
+      d( 'unknown type: ' . $type . ':' . $arg );
     }
 
     if( $text =~ m|\n\n\n$| ){
@@ -115,8 +158,12 @@ sub ImportRTF {
       $text =~ s|\n+$||;
 
       # got one block, either a new day or one program
-      if ($text =~ m|Tele 5, Programmwoche|) {
-        my ($week, $daystring) = ($text =~ m|Tele 5 PW: (\d+) ([^\n]*)\n|s);
+      if( $text =~ m|^[\s\n]*$|s ) {
+        # empty block
+        d( 'empty block: ' . $text );
+      } elsif ($text =~ m|$channel_name, Programmwoche|) {
+        d( 'parsing date from: ' . $text );
+        my ($week, $daystring) = ($text =~ m|$channel_name, Programmwoche (\d+)\n ([^\n]*)|);
         my ($day, $month, $year) = ($daystring =~ m|(\d+)\. (\S+) (\d+)|);
 
         if (!$gotbatch) {
@@ -132,31 +179,62 @@ sub ImportRTF {
           time_zone => 'Europe/Berlin');
         progress "new day: $daystring == " . $currdate->ymd('-');
         $laststart = undef;
-#        d "DAY: $text";
       } else { 
         d "TEXT: $text";
         from_to ($text, "windows-1252", "utf8");
 
+        my $ce = {};
+        $ce->{channel_id} = $chd->{id};
+
         # start_time and title
         my ($hour, $minute, $title) = ($text =~ m |^\s*(\d{2}):(\d{2})\s+(.*)$|m);
         if (!defined ($hour)) {
-          f ('program without start time');
+          # TODO may be regional window, then use the last start_time/duration
+          # SWR has 3 regional variants that sometimes share the same time slots
+          if( $channel_name ne 'SWR' ) {
+            w ('program without start time');
+            $text = '';
+            next;
+          } else {
+            d ('program without start time, using last start without end');
+            $ce->{start_time} = $laststart->ymd('-') . ' ' . $laststart->hms(':');
+            # we did not find time:title, so guess the title is the first line
+            ( $title ) = ($text =~ m |^\s*(.*?)\n|s);
+          }
+        } else {
+          my $starttime = $currdate->clone();
+          $starttime->set_hour ($hour);
+          $starttime->set_minute ($minute);
+          $starttime->set_time_zone ('UTC');
+          if (!$laststart) {
+            $laststart = $starttime->clone();
+          }
+          if (DateTime->compare ($laststart, $starttime) == 1) {
+            $starttime->add (days => 1);
+            $currdate->add (days => 1);
+          }
+          $ce->{start_time} = $starttime->ymd('-') . ' ' . $starttime->hms(':');
+          $laststart = $starttime;
+
+          # span between start and stop
+          my( $duration ) = ( $text =~ m|^\s*Sendedauer: (\d+)$|m );
+          if( defined( $duration ) ) {
+            my $stoptime = $starttime->clone()->add( minutes => $duration );
+            $ce->{end_time} = $stoptime->ymd('-') . ' ' . $stoptime->hms(':');
+          }
         }
-        my $starttime = $currdate->clone();
-        $starttime->set_hour ($hour);
-        $starttime->set_minute ($minute);
-        $starttime->set_time_zone ('UTC');
-        if (!$laststart) {
-          $laststart = $starttime->clone();
+
+        # skip if SWR an wrong region
+        if( $channel_name eq 'SWR' ) {
+          if( $text =~ m/^\s*(?:BW|RP|SR)$/m ) {
+            my( $programregion )=( $text =~ m/^\s*(BW|RP|SR)$/m );
+            if( $region_name ne $programregion ) {
+              d( 'skipping for region ' . $programregion . ' we want ' . $region_name );
+              $text = '';
+              next;
+            }
+          }
         }
-        if (DateTime->compare ($laststart, $starttime) == 1) {
-          $starttime->add (days => 1);
-          $currdate->add (days => 1);
-        }
-        my $ce = {
-          channel_id => $chd->{id},
-          start_time => $starttime->ymd('-') . ' ' . $starttime->hms(':'),
-        };
 
         # episode number
         my ($episodenum) = ($text =~ m |^\s*Folge\s+(\d+)$|m);
@@ -167,8 +245,10 @@ sub ImportRTF {
           my ($episodetitle) = ($text =~ m |\n(.*)\n\s*Folge\s+\d+\n|);
           # strip orignal episode title if present
           #error 'episode title: ' . $episodetitle;
-          $episodetitle =~ s|\(.*\)||;
-          $ce->{subtitle} = $episodetitle;
+          if( defined( $episodetitle ) ) {
+            $episodetitle =~ s|\(.*\)||;
+            $ce->{subtitle} = $episodetitle;
+          }
         } else {
           # seems to be a movie, maybe it's a multi part movie
           if ($title =~ m|Teil|) {
@@ -203,13 +283,20 @@ sub ImportRTF {
           $ce->{aspect} = '16:9';
         }
 
+        # stereo
+        if ($text =~ m|^\s*Stereo$|m) {
+          $ce->{stereo} = 'stereo';
+        } elsif ($text =~ m|^\s*Dolby Surround$|m) {
+          $ce->{stereo} = 'surround';
+        }
+
         # category override for kids (as we don't have a good category for anime anyway)
         if ($text =~ m|^\s*KINDERPROGRAMM$|m) {
           $ce->{category} = 'Kids';
         }
 
         # program type movie (hard to guess it from the genre)
-        if ($text =~ m|^\s*Film$|m) {
+        if ($text =~ m/^\s*(?:Spielfilm|Film)$/m) {
           $ce->{program_type} = 'movie';
         }
 
@@ -243,6 +330,8 @@ sub ImportRTF {
       }
       $text = '';
     }
+
+    last if( $type eq 'eof' );
   }
 
   $self->{datastore}->EndBatch (1, undef);

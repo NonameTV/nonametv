@@ -289,33 +289,33 @@ $channel_data{ "arteeinsextra.ard.de" } =
           day => 'su',
         },
       ],
-#    "eins-extra.ard.de" =>
-#      [
-#        {
-#          day => 'mo',
-#	  time => '0300-1400',
-#        },
-#        {
-#          day => 'tu',
-#	  time => '0300-1400',
-#        },
-#        {
-#          day => 'we',
-#	  time => '0300-1400',
-#        },
-#        {
-#          day => 'th',
-#	  time => '0300-1400',
-#        },
-#        {
-#          day => 'fr',
-#	  time => '0300-1400',
-#        },
-#        {
-#          day => 'sa',
-#	  time => '0300-0800',
-#        },
-#      ],
+    "eins-extra.ard.de" =>
+      [
+        {
+          day => 'mo',
+	  time => '0300-1400',
+        },
+        {
+          day => 'tu',
+	  time => '0300-1400',
+        },
+        {
+          day => 'we',
+	  time => '0300-1400',
+        },
+        {
+          day => 'th',
+	  time => '0300-1400',
+        },
+        {
+          day => 'fr',
+	  time => '0300-1400',
+        },
+        {
+          day => 'sa',
+	  time => '0300-0800',
+        },
+      ],
   };
 
 use DateTime;
