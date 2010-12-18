@@ -64,7 +64,7 @@ sub FetchDataFromSite
   my $content = <XMLFILE>;
   close(XMLFILE);
 
-  return( $content, "" );
+  return( $content, 1 );
 }
 
 sub ImportContent
