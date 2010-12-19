@@ -135,7 +135,7 @@ sub ImportFull
 
       $state = ST_FSUBINFO;
 
-    } elsif( $text =~ /^\[Kurz\]$/i ){
+    } elsif( $text =~ /\[Kurz\]$/i ){
 
       $state = ST_FDESCSHORT;
       next;
