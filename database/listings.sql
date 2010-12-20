@@ -24,7 +24,8 @@ CREATE TABLE `channels` (
   `empty_ok` tinyint(1) NOT NULL default '0',
   `url` varchar(100) default NULL,
   `allowcredits` tinyint(1) NOT NULL default '0',
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  KEY `chgroup` (`chgroup`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `channelgroups`;
@@ -33,7 +34,8 @@ CREATE TABLE `channelgroups` (
   `display_name` varchar(100) character set latin1 NOT NULL,
   `position` tinyint(10) unsigned NOT NULL,
   `sortby` varchar(32) NOT NULL,
-  `hidden` tinyint(1) NOT NULL default '0'
+  `hidden` tinyint(1) NOT NULL default '0',
+  PRIMARY KEY  (`abr`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `files`;
@@ -46,7 +48,9 @@ CREATE TABLE `files` (
   `earliestdate` datetime default NULL,
   `latestdate` datetime default NULL,
   `md5sum` varchar(33) NOT NULL default '',
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  KEY `channelid` (`channelid`),
+  CONSTRAINT `files_ibfk_1` FOREIGN KEY (`channelid`) REFERENCES `channels` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `programs`;
@@ -81,7 +85,8 @@ CREATE TABLE `programs` (
   `url_image_thumbnail` varchar(100) default NULL,
   `url_image_icon` varchar(100) default NULL,
   PRIMARY KEY  (`channel_id`,`start_time`),
-  KEY `batch` (`batch_id`,`start_time`)
+  KEY `batch` (`batch_id`,`start_time`),
+  CONSTRAINT `programs_ibfk_1` FOREIGN KEY (`channel_id`) REFERENCES `channels` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `state`;
@@ -93,7 +98,7 @@ CREATE TABLE `state` (
 
 DROP TABLE IF EXISTS `trans_cat`;
 CREATE TABLE `trans_cat` (
-  `type` varchar(20) NOT NULL default '',
+  `type` varchar(50) NOT NULL,
   `original` varchar(50) NOT NULL default '',
   `category` varchar(20) default '',
   `program_type` varchar(50) default '',
@@ -116,7 +121,7 @@ CREATE TABLE `epgservers` (
   `description` varchar(100) NOT NULL default '',
   `vendor` varchar(100) NOT NULL default '',
   `type` varchar(100) NOT NULL default '',
-  UNIQUE KEY `id` (`id`)
+  PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `dvb_cat`;
@@ -137,7 +142,9 @@ CREATE TABLE `networks` (
   `description` varchar(100) NOT NULL default '',
   `charset` varchar(100) NOT NULL default '',
   `type` enum('DVB-C','DVB-S','DVB-T','IPTV','GENERIC') NOT NULL,
-  UNIQUE KEY `id` (`id`)
+  PRIMARY KEY  (`id`),
+  KEY `epgserver` (`epgserver`),
+  CONSTRAINT `networks_ibfk_1` FOREIGN KEY (`epgserver`) REFERENCES `epgservers` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `services`;
@@ -158,7 +165,9 @@ CREATE TABLE `services` (
   `nvod` varchar(100) NOT NULL,
   `servicetypeid` int(11) unsigned NOT NULL,
   `lasteventid` int(11) unsigned NOT NULL,
-  UNIQUE KEY `id` (`id`)
+  PRIMARY KEY  (`id`),
+  KEY `transportstream` (`transportstream`),
+  KEY `dbchid` (`dbchid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `transportstreams`;
@@ -177,12 +186,21 @@ CREATE TABLE `transportstreams` (
   `dsysfecouterschemeid` varchar(100) NOT NULL,
   `dsysfecinnerschemeid` varchar(100) NOT NULL,
   `dsyssymbolrate` varchar(100) NOT NULL,
-  UNIQUE KEY `id` (`id`)
+  PRIMARY KEY  (`id`),
+  KEY `network` (`network`),
+  CONSTRAINT `transportstreams_ibfk_1` FOREIGN KEY (`network`) REFERENCES `networks` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `admins`;
 CREATE TABLE `admins` (
-  `username` varchar(32) NOT NULL,
-  `password` varchar(32) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `username` varchar(32) NOT NULL default '',
+  `password` varchar(64) NOT NULL,
+  `fullname` varchar(64) NOT NULL default '',
+  `email` varchar(64) NOT NULL default '',
+  `language` varchar(32) NOT NULL default '',
+  `ismaster` tinyint(1) unsigned NOT NULL default '0',
+  `roleeditor` tinyint(1) unsigned NOT NULL default '0',
+  UNIQUE KEY `username` (`username`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
 INSERT INTO `admins` (username, password) VALUES ('nonametv', '');

@@ -233,8 +233,8 @@ sub ParseTime
     my $dt = DateTime::Format::Excel->parse_datetime( $text );
     $hour = $dt->year;
     $min = $dt->month;
-  } elsif( $text =~ /^\d{2}:\d{2}$/ ){
-    ( $hour, $min ) = ( $text =~ /^(\d{2}):(\d{2})$/ );
+  } elsif( $text =~ /^\d+:\d+$/ ){
+    ( $hour, $min ) = ( $text =~ /^(\d+):(\d+)$/ );
   } else {
     return undef;
   }

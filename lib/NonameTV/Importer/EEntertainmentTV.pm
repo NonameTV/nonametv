@@ -45,7 +45,11 @@ sub ImportContentFile {
   if( $file =~ /\.xml$/i ){
     #$self->ImportXML( $file, $chd );
   } elsif( $file =~ /\.xls$/i ){
-    $self->ImportFlatXLS( $file, $chd );
+    if( $file =~ /monthly/i ){
+      $self->ImportFlatXLS( $file, $chd );
+    } elsif( $file =~ /weekly/i ){
+      $self->ImportGridXLS( $file, $chd );
+    }
   } else {
     error( "EEntertainmentTV: Unknown file format: $file" );
   }
@@ -241,6 +245,93 @@ sub ImportFlatXLS
   return;
 }
 
+sub ImportGridXLS
+{
+  my $self = shift;
+  my( $file, $chd ) = @_;
+
+  my $dsh = $self->{datastorehelper};
+  my $ds = $self->{datastore};
+
+  my $date;
+  my $currdate = "x";
+
+  my $coltime = 2;
+  my $colstart = 3;
+  my $colend = 9;
+
+  progress( "EEntertainmentTV GridXLS: $chd->{xmltvid}: Processing flat XLS $file" );
+
+  my( $oBook, $oWkS, $oWkC );
+  $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
+
+  if( not defined( $oBook ) ) {
+    error( "EEntertainmentTV GridXLS: $file: Failed to parse xls" );
+    return;
+  }
+
+  for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
+
+    $oWkS = $oBook->{Worksheet}[$iSheet];
+    progress("EEntertainmentTV GridXLS: $chd->{xmltvid}: processing worksheet named '$oWkS->{Name}'");
+
+    for(my $iC = $colstart ; $iC <= $colend ; $iC++) {
+
+      for(my $iR = $oWkS->{MinRow} ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
+
+        my $oWkC = $oWkS->{Cells}[$iR][$iC];
+        next if( ! $oWkC );
+        next if( ! $oWkC->Value );
+
+        if( isDate( $oWkC->Value ) ){
+          $date = ParseDate( $oWkC->Value );
+
+          if( $date ne $currdate ) {
+            if( $currdate ne "x" ) {
+	      $dsh->EndBatch( 1 );
+            }
+
+            my $batch_id = $chd->{xmltvid} . "_" . $date;
+            $dsh->StartBatch( $batch_id , $chd->{id} );
+            $dsh->StartDate( $date , "06:00" );
+            $currdate = $date;
+
+            progress("EEntertainmentTV GridXLS: $chd->{xmltvid}: Date is: $date");
+          }
+        }
+
+        # time
+        $oWkC = $oWkS->{Cells}[$iR][$coltime];
+        next if( ! $oWkC );
+        next if( ! $oWkC->Value );
+        my $time = ParseTime( $oWkC->Value );
+        next if( ! $time );
+
+        # title
+        $oWkC = $oWkS->{Cells}[$iR][$iC];
+        next if( ! $oWkC );
+        next if( ! $oWkC->Value );
+        my $title = $oWkC->Value;
+        next if( ! $title );
+
+        progress( "EEntertainmentTV GridXLS: $chd->{xmltvid}: $time - $title" );
+
+        my $ce = {
+          channel_id => $chd->{id},
+          title => $title,
+          start_time => $time,
+        };
+
+        $dsh->AddProgramme( $ce );
+      }
+    }
+  }
+
+  $dsh->EndBatch( 1 );
+
+  return;
+}
+
 sub isDate {
   my ( $text ) = @_;
 
@@ -248,6 +339,10 @@ sub isDate {
 
   # format '01/07/10'
   if( $text =~ /^\d{2}\/\d{2}\/\d{2}$/i ){
+    return 1;
+
+  # format 'Monday\n27 December 10'
+  } elsif( $text =~ /^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\n\d+\s+(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d+$/i ){
     return 1;
   }
 
@@ -259,17 +354,38 @@ sub ParseDate {
 
 #print ">$text<\n";
 
-  my( $year, $day, $month );
+  my( $dayname, $year, $day, $month, $monthname );
 
   # format '01/07/10'
   if( $text =~ /^\d{2}\/\d{2}\/\d{2}$/i ){
     ( $day, $month, $year ) = ( $text =~ /^(\d{2})\/(\d{2})\/(\d{2})$/i );
+
+  # format 'Monday\n27 December 10'
+  } elsif( $text =~ /^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\n\d+\s+(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d+$/i ){
+    ( $dayname, $day, $monthname, $year ) = ( $text =~ /^(\S+)\n(\d+)\s+(\S+)\s+(\d+)$/i );
+    $month = MonthNumber( $monthname, "en" );
   }
 
   $year += 2000 if $year < 100;
 
   return sprintf( '%d-%02d-%02d', $year, $month, $day );
 }
+
+sub ParseTime {
+  my ( $text ) = @_;
+
+#print ">$text<\n";
+
+  my( $hour, $min );
+
+  if( $text =~ /^\d{4}$/i ){
+    ( $hour, $min ) = ( $text =~ /^(\d{2})(\d{2})$/i );
+    $hour -= 24 if $hour gt 23;
+  }
+
+  return sprintf( '%02d:%02d', $hour, $min );
+}
+
 
 1;
 
