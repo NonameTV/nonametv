@@ -14,15 +14,20 @@ AugmentProgram
 
 =cut
 
-use NonameTV::Config qw/ReadConfig/;
+#use NonameTV::Config qw/ReadConfig/;
 
 sub new {
-    my $proto = shift;
-    my $class = ref($proto) || $proto;
-    my $self  = {};
-    my $conf  = ReadConfig();
-    
-    bless ($self, $class);
+  my $class = ref( $_[0] ) || $_[0];
+
+  my $self = { }; 
+  bless $self, $class;
+
+  # Copy the parameters supplied in the constructor.
+  foreach my $key (keys(%{$_[1]})) {
+      $self->{$key} = ($_[1])->{$key};
+  }
+
+  $self->{datastore} = $_[2];
 
 #    $self->{OptionSpec} = [ qw/force-update verbose+ quiet+ 
 #			    short-grab remove-old clear/ ];

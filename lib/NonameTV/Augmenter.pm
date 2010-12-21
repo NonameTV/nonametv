@@ -62,3 +62,32 @@
 # input: programme + rule
 # output: programme + error
 #
+
+sub ReadLastUpdate {
+  my $self = shift;
+
+  my $ds = $self->{datastore};
+ 
+  my $last_update = $ds->sa->Lookup( 'state', { name => "augmenter_last_update" },
+                                 'value' );
+
+  if( not defined( $last_update ) )
+  {
+    $ds->sa->Add( 'state', { name => "augmenter_last_update", value => 0 } );
+    $last_update = 0;
+  }
+
+  return $last_update;
+}
+
+sub WriteLastUpdate {
+  my $self = shift;
+  my( $update_started ) = @_;
+
+  my $ds = $self->{datastore};
+
+  $ds->sa->Update( 'state', { name => "augmenter_last_update" }, 
+               { value => $update_started } );
+}
+
+1;

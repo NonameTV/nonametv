@@ -1117,6 +1117,7 @@ TVDB::API - API to www.thetvdb.com
   my $hashref = $tvdb->getEpisodeDVD($series, $DVDseason, $DVDepisode, [$nocache]);
   my $hashref = $tvdb->getEpisodeId($episodeid, [$nocache]);
   my $hashref = $tvdb->getEpisodeByAirDate($series, $airdate, [$nocache]);
+  my $hashref = $tvdb->getEpisodeByName($series, $episode_name, [$nocache]);
   my $string = $tvdb->getEpisodeInfo($series, $season, $episode, $info, [$nocache]);
   my $string = $tvdb->getEpisodeBanner($series, $season, $episode, [$buffer, [$nocache]]);
   my $string = $tvdb->getEpisodeName($series, $season, $episode, [$nocache]);
@@ -1453,6 +1454,12 @@ be specified as:
 
 Currently this lookup is not cached.  However, if C<NOCACHE> is non-zero, then
 the C<SERIESNAME> to seriesid lookup is downloaded again.
+
+=item getEpisodeByName(SERIESNAME, EPISODENAME, [NOCACHE])
+
+Return a hashref for the episode named (C<EPISODENAME>) for C<SERIESNAME>.
+C<NOCACHE> is of no use until the site API is extended. So this call works only
+on cached data for now.
 
 =item getEpisodeInfo(SERIESNAME, SEASON, EPISODE, KEY, [NOCACHE])
 
