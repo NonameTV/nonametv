@@ -72,7 +72,7 @@ sub new {
 	$args->{useragent} ||= "TVDB::API/$VERSION";
 
 	$self->setCacheDB($args->{cache});
-	$self->setApiKey($args->{apikey});
+	$self->{apikey} = $args->{apikey};
 	$self->{ua} = LWP::UserAgent->new;
 	$self->{ua}->env_proxy();
 	$self->setUserAgent($args->{useragent});
@@ -81,7 +81,7 @@ sub new {
 		SuppressEmpty => 1,
 	);
 
-	if (exists $args->{mirrors} && @{$args->{mirrors}}) {
+	if (defined $args->{mirrors} && @{$args->{mirrors}}) {
 		$self->setMirrors(@{$args->{mirrors}});
 	} else {
 		$self->chooseMirrors();
@@ -463,7 +463,11 @@ sub getSeriesId {
 # Get series/lang.xml for series
 sub getSeries {
 	my ($self, $name, $nocache) = @_;
-	&debug(2, "getSeries: $name, $nocache\n");
+	if (defined ($nocache)) {
+		&debug(2, "getSeries: $name, $nocache\n");
+	} else {
+		&debug(2, "getSeries: $name, undef\n");
+	}
 
 	my $sid = $self->getSeriesId($name, $nocache?$nocache-1:0);
 	return undef unless $sid;
@@ -863,6 +867,7 @@ sub getEpisodeAbs {
 			foreach my $eid (@$season) {
 				next unless $eid;
 				my $ep = $cache->{Episode}->{$eid};
+				next unless $ep->{absolute_number};
 				return $ep if $ep->{absolute_number} eq $abs;
 			}
 		}
