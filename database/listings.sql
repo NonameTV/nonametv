@@ -86,6 +86,7 @@ CREATE TABLE `programs` (
   `url_image_icon` varchar(100) default NULL,
   PRIMARY KEY  (`channel_id`,`start_time`),
   KEY `batch` (`batch_id`,`start_time`),
+  CONSTRAINT `programs_ibfk_2` FOREIGN KEY (`batch_id`) REFERENCES `batches` (`id`),
   CONSTRAINT `programs_ibfk_1` FOREIGN KEY (`channel_id`) REFERENCES `channels` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -202,5 +203,18 @@ CREATE TABLE `admins` (
   `roleeditor` tinyint(1) unsigned NOT NULL default '0',
   UNIQUE KEY `username` (`username`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `augmenterrules`;
+CREATE TABLE `augmenterrules` (
+  `channel_id` int(11) NOT NULL,
+  `augmenter` varchar(20) NOT NULL,
+  `title` varchar(100) default NULL,
+  `otherfield` varchar(20) default NULL,
+  `othervalue` varchar(100) default NULL,
+  `remoteref` varchar(20) default NULL,
+  `matchby` varchar(20) default NULL,
+  UNIQUE KEY `channel_id` (`channel_id`,`augmenter`,`title`,`otherfield`,`othervalue`),
+  CONSTRAINT `augmenterrules_ibfk_1` FOREIGN KEY (`channel_id`) REFERENCES `channels` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `admins` (username, password) VALUES ('nonametv', '');
