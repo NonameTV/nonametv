@@ -454,7 +454,7 @@ sub getSeriesId {
 	}
 
 	# Nothing found, assign 0 to name so we cache this result
-	&warning("TBDB::API: No series id found for: $name\n");
+	&warning("TVDB::API: No series id found for: $name\n");
 	$cache->{Name2Sid}->{$name} = 0; # Not undef as that messes up DBM::Deep
 	return undef;
 }
@@ -642,7 +642,7 @@ sub getSeriesInfo {
 
 	# Check that info is available
 	unless (defined $data->{$info}) {
-		#&warning("TBDB::API: No $info found for series $name\n");
+		#&warning("TVDB::API: No $info found for series $name\n");
 		return undef;
 	}
 
@@ -743,7 +743,7 @@ sub getMaxSeason {
 sub getSeason {
 	my ($self, $name, $season, $nocache) = @_;
 	if ($season < 0 || $season > $self->{conf}->{maxSeason}) {
-		&warning("TBDB::API: Invalid season $season for $name\n");
+		&warning("TVDB::API: Invalid season $season for $name\n");
 		return undef;
 	}
 	my $series = $self->getSeriesAll($name, $nocache?$nocache-1:0);
@@ -751,7 +751,7 @@ sub getSeason {
 	unless ($series->{Seasons}->[$season]) {
 		$self->getUpdates();
 		unless ($series->{Seasons}->[$season]) {
-			&warning("TBDB::API: No season $season found for $name\n");
+			&warning("TVDB::API: No season $season found for $name\n");
 			#$series->{Seasons}->[$season] = 0;
 			return undef;
 		}
@@ -806,7 +806,7 @@ sub getMaxEpisode {
 sub getEpisode {
 	my ($self, $name, $season, $episode, $nocache) = @_;
 	if ($episode < 0 || $episode > $self->{conf}->{maxEpisode}) {
-		&warning("TBDB::API: Invalid episode $episode in season $season for $name\n");
+		&warning("TVDB::API: Invalid episode $episode in season $season for $name\n");
 		return undef;
 	}
 	my $sid = $self->getSeriesId($name);
@@ -818,7 +818,7 @@ sub getEpisode {
 	my $series = $cache->{Series};
 	my $eid = $data->[$episode] if defined $data->[$episode];
 	if (ref($eid) ne '' && (time - $eid->{lasttried}) < $self->{conf}->{minEpisodeTime}) {
-		&verbose(2, "TBDB::API: No episode $episode found for season $season of $name (cached)\n");
+		&verbose(2, "TVDB::API: No episode $episode found for season $season of $name (cached)\n");
 		return undef;
 	}
 	unless (!$nocache && $eid && !ref($eid) && $cache->{Episode}->{$eid}) {
@@ -841,7 +841,7 @@ sub getEpisode {
 
 	# Check again (if it's been updated)
 	unless ($eid && defined $cache->{Episode}->{$eid}) {
-		&warning("TBDB::API: No episode $episode found for season $season of $name\n");
+		&warning("TVDB::API: No episode $episode found for season $season of $name\n");
 		return undef;
 	}
 
@@ -852,7 +852,7 @@ sub getEpisode {
 sub getEpisodeAbs {
 	my ($self, $name, $abs, $nocache) = @_;
 	if ($abs < 0 || $abs > $self->{conf}->{maxEpisode}*$self->{conf}->{maxSeason}) {
-		&warning("TBDB::API: Invalid absolute episode $abs for $name\n");
+		&warning("TVDB::API: Invalid absolute episode $abs for $name\n");
 		return undef;
 	}
 	my $sid = $self->getSeriesId($name);
@@ -885,7 +885,7 @@ sub getEpisodeAbs {
 		return $cache->{Episode}->{$eid};
 	}
 
-	&warning("TBDB::API: No absolute episode $abs found for $name\n");
+	&warning("TVDB::API: No absolute episode $abs found for $name\n");
 	return undef;
 }
 
@@ -894,7 +894,7 @@ sub getEpisodeDVD {
 	my ($self, $name, $season, $episode, $nocache) = @_;
 	my $epmajor = int($episode);
 	if ($epmajor < 0 || $epmajor > $self->{conf}->{maxEpisode}) {
-		&warning("TBDB::API: Invalid DVD episode $episode in DVD season $season for $name\n");
+		&warning("TVDB::API: Invalid DVD episode $episode in DVD season $season for $name\n");
 		return undef;
 	}
 	my $sid = $self->getSeriesId($name);
@@ -928,7 +928,7 @@ sub getEpisodeDVD {
 		return $cache->{Episode}->{$eid};
 	}
 
-	&warning("TBDB::API: No DVD episode $episode found for DVD season $season of $name\n");
+	&warning("TVDB::API: No DVD episode $episode found for DVD season $season of $name\n");
 	return undef;
 }
 
@@ -947,6 +947,48 @@ sub getEpisodeId {
 	}
 
 	return $cache->{Episode}->{$eid};
+}
+
+###############################################################################
+sub getEpisodeByName {
+	my ($self, $name, $episodename, $nocache) = @_;
+	if (!defined ($episodename)) {
+		&warning("TVDB::API: No episode name defined for $name\n");
+		return undef;
+	}
+	my $sid = $self->getSeriesId($name);
+	return undef unless $sid;
+	my $series = $self->getSeriesAll($sid, $nocache?$nocache-1:0);
+	return undef unless $series;
+
+	# Look for episode in cache
+	my $cache = $self->{cache};
+	unless ($nocache) {
+		foreach my $season (@{$series->{Seasons}}) {
+			foreach my $eid (@$season) {
+				next unless $eid;
+				my $ep = $cache->{Episode}->{$eid};
+				next unless $ep->{EpisodeName};
+				return $ep if $ep->{EpisodeName} eq $episodename;
+			}
+		}
+	}
+
+	# Download named episode
+	&verbose(1, "TVDB::API: Would like to update episode named $episodename for $name\n");
+# TODO, the site does not provide an API to get one episode by name, yet.
+#	my $new = $self->_downloadXml($Url{getEpisodeAbs}, $sid, $abs, $self->{lang});
+#	if ($new) {
+#		# Save episode in cache
+#		my ($eid, $ep) = each %{$new->{Episode}};
+#		$series->{$sid}->{Seasons} = [] unless $series->{$sid}->{Seasons};
+#		$series->{$sid}->{Seasons}->[$ep->{SeasonNumber}]->[$ep->{EpisodeNumber}] = $eid;
+#		$cache->{Episode}->{$eid} = $ep;
+#		return $cache->{Episode}->{$eid};
+#	}
+
+	&warning("TVDB::API: No episode named $episodename found for $name\n");
+	return undef;
 }
 
 ###############################################################################
@@ -973,7 +1015,7 @@ sub getEpisodeInfo {
 
 	# Check that info is available
 	unless (defined $data->{$info}) {
-		#&warning("TBDB::API: No $info found for episode $episode of season $season of $name\n");
+		#&warning("TVDB::API: No $info found for episode $episode of season $season of $name\n");
 		return undef;
 	}
 
