@@ -243,10 +243,13 @@ sub ImportRTF {
 
           # episode title
           my ($episodetitle) = ($text =~ m |\n(.*)\n\s*Folge\s+\d+\n|);
-          # strip orignal episode title if present
           #error 'episode title: ' . $episodetitle;
           if( defined( $episodetitle ) ) {
+            # strip orignal episode title if present
             $episodetitle =~ s|\(.*\)||;
+            # strip leading and trailing space
+            #$episodetitle = norm( $episodetitle );
+            $episodetitle =~ s|^\s*(.+?)\s*$|$1|;
             $ce->{subtitle} = $episodetitle;
           }
         } else {
