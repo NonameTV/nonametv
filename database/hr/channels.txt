@@ -3,11 +3,11 @@
 3,"HRT plus",hrt.tv.gonix.net,HRV,HRT,1,mreza=7&krat=HRT,1,,,hr,0,http://www.hrt.hr/,1
 4,"RTL Televizija",rtltv.tv.gonix.net,HRV,RTLTV,1,raspored-xmltv.xml,1,,,hr,0,http://www.rtl.hr/,1
 5,"Nova TV",nova.tv.gonix.net,HRV,NovaTV_xml,1,NovaTV,1,,,hr,0,http://www.novatv.hr,1
-6,OTV,otv.tv.gonix.net,HRV,OTV,1,,1,,,hr,0,http://www.otv.hr/,1
+6,Jabuka,otv.tv.gonix.net,HRV,OTV,1,,1,,,hr,0,http://www.otv.hr/,1
 7,"NET TV",nettv.tv.gonix.net,HRV,NetTV,1,,1,,,hr,0,http://www.net-tv.hr/,1
 8,Z1,z1.tv.gonix.net,HRV,Phazer,1,z1.hr/weekly_z1.hr_tvprofil.net.xml,1,,,hr,0,http://www.z1-tv.hr/,0
 9,"Universal Channel",universalchannel.tv.gonix.net,FILM,Universal,1,hallmark.movie/weekly_hallmark.movie_tvprofil.net.xml,1,,,en,0,http://www.hallmarkchannelint.com,1
-10,OBN,obn.tv.gonix.net,REGION,OBN,1,obn.ba/weekly_obn.ba_tvprofil.net.xml,1,,,,0,http://www.obn.ba/,1
+10,OBN,obn.tv.gonix.net,REGION,OBN,1,obn.ba/weekly_obn.ba_tvprofil.net.xml,1,,,ba,0,http://www.obn.ba/,1
 11,"Kanal A",kanala.tv.gonix.net,MISC,RTVSlo,0,10,1,,,si,0,http://www.kanal-a.si/,0
 12,SLO1,slo1.tv.gonix.net,REGION,Phazer,1,slo1.si/weekly_slo1.si_tvprofil.net.xml,1,,,si,0,http://www.rtvs.si/,0
 13,SLO2,slo2.tv.gonix.net,REGION,Phazer,1,slo2.si/weekly_slo2.si_tvprofil.net.xml,1,,,si,0,http://www.rtvs.si/,0
@@ -16,7 +16,7 @@
 17,"Deutsche Welle TV",dw.tv.gonix.net,NEWS,Infomedia,1,DWU,1,,News,de,0," http://www.dw-world.de/",0
 18,CNBC,cnbceuro.tv.gonix.net,NEWS,CNBCEuro,1,cnbc.sat/weekly_cnbc.sat_tvprofil.net.xml,1,,,en,0,http://www.cnbceurope.com/,1
 20,JETIX,jetix.tv.gonix.net,CHILD,Phazer,1,jetix.toons/weekly_jetix.toons_tvprofil.net.xml,1,,Childrens,en,0,http://www.jetix.co.uk/,0
-21,TIJI,tiji.tv.gonix.net,CHILD,Tiji,1,,1,,,,0,http://www.tiji.tv/,1
+21,TIJI,tiji.tv.gonix.net,CHILD,Tiji,1,,1,,,fr,0,http://www.tiji.tv/,1
 22,"MTV Adria",mtvadria.tv.gonix.net,MUSIC,Phazer,1,mtv-adria.music/weekly_mtv-adria.music_tvprofil.net.xml,1,,Art_Music,en,0,http://www.mtvadria.com,0
 23,"VH1 Europe",vh1.tv.gonix.net,MUSIC,VH1_xls,1,vh1-europe.music/weekly_vh1-europe.music_tvprofil.net.xml,1,,Art_Music,en,0,http://www.vh1e.com/,1
 24,MCM,mcm.tv.gonix.net,MUSIC,TVGrabXX,1,tv_grab_fr;C30.telepoche.com,1,,Art_Music,fr,0,http://www.mcm.net/,0
@@ -40,15 +40,15 @@
 43,"RTL 2",rtl2de.tv.gonix.net,MISC,Phazer,1,rtl-2.de/weekly_rtl-2.de_tvprofil.net.xml,1,,,de,0,http://www.rtl2.de/,0
 44,"TV5 MONDE (Europe)",tv5monde.tv.gonix.net,NEWS,TVGrabXX,1,tv_grab_fr;C10.telepoche.com,1,,,fr,0,http://www.tv5.org/,0
 45,"TVE 24 Horas",tve24h.tv.gonix.net,TEST,,0,,1,,,es,0,http://www.rtve.es/,0
-46,"RTS SAT",rtssat.tv.gonix.net,REGION,Phazer,1,rts-sat.yu/weekly_rts-sat.yu_tvprofil.net.xml,1,,,,0,http://www.rts.co.yu/,0
-47,"PINK BH",pinkbh.tv.gonix.net,REGION,PinkTV,1,http://www.pink.co.ba/tvprogram/tvtxt.php,1,,,,0,http://www.pink.co.ba/,1
-48,RTCG,rtcg.tv.gonix.net,REGION,Phazer,1,tvcg-sat.cg/weekly_tvcg-sat.cg_tvprofil.net.xml,1,,,,0,http://www.rtcg.org/,0
+46,"RTS SAT",rtssat.tv.gonix.net,REGION,Phazer,1,rts-sat.yu/weekly_rts-sat.yu_tvprofil.net.xml,1,,,rs,0,http://www.rts.co.yu/,0
+47,"PINK BH",pinkbh.tv.gonix.net,REGION,PinkTV,1,http://www.pink.co.ba/tvprogram/tvtxt.php,1,,,ba,0,http://www.pink.co.ba/,1
+48,RTCG,rtcg.tv.gonix.net,REGION,Phazer,1,tvcg-sat.cg/weekly_tvcg-sat.cg_tvprofil.net.xml,1,,,me,0,http://www.rtcg.org/,0
 49,"CineStar TV",cinestar.tv.gonix.net,HRV,Cinestar,1,,1,,,hr,0,http://www.blitz-cinestar.hr/,1
-50,"FTV BiH",ftvba.tv.gonix.net,REGION,Phazer,1,ftv.ba/weekly_ftv.ba_tvprofil.net.xml,1,,,,0,http://www.rtvfbih.ba/,0
+50,"FTV BiH",ftvba.tv.gonix.net,REGION,Phazer,1,ftv.ba/weekly_ftv.ba_tvprofil.net.xml,1,,,ba,0,http://www.rtvfbih.ba/,0
 51,"HUSTLER TV",hustlertv.tv.gonix.net,ADULT,Hustler,1,,1,,Adult,en,0,http://www.hustlertveurope.com/,1
 52,"Hustler Blue",hustlerblue.tv.gonix.net,ADULT,Hustler,1,,1,,Adult,en,0,http://www.bluehustler.com,1
-53,"PINK plus",pinkplus.tv.gonix.net,REGION,PinkTV,1,pinkPlus,1,,,,0,http://www.rtvpink.com/pinkplus/,1
-54,"PINK Extra",pinkextra.tv.gonix.net,REGION,PinkTV,1,extra,1,,,,0,http://www.rtvpink.com/,1
+53,"PINK plus",pinkplus.tv.gonix.net,REGION,PinkTV,1,pinkPlus,1,,,rs,0,http://www.rtvpink.com/pinkplus/,1
+54,"PINK Extra",pinkextra.tv.gonix.net,REGION,PinkTV,1,extra,1,,,rs,0,http://www.rtvpink.com/,1
 55,"HBO Adria",hboad.tv.gonix.net,FILM,HBO,1,HBO,1,,,hr,0,http://www.hbo.hr/,1
 56,"Kanal 5",kanal5.tv.gonix.net,HRV,Kanal5Split,1,,1,,,hr,0,http://www.kanal5.hr/,1
 101,TCM,tcm.tv.gonix.net,FILM,Turner,1,tcm.movie/weekly_tcm.movie_tvprofil.net.xml,1,,,en,0,http://www.tcm.com/,1
@@ -62,7 +62,7 @@
 109,"Viasat TV1000",tv1000.tv.gonix.net,FILM,Viasat,1,tv1000_balkan_hr_,1,,,hr,0,http://www.tv1000.se,1
 110,PRO7,pro7.tv.gonix.net,MISC,Phazer,1,pro-7.de/weekly_pro-7.de_tvprofil.net.xml,1,,,de,0,http://www.prosieben.de/,0
 111,CMC,cmc.tv.gonix.net,HRV,Phazer,1,cmc.hr/weekly_cmc.hr_tvprofil.net.xml,1,,Art_Music,hr,0,http://www.cmc.com.hr/,0
-112,"Slavonskobrodska televizija",sbtv.tv.gonix.net,HRV,Phazer,1,sbtv.hr/weekly_sbtv.hr_tvprofil.net.xml,1,,,,0,http://www.sbtv.hr/,0
+112,"Slavonskobrodska televizija",sbtv.tv.gonix.net,HRV,Phazer,1,sbtv.hr/weekly_sbtv.hr_tvprofil.net.xml,1,,,hr,0,http://www.sbtv.hr/,0
 113,"Vinkovacka TV",vktv.tv.gonix.net,HRV,VKTVVinkovci,1,,1,,,hr,0,http://www.vktv.hr/,1
 114,NIT,nit.tv.gonix.net,HRV,NIT,1,,1,,,hr,0,http://www.nit.hr/,1
 115,"BBC Entertainment",bbcentertainment.tv.gonix.net,MISC,BBCPrime,1,,1,,,en,0,http://www.bbcentertainment.com/,1
@@ -86,46 +86,46 @@
 133,"Sky Sports News",skysportsnews.tv.gonix.net,SPORT,Bleb,1,sky_sports_news.xml,1,,Sports,en,0,http://www.skysports.com/,0
 134,"Sky Sports Xtra",skysportsxtra.tv.gonix.net,SPORT,Bleb,1,sky_sports_xtra.xml,1,,Sports,en,0,http://www.skysports.com/,0
 135,"Kapital Network",kapnet.tv.gonix.net,HRV,KapNet,1,kapital-network.hr/weekly_kapital-network.hr_tvprofil.net.xml,1,news,,hr,0,http://www.kapital.biz.hr/,0
-136,Boomerang,boomerang.tv.gonix.net,CHILD,Turner,1,,1,,Children,,0,http://www.boomerangtv.co.uk/,1
-137,Nickelodeon,nickelodeon.tv.gonix.net,CHILD,Phazer,1,nickelodeon.toons/weekly_nickelodeon.toons_tvprofil.net.xml,1,,Children,,0,http://www.nick.com/,0
-138,KiKa,kika.tv.gonix.net,CHILD,KiKaDE,1,,1,,Children,,0,http://www.kika.de/,1
-139,BabyTV,babytv.tv.gonix.net,CHILD,Phazer,1,babytv.toons/weekly_babytv.toons_tvprofil.net.xml,1,,,,0,http://www.babytvchannel.com/,0
+136,Boomerang,boomerang.tv.gonix.net,CHILD,Turner,1,,1,,Children,en,0,http://www.boomerangtv.co.uk/,1
+137,Nickelodeon,nickelodeon.tv.gonix.net,CHILD,Phazer,1,nickelodeon.toons/weekly_nickelodeon.toons_tvprofil.net.xml,1,,Children,en,0,http://www.nick.com/,0
+138,KiKa,kika.tv.gonix.net,CHILD,KiKaDE,1,,1,,Children,de,0,http://www.kika.de/,1
+139,BabyTV,babytv.tv.gonix.net,CHILD,Phazer,1,babytv.toons/weekly_babytv.toons_tvprofil.net.xml,1,,,en,0,http://www.babytvchannel.com/,0
 140,"Playboy TV",playboytv.tv.gonix.net,ADULT,PlayboyTV,1,,1,,Adult,en,0,http://www.playboy.com/playboytv/,1
 141,"Private Spice",privatespice.tv.gonix.net,ADULT,PlayboyTV,1,,1,,,en,0,http://www.privatespice.com/,1
 142,"SportKlub Plus",sportklubplus.tv.gonix.net,SPORT,SportKlub,1,,1,,Sport,hr,0,http://www.sportklub.info/,0
 143,"ESPN America",espnamerica.tv.gonix.net,SPORT,ESPN,1,,1,sports,Sports,en,0,http://www.espnamerica.com/,1
-144,"Bloomberg Television",bloombergeu.tv.gonix.net,NEWS,TVGrabXX,1,tv_grab_fr;C162.telepoche.com,1,,,,0," http://www.bloomberg.com/media/tv/tv_index_europe.html",0
+144,"Bloomberg Television",bloombergeu.tv.gonix.net,NEWS,TVGrabXX,1,tv_grab_fr;C162.telepoche.com,1,,,en,0," http://www.bloomberg.com/media/tv/tv_index_europe.html",0
 145,"Virgin 1",virgin1.tv.gonix.net,TEST,Bleb,0,virgin1.xml,1,,,en,0,http://virgin1.virginmedia.com/,0
-146,"Yacht and Sail",yachtandsail.tv.gonix.net,SPORT,Sailing,1,,1,,,,0,http://www.sailingchannel.com/,1
+146,"Yacht and Sail",yachtandsail.tv.gonix.net,SPORT,Sailing,1,,1,,,en,0,http://www.sailingchannel.com/,1
 147,Poker,poker.tv.gonix.net,SPORT,Poker,1,,1,,,en,0,http://www.pokerchanneleurope.com/,0
 148,"Realmadrid TV",rmtv.tv.gonix.net,SPORT,RMTV,1,,1,,,en,0,http://www.realmadrid.tv/,1
 149,"Adult TV",adulteurope.tv.gonix.net,ADULT,PlayboyTV,1,,1,,,en,0,http://www.adultchannel.co.uk/,1
-150,Nick,nick.tv.gonix.net,TEST,,0,,1,,,,0,http://www.nick.com/,0
-151,"Jetix Play",jetixplay.tv.gonix.net,CHILD,Phazer,0,jetix-play.toons/weekly_jetix-play.toons_tvprofil.net.xml,1,,,,0,http://www.jetixeurope.com/,0
-152,KidsCo,kidsco.tv.gonix.net,CHILD,Bnet,0,,1,,,,0,http://www.kidscotv.tv/,0
+150,Nick,nick.tv.gonix.net,TEST,,0,,1,,,en,0,http://www.nick.com/,0
+151,"Jetix Play",jetixplay.tv.gonix.net,CHILD,Phazer,0,jetix-play.toons/weekly_jetix-play.toons_tvprofil.net.xml,1,,,en,0,http://www.jetixeurope.com/,0
+152,KidsCo,kidsco.tv.gonix.net,CHILD,Bnet,0,,1,,,en,0,http://www.kidscotv.tv/,0
 153,"DoQ TV",doqtv.tv.gonix.net,DOCUM,Croatel,0,,1,,,en,0,,0
 154,"Smile of a Child",smileofachild.tv.gonix.net,CHILD,Bnet,0,,1,,,en,0,http://www.smileofachildtv.org/,0
-155,"Bebe TV",bebetv.tv.gonix.net,CHILD,BebeTV,1,,1,,Children,en,0,http://www.bebetv.tv/,1
+155,DUCKTV,bebetv.tv.gonix.net,CHILD,BebeTV,1,,1,,Children,en,0,http://www.bebetv.tv/,1
 156,"National Geographic",ngcro.tv.gonix.net,DOCUM,GlobalListings,1,,1,,,hr,0,http://croatia.ngceurope.com/,1
 157,"National Geographic Wild",ngwildeu.tv.gonix.net,DOCUM,GlobalListings,1,,1,,,en,0,http://natgeowild.co.uk/,1
-158,MGM,mgm.tv.gonix.net,FILM,MojTV,0,mgm.tv.mojtv.hr,1,,,,0,,0
+158,MGM,mgm.tv.gonix.net,FILM,MojTV,0,mgm.tv.mojtv.hr,1,,,en,0,,0
 159,"VH1 Classic",vh1classic.tv.gonix.net,MUSIC,VH1_xls,1,"VH1 Classic",1,,,en,0,http://www.mtv.co.uk/channel/vh1classic,1
-160,"XXX Xtreme",xxxxtreme.tv.gonix.net,TEST,Hustler,0,,1,,,,0,,0
-161,"Body in Balance",bibeurope.tv.gonix.net,TEST,,0,,1,,,,0,http://www.bodyinbalance.tv/,0
-162,JimJam,jimjam.tv.gonix.net,CHILD,ZoneMedia,0,JJPE,1,,,,0,http://www.it.jimjam.tv/,0
+160,"XXX Xtreme",xxxxtreme.tv.gonix.net,TEST,Hustler,0,,1,,,en,0,,0
+161,"Body in Balance",bibeurope.tv.gonix.net,TEST,,0,,1,,,en,0,http://www.bodyinbalance.tv/,0
+162,JimJam,jimjam.tv.gonix.net,CHILD,ZoneMedia,0,JJPE,1,,,en,0,http://www.it.jimjam.tv/,0
 163,"FootSchool TV",footschooltv.tv.gonix.net,SPORT,FSTV,1,,1,,,en,0,http://www.footschooltv.com/,1
-164,"FREE-X TV",freextv.tv.gonix.net,ADULT,FreeXTV,1,,1,,,,0,http://www.free-xtv.com/,1
-165,"FREE-X TV2",freextv2.tv.gonix.net,ADULT,FreeXTV,1,,1,,,,0,http://www.free-xtv.com/,1
-166,"X-Dream TV",xdreamtv.tv.gonix.net,ADULT,FreeXTV,1,,1,,,,0,http://www.inxworld.com/,1
+164,"FREE-X TV",freextv.tv.gonix.net,ADULT,FreeXTV,1,,1,,,en,0,http://www.free-xtv.com/,1
+165,"FREE-X TV2",freextv2.tv.gonix.net,ADULT,FreeXTV,1,,1,,,en,0,http://www.free-xtv.com/,1
+166,"X-Dream TV",xdreamtv.tv.gonix.net,ADULT,FreeXTV,1,,1,,,en,0,http://www.inxworld.com/,1
 167,BubbleHits,bubblehits.tv.gonix.net,MUSIC,BubbleHits,0,,1,,Music,en,0,http://www.bubblehits.net/,0
 168,RaiDue,rai2.tv.gonix.net,MISC,TVGrabXX,1,tv_grab_it;www.raidue.rai.it,1,,,it,0,http://www.raidue.rai.it/,0
 169,RaiTre,rai3.tv.gonix.net,MISC,TVGrabXX,1,tv_grab_it;www.raitre.rai.it,1,,,it,0,http://www.raitre.rai.it/,0
 170,"Rete 4",rete4.tv.gonix.net,MISC,Phazer,0,rete-4.it/weekly_rete-4.it_tvprofil.net.xml,1,,,it,0,http://www.rete4.mediaset.it/,0
 171,"Eurosport 2",eurosport2.tv.gonix.net,SPORT,Eurosport,1,Eurosport2,1,sport,Sports,en,0,http://www.eurosport.com,1
-172,"Eurosport News",eurosportnews.tv.gonix.net,SPORT,TVGrabXX,1,tv_grab_it;eurosportnews.skytv.it,1,,,,0,,0
-173,"Eurosport HD",eurosporthd.tv.gonix.net,TEST,,0,,1,,,,0,,0
+172,"Eurosport News",eurosportnews.tv.gonix.net,SPORT,TVGrabXX,1,tv_grab_it;eurosportnews.skytv.it,1,,,en,0,,0
+173,"Eurosport HD",eurosporthd.tv.gonix.net,TEST,,0,,1,,,en,0,,0
 174,"Fashion TV HD",ftvhd.tv.gonix.net,MISC,FTV,1,,1,,,en,0,http://www.ftv.com/,1
-175,"Perviy kanal",c1r.tv.gonix.net,MISC,C1R,0,,1,,,,0,,0
+175,"Perviy kanal",c1r.tv.gonix.net,MISC,C1R,0,,1,,,ru,0,,0
 176,m1,m1hu.tv.gonix.net,MISC,Port,1,n_events_1.xml,1,,,hu,0,http://www.mtv.hu/,0
 177,m2,m2hu.tv.gonix.net,MISC,Port,1,n_events_2.xml,1,,,hu,0,http://www.mtv.hu/,0
 178,"RTL Klub",rtlklubhu.tv.gonix.net,MISC,Port,1,n_events_3.xml,1,,,hu,0,http://www.rtlklub.hu/,0
@@ -134,8 +134,8 @@
 181,"Rai Sport",raisport.tv.gonix.net,SPORT,Phazer,1,rai-sport.sport/weekly_rai-sport.sport_tvprofil.net.xml,1,,Sports,it,0,http://www.raisport.rai.it/,0
 182,"Chasse et Peche",chasseetpeche.tv.gonix.net,MISC,TVGrabXX,1,tv_grab_fr;C113.telepoche.com,1,,,fr,0,http://www.chasseetpechetv.fr/,0
 183,"Hustler TV (sw)",hustlertvsw.tv.gonix.net,ADULT,Combiner,1,,1,,,en,0,http://www.hustlertveurope.com/,1
-184,RTS1,rts1.tv.gonix.net,REGION,Phazer,1,rts1.yu/weekly_rts1.yu_tvprofil.net.xml,1,,,,0,http://www.rts.co.yu/,0
-185,RTS2,rts2.tv.gonix.net,REGION,Phazer,1,rts2.yu/weekly_rts2.yu_tvprofil.net.xml,1,,,,0,http://www.rts.co.yu/,0
+184,RTS1,rts1.tv.gonix.net,REGION,Phazer,1,rts1.yu/weekly_rts1.yu_tvprofil.net.xml,1,,,rs,0,http://www.rts.co.yu/,0
+185,RTS2,rts2.tv.gonix.net,REGION,Phazer,1,rts2.yu/weekly_rts2.yu_tvprofil.net.xml,1,,,rs,0,http://www.rts.co.yu/,0
 186,"Duna TV",dunatvhu.tv.gonix.net,MISC,Port,1,n_events_6.xml,1,,,hu,0,http://www.dunatv.hu/,0
 187,"GTV Zadar",gradskatvzd.tv.gonix.net,HRV,GTVZadar,1,,1,,,hr,0,http://www.gtv-zadar.hr/,1
 188,"Osjecka TV",ostv.tv.gonix.net,HRV,OSTV,1,,1,,,hr,0,http://www.ostv.hr/,1
@@ -144,16 +144,16 @@
 191,"TV Dalmacija",tvdalmacija.tv.gonix.net,HRV,TVDalmacija,1,,1,,,hr,0,http://www.tv-dalmacija.hr/,1
 192,Euronews,euronews.tv.gonix.net,NEWS,TVGrabXX,1,tv_grab_fr;C121.telepoche.com,1,,,en,0,http://www.euronews.net/,0
 193,NTDTV,ntdtv.tv.gonix.net,MISC,NTDTV,1,,1,,,en,0,http://english.ntdtv.com/,1
-194,PINK,pink.tv.gonix.net,REGION,PinkTV,1,pink,1,,,,0,http://www.rtvpink.com/,1
-195,"PINK M",pinkm.tv.gonix.net,REGION,PinkTV,1,http://www.pinkm.com/tvprogram/tvtxt.php,1,,,,0,http://www.pinkm.com/,1
-196,"MCM TOP",mcmtop.tv.gonix.net,MUSIC,,0,,1,,,,0,,0
+194,PINK,pink.tv.gonix.net,REGION,PinkTV,1,pink,1,,,rs,0,http://www.rtvpink.com/,1
+195,"PINK M",pinkm.tv.gonix.net,REGION,PinkTV,1,http://www.pinkm.com/tvprogram/tvtxt.php,1,,,rs,0,http://www.pinkm.com/,1
+196,"MCM TOP",mcmtop.tv.gonix.net,MUSIC,,0,,1,,,fr,0,,0
 197,Balkanika,balkanika.tv.gonix.net,MUSIC,Balkanika,0,,1,,,hr,0,http://www.balkanika.tv/,0
 198,"TV Koper",slokp.tv.gonix.net,REGION,RTVSlo,0,6,1,,,si,0,,0
-199,B92,b92.tv.gonix.net,REGION,B92,1,b92.yu/weekly_b92.yu_tvprofil.net.xml,1,,,,0,http://www.b92.net,1
-200,"TV Košava",tvkosava.tv.gonix.net,REGION,Phazer,0,tv-kosava.yu/weekly_tv-kosava.yu_tvprofil.net.xml,1,,,,0,http://www.kosava.co.yu/,0
-201,"B92 Info",b92info.tv.gonix.net,REGION,B92,1,b92-info-kanal.yu/weekly_b92-info-kanal.yu_tvprofil.net.xml,1,,,,0,http://www.b92.net,1
-202,"TV Novi Sad 1",tvns1.tv.gonix.net,REGION,TVNS,1,"prvi program",1,,,sr,0,http://www.rtv.rs/sr/,1
-203,"TV Novi Sad 2",tvns2.tv.gonix.net,REGION,TVNS,1,"drugi program",1,,,sr,0,http://www.rtv.rs/sr/,1
+199,B92,b92.tv.gonix.net,REGION,B92,1,b92.yu/weekly_b92.yu_tvprofil.net.xml,1,,,rs,0,http://www.b92.net,1
+200,"TV Košava",tvkosava.tv.gonix.net,REGION,Phazer,0,tv-kosava.yu/weekly_tv-kosava.yu_tvprofil.net.xml,1,,,rs,0,http://www.kosava.co.yu/,0
+201,"B92 Info",b92info.tv.gonix.net,REGION,B92,1,b92-info-kanal.yu/weekly_b92-info-kanal.yu_tvprofil.net.xml,1,,,rs,0,http://www.b92.net,1
+202,"TV Novi Sad 1",tvns1.tv.gonix.net,REGION,TVNS,1,"prvi program",1,,,rs,0,http://www.rtv.rs/sr/,1
+203,"TV Novi Sad 2",tvns2.tv.gonix.net,REGION,TVNS,1,"drugi program",1,,,rs,0,http://www.rtv.rs/sr/,1
 204,VOX,vox.tv.gonix.net,MISC,Bnet,1,,1,,,de,0,http://www.vox.de/,0
 205,"National Geographic HD",ngchd.tv.gonix.net,DOCUM,NGCHD,1,,1,,,en,0,http://croatia.ngceurope.com/,1
 206,"Discovery HD",dischd.tv.gonix.net,TEST,GlobalListings,0,,1,,,en,0,,0
@@ -185,7 +185,7 @@
 232,"VH1 UK",vh1uk.tv.gonix.net,MUSIC,MTVuk,0,vh1,1,,,en,0,http://www.mtv.co.uk/channel/vh1,0
 233,"VH1 Classic UK",vh1classicuk.tv.gonix.net,MUSIC,MTVuk,0,vh1classic,1,,,en,0,http://www.mtv.co.uk/channel/vh1classic,0
 234,Deluxe,deluxemusic.tv.gonix.net,TEST,,0,,1,,,en,0,http://www.deluxemusic.tv/,0
-235,"DM SAT",dmsat.tv.gonix.net,MUSIC,Phazer,0,dmsat.yu/weekly_dmsat.yu_tvprofil.net.xml,1,,,sr,0,http://www.dmsat.tv/,0
+235,"DM SAT",dmsat.tv.gonix.net,MUSIC,Phazer,0,dmsat.yu/weekly_dmsat.yu_tvprofil.net.xml,1,,,rs,0,http://www.dmsat.tv/,0
 236,Trace,trace.tv.gonix.net,MUSIC,Trace,1,,1,,,en,0,http://www.trace.tv/,1
 237,Ritmoson,ritmoson.tv.gonix.net,TEST,,0,,1,,,en,0,http://www.esmas.com/ritmosonlatino/,0
 238,Viva,viva.tv.gonix.net,MUSIC,Viva,1,viva.music/weekly_viva.music_tvprofil.net.xml,1,,,de,0,http://www.viva.tv/,1
@@ -209,7 +209,7 @@
 256,SLO3,slo3.tv.gonix.net,REGION,RTVSlo,0,22,1,,,si,0,http://www.rtvs.si/,0
 257,"Animal Planet HD",discanihd.tv.gonix.net,DOCUM,GlobalListings,1,,1,,,en,0,http://animal.discovery.com/,1
 258,"TV Maribor",slomb.tv.gonix.net,REGION,RTVSlo,0,7,1,,,si,0,,0
-259,"RTV Tuzlanskog kantona",rtvtk.tv.gonix.net,REGION,Bnet,0,,1,,,,0,http://www.rtvtk.ba/,0
+259,"RTV Tuzlanskog kantona",rtvtk.tv.gonix.net,REGION,Bnet,0,,1,,,ba,0,http://www.rtvtk.ba/,0
 260,"VOX Zadar",voxzadar.tv.gonix.net,HRV,VOXTV,1,,1,,,hr,0,http://www.voxtv.hr/,1
 261,"TV Gorica",tvg.tv.gonix.net,HRV,TVGorica,0,,1,,,hr,0,,0
 262,"TV Turopolje",tvturopolje.tv.gonix.net,TEST,,0,,1,,,hr,0,,0
@@ -221,7 +221,7 @@
 268,"Arirang World",arirangworld.tv.gonix.net,TEST,,0,,1,,,en,0,http://www.arirang.co.kr/,0
 269,"Dubrovacka Televizija",dutv.tv.gonix.net,TEST,,0,,1,,,hr,0,http://www.dutv.hr/,0
 270,F-Men,fmen.tv.gonix.net,MISC,FTV,0,,1,,,en,0,http://www.ftv.com/,0
-271,"Bebe TV HD",bebetvhd.tv.gonix.net,CHILD,BebeTV,1,,1,,,en,0,http://www.bebetv.tv/,1
+271,"DUCKTV HD",bebetvhd.tv.gonix.net,CHILD,BebeTV,1,,1,,,en,0,http://www.bebetv.tv/,1
 272,"Cakovecka TV",cktv.tv.gonix.net,HRV,Phazer,1,cakovec.hr/weekly_cakovec.hr_tvprofil.net.xml,1,,,hr,0,http://www.cktv.hr/,0
 273,"RaiSat Cinema",raisatcinema.tv.gonix.net,TEST,TVGrabXX---,0,tv_grab_it;cinema.raisat.it---,1,,,it,0,,0
 274,"RaiSat Cinema World",raisatcinemaworld.tv.gonix.net,TEST,TVGrabXX---,0,tv_grab_it;cinemaworld.raisat.it---,1,,,it,0,,0
@@ -229,27 +229,27 @@
 276,VoomHD,voomhd.tv.gonix.net,TEST,VoomHD,0,,1,,,en,0,http://www.voom.com/,0
 277,"History Channel",historychannel.tv.gonix.net,DOCUM,HistoryChannel,1,,1,,Documentary,en,0,http://www.history.com/,1
 278,"History Channel HD",historychannelhd.tv.gonix.net,DOCUM,HistoryChannel,1,,1,,Documentary,en,0,http://www.history.com/,1
-279,"ESPN America (feed 2)",espnamerica-feed2.tv.gonix.net,TEST,NASN,0,,1,,,,0,,0
+279,"ESPN America (feed 2)",espnamerica-feed2.tv.gonix.net,TEST,NASN,0,,1,,,en,0,,0
 280,Arte,arte.tv.gonix.net,MISC,Arte,1,,1,,,de,0,http://www.arte.tv/,1
 281,DisneyXD,disneyxd.tv.gonix.net,TEST,Jetix,0,,1,,,en,0,http://www.disneyxd.com/,0
 282,"Arte HD",artehd.tv.gonix.net,MISC,Downconverter,1,arte.tv.gonix.net,1,,,de,0,,1
 283,AXN,axn.tv.gonix.net,FILM,HBOAdria,1,AXAD,1,,,de,0,http://www.axn.com.hr/,1
-284,BHT1,bht1.tv.gonix.net,REGION,Phazer,1,bht1.ba/weekly_bht1.ba_tvprofil.net.xml,1,,,,0,http://www.bhrt.ba/,0
-285,Hayat,hayat.tv.gonix.net,REGION,Hayat,1,ntv-hayat.ba/weekly_ntv-hayat.ba_tvprofil.net.xml,1,,,,0,http://www.hayat.ba/,1
+284,BHT1,bht1.tv.gonix.net,REGION,Phazer,1,bht1.ba/weekly_bht1.ba_tvprofil.net.xml,1,,,ba,0,http://www.bhrt.ba/,0
+285,Hayat,hayat.tv.gonix.net,REGION,Hayat,1,ntv-hayat.ba/weekly_ntv-hayat.ba_tvprofil.net.xml,1,,,ba,0,http://www.hayat.ba/,1
 286,"Travel Channel",travelchannel.tv.gonix.net,DOCUM,Phazer,1,travel-channel.doc/weekly_travel-channel.doc_tvprofil.net.xml,1,,,en,0,http://www.travelchannel.com/,0
 287,---,---,TEST,,0,,1,,,en,0,,0
 288,"Orkando Kids",orlandokids.tv.gonix.net,HRV,Phazer,1,orlando-kids.toons/weekly_orlando-kids.toons_tvprofil.net.xml,1,,,hr,0,http://www.orlando-kids.tv/,0
 289,kupi.tv,kupitv.tv.gonix.net,HRV,KupiTV,0,,1,,,hr,0,http://www.kupitv.hr/,0
 290,"French Lover TV",frenchlovertv.tv.gonix.net,ADULT,FreeXTV,1,,1,,,en,0,http://www.frenchlover.tv/,1
-291,"Zone Horror",zonehorror.tv.gonix.net,MISC,ZoneMedia,1,HRUK,1,,,,0,http://www.zonehorror.tv/,0
-292,"Zone Fantasy",zonefantasy.tv.gonix.net,MISC,ZoneMedia,1,FTTY,1,,,,0,http://www.zonefantasy.tv/,0
+291,"Zone Horror",zonehorror.tv.gonix.net,MISC,ZoneMedia,1,HRUK,1,,,en,0,http://www.zonehorror.tv/,0
+292,"Zone Fantasy",zonefantasy.tv.gonix.net,MISC,ZoneMedia,1,FTTY,1,,,en,0,http://www.zonefantasy.tv/,0
 293,"Food Network",foodnetwork.tv.gonix.net,MISC,ZoneMedia,1,FNUK,1,,,en,0,http://www.foodnetwork.com/,0
 294,ARD,ard.tv.gonix.net,MISC,DasErsteDE,1,ard.de/weekly_ard.de_tvprofil.net.xml,1,,,de,0,http://www.ard.de/,1
 295,"ARD HD",ardhd.tv.gonix.net,MISC,Downconverter,1,ard.tv.gonix.net,1,,,de,0,http://www.ard.de/,1
 297,ZDF,zdf.tv.gonix.net,MISC,ZDF,1,,1,,,de,0,http://www.zdf.de/,1
 298,"ZDF HD",zdfhd.tv.gonix.net,MISC,Downconverter,1,zdf.tv.gonix.net,1,,,de,0,http://www.zdf.de/,1
-299,"Golf Klub",golfklub.tv.gonix.net,SPORT,GolfKlub,1,,1,,,,0,,0
-300,"Fishing and Hunting",fishhunt.tv.gonix.net,TEST,,0,,1,,,,0,,0
+299,"Golf Klub",golfklub.tv.gonix.net,SPORT,GolfKlub,1,,1,,,en,0,,0
+300,"Fishing and Hunting",fishhunt.tv.gonix.net,TEST,,0,,1,,,en,0,,0
 301,"Viasat Nature",viasatnature.tv.gonix.net,DOCUM,Viasat,1,viasat_nature_cee_hr_,1,,,hr,0,,1
 302,RTLplus,rtlplus.tv.gonix.net,HRV,RTLTV,1,raspored-plus-xmltv.xml,1,,,hr,0,,1
 303,ZDFneo,zdfneo.tv.gonix.net,MISC,ZDFneo,1,,1,,,de,0,http://neo.zdf.de/,1
@@ -259,32 +259,44 @@
 307,"Canal de las Estrellas",estrellas.tv.gonix.net,TEST,,0,,1,,,es,0,,0
 308,"Fashion TV SEE",ftvsee.tv.gonix.net,TEST,FTV,0,,1,,,en,0,,0
 309,MCE,machaineetudiante.tv.gonix.net,MISC,Infomedia,1,ETU,1,,,fr,0,,0
-310,"TOP Music",topmusicchannel.tv.gonix.net,TEST,,0,,1,,,sr,0,http://www.top-music.tv/,0
+310,"TOP Music",topmusicchannel.tv.gonix.net,TEST,,0,,1,,,rs,0,http://www.top-music.tv/,0
 311,"Media Travel",mediatravel.tv.gonix.net,HRV,MediaTravel,1,,1,,,hr,0,http://www.mediatravel.tv/,1
-312,"Dorcel TV",dorceltv.tv.gonix.net,ADULT,Phazer,1,dorcel.porn/weekly_dorcel.porn_tvprofil.net.xml,1,,,,0,http://www.dorceltv.com/,0
-313,"Doma TV",novadomatv.tv.gonix.net,HRV,NovaTV,1,DomaTV,1,,,hr,0,,0
-314,"TV Svet Plus",tvsvetplus.tv.gonix.net,TEST,,0,,1,,,sr,0,http://www.svetplus.com/,0
+312,"Dorcel TV",dorceltv.tv.gonix.net,ADULT,Phazer,1,dorcel.porn/weekly_dorcel.porn_tvprofil.net.xml,1,,,en,0,http://www.dorceltv.com/,0
+313,"Doma TV",novadomatv.tv.gonix.net,HRV,NovaTV,1,DomaTV,1,,,hr,0,,1
+314,"TV Svet Plus",tvsvetplus.tv.gonix.net,TEST,,0,,1,,,rs,0,http://www.svetplus.com/,0
 315,"MKTV SAT",mktvsat.tv.gonix.net,TEST,,0,,1,,,mk,0,http://www.mkrtv.com.mk/,0
 316,"OTV Valentino",otvvalentino.tv.gonix.net,TEST,,0,,1,,,ba,0,http://www.valentinobh.com/,0
-317,"RTV BN",rtvbn.tv.gonix.net,TEST,,0,,1,,,sr,0,http://www.rtvbn.com/,0
-318,"RTV Atlas",rtvatlas.tv.gonix.net,REGION,Phazer,1,atlas.cg/weekly_atlas.cg_tvprofil.net.xml,1,,,mn,0,http://www.rtvatlas.tv/,0
+317,"RTV BN",rtvbn.tv.gonix.net,TEST,,0,,1,,,rs,0,http://www.rtvbn.com/,0
+318,"RTV Atlas",rtvatlas.tv.gonix.net,REGION,Phazer,1,atlas.cg/weekly_atlas.cg_tvprofil.net.xml,1,,,me,0,http://www.rtvatlas.tv/,0
 319,"Alsat TV",alsat.tv.gonix.net,TEST,,0,,1,,,al,0,http://www.alsat.tv/,0
 320,"Vizion Plus",vizionplus.tv.gonix.net,TEST,,0,,1,,,al,0,http://www.vizionplus.tv/,0
-321,TF1,tf1.tv.gonix.net,MISC,TVGrabXX,1,tv_grab_fr;C1.telepoche.com,1,,,fr,0,,0
-322,RTL2,rtl2.tv.gonix.net,HRV,RTLTV,0,"raspored-rtl2-xmltv.xml ",1,,,hr,0,,0
+321,TF1,tf1.tv.gonix.net,MISC,TVGrabXX,1,tv_grab_fr;C1.telepoche.com,1,,,fr,0,http://www.tf1.fr/,0
+322,RTL2,rtl2.tv.gonix.net,HRV,RTLTV,1,"raspored-rtl2-xmltv.xml ",1,,,hr,0,,1
 323,"MCM Pop",mcmpop.tv.gonix.net,MUSIC,TVGrabXX,1,tv_grab_fr;C160.telepoche.com,1,,,fr,0,,0
 324,TVE1,tve1.tv.gonix.net,MISC,TVGrabXX,1,tv_grab_es_miguiatv;CTVE1.miguiatv.com,1,,,es,0,,0
-325,TVE2,tve2.tv.gonix.net,MISC,TVGrabXX,1,tv_grab_es_miguiatv;CLa2.miguiatv.com,1,,,es,0,,0
-326,"France 2",france2.tv.gonix.net,TEST,,0,,1,,,fr,0,,0
+325,"TVE2 (La2)",tve2.tv.gonix.net,MISC,TVGrabXX,1,tv_grab_es_miguiatv;CLa2.miguiatv.com,1,,,es,0,,0
+326,....,,TEST,,0,,1,,,,0,,0
 327,Daring!,daring.tv.gonix.net,ADULT,Hustler,1,,1,,,en,0,http://www.daringtv.com/,1
 328,"Fine Living Network",flneu.tv.gonix.net,MISC,ZoneMedia,1,FLPE,1,,,en,0,http://www.finelivingnetwork.com/,1
-1001,HR1,hr1.radio.gonix.net,RADIO,HRT,1,mreza=16&krat=HR1,1,,,,0,http://www.hrt.hr/,0
-1002,HR2,hr2.radio.gonix.net,RADIO,HRT,1,mreza=17&krat=HR2,1,,,,0,http://www.hrt.hr/,0
-1003,HR3,hr3.radio.gonix.net,RADIO,HRT,1,mreza=18&krat=HR3,1,,,,0,http://www.hrt.hr/,0
+329,"Zdrava TV",zdravatv.tv.gonix.net,TEST,,0,,1,,,hr,0,http://www.tv-studio7.hr/,0
+330,"TV Plus",tvplus.tv.gonix.net,TEST,,0,,1,,,hr,0,http://www.tvplus.hr/,0
+331,HOO,hootv.tv.gonix.net,TEST,,0,,1,,,hr,0,http://www.hoo.hr/,0
+332,"24 Sata",24sata.tv.gonix.net,TEST,,0,,1,,news,hr,0,,0
+333,Antena3,antena3es.tv.gonix.net,MISC,TVGrabXX,1,tv_grab_es_miguiatv;CAntena3.miguiatv.com,1,,,es,0,http://www.antena3.com/,0
+334,Cuatro,cuatroes.tv.gonix.net,MISC,TVGrabXX,1,tv_grab_es_miguiatv;CCuatro.miguiatv.com,1,,,es,0,http://www.cuatro.com/,0
+335,Telecinco,telecincoes.tv.gonix.net,MISC,TVGrabXX,1,tv_grab_es_miguiatv;CTelecinco.miguiatv.com,1,,,es,0,http://www.telecinco.es/,0
+336,"La Sexta",lasextaes.tv.gonix.net,MISC,TVGrabXX,1,tv_grab_es_miguiatv;CLa-20Sexta.miguiatv.com,1,,,es,0,http://www.lasexta.com/,0
+337,"France 2",france2fr.tv.gonix.net,MISC,TVGrabXX,1,tv_grab_fr;C2.telepoche.com,1,,,fr,0,http://www.france2.fr/,0
+338,"France 3",france3fr.tv.gonix.net,MISC,TVGrabXX,1,tv_grab_fr;C3.telepoche.com,1,,,fr,0,http://www.france3.fr/,0
+339,"France 4",france4fr.tv.gonix.net,MISC,TVGrabXX,1,tv_grab_fr;C28.telepoche.com,1,,,fr,0,http://www.france4.fr/,0
+340,"France 5",france5fr.tv.gonix.net,MISC,TVGrabXX,1,tv_grab_fr;C7.telepoche.com,1,,,fr,0,http://www.france5.fr/,0
+1001,HR1,hr1.radio.gonix.net,RADIO,HRT,1,mreza=16&krat=HR1,1,,,hr,0,http://www.hrt.hr/,0
+1002,HR2,hr2.radio.gonix.net,RADIO,HRT,1,mreza=17&krat=HR2,1,,,hr,0,http://www.hrt.hr/,0
+1003,HR3,hr3.radio.gonix.net,RADIO,HRT,1,mreza=18&krat=HR3,1,,,hr,0,http://www.hrt.hr/,0
 1004,"Glas Hrvatske",gh.radio.gonix.net,RADIO,HRT,1,mreza=20&krat=GH,1,,,hr,0,http://www.hrt.hr/,0
-1005,"Radio Sljeme",sljeme.radio.gonix.net,RADIO,HRT,1,mreza=19&krat=HR_SLJ,1,,,,0,http://www.hrt.hr/,0
-5001,"Test - HBO",test.tv.gonix.net,TEST,HBO,0,HBO,0,,,,0,,0
-5002,"Test - HBOCOMEDY",test2.tv.gonix.net,TEST,HBO,0,HBOCOMEDY,0,,,,0,,0
-5003,"Test3 - CMAX",test3.tv.gonix.net,TEST,HBO,0,CMAX,0,,,,0,,0
-5004,"Test4 - CMAX2",test4.tv.gonix.net,TEST,HBO,0,CMAX2,0,,,hr,0,,0
-5005,"Text5 - ESPN America feed 2",test5.tv.gonix.net,TEST,NASN,0,tv_grab_it;www.raiuno.rai.it,0,,,,0,,0
+1005,"Radio Sljeme",sljeme.radio.gonix.net,RADIO,HRT,1,mreza=19&krat=HR_SLJ,1,,,hr,0,http://www.hrt.hr/,0
+5001,"Test - HBO",test.tv.gonix.net,TEST,,0,HBO,0,,,hr,0,,0
+5002,"Test - HBOCOMEDY",test2.tv.gonix.net,TEST,,0,HBOCOMEDY,0,,,,0,,0
+5003,"Test3 - CMAX",test3.tv.gonix.net,TEST,,0,CMAX,0,,,,0,,0
+5004,"Test4 - CMAX2",test4.tv.gonix.net,TEST,,0,CMAX2,0,,,hr,0,,0
+5005,"Text5 - ESPN America feed 2",test5.tv.gonix.net,TEST,,0,tv_grab_it;www.raiuno.rai.it,0,,,,0,,0

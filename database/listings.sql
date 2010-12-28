@@ -127,9 +127,10 @@ CREATE TABLE `epgservers` (
 
 DROP TABLE IF EXISTS `dvb_cat`;
 CREATE TABLE `dvb_cat` (
-  `category` varchar(20) NOT NULL default '',
+  `category` varchar(100) default NULL,
   `dvb_category` varchar(20) NOT NULL,
-  PRIMARY KEY  (`category`)
+  `description` varchar(100) NOT NULL,
+  PRIMARY KEY  (`dvb_category`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `networks`;
