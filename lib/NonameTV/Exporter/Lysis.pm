@@ -24,6 +24,7 @@ use Lingua::Translate;
 use NonameTV::Exporter;
 use NonameTV::Language qw/LoadLanguage/;
 use NonameTV qw/norm/;
+use DVB qw/DVBCategory/;
 
 use NonameTV::Log qw/progress error d p w StartLogSection EndLogSection SetVerbosity/;
 
@@ -649,6 +650,8 @@ sub WriteEntry
   my $self = shift;
   my( $odoc, $parent, $data, $chd, $evno ) = @_;
 
+  my $ds = $self->{datastore};
+
   Lingua::Translate::config
   (
     back_end => 'Google',
@@ -708,10 +711,10 @@ sub WriteEntry
       $epgel->appendText( $data->{rating} || 0 );
       $epgdesc->appendChild( $epgel );
 
+      my $dvbcategory = DVBCategory( $ds, $data->{category}, $data->{program_type} );
       $epgel = $odoc->createElement( 'EpgElement' );
       $epgel->setAttribute( 'key' , "DVB_Content" );
-# DVBCategory
-      $epgel->appendText( "0:0:0:0" );
+      $epgel->appendText( $dvbcategory );
       $epgdesc->appendChild( $epgel );
 
     # local Epg title and description
@@ -920,57 +923,6 @@ sub hdump {
         $offset += 16;
     }
 }
-
-sub DVBCategory {
-  my( $category, $type ) = @_;
-
-  my( $dvbcatl1, $dvbcatl2 );
-
-  $dvbcatl2 = 0;
-
-  if( $category =~ /drama/i ){
-    $dvbcatl1 = 1;
-  } elsif( $category =~ /news/i ){
-    $dvbcatl1 = 2;
-  } elsif( $category =~ /show/i ){
-    $dvbcatl1 = 3;
-  } elsif( $category =~ /sport/i ){
-    $dvbcatl1 = 4;
-  } elsif( $category =~ /children/i ){
-    $dvbcatl1 = 5;
-  } elsif( $category =~ /music/i ){
-    $dvbcatl1 = 6;
-  } elsif( $category =~ /arts/i ){
-    $dvbcatl1 = 7;
-  } elsif( $category =~ /politic/i ){
-    $dvbcatl1 = 8;
-  } elsif( $category =~ /science/i ){
-    $dvbcatl1 = 9;
-  } elsif( $category =~ /magazine/i ){
-    $dvbcatl1 = 10;
-  } elsif( $category =~ /misc/i ){
-    $dvbcatl1 = 11;
-  } else {
-    $dvbcatl1 = 0;
-  }
-
-  return( $dvbcatl1, $dvbcatl2 );
-
-# 0x1 : "Movie/Drama",
-# 0x2 : "News/Current Affairs",
-# 0x3 : "Show/Game show",
-# 0x4 : "Sports",
-# 0x5 : "Children's/Youth",
-# 0x6 : "Music/Ballet/Dance",
-# 0x7 : "Arts/Culture (without music)",
-# 0x8 : "Social/Political issues/Economics",
-# 0x9 : "Childrens/Youth Education/Science/Factual",
-# 0xa : "Leisure hobbies",
-# 0xb : "Misc",
-# 0xf : "Drama", # user defined (specified in the UK "D book")
-
-}
-
 
 1;
 
