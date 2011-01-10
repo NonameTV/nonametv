@@ -77,6 +77,11 @@ sub FilterContent {
     $node->addChild ($saveddata);
   }
 
+  # drop link to recorder
+  foreach my $node ($doc->find ('//a[@class="link_recorder"]')->get_nodelist) {
+    $node->unbindNode ();
+  }
+
   $cref = $doc->toStringHTML ();
 
   return( \$cref, undef);
