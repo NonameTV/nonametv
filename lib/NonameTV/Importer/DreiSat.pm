@@ -43,13 +43,13 @@ sub Object2Url {
   my( $year, $week ) = ( $objectname =~ /(\d+)-(\d+)$/ );
 
   # Tomica's (more like the files from ZDF and ZDFneo)
-  my $url = sprintf( "http://pressetreff2.3sat.de/Public/Woche/3Sat_%04d%02d.XML", $year, $week);
+  my $url1 = sprintf( "http://pressetreff2.3sat.de/Public/Woche/3Sat_%04d%02d.XML", $year, $week);
   # Karl's (looks like some postprocessed version, basically the same)
-  #my $url = sprintf( "http://programmdienst.3sat.de/wspressefahne/Dateien/3sat_Woche%02d%02d.xml", $week, $year%100 );
+  my $url2 = sprintf( "http://programmdienst.3sat.de/wspressefahne/Dateien/3sat_Woche%02d%02d.xml", $week, $year%100 );
 
-  progress($self->{Type} . ": fetching data from $url");
+#  progress($self->{Type} . ": fetching data from $url");
 
-  return( $url, undef );
+  return( [$url1, $url2], undef );
 }
 
 sub FilterContent {
