@@ -22,7 +22,7 @@ use XML::LibXML;
 
 use NonameTV qw/AddCategory norm ParseXml/;
 use NonameTV::DataStore::Helper;
-use NonameTV::Log qw/d p progress w f/;
+use NonameTV::Log qw/d p w f/;
 
 use NonameTV::Importer::BaseDaily;
 
@@ -142,7 +142,7 @@ sub ImportContent {
   
   if( not defined( $doc ) )
   {
-    error( "$batch_id: Failed to parse." );
+    f( "$batch_id: Failed to parse." );
     return 0;
   }
 
@@ -152,7 +152,7 @@ sub ImportContent {
 
   if( not defined( $day ) )
   {
-    error( "$batch_id: Failed to find date in page ($daytext)" );
+    f( "$batch_id: Failed to find date in page ($daytext)" );
     return 0;
   }
 
@@ -160,7 +160,7 @@ sub ImportContent {
 
   if( $day != $dateday )
   {
-    error( "$batch_id: Wrong day: $daytext" );
+    f( "$batch_id: Wrong day: $daytext" );
     return 0;
   }
         
@@ -168,7 +168,7 @@ sub ImportContent {
   my $ns = $doc->find( "//Sendung" );
   if( $ns->size() == 0 )
   {
-    error( "$batch_id: No data found" );
+    w( "$batch_id: No programmes found" );
     return 0;
   }
 
