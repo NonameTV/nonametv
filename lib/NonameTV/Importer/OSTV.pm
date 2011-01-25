@@ -93,6 +93,7 @@ sub ImportContentFile
     if( isDate( $text ) ) { # the line with the date in format 'Friday 1st August 2008'
 
       $date = ParseDate( $text );
+print ">$date<\n";
 
       if( $date ) {
 
@@ -144,15 +145,15 @@ sub ImportContentFile
 sub isDate {
   my ( $text ) = @_;
 
-#print ">$text<\n";
+#print "isDate >$text<\n";
 
   # format 'PETAK: 11. srpnja 2008.god.'
   if( $text =~ /^(ponedjeljak|utorak|srijeda|ČETVRTAK|petak|subota|nedjelja):\s*\d+\.\s*(siječnja|veljače|ozujka|travnja|svibnja|lipnja|srpnja|kolovoza|rujna|listopada|studenog\a*|prosinca)\s*\d+\.\s*god\.$/i ){
     return 1;
   }
 
-  # format 'PONEDJELJAK, 5. srpnja 2010
-  elsif( $text =~ /^(ponedjeljak|utorak|srijeda|ČETVRTAK|petak|subota|nedjelja),\s*\d+\.\s*(siječnja|veljače|ozujka|travnja|svibnja|lipnja|srpnja|kolovoza|rujna|listopada|studenog\a*|prosinca)\s*\d+$/i ){
+  # format 'PONEDJELJAK\,* 5. srpnja 2010
+  elsif( $text =~ /^(ponedjeljak|utorak|srijeda|ČETVRTAK|petak|subota|nedjelja)\,*\s*\d+\.\s*(siječnja|veljače|ozujka|travnja|svibnja|lipnja|srpnja|kolovoza|rujna|listopada|studenog\a*|prosinca)\s*\d+/i ){
     return 1;
   }
 
@@ -162,13 +163,13 @@ sub isDate {
 sub ParseDate {
   my( $text ) = @_;
 
-#print ">$text<\n";
+#print "ParseDate >$text<\n";
   my( $dayname, $day, $monthname, $year );
 
   if( $text =~ /^(ponedjeljak|utorak|srijeda|ČETVRTAK|petak|subota|nedjelja):\s*\d+\.\s*(siječnja|veljače|ozujka|travnja|svibnja|lipnja|srpnja|kolovoza|rujna|listopada|studenog\a*|prosinca)\s*\d+\.\s*god\.$/i ){
     ( $dayname, $day, $monthname, $year ) = ( $text =~ /^(\S+):\s*(\d+)\.\s*(\S+)\s*(\d+)\.\s*god\.$/ );
-  } elsif( $text =~ /^(ponedjeljak|utorak|srijeda|ČETVRTAK|petak|subota|nedjelja),\s*\d+\.\s*(siječnja|veljače|ozujka|travnja|svibnja|lipnja|srpnja|kolovoza|rujna|listopada|studenog\a*|prosinca)\s*\d+$/i ){
-    ( $dayname, $day, $monthname, $year ) = ( $text =~ /^(\S+),\s*(\d+)\.\s*(\S+)\s*(\d+)$/ );
+  } elsif( $text =~ /^(ponedjeljak|utorak|srijeda|ČETVRTAK|petak|subota|nedjelja)\,*\s*\d+\.\s*(siječnja|veljače|ozujka|travnja|svibnja|lipnja|srpnja|kolovoza|rujna|listopada|studenog\a*|prosinca)\s*\d+/i ){
+    ( $dayname, $day, $monthname, $year ) = ( $text =~ /^(\S+)\,*\s*(\d+)\.\s*(\S+)\s*(\d+)/ );
   }
 
   my $month = MonthNumber( $monthname , 'hr' );

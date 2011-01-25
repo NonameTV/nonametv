@@ -202,8 +202,7 @@ sub ImportFlatXLS
 
   progress( "RiTv FlatXLS: $chd->{xmltvid}: Processing flat XLS $file" );
 
-  my( $oBook, $oWkS, $oWkC );
-  $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
+  my $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
 
   if( not defined( $oBook ) ) {
     error( "RiTv FlatXLS: $file: Failed to parse xls" );
@@ -212,14 +211,14 @@ sub ImportFlatXLS
 
   for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
 
-    $oWkS = $oBook->{Worksheet}[$iSheet];
+    my $oWkS = $oBook->{Worksheet}[$iSheet];
     progress("RiTv FlatXLS: $chd->{xmltvid}: processing worksheet named '$oWkS->{Name}'");
 
     # read the rows with data
     for(my $iR = $oWkS->{MinRow} ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
 
       # Date
-      $oWkC = $oWkS->{Cells}[$iR][$coldate];
+      my $oWkC = $oWkS->{Cells}[$iR][$coldate];
       if( $oWkC and $oWkC->Value ){
 
         if( isDate( $oWkC->Value ) ){
@@ -296,6 +295,8 @@ sub isDate {
   # format 'RASPORED PROGRAMA ZA PETAK 18.07.2008.'
   if( $text =~ /^RASPORED PROGRAMA ZA (ponedjeljak|utorak|srijedu|Četvrtak|petak|subotu|nedjelju)\s*\d+\.\d+\.\d+\.\s*$/i ){
     return 1;
+  } elsif( $text =~ /^\d+\/\d+\/\d+$/i ){
+    return 1;
   } elsif( $text =~ /^\d{5}$/i ){
     return 1;
   }
@@ -308,8 +309,12 @@ sub ParseDate {
 
   my( $dayname, $day, $month, $year );
 
+#print ">$text<\n";
+
   if( $text =~ /^RASPORED PROGRAMA ZA (\S+)\s*(\d+)\.(\d+)\.(\d+)\.\s*$/ ){
     ( $dayname, $day, $month, $year ) = ( $text =~ /^RASPORED PROGRAMA ZA (\S+)\s*(\d+)\.(\d+)\.(\d+)\.\s*$/ );
+  } elsif( $text =~ /^\d+\/\d+\/\d+$/i ){
+    ( $day, $month, $year ) = ( $text =~ /^(\d+)\/(\d+)\/(\d+)$/i );
   } elsif( $text =~ /^\d{5}$/ ){
     my $dt = DateTime::Format::Excel->parse_datetime( $text );
     $year = $dt->year;
@@ -317,14 +322,16 @@ sub ParseDate {
     $day = $dt->day;
   }
 
-  return sprintf( '%d-%02d-%02d', $year, $month, $day );
+  $year += 2000 if $year < 100;
+
+  return sprintf( '%04d-%02d-%02d', $year, $month, $day );
 }
 
 sub ParseTime
 {
   my( $text ) = @_;
 
-#print "TIME >$text<\n";
+print "TIME >$text<\n";
 
   my( $hour, $min, $sec );
 
@@ -332,6 +339,8 @@ sub ParseTime
     my $daysecs = int( 86400 * $text );
     $hour = int( $daysecs / 3600 );
     $min =  int( ( $daysecs - ( $hour * 3600 ) ) / 60 );
+  } elsif( $text =~ /^\d+[.|:]\d+$/ ){
+    ( $hour, $min ) =(  $text =~ /^(\d+)[.|:](\d+)$/ );
   } else {
     return undef;
   }

@@ -323,13 +323,13 @@ sub ImportAirCombined
       if( $oWkS->{Cells}[$iR][1] and $oWkS->{Cells}[$iR][2] ){
         if( $oWkS->{Cells}[$iR][1]->Value =~ /AIRING HOURS FOR/ and isDate( $oWkS->{Cells}[$iR][2]->Value ) ){
           $date = ParseDate( $oWkS->{Cells}[$iR][2]->Value );
-print "DATE $date\n";
+#print "DATE $date\n";
         }
       }
 
       # check date
       if( $oWkS->{Cells}[$iR][1] and $oWkS->{Cells}[$iR][1]->Value =~ /On Date:/ ){
-print "DATE IN TEXT\n";
+#print "DATE IN TEXT\n";
         for(my $iC = $oWkS->{MinCol} ; defined $oWkS->{MaxCol} && $iC <= $oWkS->{MaxCol} ; $iC++) {
 
           $oWkC = $oWkS->{Cells}[$iR][$iC];
@@ -338,12 +338,12 @@ print "DATE IN TEXT\n";
 
           if( isDate( $oWkS->{Cells}[$iR][$iC]->Value ) ){
             $date = ParseDate( $oWkS->{Cells}[$iR][$iC]->Value );
-print "DATE $date\n";
+#print "DATE $date\n";
             next;
           }
         }
       }
-print "DATE $date\n";
+#print "DATE $date\n";
 
       if( $date ne $currdate ) {
         if( $currdate ne "x" ) {
@@ -507,7 +507,7 @@ print ">$cl<\n";
       next if( ! $oWkC->Value );
       if( isDate( $oWkC->Value ) ){
         $date = ParseDate( $oWkC->Value );
-print "DATE $currdate $date\n";
+#print "DATE $currdate $date\n";
 
         if( $date ne $currdate ) {
           if( $currdate ne "x" ) {
@@ -900,15 +900,15 @@ sub ParseDate {
     ( $day, $month, $year ) = ( $text =~ /^On date:\s+(\d+)\.(\d+)\.(\d+)/i );
   }
 
-  $year += 2000 if $year lt 100;
+  $year += 2000 if $year < 100;
 
-  return sprintf( '%d-%02d-%02d', $year, $month, $day );
+  return sprintf( '%04d-%02d-%02d', $year, $month, $day );
 }
 
 sub ParseTime {
   my ( $text ) = @_;
 
-print "ParseTime >$text<\n";
+#print "ParseTime >$text<\n";
 
   my( $hour, $min, $sec );
 

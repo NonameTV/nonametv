@@ -15,6 +15,7 @@ Features:
 
 use POSIX qw/strftime/;
 use DateTime;
+use Encode qw(from_to);
 
 use NonameTV qw/MyGet norm AddCategory/;
 use NonameTV::DataStore::Helper;
@@ -89,6 +90,7 @@ sub ImportXML
   
   my $doc;
   my $xml = XML::LibXML->new;
+  $xml->set_option( "encoding", "utf-16" );
   eval { $doc = $xml->parse_file($file); };
   if( $@ ne "" )
   {

@@ -196,30 +196,11 @@ sub ParseDate
     ( $day, $month, $year ) = ( $text =~ /^(\d+)\.(\d+)\.(\d+)$/ );
   }
 
-  $year += 2000 if $year lt 100;
+  $year += 2000 if $year < 100;
 
   return sprintf( "%04d-%02d-%02d", $year, $month, $day );
 }
 
-sub create_dt
-{
-  my ( $dy , $mo , $yr , $hr , $mn ) = @_;
-
-  my $dt = DateTime->new( year   => $yr,
-                           month  => $mo,
-                           day    => $dy,
-                           hour   => $hr,
-                           minute => $mn,
-                           second => 0,
-                           time_zone => 'Europe/Zagreb',
-                           );
-
-  # times are in CET timezone in original XLS file
-  #$dt->set_time_zone( "UTC" );
-
-  return( $dt );
-}
-  
 1;
 
 ### Setup coding system

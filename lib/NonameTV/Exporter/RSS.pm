@@ -69,12 +69,13 @@ sub new {
       DateTime->today->add( days => $self->{MinDays}-1 )->ymd("-");
 
     $self->{OptionSpec} = [ qw/export-nowongroup export-todayongroup 
-			       force-export 
+			       remove-old force-export 
                                verbose quiet help/ ];
 
     $self->{OptionDefaults} = { 
       'export-nowongroup' => 0,
       'export-todayongroup' => 0,
+      'remove-old' => 0,
       'force-export' => 0,
       'help' => 0,
       'verbose' => 0,

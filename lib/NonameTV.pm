@@ -738,7 +738,7 @@ sub MonthNumber {
     @months_2 = qw/sijecanj veljaca ozujak travanj svibanj lipanj srpanj kolovoz rujan listopad studeni prosinac/;
     @months_3 = qw/sijecnja veljače ozujka travnja svibnja lipnja srpnja kolovoza rujna listopada studenoga prosinca/;
     @months_4 = qw/sijeÃ¨a veljače ožujka travnja svibnja lipnja srpnja kolovoza rujna listopada studenog prosinca/;
-    @months_5 = qw/siječnja veljace mart april maj juni sjuli august septembar oktobar novembar decembar/;
+    @months_5 = qw/januar februar mart april maj juni juli august septembar oktobar novembar decembar/;
     @months_6 = qw/siječanj veljace ozujka travnja svibnja lipnja srpnja kolovoza rujna listopada studenog prosinca/;
     @months_7 = qw/jan feb mar apr maj jun jul aug sep okt nov dec/;
   } elsif( $lang =~ /^sr$/ ){

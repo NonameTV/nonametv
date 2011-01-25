@@ -96,7 +96,7 @@ sub ImportContentFile
 
     my( $text ) = norm( $div->findvalue( '.' ) );
 
-    #print "> $text\n";
+#print ">$text\n";
 
     if( $text eq "" ) {
       # blank line
@@ -233,6 +233,8 @@ sub isDate {
     ( $text =~ /^(ponedjeljak|utorak|srijeda|ČETVRTAK|petak|subota|nedjelja|nejelja)\,*\s*\d+\s*\.\s*\d+\s*\.\s*\d+\s*\.\s*$/i )
     or
     ( $text =~ /^(ponedjeljak|utorak|srijeda|ČETVRTAK|petak|subota|nedjelja|nejelja)\,*\s*\d+\s*\.\s*\d+\s*\.\s*$/i )
+    or
+    ( $text =~ /^\d+\s*\.\s*\d+\s*\.\d+\s*\.\s*(ponedjeljak|utorak|srijeda|ČETVRTAK|petak|subota|nedjelja|nejelja)$/i )
   ){
     return 1;
   }
@@ -248,6 +250,8 @@ sub ParseDate {
     ( $day, $month, $yr ) = ($text =~ /(\d+)\s*\.\s*(\d+)\s*\.\s*(\d+)/);
   } elsif( $text =~ /\d+\s*\.\s*\d+\s*\.\s*/ ){
     ( $day, $month ) = ($text =~ /(\d+)\s*\.\s*(\d+)/);
+  } elsif( $text =~ /\d+\s*\.\s*\d+\s*\.\d+\s*\.\s*\S+/ ){
+    ( $day, $month, $yr ) = ($text =~ /(\d+)\s*\.\s*(\d+)\s*\.(\d+)\s*\.\s*\S+/);
   }
 
   $year = $yr if $yr;

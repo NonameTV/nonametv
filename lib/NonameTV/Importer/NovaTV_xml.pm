@@ -90,7 +90,7 @@ sub ImportContent {
   foreach my $ntv ($ntvs->get_nodelist) {
 
     my $tvsource = $ntv->findvalue( './@source' );
-    if( $tvsource !~ /^Nova TV$/ and $tvsource !~ /^Mini TV$/ ){
+    if( $tvsource !~ /^Nova TV$/ and $tvsource !~ /^Mini TV$/ and $tvsource !~ /^Doma TV$/ ){
       error( "NovaTV_xml: $channel_xmltvid: Invalid tv source: $tvsource" );
       return;
     }

@@ -99,9 +99,9 @@ sub ImportFlatXLS
           }
         }
 
-#foreach my $cl (%columns) {
-#print "$cl\n";
-#}
+foreach my $cl (%columns) {
+print "$cl\n";
+}
         next;
       }
 

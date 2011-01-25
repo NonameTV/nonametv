@@ -122,6 +122,13 @@ sub ImportFlatXLS
         for(my $iC = $oWkS->{MinCol} ; defined $oWkS->{MaxCol} && $iC <= $oWkS->{MaxCol} ; $iC++) {
           if( $oWkS->{Cells}[$iR][$iC] ){
             $columns{$oWkS->{Cells}[$iR][$iC]->Value} = $iC;
+
+            $columns{'Start Plan'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /start plan/i );
+            $columns{'library id'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /library id/i );
+            $columns{'length'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /length/i );
+            $columns{'Programmcode'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /programm code/i );
+            $columns{'ORI Cliptitel'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /ORI clip title/i );
+            $columns{'ORI epg'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /ORI epg/i );
           }
         }
 #foreach my $cl (%columns) {
