@@ -135,10 +135,14 @@ sub ImportContent {
         if (($episodetitle eq 'Teil') || ($episodetitle eq 'Folge') ){
           $episodetitle = 'Folge ' . $episodenumber;
         }
-        $subtitle .= $episodetitle;
+        if( $episodetitle ne 'Titel wird nachgereicht.' ){
+          $subtitle .= $episodetitle;
+        }
 
         my $episodedesc = $episode->findvalue ('FolgeLangText');
-        $desc .= $episodedesc;
+        if( $episodedesc ne 'Inhalt wird nachgereicht!' ){
+          $desc .= $episodedesc;
+        }
       }
 
       if (!$desc) {
