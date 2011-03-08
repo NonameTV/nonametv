@@ -454,7 +454,7 @@ sub create_dt
   ( $year, $month, $day ) =
     ( $str =~ /^(\d{4})-(\d{2})-(\d{2})$/ );
 
-  logdie( "Dreampark: Unknown time format $str" )
+  die( "Dreampark: Unknown time format $str" )
     unless defined $day;
 
   return DateTime->new(
@@ -854,7 +854,7 @@ sub ExportMetaDataFile
 
       my $outfile = "$self->{Root}$edata->{name}/meta.xml";
       open( my $fh, '>:encoding(' . $self->{Encoding} . ')', $outfile )
-        or logdie( "Dreampark: cannot write to $outfile" );
+        or die( "Dreampark: cannot write to $outfile" );
 
         my $docstring = $odoc->toString( 1 );
         my $fragstring = $root->toString( 1 );

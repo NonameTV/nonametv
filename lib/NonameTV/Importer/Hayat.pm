@@ -223,6 +223,7 @@ sub ImportFlatXLS
       next if( ! $oWkC->Value );
       my $time = $oWkC->Value;
       $time =~ s/\s//;
+      next if( $time !~ /^\d+:\d+$/ );
 
       # Title
       $oWkC = $oWkS->{Cells}[$iR][$coltitle];
@@ -297,7 +298,7 @@ sub isShow {
 sub ParseShow {
   my ( $text ) = @_;
 
-#print ">$text<\n";
+print ">$text<\n";
 
   my( $time, $title, $genre, $episode );
 

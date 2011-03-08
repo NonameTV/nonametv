@@ -59,6 +59,7 @@ sub ImportContentFile {
 
   my $date;
 
+  my %columns = ();
   my $kada;
   my $batch_id;
   my $currdate = "x";
@@ -76,8 +77,31 @@ sub ImportContentFile {
 
     for(my $iR = $oWkS->{MinRow} ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
 
+      # get the names of the columns from the 1st row
+      if( not %columns ){
+        for(my $iC = $oWkS->{MinCol} ; defined $oWkS->{MaxCol} && $iC <= $oWkS->{MaxCol} ; $iC++) {
+
+          next if( ! $oWkS->{Cells}[$iR][$iC] );
+          next if( ! $oWkS->{Cells}[$iR][$iC]->Value );
+
+          $columns{norm($oWkS->{Cells}[$iR][$iC]->Value)} = $iC;
+
+          # columns alternate names
+          $columns{'DATE'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /(ponedjeljak|utorak|srijeda|cetvrtak|petak|subota|nedjelja)/i );
+          $columns{'TIME'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^VRIJEME$/i );
+          $columns{'TITLE'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^IME EMISIJE$/i );
+        }
+#foreach my $col (%columns) {
+#print ">$col<\n";
+#}
+	if( ! $columns{'DATE'} and ! $columns{'TIME'} and ! $columns{'TIME'} ){
+          %columns = ();
+        }
+        next if %columns;
+      }
+
       # Date
-      my $oWkC = $oWkS->{Cells}[$iR][0];
+      my $oWkC = $oWkS->{Cells}[$iR][$columns{'DATE'}];
       next if( ! $oWkC );
       next if( ! $oWkC->Value );
 
@@ -103,7 +127,7 @@ sub ImportContentFile {
       }
 
       # time
-      $oWkC = $oWkS->{Cells}[$iR][0];
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'TIME'}];
       next if( ! $oWkC );
       next if( ! $oWkC->Value );
       my $time = $oWkC->Value;
@@ -111,7 +135,7 @@ sub ImportContentFile {
       $time =~ s/\./:/;
 
       # Title
-      $oWkC = $oWkS->{Cells}[$iR][1];
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'TITLE'}];
       next if( ! $oWkC );
       next if( ! $oWkC->Value );
       my $title = $oWkC->Value;

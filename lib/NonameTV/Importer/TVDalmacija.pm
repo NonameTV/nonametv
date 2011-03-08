@@ -35,7 +35,6 @@ sub new {
   my $self  = $class->SUPER::new( @_ );
   bless ($self, $class);
 
-
   my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
   $self->{datastorehelper} = $dsh;
 
@@ -196,8 +195,14 @@ sub FlushDayData {
 sub isDate {
   my ( $text ) = @_;
 
+#print "isDate >$text<\n";
+
   # format 'Petak 18.07.2008.'
   if( $text =~ /^(ponedjeljak|utorak|srijeda|Četvrtak|petak|subota|nedjelja)\s*\d+\.\d+\.\d+\.\s*$/i ){
+    return 1;
+
+  # format 'Petak 25.02.'
+  } elsif( $text =~ /^(ponedjeljak|utorak|srijeda|Četvrtak|petak|subota|nedjelja)\s*\d+\.\d+\.\s*$/i ){
     return 1;
   }
 
@@ -207,7 +212,18 @@ sub isDate {
 sub ParseDate {
   my( $text ) = @_;
 
-  my( $dayname, $day, $month, $year ) = ( $text =~ /^(\S+)\s*(\d+)\.(\d+)\.(\d+)\.\s*$/ );
+  my( $dayname, $day, $month, $year );
+
+  # format 'Petak 18.07.2008.'
+  if( $text =~ /^(ponedjeljak|utorak|srijeda|Četvrtak|petak|subota|nedjelja)\s*\d+\.\d+\.\d+\.\s*$/i ){
+    ( $dayname, $day, $month, $year ) = ( $text =~ /^(\S+)\s*(\d+)\.(\d+)\.(\d+)\.\s*$/ );
+
+  # format 'Petak 25.02.'
+  } elsif( $text =~ /^(ponedjeljak|utorak|srijeda|Četvrtak|petak|subota|nedjelja)\s*\d+\.\d+\.\s*$/i ){
+    ( $dayname, $day, $month ) = ( $text =~ /^(\S+)\s*(\d+)\.(\d+)\.\s*$/ );
+    $year = DateTime->today->year();
+  }
+
 
   return sprintf( '%d-%02d-%02d', $year, $month, $day );
 }

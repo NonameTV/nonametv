@@ -431,7 +431,7 @@ sub create_dt
   ( $year, $month, $day ) =
     ( $str =~ /^(\d{4})-(\d{2})-(\d{2})$/ );
 
-  logdie( "Lysis: Unknown time format $str" )
+  die( "Lysis: Unknown time format $str" )
     unless defined $day;
 
   return DateTime->new(
@@ -836,7 +836,7 @@ sub ExportNetworks
 
     my $outfile = "$self->{Root}/$edata->{name}/network-information.xml";
     open( my $fh, '>:encoding(' . $self->{Encoding} . ')', $outfile )
-      or logdie( "Lysis: cannot write to $outfile" );
+      or die( "Lysis: cannot write to $outfile" );
 
     $odoc->toFH( $fh, 1 );
     close( $fh );

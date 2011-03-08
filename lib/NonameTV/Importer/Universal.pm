@@ -70,6 +70,10 @@ sub ImportContentFile {
       # get the names of the columns from the 1st row
       if( not %columns ){
         for(my $iC = $oWkS->{MinCol} ; defined $oWkS->{MaxCol} && $iC <= $oWkS->{MaxCol} ; $iC++) {
+
+          next if( ! $oWkS->{Cells}[$iR][$iC] );
+          next if( ! $oWkS->{Cells}[$iR][$iC]->Value );
+
           $columns{norm($oWkS->{Cells}[$iR][$iC]->Value)} = $iC;
 
           # columns alternate names
@@ -109,18 +113,18 @@ sub ImportContentFile {
       my $titlecro = $oWkS->{Cells}[$iR][$columns{'Title CRO'}]->Value if $oWkS->{Cells}[$iR][$columns{'Title CRO'}];
 
       my $type = $oWkS->{Cells}[$iR][$columns{'Type'}]->Value if $oWkS->{Cells}[$iR][$columns{'Type'}];
-      my $prodno = $oWkS->{Cells}[$iR][$columns{'Prod No.'}]->Value if $oWkS->{Cells}[$iR][$columns{'Prod No.'}];
-      my $episodetitle = $oWkS->{Cells}[$iR][$columns{'Episode Title'}]->Value if $oWkS->{Cells}[$iR][$columns{'Episode Title'}];
-      my $slotlen = $oWkS->{Cells}[$iR][$columns{'Slot Len'}]->Value if $oWkS->{Cells}[$iR][$columns{'Slot Len'}];
-      my $epino = $oWkS->{Cells}[$iR][$columns{'Epi No.'}]->Value if $oWkS->{Cells}[$iR][$columns{'Epi No.'}];
-      my $cert = $oWkS->{Cells}[$iR][$columns{'Cert'}]->Value if $oWkS->{Cells}[$iR][$columns{'Cert'}];
+      #my $prodno = $oWkS->{Cells}[$iR][$columns{'Prod No.'}]->Value if $oWkS->{Cells}[$iR][$columns{'Prod No.'}];
+      #my $episodetitle = $oWkS->{Cells}[$iR][$columns{'Episode Title'}]->Value if $oWkS->{Cells}[$iR][$columns{'Episode Title'}];
+      #my $slotlen = $oWkS->{Cells}[$iR][$columns{'Slot Len'}]->Value if $oWkS->{Cells}[$iR][$columns{'Slot Len'}];
+      #my $epino = $oWkS->{Cells}[$iR][$columns{'Epi No.'}]->Value if $oWkS->{Cells}[$iR][$columns{'Epi No.'}];
+      #my $cert = $oWkS->{Cells}[$iR][$columns{'Cert'}]->Value if $oWkS->{Cells}[$iR][$columns{'Cert'}];
       my $genre = $oWkS->{Cells}[$iR][$columns{'Genre'}]->Value if $oWkS->{Cells}[$iR][$columns{'Genre'}];
       my $year = $oWkS->{Cells}[$iR][$columns{'Year'}]->Value if $oWkS->{Cells}[$iR][$columns{'Year'}];
       my $director = $oWkS->{Cells}[$iR][$columns{'Director'}]->Value if $oWkS->{Cells}[$iR][$columns{'Director'}];
       my $actor = $oWkS->{Cells}[$iR][$columns{'Actor'}]->Value if $oWkS->{Cells}[$iR][$columns{'Actor'}];
-      my $episodesynopsis = $oWkS->{Cells}[$iR][$columns{'Episode Synopsis'}]->Value if $oWkS->{Cells}[$iR][$columns{'Episode Synopsis'}];
-      my $minisynopsis = $oWkS->{Cells}[$iR][$columns{'Mini Synopsis'}]->Value if $oWkS->{Cells}[$iR][$columns{'Mini Synopsis'}];
-      my $synopsis = $oWkS->{Cells}[$iR][$columns{'Synopsis'}]->Value if $oWkS->{Cells}[$iR][$columns{'Synopsis'}];
+      #my $episodesynopsis = $oWkS->{Cells}[$iR][$columns{'Episode Synopsis'}]->Value if $oWkS->{Cells}[$iR][$columns{'Episode Synopsis'}];
+      #my $minisynopsis = $oWkS->{Cells}[$iR][$columns{'Mini Synopsis'}]->Value if $oWkS->{Cells}[$iR][$columns{'Mini Synopsis'}];
+      #my $synopsis = $oWkS->{Cells}[$iR][$columns{'Synopsis'}]->Value if $oWkS->{Cells}[$iR][$columns{'Synopsis'}];
 
       progress("Universal: $xmltvid: $starttime - $title");
 
@@ -132,23 +136,23 @@ sub ImportContentFile {
       };
 
       # subtitle
-      if( $episodetitle ){
-        $ce->{subtitle} = $episodetitle;
-      } elsif( $titlecro ){
-        $ce->{subtitle} = $title;
-      }
+#      if( $episodetitle ){
+#        $ce->{subtitle} = $episodetitle;
+#      } elsif( $titlecro ){
+#        $ce->{subtitle} = $title;
+#      }
 
-      $ce->{description} = $synopsis if $synopsis;
+      #$ce->{description} = $synopsis if $synopsis;
       $ce->{program_type} = $type if $type;
       $ce->{production_date} = "$year-01-01" if $year;
       $ce->{directors} = $director if $director;
       $ce->{actors} = $actor if $actor;
 
       # episode
-      if( $epino ){
-        $ce->{episode} = sprintf( ". %d .", $epino-1 );
-        $ce->{program_type} = 'series';
-      }
+#      if( $epino ){
+#        $ce->{episode} = sprintf( ". %d .", $epino-1 );
+#        $ce->{program_type} = 'series';
+#      }
 
       # genre
       if( $genre ){

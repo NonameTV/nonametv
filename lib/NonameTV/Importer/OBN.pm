@@ -165,6 +165,8 @@ sub isDate {
     return 1;
   } elsif( $text =~ /^(ponedjeljak|utorak|srijeda|ČETVRTAK|petak|subota|nedjelja),\s*\d+\.\s*(januar|veljače|mart|april|maj|juni|juli|august|septembar|oktobar|novembar|decembar)$/i ){ # format 'SUBOTA, 21. studeni'
     return 1;
+  } elsif( $text =~ /^(ponedjeljak|utorak|srijeda|ČETVRTAK|petak|subota|nedjelja),\s*\d+\.\d+\.\d+\.$/i ){ # SUBOTA, 26.02.2011.
+    return 1;
   }
 
   return 0;
@@ -175,17 +177,20 @@ sub ParseDate {
 
 #print ">$text<\n";
 
-  my( $dayname, $day, $monthname, $year );
+  my( $dayname, $day, $monthname, $month, $year );
 
   # format 'subota, 21.studeni 2009.'
   if( $text =~ /^(ponedjeljak|utorak|srijeda|ČETVRTAK|petak|subota|nedjelja),\s*\d+\.\s*(januar|veljače|mart|april|maj|juni|juli|august|septembar|oktobar|novembar|decembar)\s*\d+\.$/i ){
-    ( $dayname, $day, $monthname, $year ) = ( $text =~ /^(\S+),\s*(\d+)\.\s*(\S+)\s*(\d+)\.$/i )
+    ( $dayname, $day, $monthname, $year ) = ( $text =~ /^(\S+),\s*(\d+)\.\s*(\S+)\s*(\d+)\.$/i );
+    $month = MonthNumber( $monthname , 'hr' );
   } elsif( $text =~ /^(ponedjeljak|utorak|srijeda|ČETVRTAK|petak|subota|nedjelja),\s*\d+\.\s*(januar|veljače|mart|april|maj|juni|juli|august|septembar|oktobar|novembar|decembar)$/i ){ # format 'SUBOTA, 21. studeni'
     ( $dayname, $day, $monthname ) = ( $text =~ /^(\S+),\s*(\d+)\.\s*(\S+)$/i );
     $year = DateTime->today->year();
+    $month = MonthNumber( $monthname , 'hr' );
+  } elsif( $text =~ /^(ponedjeljak|utorak|srijeda|ČETVRTAK|petak|subota|nedjelja),\s*\d+\.\d+\.\d+\.$/i ){ # SUBOTA, 26.02.2011.
+    ( $dayname, $day, $month, $year ) = ( $text =~ /^(\S+),\s*(\d+)\.(\d+)\.(\d+)\.$/i ); # SUBOTA, 26.02.2011.
   }
 
-  my $month = MonthNumber( $monthname , 'hr' );
 
   return sprintf( '%d-%02d-%02d', $year, $month, $day );
 }
@@ -193,8 +198,10 @@ sub ParseDate {
 sub isShow {
   my ( $text ) = @_;
 
+#print ">$text<\n";
+
   # format '09:00 Nasljednici zemlje, 4/8'
-  if( $text =~ /^\d+\:\d+\s+\S+/i ){
+  if( $text =~ /^\d+[:|.]\d+\s+\S+/i ){
     return 1;
   }
 
@@ -204,9 +211,12 @@ sub isShow {
 sub ParseShow {
   my( $text ) = @_;
 
-  my( $time, $title, $genre, $epnum, $eptot, $rating );
+#print ">$text<\n";
 
-  ( $time, $title ) = ( $text =~ /^(\d+\:\d+)\s+(.*)$/ );
+  my( $hour, $min, $time, $title, $genre, $epnum, $eptot, $rating );
+
+  ( $hour, $min, $title ) = ( $text =~ /^(\d+)[:|.](\d+)\s+(.*)$/ );
+  $time = $hour . ":" . $min;
 
   # parse episode
   # format '22:00 - Pepper Dennis, 5/13'

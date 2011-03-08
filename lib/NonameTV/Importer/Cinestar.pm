@@ -54,7 +54,6 @@ sub ImportContentFile {
   my $date;
   my $currdate = "x";
 
-
   my $batch_id = $xmltvid . "_" . $file;
   $ds->StartBatch( $batch_id , $channel_id );
 
@@ -83,9 +82,9 @@ sub ImportContentFile {
           $columns{'Title CRO'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Title$/i );
           $columns{'STARTTIME'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^POČETAK$/i );
         }
-#foreach my $col (%columns) {
-#print ">$col<\n";
-#}
+foreach my $col (%columns) {
+print ">$col<\n";
+}
         next;
       }
 
@@ -95,7 +94,9 @@ sub ImportContentFile {
       next if( ! $oWkC );
       next if( ! $oWkC->Value );
       $date = ParseDate( $oWkC->Value );
+$date = $currdate if ( ! $date );
       next if( ! $date );
+$currdate = $date;
 
       # starttime - column ('POČETAK')
       $oWkC = $oWkS->{Cells}[$iR][$columns{'STARTTIME'}];
@@ -122,12 +123,12 @@ sub ImportContentFile {
       next if( ! $crotitle );
 
       my $progtype = $oWkS->{Cells}[$iR][$columns{'VRSTA'}]->Value if $oWkS->{Cells}[$iR][$columns{'VRSTA'}];
-      my $origtitle = $oWkS->{Cells}[$iR][$columns{'ORG. NASLOV'}]->Value if $oWkS->{Cells}[$iR][$columns{'ORG. NASLOV'}];
+      #my $origtitle = $oWkS->{Cells}[$iR][$columns{'ORG. NASLOV'}]->Value if $oWkS->{Cells}[$iR][$columns{'ORG. NASLOV'}];
       my $year = $oWkS->{Cells}[$iR][$columns{'GODINA'}]->Value if $oWkS->{Cells}[$iR][$columns{'GODINA'}];
       my $director = $oWkS->{Cells}[$iR][$columns{'REŽIJA'}]->Value if $oWkS->{Cells}[$iR][$columns{'REŽIJA'}];
-      my $actor = $oWkS->{Cells}[$iR][$columns{'ULOGE'}]->Value if $oWkS->{Cells}[$iR][$columns{'ULOGE'}];
+      #my $actor = $oWkS->{Cells}[$iR][$columns{'ULOGE'}]->Value if $oWkS->{Cells}[$iR][$columns{'ULOGE'}];
       my $synopsis = $oWkS->{Cells}[$iR][$columns{'SINOPSIS'}]->Value if $oWkS->{Cells}[$iR][$columns{'SINOPSIS'}];
-      my $genre = $oWkS->{Cells}[$iR][$columns{'ŽANR'}]->Value if $oWkS->{Cells}[$iR][$columns{'ŽANR'}];
+      #my $genre = $oWkS->{Cells}[$iR][$columns{'ŽANR'}]->Value if $oWkS->{Cells}[$iR][$columns{'ŽANR'}];
       #my $country = $oWkS->{Cells}[$iR][$columns{'ZEMLJA'}]->Value if $oWkS->{Cells}[$iR][$columns{'ZEMLJA'}];
       #my $duration = $oWkS->{Cells}[$iR][$columns{'TRAJANJE'}]->Value if $oWkS->{Cells}[$iR][$columns{'TRAJANJE'}];
       #my $rating = $oWkS->{Cells}[$iR][$columns{'DOBNA OZNAKA'}]->Value if $oWkS->{Cells}[$iR][$columns{'DOBNA OZNAKA'}];
@@ -142,19 +143,19 @@ sub ImportContentFile {
       };
 
       # subtitle, etc...
-      $ce->{subtitle} = $origtitle if $origtitle;
+      #$ce->{subtitle} = $origtitle if $origtitle;
       $ce->{description} = $synopsis if $synopsis;
 
       $ce->{program_type} = $progtype if $progtype;
       $ce->{production_date} = "$year-01-01" if $year;
       $ce->{directors} = $director if $director;
-      $ce->{actors} = $actor if $actor;
+      #$ce->{actors} = $actor if $actor;
 
       # genre
-      if( $genre ){
-        my($program_type, $category ) = $ds->LookupCat( "Cinestar", $genre );
-        AddCategory( $ce, $program_type, $category );
-      }
+#      if( $genre ){
+#        my($program_type, $category ) = $ds->LookupCat( "Cinestar", $genre );
+#        AddCategory( $ce, $program_type, $category );
+#      }
 
       $ds->AddProgramme( $ce );
     }
