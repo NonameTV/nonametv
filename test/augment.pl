@@ -25,10 +25,10 @@ my %simplerule = ( matchby => 'episodetitle' );
     my ( $res, $sth ) = $ds->sa->Sql( "
         SELECT p.* from programs p, batches b
         WHERE (p.batch_id = b.id)
-          AND (b.name = ?)
+          AND (b.name LIKE ?)
         ORDER BY start_time asc, end_time desc", 
 # name of batch to use for testing
-      ['neo.zdf.de_2011-4'] );
+      ['neo.zdf.de_2011-13'] );
   
   my @result;
 
@@ -39,6 +39,7 @@ my %simplerule = ( matchby => 'episodetitle' );
     if( ( $ce->{program_type} eq 'series' )and( defined( $ce->{subtitle} ) ) ) {
       $ce->{subtitle} =~ s|,\sTeil (\d+)$| ($1)|;
       $ce->{subtitle} =~ s|\s-\sTeil (\d+)$| ($1)|;
+      $ce->{subtitle} =~ s|\s\(Teil (\d+)\)$| ($1)|;
       ( $newprogram, $result ) = $augmenter->AugmentProgram( $ce, \%simplerule );
       if( defined( $newprogram) ) {
         printf( "'%s: %s' found\n", $ce->{title}, $ce->{subtitle} );

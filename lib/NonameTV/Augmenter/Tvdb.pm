@@ -36,6 +36,7 @@ sub new {
                                   });
 #    print Dumper( $self->{tvdb}->{cache}->{Update} ); #->{lastupdated};
 #    $self->{tvdb}->getUpdates( 'all' );
+    $self->{tvdb}->getUpdates( 'guess' );
 
     return $self;
 }
