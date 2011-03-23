@@ -210,8 +210,11 @@ sub ImportRTF {
             $laststart = $starttime->clone();
           }
           if (DateTime->compare ($laststart, $starttime) == 1) {
+            # add 1 to the date without messing with the value of the houer in localtime
+            $starttime->set_time_zone ('Europe/Berlin');
             $starttime->add (days => 1);
             $currdate->add (days => 1);
+            $starttime->set_time_zone ('UTC');
           }
           $ce->{start_time} = $starttime->ymd('-') . ' ' . $starttime->hms(':');
           $laststart = $starttime;
