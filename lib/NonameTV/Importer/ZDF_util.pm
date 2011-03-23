@@ -152,11 +152,14 @@ sub ParseData
 
       # duration
       my $dauermin = $as->findvalue( 'dauermin' );
-
-      # FIXME bugged programme on ZDFneo files, length 0 but end-start is one day
       if ($dauermin eq '0') {
+        # fixup bugged programme on ZDFneo files, length 0 but end-start is one day
         w( "$batch_id: Zero length programme id $id - Skipping." );
         next;
+      } else {
+        # fixup for ZDF around DST switchover
+        # replace endtime with starttime+duration (now that we fixed up the starttime)
+        $endtime = $starttime->clone()->add( minutes => $dauermin );
       }
 
       # attributes
@@ -282,7 +285,7 @@ sub create_dt
                           );
   };
   if ($@){
-    error ("Could not convert time! Check for daylight saving time border.");
+    error ("Could not convert time! Check for daylight saving time border. " . $year . "-" . $month . "-" . $day . " " . $hour . ":" . $minute);
     return undef;
   };
   
