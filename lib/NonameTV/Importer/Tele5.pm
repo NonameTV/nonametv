@@ -219,7 +219,14 @@ sub ImportRTF {
           # span between start and stop
           my( $duration ) = ( $text =~ m|^\s*Sendedauer: (\d+)$|m );
           if( defined( $duration ) ) {
-            my $stoptime = $starttime->clone()->add( minutes => $duration );
+            # Sendedauer is not adjusted for DST switchover (it's 60 minutes off twice a year)
+            # this ugly hack will eat 60 minutes when switchung to DST and spit out 60 minutes when switching back
+            my $stoptime = $starttime->clone();
+            $stoptime->set_time_zone("Europe/Berlin"); # convert UTC to local
+            $stoptime->set_time_zone("floating");      # forget the time zone
+            $stoptime->add( minutes => $duration );    # add the minutes
+            $stoptime->set_time_zone("Europe/Berlin"); # force local time without adjustment
+            $stoptime->set_time_zone("UTC");           # convert local to UTC
             $ce->{end_time} = $stoptime->ymd('-') . ' ' . $stoptime->hms(':');
           }
         }
