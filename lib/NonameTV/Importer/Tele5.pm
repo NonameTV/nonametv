@@ -254,10 +254,15 @@ sub ImportRTF {
           }
         } else {
           # seems to be a movie, maybe it's a multi part movie
-          if ($title =~ m|Teil|) {
+          if ($title =~ m|[,-] Teil \d+$|) {
             my ($partnum) = ($title =~ m|[,-] Teil (\d+)$|);
             $title =~ s|[,-] Teil \d+$||;
             $ce->{episode} = ' . . ' . ($partnum - 1);
+          } elsif ($title =~ m|[,-] Teil \d+: .*$|) {
+            my ($partnum, $episodetitle) = ($title =~ m|[,-] Teil (\d+): (.*)$|);
+            $title =~ s|[,-] Teil \d+: .*$||;
+            $ce->{episode} = ' . . ' . ($partnum - 1);
+            $ce->{subtitle} = $episodetitle;
           }
         }
 
