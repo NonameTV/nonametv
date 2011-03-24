@@ -200,7 +200,7 @@ sub ParseData
           # ZDFneo
           case /&zw;/   {$ce{stereo} = "bilingual"} 
           # ZDFinfo
-          case /&mhp;   {} # DVB-MHP
+          case /&mhp;/  {} # DVB-MHP
           else          { w ("unhandled attribute: $attribut") } 
         }
       }
