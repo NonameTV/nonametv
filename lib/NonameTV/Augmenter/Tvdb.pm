@@ -63,6 +63,7 @@ sub FillHash( $$$$ ) {
 
   $resultref->{production_date} = $episode->{FirstAired};
 
+  # FIXME link to the correct language instead of hardcoding german (14)
   $resultref->{url} = sprintf(
     'http://thetvdb.com/?tab=episode&seriesid=%d&seasonid=%d&id=%d&lid=%d',
     $episode->{seriesid}, $episode->{seasonid}, $episodeid, 14
