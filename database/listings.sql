@@ -203,7 +203,7 @@ CREATE TABLE `admins` (
   `ismaster` tinyint(1) unsigned NOT NULL default '0',
   `roleeditor` tinyint(1) unsigned NOT NULL default '0',
   UNIQUE KEY `username` (`username`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `augmenterrules`;
 CREATE TABLE `augmenterrules` (
@@ -216,6 +216,20 @@ CREATE TABLE `augmenterrules` (
   `matchby` varchar(20) default NULL,
   UNIQUE KEY `channel_id` (`channel_id`,`augmenter`,`title`,`otherfield`,`othervalue`),
   CONSTRAINT `augmenterrules_ibfk_1` FOREIGN KEY (`channel_id`) REFERENCES `channels` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `jobs`;
+CREATE TABLE `jobs` (
+  `type` varchar(20) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `starttime` datetime NOT NULL,
+  `deleteafter` datetime NOT NULL,
+  `duration` varchar(20) NOT NULL,
+  `success` tinyint NOT NULL,
+  `message` mediumtext,
+  `lastok` datetime default '0000-00-00 00:00:00',
+  `lastfail` datetime default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`type`, `name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `admins` (username, password) VALUES ('nonametv', '');

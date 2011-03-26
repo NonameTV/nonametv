@@ -81,7 +81,7 @@ sub dump_structure {
       batches channels channelgroups files
       programs state trans_cat languagestrings
       epgservers dvb_cat networks services transportstreams
-      admins augmenterrules
+      admins augmenterrules jobs
       /;
 
   my $command = "--add-drop-table --no-data " . join( " ", @tables );
