@@ -137,7 +137,9 @@ sub ImportContent {
     my ( $title ) = ( $row[1] =~ m|^(.*)$|m );
     my ( $desc ) = ( $row[1] =~ m|\n(.+)$|s );
 
-    my $start = DateTime->new(
+    my $start;
+    eval {
+       $start = DateTime->new(
                           year  => $year,
                           month => $month,
                           day   => $day,
@@ -145,6 +147,15 @@ sub ImportContent {
                           minute => $minute,
                           time_zone => 'Europe/Berlin'
                           );
+    };
+    if ($@){
+      if ($hour && $minute) {
+        w ("Could not convert time! Check for daylight saving time border. " . $year . "-" . $month . "-" . $day . " " . $hour . ":" . $minute);
+      } else {
+        w ("Could not find time! " . $year . "-" . $month . "-" . $day);
+      }
+      next;
+    };
 
     $start->set_time_zone ('UTC');
 
