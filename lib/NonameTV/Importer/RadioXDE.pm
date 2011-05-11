@@ -58,7 +58,7 @@ sub FilterContent {
   $cref = decode( 'windows-1252', $cref );
 
   # cut away frame around tables
-  $cref =~ s|^.+\"0Woche\"> +(<table.+/table>)\n +</div></body>.*$|<html><body><div>$1</div></body></html>|s;
+  $cref =~ s|^.+\"0Woche\"> *(<table.+/table>)\n +</div></body>.*$|<html><body><div>$1</div></body></html>|s;
 
   # remove hyperlinks
   $cref =~ s|<a href[^>]+>||g;
