@@ -26,7 +26,7 @@ use DateTime;
 use RTF::Tokenizer;
 
 use NonameTV::DataStore::Helper;
-use NonameTV::Log qw/d progress w error f/;
+use NonameTV::Log qw/d p w error f/;
 use NonameTV qw/AddCategory MonthNumber norm/;
 
 use NonameTV::Importer::BaseFile;
@@ -78,7 +78,7 @@ sub ImportRTF {
   my $self = shift;
   my( $file, $chd ) = @_;
 
-  progress( "Tele5: Processing $file" );
+  p( "Tele5: Processing $file" );
 
   $self->{fileerror} = 0;
 
@@ -177,7 +177,7 @@ sub ImportRTF {
           month => $month,
           day => $day,
           time_zone => 'Europe/Berlin');
-        progress "new day: $daystring == " . $currdate->ymd('-');
+        p( "new day: $daystring == " . $currdate->ymd( '-' ));
         $laststart = undef;
       } else { 
         d "TEXT: $text";
@@ -192,7 +192,7 @@ sub ImportRTF {
           # TODO may be regional window, then use the last start_time/duration
           # SWR has 3 regional variants that sometimes share the same time slots
           if( $channel_name ne 'SWR' ) {
-            w ('program without start time');
+            p ('program without start time');
             $text = '';
             next;
           } else {
