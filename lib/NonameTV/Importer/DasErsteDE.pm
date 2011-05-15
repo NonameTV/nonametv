@@ -185,7 +185,8 @@ sub ImportContent {
 
     my $ce = {
       start_time  => $startTime,
-      end_time    => $endTime,
+      # FIXME using end_time leaves gaps between programmes
+      # end_time    => $endTime,
       title       => $title,
     };
 
@@ -250,6 +251,10 @@ sub ImportContent {
         case "Breitbild 16:9"   { $ce->{aspect} = "16:9" }
         case "Dolby Digital"    { $ce->{stereo} = "dolby digital" }
         case "Dolby Surround"   { $ce->{stereo} = "surround" }
+        case "FSK 6"            { $ce->{rating} = "FSK 6"; }  # FIXME should be system=FSK rating=6
+        case "FSK 12"           { $ce->{rating} = "FSK 12"; } # should be system=FSK rating=12
+        case "FSK 16"           { $ce->{rating} = "FSK 16"; } # should be system=FSK rating=16
+        case "FSK 18"           { $ce->{rating} = "FSK 18"; } # should be system=FSK rating=18
         case "HD"               { $ce->{quality} = "HDTV"; }
         case "Kinderprogramm"   { ; } # to many false positives
         case "Schwarzweiß"      { ; } # colour=no
