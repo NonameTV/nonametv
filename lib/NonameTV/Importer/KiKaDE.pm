@@ -14,6 +14,8 @@ See xxx for instructions.
 use NonameTV::Log qw/f/;
 use NonameTV qw/ParseXml/;
 
+use IO::Uncompress::Gunzip qw(gunzip $GunzipError) ;
+
 use base 'NonameTV::Importer::BaseWeekly';
 
 sub new {
@@ -47,7 +49,13 @@ sub Object2Url {
 
 sub FilterContent {
   my $self = shift;
-  my( $cref, $chd ) = @_;
+  my( $gzcref, $chd ) = @_;
+  my $c;
+  my $cref = \$c;
+
+  # try to ungzip, just in case (we might be behind a filtering and compressing proxy)
+  gunzip $gzcref => $cref
+    or $cref = $gzcref;
 
   $$cref =~ s|$||g;
   $$cref =~ s|http://www.kika-presse.de/scripts/media/export/dtd/kika_programmWoche.dtd|http://www.kika-presse.de/media/export/dtd/kika_programmWoche.dtd|;
