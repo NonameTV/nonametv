@@ -37,12 +37,15 @@ sub new {
     defined( $self->{Username} ) or die "You must specify Username";
     defined( $self->{Password} ) or die "You must specify Password";
 
+    # how many days are available every days of the week?
+    my $DaysOnSite = 5*7 + 5;
+
     if ($self->{MaxDays} == 32) {
       # default to all data
-      $self->{MaxDays} = 6*7; # 6 weeks from today
-    } elsif ($self->{MaxDays} > 6*7) {
+      $self->{MaxDays} = $DaysOnSite;
+    } elsif ($self->{MaxDays} > $DaysOnSite) {
       w ($self->{Type} . ": limiting MaxDays to availible data");
-      $self->{MaxDays} = 6*7; # 6 weeks from today
+      $self->{MaxDays} = $DaysOnSite;
     }
 
     my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
@@ -50,7 +53,7 @@ sub new {
 
 #    $self->{datastore}->{SILENCE_DUPLICATE_SKIP} = 1;
 
-    $self->{SkipYesterday} =1; # there is no data for the past
+    $self->{SkipYesterday} = 1; # there is no data for the past
 
     return $self;
 }
