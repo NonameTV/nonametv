@@ -15,6 +15,7 @@ use Encode;
 use Switch;
 use HTML::TableExtract;
 use HTML::Parse;
+use IO::Uncompress::Gunzip qw(gunzip $GunzipError) ;
 use Unicode::String;
 
 use NonameTV qw/MyGet norm Html2Xml ParseXml/;
@@ -50,7 +51,12 @@ sub Object2Url {
 
 sub FilterContent {
   my $self = shift;
-  my( $cref, $chd ) = @_;
+  my( $gzcref, $chd ) = @_;
+  my $c;
+  my $cref = \$c;
+
+  gunzip $gzcref => $cref
+    or $cref = $gzcref;
 
   # fix buggy html
   #$$cref =~ s|charset=charset=|charset=|g;
@@ -158,7 +164,7 @@ sub ImportContent {
   my $ds = $self->{datastore};
 
   # find first <td>.*DAG</td>
-  my ($firstday) = ($$xmldata =~ m|<td>(\S+DAG)</td>|);
+  my ($firstday) = ($$xmldata =~ m|><td>(\S+DAG)</td>|);
 
   # find start DateTime
   switch ($firstday) {
