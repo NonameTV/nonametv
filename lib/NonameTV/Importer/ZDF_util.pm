@@ -70,21 +70,30 @@ sub ParseData
     }
     $sce{title} = norm($title);
 
-    # the subtitle
-    my $subtitle = $sc->findvalue( './programm//untertitel' );
-    if ($subtitle) {
-      $subtitle = clean_untertitel ($ds, \%sce, $subtitle);
-    }
-
-    # additional info to the title
-    my @addinfo;
-    my $zusatz = $sc->findnodes( './programm//zusatz' );
-    foreach my $zs ($zusatz->get_nodelist) {
-      push( @addinfo, $zs->string_value() );
-    }
-
     # episode title
     my $episodetitle = $sc->findvalue( './programm//folgentitel' );
+
+      # form the subtitle out of 'episodetitle' and ignore 'subtitle' completely
+      # the information is usually duplicated in the longdesc anyway and of no
+      # use for automated processing
+      if ($episodetitle) {
+        $episodetitle = clean_untertitel ($ds, \%sce, $episodetitle);
+        if ($episodetitle) {
+          $sce{subtitle} = norm($episodetitle);
+        }
+      }
+
+    # the subtitle, parse known good information and ignore the rest
+    my $subtitle = $sc->findnodes( './programm//untertitel' );
+    foreach my $st ($subtitle->get_nodelist) {
+      clean_untertitel( $ds, \%sce, $st->string_value() );
+    }
+
+    # additional information, parse known good information and ignore the rest
+    my $zusatz = $sc->findnodes( './programm//zusatz' );
+    foreach my $zs ($zusatz->get_nodelist) {
+      clean_untertitel( $ds, \%sce, $zs->string_value() );
+    }
 
     # episode number
     my $episodenr = $sc->findvalue( './programm//folgenr' );
@@ -118,6 +127,30 @@ sub ParseData
     ParseCredits( \%sce, 'presenters', $sc, './programm//moderation' );
     ParseCredits( \%sce, 'directors',  $sc, './programm//regie' );
     ParseCredits( \%sce, 'writers',    $sc, './programm//stab/person[funktion=buch]' );
+
+    # form the description out of 'zusatz', 'shortdesc', 'longdesc', 'wholedesc'
+    # 'origin'
+    my $description;
+    $description .= norm($longdesc) || norm($shortdesc) || norm($wholedesc);
+    if ($description) {
+      $sce{description} = $description;
+    }
+
+    # episode number
+    if( $episodenr ){
+      $sce{episode} = ". " . ($episodenr-1) . " .";
+    }
+
+
+    my ( $program_type, $categ ) = $ds->LookupCat( "DreiSat_genre", $genre );
+    AddCategory( \%sce, $program_type, $categ );
+
+    ( $program_type, $categ ) = $ds->LookupCat( "DreiSat_category", $category );
+    AddCategory( \%sce, $program_type, $categ );
+
+    ( $program_type, $categ ) = $ds->LookupCat( "DreiSat_thember", $thember );
+    AddCategory( \%sce, $program_type, $categ );
+
 
     # there can be more than one broadcast times
     # so we have to find each 'ausstrahlung'
@@ -154,7 +187,7 @@ sub ParseData
       my $dauermin = $as->findvalue( 'dauermin' );
       if ($dauermin eq '0') {
         # fixup bugged programme on ZDFneo files, length 0 but end-start is one day
-        w( "$batch_id: Zero length programme id $id - Skipping." );
+        p( "$batch_id: Zero length programme id $id - Skipping." );
         next;
       } else {
         # fixup for ZDF around DST switchover
@@ -169,11 +202,10 @@ sub ParseData
 
       my %ce = (
         start_time  => $starttime->ymd("-") . " " . $starttime->hms(":"),
-        end_time    => $endtime->ymd("-") . " " . $endtime->hms(":"),
+        # FIXME using end_time leaves gaps between programmes on ZDF
+        # FIXME no end_time breaks neo / KiKa switch
+        # end_time    => $endtime->ymd("-") . " " . $endtime->hms(":"),
       );
-
-      # append shared ce to this ce
-      @ce{keys %sce} = values %sce;
 
       foreach my $attribut (split (" ", $attribute)) {
         switch ($attribut) {
@@ -205,42 +237,8 @@ sub ParseData
         }
       }
 
-      # form the subtitle out of 'episodetitle' and ignore 'subtitle' completely
-      # the information is usually duplicated in the longdesc anyway and of no
-      # use for automated processing
-      if ($episodetitle) {
-        $episodetitle = clean_untertitel ($ds, \%ce, $episodetitle);
-        if ($episodetitle) {
-          $ce{subtitle} = norm($episodetitle);
-        }
-      }
-
-      # form the description out of 'zusatz', 'shortdesc', 'longdesc', 'wholedesc'
-      # 'origin'
-      my $description;
-      if( @addinfo ){
-        foreach my $z ( @addinfo ){
-          $description .= $z . "\n";
-        }
-      }
-      $description .= norm($longdesc) || norm($shortdesc) || norm($wholedesc);
-      if ($description) {
-        $ce{description} = $description;
-      }
-
-      # episode number
-      if( $episodenr ){
-        $ce{episode} = ". " . ($episodenr-1) . " .";
-      }
-
-      my ( $program_type, $categ ) = $ds->LookupCat( "DreiSat_genre", $genre );
-      AddCategory( \%ce, $program_type, $categ );
-
-      ( $program_type, $categ ) = $ds->LookupCat( "DreiSat_category", $category );
-      AddCategory( \%ce, $program_type, $categ );
-
-      ( $program_type, $categ ) = $ds->LookupCat( "DreiSat_thember", $thember );
-      AddCategory( \%ce, $program_type, $categ );
+      # append shared ce to this ce
+      @ce{keys %sce} = values %sce;
 
       $ds->AddProgramme( \%ce );
     }
@@ -367,9 +365,31 @@ sub clean_untertitel
   if ($subtitle =~ m|\s+\(Wh\..*\)$|) {
     $subtitle =~ s|\s+\(Wh\..*\)$||;
   }
+  # strip repeat in ZDFneo style
+  if ($subtitle =~ m|\s*\(vom \d+\.\d+\.\d{4}\)$|) {
+    $subtitle =~ s|\s*\(vom \d+\.\d+\.\d{4}\)$||;
+  }
+  # strip repeat in ZDFneo style
+  if ($subtitle =~ m|\s*\(ZDF \d+\.\d+\.\d{4}\)$|) {
+    $subtitle =~ s|\s*\(ZDF \d+\.\d+\.\d{4}\)$||;
+  }
 
   # strip "anschl. Wetter"
   if ($subtitle =~ m|^anschl\. 3sat-Wetter$|) {
+    return undef;
+  }
+
+  # move foreign series title to programme title (for 3sat)
+  if( $subtitle =~ m|^\(aus der .*Reihe \".*\"\)$| ) {
+    my( $seriesname )=( $subtitle =~ m|^\(aus der .*Reihe \"(.*)\"\)$| );
+
+    if( defined( $sce->{subtitle} ) ){
+      $sce->{subtitle} = $sce->{title} . ": " . $sce->{subtitle};
+    } else {
+      $sce->{subtitle} = $sce->{title};
+    }
+    $sce->{title} = $seriesname;
+    
     return undef;
   }
 
@@ -573,6 +593,7 @@ sub ParseWeek
   return $week;
 }
 
+
 # call with sce, target field, sendung element, xpath expression
 # e.g. ParseCredits( \%sce, 'actors', $sc, './programm//besetzung/darsteller' );
 # e.g. ParseCredits( \%sce, 'writers', $sc, './programm//stab/person[funktion=buch]' );
@@ -591,6 +612,7 @@ sub ParseCredits
 
   AddCredits( $ce, $field, @people );
 }
+
 
 sub AddCredits
 {
