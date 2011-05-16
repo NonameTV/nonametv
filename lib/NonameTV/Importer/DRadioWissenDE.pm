@@ -59,6 +59,12 @@ sub FilterContent {
     $node->unbindNode ();
   }
 
+  # remove link to recorder
+  foreach my $node ($doc->find ('//a[@class="psradio"]')->get_nodelist) {
+    $node->unbindNode ();
+  }
+
+
   # save program table
   my $saveddata;
   my @nodes = $doc->find ('//div[@class="contentSchedule"]/table')->get_nodelist();
