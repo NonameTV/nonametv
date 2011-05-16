@@ -60,7 +60,7 @@ sub FilterContent {
   my $cref = \$c;
 
   gunzip $gzcref => $cref
-    or die "gunzip failed: $GunzipError\n";
+    or $cref = $gzcref;
 
   # turn right single ' into '
   $$cref =~ s|&#8217;|'|g;
