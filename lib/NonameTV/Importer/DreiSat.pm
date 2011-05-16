@@ -12,6 +12,7 @@ The downloaded file is in xml-format.
 =cut
 
 use DateTime;
+use IO::Uncompress::Gunzip qw(gunzip $GunzipError) ;
 use XML::LibXML;
 use Switch;
 
@@ -54,7 +55,12 @@ sub Object2Url {
 
 sub FilterContent {
   my $self = shift;
-  my( $cref, $chd ) = @_;
+  my( $gzcref, $chd ) = @_;
+  my $c;
+  my $cref = \$c;
+
+  gunzip $gzcref => $cref
+    or die "gunzip failed: $GunzipError\n";
 
   # turn right single ' into '
   $$cref =~ s|&#8217;|'|g;
