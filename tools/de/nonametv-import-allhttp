@@ -30,8 +30,9 @@ $NONAMETV RadioXDE $1 $2 $3
 $NONAMETV TechnoBaseFM $1 $2 $3
 #$NONAMETV Tele5 $1 $2 $3
 $NONAMETV ZDF $1 $2 $3
-$NONAMETV ZDFneo $1 $2 $3
 #$NONAMETV ZDFinfo $1 $2 $3
+$NONAMETV ZDFkultur $1 $2 $3
+$NONAMETV ZDFneo $1 $2 $3
 
 fetch -o /home/nonametv/var/channels/tv_grab/ok54.xml http://programm.ok54.de/xmltv/
 $NONAMETV TVGrabXX $1 $2 $3
