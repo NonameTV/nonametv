@@ -373,6 +373,12 @@ sub parse_subtitle
     my ( $type, $categ ) = $self->{datastore}->LookupCat( "DasErste_type", $program_type );
     AddCategory( $sce, $type, $categ );
     $subtitle = undef;
+  } elsif ($subtitle =~ m|^\d+-teilige \S+erie \S+$|) {
+    # 52-teilige Zeichentrickserie Frankreich/
+    my ($program_type, $production_countries) = ($subtitle =~ m|^\d+-teilige (\S+) (\S+)/$|);
+    my ( $type, $categ ) = $self->{datastore}->LookupCat( "DasErste_type", $program_type );
+    AddCategory( $sce, $type, $categ );
+    $subtitle = undef;
   } elsif ($subtitle =~ m|^Film von [A-Z]\S+ [A-Z]\S+$|) {
     my ($producer) = ($subtitle =~ m|^Film von (\S+ \S+)$|);
     if ($sce->{producers}) {
