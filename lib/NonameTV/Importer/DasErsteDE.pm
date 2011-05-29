@@ -241,6 +241,15 @@ sub ImportContent {
       $ce->{subtitle} = $subtitle;
     }
 
+    # strip episode number and title from description
+    if( defined( $episode ) && defined( $subtitle ) && defined( $ce->{description} ) ) {
+      my $candidate = "$episode. $subtitle";
+      # strip part number from multipart episodes
+      $candidate =~ s|\s*\(.*?\)$||;
+      # strip initial line if it begins with the episode number and title
+      $ce->{description} =~ s|^$candidate.*?\n||s;
+    }
+
     my $url = $pgm->findvalue( 'Internetlink' );
     if ($url) {
       $ce->{url} = $url;
