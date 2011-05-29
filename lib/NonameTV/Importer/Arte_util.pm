@@ -344,8 +344,15 @@ sub ParseExtraInfo
       $line =~ s|, Synchronfassung$||;
       $line =~ s|, Originalfassung mit Untertiteln||; # yes, it's not the last
       # is it the genre?
-      # genre, contries year, producing stations
+      # [genre, ]contries year[, producing stations]
       if( ($genre, $productiondate) = ( $line =~ m|^([^,]+)\s*,[^,]+\s+(\d{4}),[^,]+$| ) ) {
+        # genre, country year, network
+        $seengenre = 1;
+      } elsif( ($genre, $productiondate) = ( $line =~ m|^([^,]+)\s*,[^,]+\s+(\d{4})$| ) ) {
+        # genre, country year
+        $seengenre = 1;
+      } elsif( ($productiondate) = ( $line =~ m|^[^,]+\s+(\d{4}),[^,]+$| ) ) {
+        # country year, network
         $seengenre = 1;
       } else {
         # then it must be the subtitle
