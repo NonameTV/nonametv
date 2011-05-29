@@ -381,6 +381,14 @@ sub parse_subtitle
       $sce->{producers} = $producer;
     }
     $subtitle = undef;
+  } elsif ($subtitle =~ m|^Film von [A-Z]\S+ von [A-Z]\S+$|) {
+    my ($producer) = ($subtitle =~ m|^Film von (\S+ von \S+)$|);
+    if ($sce->{producers}) {
+      $sce->{producers} = join (", ", $sce->{producers}, $producer);
+    } else {
+      $sce->{producers} = $producer;
+    }
+    $subtitle = undef;
   } elsif ($subtitle =~ m|^Film von [A-Z]\S+ [A-Z]\. [A-Z]\S+$|) {
     my ($producer) = ($subtitle =~ m|^Film von (\S+ \S+ \S+)$|);
     if ($sce->{producers}) {
