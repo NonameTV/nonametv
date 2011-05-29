@@ -339,6 +339,7 @@ sub ParseExtraInfo
       # strip dub, premiere
       $line =~ s|, Synchronfassung$||;
       $line =~ s|, Erstausstrahlung$||;
+      $line =~ s|, Schwarz-Wei\x{df}$||;
       $line =~ s|, Schwerpunkt: [^,]+$||;
       $line =~ s|, Synchronfassung$||;
       $line =~ s|, Originalfassung mit Untertiteln||; # yes, it's not the last
