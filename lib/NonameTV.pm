@@ -43,7 +43,8 @@ my $wvhtml = 'wvHtml --charset=utf-8';
 # my $wvhtml = '/usr/bin/wvHtml';
 
 my $ua = LWP::UserAgent->new( agent => "Grabber from http://tv.swedb.se", 
-                              cookie_jar => {} );
+                              cookie_jar => {},
+                              env_proxy => 1 );
 
 # Fetch a url. Returns ($content, true) if data was fetched from server and
 # different from the last time the same url was fetched, ($content, false) if

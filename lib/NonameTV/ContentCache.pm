@@ -4,6 +4,7 @@ use strict;
 
 use Digest::MD5 qw/md5_hex/;
 use Encode qw(encode_utf8 from_to is_utf8);
+use IO::Uncompress::Gunzip qw(gunzip $GunzipError) ;
 
 use NonameTV::Log qw/w d/;
 
@@ -88,6 +89,7 @@ sub new {
   }
 
   $self->{ua}->agent( $self->{useragent} );
+  $self->{ua}->env_proxy( );
 
   if( not defined $self->{credentials} ) {
     $self->{credentials} = {};
@@ -267,6 +269,20 @@ sub GetUrl {
   }
 
   my $res = $self->{ua}->get( $surl );
+
+#  if( defined( $self->{wantuncompress} ) ) {
+    if( defined( $res->header( 'Content-Encoding' ) ) ) {
+      # Content-Encoding: gzip
+      if ($res->header( 'Content-Encoding' ) =~ m|^gzip$| ) {
+        d( "uncompressing gzip" );
+        my $newc;
+        # try to gunzip
+        gunzip $res->content_ref => \$newc
+          or return (undef, 'failure in gunzipping content: ' . $GunzipError);
+        ${$res->content_ref} = $newc; 
+      }
+    }
+#  }
 
   if( defined( $self->{wantdecode} ) ) {
     if( defined( $res->header( 'Content-Type' ) ) ) {
