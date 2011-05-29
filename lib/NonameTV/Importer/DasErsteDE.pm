@@ -202,6 +202,7 @@ sub ImportContent {
     # turn space before elipsis into non-breaking space (german usage)
     $desc =~ s| \.\.\.$| ...|;
     # strip running time
+    $desc =~ s|^Laufzeit:\s+ca.\s+\d+ Min[^<]*\n\n||;
     $desc =~ s|^Laufzeit:\s+\d+ Min[^<]*\n\n||;
     # keep the short description only
     my @descs = split (/\n\Q*\E\n/, $desc);
