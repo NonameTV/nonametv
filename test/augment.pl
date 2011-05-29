@@ -6,12 +6,20 @@ use utf8;
 use FindBin;
 use lib "$FindBin::Bin/../lib";
 
+use DateTime;
 use Data::Dumper;
 use Encode;
 #use NonameTV::Augmenter::Tvdb;
 use NonameTV::Factory qw/CreateAugmenter CreateDataStore CreateDataStoreDummy /;
 
 my $ds = CreateDataStore( );
+
+my $dt = DateTime->now( time_zone => 'UTC' );
+$dt->add( days => 7 );
+
+my $batchid = 'neo.zdf.de_' . $dt->week_year() . '-' . $dt->week();
+printf( "augmenting %s...\n", $batchid );
+
 my $augmenter = CreateAugmenter( 'Tvdb', $ds );
 
 # program metadata from augmenter
@@ -28,10 +36,8 @@ my %simplerule = ( matchby => 'episodetitle' );
           AND (b.name LIKE ?)
         ORDER BY start_time asc, end_time desc", 
 # name of batch to use for testing
-      ['neo.zdf.de_2011-13'] );
+      [$batchid] );
   
-  my @result;
-
   my $found=0;
   my $notfound=0;
   my $ce = $sth->fetchrow_hashref();
@@ -42,10 +48,8 @@ my %simplerule = ( matchby => 'episodetitle' );
       $ce->{subtitle} =~ s|\s\(Teil (\d+)\)$| ($1)|;
       ( $newprogram, $result ) = $augmenter->AugmentProgram( $ce, \%simplerule );
       if( defined( $newprogram) ) {
-        printf( "'%s: %s' found\n", $ce->{title}, $ce->{subtitle} );
         $found++;
       } else {
-        printf( "'%s: %s' not found\n", $ce->{title}, $ce->{subtitle} );
         $notfound++;
       }
     }
