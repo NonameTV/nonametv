@@ -943,7 +943,7 @@ sub getEpisodeId {
 		return undef unless $new;
 
 		# Save episode in cache
-		$cache->{Episode}->{$eid} = $new->{Episode}-{$eid};
+		$cache->{Episode}->{$eid} = $new->{Episode}->{$eid};
 	}
 
 	return $cache->{Episode}->{$eid};
@@ -964,12 +964,14 @@ sub getEpisodeByName {
 	# Look for episode in cache
 	my $cache = $self->{cache};
 	unless ($nocache) {
+                my $match = $episodename;
+                utf8::encode( $match );
 		foreach my $season (@{$series->{Seasons}}) {
 			foreach my $eid (@$season) {
 				next unless $eid;
 				my $ep = $cache->{Episode}->{$eid};
 				next unless $ep->{EpisodeName};
-				return $ep if $ep->{EpisodeName} eq $episodename;
+				return $ep if $ep->{EpisodeName} eq $match;
 			}
 		}
 	}
