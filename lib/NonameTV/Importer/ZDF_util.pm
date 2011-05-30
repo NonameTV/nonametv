@@ -522,6 +522,18 @@ sub clean_untertitel
     return $subtitle;
   }
 
+  # ZDF.kultur puts the episode number in front of the episode title
+  if( $ds->{currbatch} =~ m|^kultur\.| ){
+    if( $subtitle =~ m|^\d+\.\s+.*$| ){
+      d( 'parsing episode number from subtitle: ' . $subtitle );
+      my( $episodenr, $title )=( $subtitle =~ m|^(\d+)\.\s+(.*)$| );
+
+      $sce->{episode} = ". " . ($episodenr-1) . " .";
+
+      return $title;
+    }
+  }
+
   # possible false positives / more data
   # Film von und mit Axel Bulthaupt
   # Film Otmar Penker und Klaus Feichtenberger
