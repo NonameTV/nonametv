@@ -3,8 +3,10 @@ package NonameTV::Augmenter::Tvdb;
 use strict;
 
 use Data::Dumper;
+use Encode;
 use TVDB::API;
 
+use NonameTV qw/norm/;
 use NonameTV::Augmenter::Base;
 use NonameTV::Config qw/ReadConfig/;
 use NonameTV::Log qw/w/;
@@ -55,10 +57,10 @@ sub FillHash( $$$$ ) {
 
   $resultref->{episode} = ($episode->{SeasonNumber} - 1) . ' . ' . ($episode->{EpisodeNumber} - 1) . ' .';
 
-  $resultref->{subtitle} = $episode->{EpisodeName};
+  $resultref->{subtitle} = decode( 'utf-8', $episode->{EpisodeName} );
 
   if( defined( $episode->{Overview} ) ) {
-    $resultref->{description} = $episode->{Overview} . "\nQuelle: Tvdb";
+    $resultref->{description} = decode( 'utf-8', $episode->{Overview} ) . "\nQuelle: Tvdb";
   }
 
   $resultref->{production_date} = $episode->{FirstAired};
@@ -70,8 +72,11 @@ sub FillHash( $$$$ ) {
   );
 
   # FIXME split can strip the leading empties, but I don't know how
-  my @actors = split( '\|', $series->{Actors} );
+  my @actors = split( '\|', decode( 'utf-8', $series->{Actors} ) );
   shift( @actors );
+  foreach( @actors ){
+    $_ = norm( $_ );
+  }
   $resultref->{actors} = join( ', ', @actors );
 
   $resultref->{program_type} = 'series';  
@@ -103,17 +108,27 @@ sub AugmentProgram( $$$ ){
 
   }elsif( $ruleref->{matchby} eq 'episodetitle' ) {
     # match by episode title from program hash
-    my $series;
-    if( defined( $ruleref->{remoteref} ) ) {
-      my $seriesname = $self->{tvdb}->getSeriesName( $ruleref->{remoteref} );
-      $series = $self->{tvdb}->getSeries( $seriesname );
-    } else {
-      $series = $self->{tvdb}->getSeries( $ceref->{title} );
-#      print "getSeries: " . Dumper( $ceref->{title}, $series );
-    }
-    my $episode = $self->{tvdb}->getEpisodeByName( $series->{SeriesName}, $ceref->{subtitle} );
-    if( defined( $episode ) ) {
-      $self->FillHash( $resultref, $series, $episode );
+
+    if( defined( $ceref->{subtitle} ) ) {
+      my $series;
+      if( defined( $ruleref->{remoteref} ) ) {
+        my $seriesname = $self->{tvdb}->getSeriesName( $ruleref->{remoteref} );
+        $series = $self->{tvdb}->getSeries( $seriesname );
+      } else {
+        $series = $self->{tvdb}->getSeries( $ceref->{title} );
+      }
+
+      my $episodetitle = $ceref->{subtitle};
+      $episodetitle =~ s|,\sTeil (\d+)$| ($1)|;
+      $episodetitle =~ s|\s-\sTeil (\d+)$| ($1)|;
+      $episodetitle =~ s|\s\(Teil (\d+)\)$| ($1)|;
+
+      my $episode = $self->{tvdb}->getEpisodeByName( $series->{SeriesName}, $episodetitle );
+      if( defined( $episode ) ) {
+        $self->FillHash( $resultref, $series, $episode );
+      } else {
+        $resultref = undef;
+      }
     } else {
       $resultref = undef;
     }
