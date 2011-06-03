@@ -1,0 +1,20 @@
+\N,Tmdb,\N,program_type,movie,\N,title
+\N,Fixups,Tagesschau,\N,\N,\N,setcategorynews
+58,Tvdb,"Being Erica - Alles auf Anfang",\N,\N,84414,episodetitle
+58,Tvdb,"Spooks - Im Visier des MI5",\N,\N,78890,episodetitle
+58,Tvdb,"Beverly Hills, 90210",\N,\N,74936,episodetitle
+58,Tvdb,"Dawsons Creek",\N,\N,72584,episodetitle
+58,Tvdb,"Hustle - Unehrlich währt am längsten",\N,\N,73028,episodetitle
+58,Tvdb,\N,program_type,series,\N,episodetitle
+84,Fixups,"^(Video Killed The Radio Star):\s+(.*)$",\N,\N,\N,splittitle
+84,Fixups,"^(Kopf der Woche):\s+(.*)$",\N,\N,\N,splittitle
+84,Fixups,^(Montage):\s+(.*)$,\N,\N,\N,splittitle
+84,Fixups,"^(splash! 2010):\s+(.*)$",\N,\N,\N,splittitle
+84,Fixups,^(Abgeschminkt):\s+(.*)$,\N,\N,\N,splittitle
+58,Fixups,^(neoMusic):\s+(?!(?:Wanted|90minutes))(.*)$,\N,\N,\N,splittitle
+58,Fixups,"^(Adventure X):\s+(.*)$",\N,\N,\N,splittitle
+58,Fixups,"^(neoMusic Portrait):\s+(.*)$",\N,\N,\N,splittitle
+58,Tvdb,Glücksbärchis,\N,\N,76079,episodetitle
+\N,Fixups,"^(Kommissar Wallander)\s+-\s+(.*)$",\N,\N,\N,splittitle
+\N,Fixups,"^(Mankells Wallander)\s+-\s+(.*)$",\N,\N,\N,splittitle
+74,Fixups,"^(Der Bug) - Gast:\s+(.*)$",\N,\N,\N,splitguesttitle
