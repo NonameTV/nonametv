@@ -130,6 +130,36 @@ sub ImportContent {
         title => $title
       };
 
+      my ($widescreen) = $program->findvalue ('ProgrammElement/Technik/T169');
+      if ($widescreen eq '1') {
+        $ce->{aspect} = '16:9';
+      }
+
+      my ($stereo) = $program->findvalue ('ProgrammElement/Technik/TStereo');
+      if ($stereo eq '1') {
+        $ce->{stereo} = 'stereo';
+      }
+
+      ($stereo) = $program->findvalue ('ProgrammElement/Technik/TDolby');
+      if ($stereo eq '1') {
+        $ce->{stereo} = 'dolby';
+      }
+
+      ($stereo) = $program->findvalue ('ProgrammElement/Technik/TZweikanalton');
+      if ($stereo eq '1') {
+        $ce->{stereo} = 'bilingual';
+      }
+
+      my ($captions) = $program->findvalue ('ProgrammElement/Technik/TUntertitel');
+      if ($captions eq '1') {
+        # $ce->{captions} = 'text';
+      }
+
+      my ($blackandwhite) = $program->findvalue ('ProgrammElement/Technik/TSw');
+      if ($blackandwhite eq '1') {
+        # $ce->{colour} = 'no';
+      }
+
       my $episodes = $program->findnodes ('ProgrammElement/Folge');
       my ($desc, $episodenumber, $subtitle, $multipleepisodes);
       foreach my $episode ($episodes->get_nodelist) {
