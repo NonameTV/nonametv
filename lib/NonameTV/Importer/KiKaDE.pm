@@ -107,6 +107,17 @@ sub ImportContent {
     my ($day, $month, $year) = ($tag->findvalue ('@date') =~ m|(\d+)\.(\d+)\.(\d+)|);
     my $programs = $tag->find ('ProgrammPunkt');
 
+    # copy start of programme to last programme in preparation of splitting multi episode slots
+    my $lastprogram;
+    foreach my $program ($programs->get_nodelist){
+      if( defined( $lastprogram ) ){
+        my $stop = $program->findvalue( '@Time' );
+        my $attr = XML::LibXML::Attr->new( 'TimeStop', $stop );
+        $lastprogram->addChild( $attr );
+      }
+      $lastprogram = $program;
+    }
+
     foreach my $program ($programs->get_nodelist) {
       my ($hour, $minute) = ($program->findvalue ('@Time') =~ m|(\d+)\.(\d+)|);
       my $start_time = DateTime->new ( 
@@ -130,77 +141,107 @@ sub ImportContent {
         title => $title
       };
 
-      my ($widescreen) = $program->findvalue ('ProgrammElement/Technik/T169');
-      if ($widescreen eq '1') {
-        $ce->{aspect} = '16:9';
-      }
-
-      my ($stereo) = $program->findvalue ('ProgrammElement/Technik/TStereo');
-      if ($stereo eq '1') {
-        $ce->{stereo} = 'stereo';
-      }
-
-      ($stereo) = $program->findvalue ('ProgrammElement/Technik/TDolby');
-      if ($stereo eq '1') {
-        $ce->{stereo} = 'dolby';
-      }
-
-      ($stereo) = $program->findvalue ('ProgrammElement/Technik/TZweikanalton');
-      if ($stereo eq '1') {
-        $ce->{stereo} = 'bilingual';
-      }
-
-      my ($captions) = $program->findvalue ('ProgrammElement/Technik/TUntertitel');
-      if ($captions eq '1') {
-        # $ce->{captions} = 'text';
-      }
-
-      my ($blackandwhite) = $program->findvalue ('ProgrammElement/Technik/TSw');
-      if ($blackandwhite eq '1') {
-        # $ce->{colour} = 'no';
-      }
-
-      my $episodes = $program->findnodes ('ProgrammElement/Folge');
-      my ($desc, $episodenumber, $subtitle, $multipleepisodes);
-      foreach my $episode ($episodes->get_nodelist) {
-        my $episodetitle = $episode->findvalue ('FolgenTitel');
-        $episodenumber = $episode->findvalue ('@Folgennummer');
-        if ($subtitle) {
-          $subtitle .= ' / ';
-          $desc .= "\n\n";
-          $multipleepisodes = 1;
+      if ($title eq 'end-of-transmission') {
+        $self->{datastore}->AddProgramme ($ce);
+      } else {
+        ($hour, $minute) = ($program->findvalue ('@TimeStop') =~ m|(\d+)\.(\d+)|);
+        if( !defined( $hour )||!defined( $minute ) ){
+          f('missing expected stop time!');
+          printf( "%s\n", $program->serialize()  );
         }
-        if (($episodetitle eq 'Teil') || ($episodetitle eq 'Folge') ){
-          $episodetitle = 'Folge ' . $episodenumber;
-        }
-        if( $episodetitle ne 'Titel wird nachgereicht.' ){
-          $subtitle .= $episodetitle;
+        my $stop_time = DateTime->new ( 
+          year      => $year,
+          month     => $month,
+          day       => $day,
+          hour      => $hour,
+          minute    => $minute,
+          time_zone => 'Europe/Berlin'
+        );
+        $stop_time->set_time_zone ('UTC');
+        my $duration = $start_time->delta_ms( $stop_time )->minutes;
+
+        my ($widescreen) = $program->findvalue ('ProgrammElement/Technik/T169');
+        if ($widescreen eq '1') {
+          $ce->{aspect} = '16:9';
         }
 
-        my $episodedesc = $episode->findvalue ('FolgeLangText');
-        if( $episodedesc ne 'Inhalt wird nachgereicht!' ){
-          $desc .= $episodedesc;
+        my ($stereo) = $program->findvalue ('ProgrammElement/Technik/TStereo');
+        if ($stereo eq '1') {
+          $ce->{stereo} = 'stereo';
+        }
+
+        ($stereo) = $program->findvalue ('ProgrammElement/Technik/TDolby');
+        if ($stereo eq '1') {
+          $ce->{stereo} = 'dolby';
+        }
+
+        ($stereo) = $program->findvalue ('ProgrammElement/Technik/TZweikanalton');
+        if ($stereo eq '1') {
+          $ce->{stereo} = 'bilingual';
+        }
+
+        my ($captions) = $program->findvalue ('ProgrammElement/Technik/TUntertitel');
+        if ($captions eq '1') {
+          # $ce->{captions} = 'text';
+        }
+
+        my ($blackandwhite) = $program->findvalue ('ProgrammElement/Technik/TSw');
+        if ($blackandwhite eq '1') {
+          # $ce->{colour} = 'no';
+        }
+
+        # description of programme, for series it's the general description of the whole series
+        my ($desc) = $program->findvalue ('ProgrammElement/LangText');
+        if ($desc) {
+          $ce->{description} = $desc;
+        }
+
+
+        my $episodes = $program->findnodes ('ProgrammElement/Folge');
+        if( $episodes->size( ) > 0 ){
+          $ce->{program_type} = 'series';
+
+          my $durationPerEpisode = $duration / $episodes->size( );
+
+          foreach my $episode ($episodes->get_nodelist) {
+            # copy ce hash to episode ce hash
+            my %ece = %{$ce};
+
+            # it's the absolute episode number in tvdb terms
+            my $episodenumber = $episode->findvalue ('@Folgennummer');
+            if( $episodenumber ){
+              $ece{episode} = ' . ' . ($episodenumber-1) . ' . ';
+            }
+
+            my $episodetitle = $episode->findvalue ('FolgenTitel');
+            # strip leading "topic:"
+            $episodetitle =~ s|^Thema:\s+||;
+            # remove generic titles
+            if( ( $episodetitle eq 'Folge' )||
+                ( $episodetitle eq 'Teil' )||
+                ( $episodetitle eq 'Titel wird nachgereicht.' )||
+                ( $episodetitle eq 'Thema:' ) ){
+              $episodetitle = undef;
+            }
+            if( defined ( $episodetitle ) ){
+              $ece{subtitle} = $episodetitle;
+            }
+  
+            my $episodedesc = $episode->findvalue ('FolgeLangText');
+            if( $episodedesc ne 'Inhalt wird nachgereicht!' ){
+              $ece{description} = $episodedesc;
+            }
+            $self->{datastore}->AddProgramme (\%ece);
+
+            # advance start time to start of the next episode
+            $start_time->add( minutes => $durationPerEpisode );
+            $ce->{start_time} = $start_time->ymd ('-') . ' ' . $start_time->hms (':'),
+          }
+        }else{
+          # it is not an episode
+          $self->{datastore}->AddProgramme ($ce);
         }
       }
-
-      if (!$desc) {
-        $desc = $program->findvalue ('ProgrammElement/LangText');
-      }
-
-      if ($subtitle) {
-        $ce->{subtitle} = $subtitle;
-        $ce->{program_type} = 'series';
-      }
-
-      if ($desc) {
-        $ce->{description} = $desc;
-      }
-
-      if ((!$multipleepisodes) && ($episodenumber)) {
-        $ce->{episode} = ' . ' . ($episodenumber-1) . ' . ';
-      }
-
-      $self->{datastore}->AddProgramme ($ce);
     }
   }
 
