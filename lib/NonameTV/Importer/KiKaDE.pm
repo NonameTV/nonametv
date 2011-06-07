@@ -196,6 +196,15 @@ sub ImportContent {
           $ce->{description} = $desc;
         }
 
+        my $actors = $program->findnodes ('.//NameDarsteller');
+        my @actors_array;
+        if( $actors->size( ) > 0 ){
+          foreach my $actor ($actors->get_nodelist()) {
+            push( @actors_array, $actor->string_value( ) );
+          }
+          $ce->{actors} = join( ', ', @actors_array );
+        }
+
 
         my $episodes = $program->findnodes ('ProgrammElement/Folge');
         if( $episodes->size( ) > 0 ){
