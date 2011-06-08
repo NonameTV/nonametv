@@ -224,6 +224,7 @@ sub ImportContent {
 
             my $episodetitle = $episode->findvalue ('FolgenTitel');
             # strip leading "topic:"
+            $episodetitle =~ s|^Folge\s+-\s+||;
             $episodetitle =~ s|^Thema:\s+||;
             # remove generic titles
             if( ( $episodetitle eq 'Folge' )||
