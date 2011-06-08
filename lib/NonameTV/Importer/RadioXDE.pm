@@ -176,6 +176,8 @@ sub ImportContent {
             if (!($sendung[$i] =~ /^[[:space:]]*d?i?t?o?[[:space:]]*$/s)) {
               if ($sendung[$i] =~ /ab 8 Uhr:/) {
                 $start_time = '08:00';
+              } elsif ($sendung[$i] =~ /ab 08:00 Uhr:/) {
+                $start_time = '08:00';
               } else {
                 $title = $sendung[$i];
               }
