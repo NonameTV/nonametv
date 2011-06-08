@@ -233,7 +233,7 @@ sub ImportContent {
                 ( $episodetitle eq 'Thema:' ) ){
               $episodetitle = undef;
             }
-            if( defined ( $episodetitle ) ){
+            if( $episodetitle ){
               $ece{subtitle} = $episodetitle;
             }
   
