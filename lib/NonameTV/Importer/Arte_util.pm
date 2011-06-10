@@ -336,6 +336,10 @@ sub ParseExtraInfo
         next;
       }
 
+      if ($line =~ m/^Wiederholung vom \d+\. \d+\. \d{4}$/) {
+        next;
+      }
+
       # strip dub, premiere
       $line =~ s|, Synchronfassung$||;
       $line =~ s|, Erstausstrahlung$||;
