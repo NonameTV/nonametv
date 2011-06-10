@@ -59,7 +59,7 @@ $d perl -I lib tools/nonametv-export Xmltv --force-export --verbose
 $d perl -I lib tools/nonametv-import Downconverter $Q
 $h perl -I lib tools/nonametv-import Downconverter --short-grab $Q
 
-tools/de/nonametv-updatesite $Q
+#tools/de/nonametv-updatesite $Q # not needed anymore
 # Update the Combiner-channels as well.
 $d perl -I lib tools/nonametv-import Combiner $Q
 $h perl -I lib tools/nonametv-import Combiner --short-grab $Q

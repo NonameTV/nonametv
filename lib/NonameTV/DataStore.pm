@@ -203,6 +203,9 @@ sub EndBatch {
     );
 
     $self->{sa}->DoSql("Commit");
+
+# TODO start the to augment here
+
   }
   elsif ( $success == -1 ) {
     $self->{sa}->DoSql("Rollback");
@@ -647,11 +650,18 @@ sub ParsePrograms {
   my $parser = DateTime::Format::Strptime->new( pattern => '%Y-%m-%d %H:%M:%S' );
 
     # replacement for ParseXmltv on our own Export
-    # FIXME only works for programmes with end_time
        $self     = shift;
     my $batch_id = shift;
     my( $xmltv_id, $date ) = ($batch_id =~ m|^(.*)_([-\d]+)$|);
     my $next_date = $parser->parse_datetime( $date . ' 00:00:00' )->add( days => 1 )->ymd('-');
+
+    my $channel = $self->sa->Lookup( 'channels', { xmltvid => $xmltv_id } );
+    my $def_cat;
+    my $def_pty;
+    if( $channel ){
+      $def_cat = $channel->{def_cat};
+      $def_pty = $channel->{def_pty};
+    };
 
     ( $res, $sth ) = $self->sa->Sql( "
         SELECT p.* from programs p, channels c
@@ -670,7 +680,7 @@ sub ParsePrograms {
     return undef;
   }
   while( my $next_ce = $sth->fetchrow_hashref() ) {
-    # Break look once we have got the whole day?
+    # Break loop once we have got the whole day?
     if( $ce->{start_time} gt $date . ' 23:59:59' ) {
       $done = 1;
       last;
@@ -698,11 +708,15 @@ sub ParsePrograms {
       $ce->{stop_dt} = $parser->parse_datetime( $next_ce->{start_time} );
     }
 
+    if( !defined( $ce->{category} ) && $def_cat){
+      $ce->{category} = $def_cat;
+    }
+    if( !defined( $ce->{program_type} ) && $def_pty){
+      $ce->{program_type} = $def_pty;
+    }
+
     push (@result, $ce);
     $ce = $next_ce;
-  }
-
-  if( !defined( $done )) {
   }
 
   return \@result;

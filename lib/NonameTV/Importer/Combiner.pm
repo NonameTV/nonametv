@@ -320,14 +320,10 @@ $channel_data{ "arteeinsextra.ard.de" } =
 
 use DateTime;
 use DateTime::Event::Recurrence;
-use XML::LibXML;
-use Compress::Zlib;
-
-use NonameTV qw/MyGet ParseXmltv/;
 
 use NonameTV::Importer::BaseDaily;
 
-use NonameTV::Log qw/d progress error/;
+use NonameTV::Log qw/d p w/;
 
 use NonameTV::Importer;
 
@@ -341,6 +337,10 @@ sub new {
 
     $self->{MaxDays} = 32 unless defined $self->{MaxDays};
     $self->{MaxDaysShort} = 2 unless defined $self->{MaxDaysShort};
+
+    if( defined( $self->{UrlRoot} ) ) {
+      w( 'UrlRoot is deprecated as we read directly from our database now.' );
+    }
 
     $self->{OptionSpec} = [ qw/force-update verbose+ quiet+ short-grab/ ];
     $self->{OptionDefaults} = { 
@@ -375,7 +375,7 @@ sub Import
     {
       # Delete all data for this channel.
       my $deleted = $ds->ClearChannel( $data->{id} );
-      progress( "Deleted $deleted records for $data->{xmltvid}" );
+      p( "Deleted $deleted records for $data->{xmltvid}" );
     }
 
     my $start_dt = DateTime->today->subtract( days => 1 );
@@ -387,39 +387,28 @@ sub Import
 
       my $batch_id = $data->{xmltvid} . "_" . $dt->ymd('-');
 
-      my %ch_content;
-      my $changed = 0;
-      my $error = 0;
+      my $gotcontent = 0;
+      my %prog;
 
       foreach my $chan (keys %{$channel_data{$data->{xmltvid}}})
       {
-        my $curr_batch = $data->{xmltvid}. "_" . $chan . "_" . $dt->ymd('-');
-        my( $content, $code ) = $self->FetchData( $curr_batch, $data );
+        my $curr_batch = $chan . "_" . $dt->ymd('-');
+        my $content = $ds->ParsePrograms( $curr_batch );
 
-        $ch_content{$chan} = $content;
-        $changed = 1 if $code;
-        $error = 1 if not defined( $content );
+        $prog{$chan} = $content;
+        $gotcontent = 1 if $content;
       }
 
-      if( ($error==0) and ($p->{'force-update'} or $changed)  )
+      if( $gotcontent )
       {
-        progress( "$batch_id: Processing data" );
-
-        # Process the gzipped xml-files into an array of program-
-        # entries.
-        my %prog;
-        foreach my $ch (keys %ch_content)
-        {
-          my $xmldata = Compress::Zlib::memGunzip( \($ch_content{$ch}) );
-          $prog{$ch} = ParseXmltv( \$xmldata );
-        }
+        p( "$batch_id: Processing data" );
 
         my $progs = $self->BuildDay( $batch_id, \%prog, 
                                      $channel_data{$data->{xmltvid}}, $data );
       }
-      elsif( $error )
+      else
       {
-        error( "$batch_id: Failed to fetch data" );
+        w( "$batch_id: Failed to fetch data" );
       }
     }
   }
@@ -448,7 +437,7 @@ sub BuildDay
     foreach my $span (@{$sched->{$subch}}) {
       my $weekly;
       if (($span->{day}) && ($span->{day} ne 'all')) {
-        progress ("handling specific days schedule");
+        d( 'handling specific days schedule' );
         $weekly = DateTime::Event::Recurrence->weekly (
           days => $span->{day},
         );
@@ -537,20 +526,7 @@ sub BuildDay
 
 sub FetchDataFromSite
 {
-  my $self = shift;
-  my( $batch_id, $data ) = @_;
-
-  my( $id ) = ($batch_id =~ /_(.*)/);
-
-  my $url = $self->{UrlRoot} . $id . '.xml.gz';
-
-  my( $content, $code ) = MyGet( $url );
-
-  if( not defined( $content ) )
-  {
-    print "$url failed.\n";
-  }
-  return( $content, $code );
+  return( '', undef );
 }
     
 sub date2dt {
