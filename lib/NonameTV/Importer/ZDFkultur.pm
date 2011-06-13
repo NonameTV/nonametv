@@ -73,9 +73,21 @@ sub Object2Url {
   }
   my $url4 = sprintf( "http://pressetreff.zdf.de/Public/ZDFkultur-PD/%d.KW-%s-%s-ZDFkultur.xml", $week, $firstday4, $lastdaythird );
 
+  # http://pressetreff.zdf.de/Public/ZDFkultur-PD/23.KW-4.-10.06.2011-ZDFkultur.xml
+  # http://pressetreff.zdf.de/Public/ZDFkultur-PD/24.KW-11.-17.06.2011-ZDFkultur.xml
+  # http://pressetreff.zdf.de/Public/ZDFkultur-PD/25.KW-18.-24.06.2011-ZDFkultur.xml
+  # http://pressetreff.zdf.de/Public/ZDFkultur-PD/26.KW-25.06.-1.07.2011-ZDFkultur.xml
+  # http://pressetreff.zdf.de/Public/ZDFkultur-PD/27.KW-2.-08.07.2011-ZDFkultur.xml
+  # http://pressetreff.zdf.de/Public/ZDFkultur-PD/28.KW-9.-15.07.2011-ZDFkultur.xml
+  # http://pressetreff.zdf.de/Public/ZDFkultur-PD/29.KW-16.-22.07.2011-ZDFkultur.xml
+
+  # fifth format 27.KW-2.-08.07.2011-ZDFkultur.xml
+  my $lastdayfifth = sprintf( "%02d.%02d.%d", $last->day(), $last->month(), $last->year() );
+  my $url5 = sprintf( "http://pressetreff.zdf.de/Public/ZDFkultur-PD/%d.KW-%s-%s-ZDFkultur.xml", $week, $firstday, $lastdayfifth );
+
   d( "ZDFkultur: fetching data from $url\nor $urlother\nor $urlthird\nor$url4" );
 
-  return( [$url4, $urlthird, $url, $urlother], undef );
+  return( [$url5, $url4, $urlthird, $url, $urlother], undef );
 }
 
 #
