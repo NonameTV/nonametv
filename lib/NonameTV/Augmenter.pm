@@ -1,4 +1,6 @@
 #
+# THIS IS NOT THE BASE CLASS FOR AUGMENTERS! (CONTRARY TO HOW IMPORTER.PM IS THE BASE CLASS FOR IMPORTERS)
+#
 # Augmenters augment programmes with additional data
 #
 # tools/nonametv-augment

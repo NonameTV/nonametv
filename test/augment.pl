@@ -23,6 +23,68 @@ sub cmp_rules_by_score( ){
   }
 }
 
+sub sprint_rule( @ ){
+  my ($rule_ref) = @_;
+  my $result = '';
+
+  if( $rule_ref ){
+    if( $rule_ref->{channel_id} ){
+      $result .= 'channel=' . $rule_ref->{channel_id} . ', ';
+    }
+    if( $rule_ref->{title} ){
+      $result .= 'title=\'' . $rule_ref->{title} . '\', ';
+    }
+    if( $rule_ref->{otherfield} ){
+      if( defined( $rule_ref->{othervalue} ) ){
+        $result .= $rule_ref->{otherfield} . '=\'' . $rule_ref->{othervalue} . '\', ';
+      } else {
+        $result .= $rule_ref->{otherfield} . '=NULL, ';
+      }
+    }
+    if( $rule_ref->{augmenter} ){
+      $result .= $rule_ref->{augmenter};
+      if( $rule_ref->{matchby} ){
+        $result .= '::' . $rule_ref->{matchby};
+      }
+      if( $rule_ref->{remoteref} ){
+        $result .= '( ' . $rule_ref->{remoteref} . ' )';
+      }
+    }
+  }
+
+  return( $result );
+}
+
+sub sprint_augment( @@ ){
+  my ($programme_ref, $augment_ref) = @_;
+  my $result = '';
+
+  if( $programme_ref && $augment_ref){
+    foreach my $attribute ( 'title', 'subtitle', 'episode',
+                            'program_type', 'category', 'actors' ) {
+      if( exists( $augment_ref->{$attribute} ) ){
+        if( defined( $programme_ref->{$attribute} ) && defined( $augment_ref->{$attribute} ) ) {
+          if( $programme_ref->{$attribute} ne $augment_ref->{$attribute} ){
+            $result .= '  changing ' . $attribute . " to \'" .
+                       $augment_ref->{$attribute} .  "\' was \'" .
+                       $programme_ref->{$attribute} . "\'\n";
+# TODO add verbose mode
+#          } else {
+#            $result .= '  leaving  ' . $attribute . " unchanged\n";
+          }
+        } elsif( defined( $programme_ref->{$attribute} ) ){
+          $result .= '  removing ' . $attribute . "\n";
+        } elsif( defined( $augment_ref->{$attribute} ) ){
+          $result .= '  adding   ' . $attribute . " as \'" .
+                     $augment_ref->{$attribute} . "\'\n";
+        }
+      }
+    }
+  }
+
+  return( $result );
+}
+
 my $ds = CreateDataStore( );
 
 my $dt = DateTime->now( time_zone => 'UTC' );
@@ -61,7 +123,10 @@ while( defined( $iter = $sth->fetchrow_hashref() ) ){
 }
 
 
-printf( "ruleset for this batch: %s\n", Dumper( \@ruleset ) );
+print( "ruleset for this batch: \n" );
+foreach my $therule ( @ruleset ) {
+  printf( "%s\n", sprint_rule( $therule ) );
+}
 
 
 ###
@@ -89,9 +154,9 @@ my $result;
     my @rules = @ruleset;
 
     if( defined( $ce->{subtitle} ) ) {
-      printf( "augmenting program: %s - \"%s\"\n\n", $ce->{title}, $ce->{subtitle} );
+      printf( "\naugmenting program: %s - \"%s\"\n", $ce->{title}, $ce->{subtitle} );
     } else {
-      printf( "augmenting program: %s\n\n", $ce->{title} );
+      printf( "\naugmenting program: %s\n", $ce->{title} );
     }
 
     # loop until no more rules match
@@ -156,7 +221,7 @@ my $result;
         last;
       }
 
-      printf( "applying best matching rule: %s\n", Dumper( $rule ) );
+      printf( "best matching rule: %s\n", sprint_rule( $rule ) );
 
       # apply the rule
       ( $newprogram, $result ) = $augmenter->{$rule->{augmenter}}->AugmentProgram( $ce, $rule );
@@ -165,7 +230,7 @@ my $result;
         $found++;
       }
       if( defined( $newprogram) ) {
-        printf( "augmenting as follows:\n%s\n\n", Dumper( $newprogram ) );
+        printf( "augmenting as follows:\n%s", sprint_augment( $ce, $newprogram ) );
         while( my( $key, $value )=each( %$newprogram ) ) {
           if( $value ) {
             $ce->{$key} = $value;

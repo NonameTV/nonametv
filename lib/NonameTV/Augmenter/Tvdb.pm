@@ -71,13 +71,21 @@ sub FillHash( $$$$ ) {
     $episode->{seriesid}, $episode->{seasonid}, $episodeid, 14
   );
 
-  # FIXME split can strip the leading empties, but I don't know how
   my @actors = split( '\|', decode( 'utf-8', $series->{Actors} ) );
-  shift( @actors );
   foreach( @actors ){
     $_ = norm( $_ );
+    if( $_ eq '' ){
+      $_ = undef;
+    }
   }
-  $resultref->{actors} = join( ', ', @actors );
+  @actors = grep{ defined } @actors;
+  if( @actors ) {
+    # replace programme's actors
+    $resultref->{actors} = join( ', ', @actors );
+  } else {
+    # remove existing actors from programme
+    $resultref->{actors} = undef;
+  }
 
   $resultref->{program_type} = 'series';  
 }
