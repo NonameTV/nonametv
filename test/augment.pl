@@ -73,9 +73,6 @@ my $newprogram;
 # result code from augmenter
 my $result;
 
-# stripped down rule for testing
-my %simplerule = ( matchby => 'episodetitle' );
-
     ( $res, $sth ) = $ds->sa->Sql( "
         SELECT p.* from programs p, batches b
         WHERE (p.batch_id = b.id)
@@ -103,7 +100,6 @@ my %simplerule = ( matchby => 'episodetitle' );
       # order rules by quality of match
       ###
       foreach( @rules ){
-        # TODO scores for each kind of match should be giving on a golomg ruler to give each kind of match a different value
         my $score = 0;
 
         # match by channel_id
@@ -121,14 +117,14 @@ my %simplerule = ( matchby => 'episodetitle' );
           # regexp?
           if( $_->{title} =~ m|^\^| ) {
             if( $ce->{title} =~ m|$_->{title}| ){
-              $score += 1;
+              $score += 4;
             } else {
               $_->{score} = undef;
               next;
             }
           } else {
             if( $_->{title} eq $ce->{title} ){
-              $score += 1;
+              $score += 4;
             } else {
               $_->{score} = undef;
               next;
@@ -139,7 +135,7 @@ my %simplerule = ( matchby => 'episodetitle' );
         # match by other field
         if( defined( $_->{otherfield} ) && defined( $_->{othervalue} ) ) {
           if( $_->{othervalue} eq $ce->{$_->{otherfield}} ){
-            $score += 1;
+            $score += 2;
           } else {
             $_->{score} = undef;
             next;
@@ -155,7 +151,7 @@ my %simplerule = ( matchby => 'episodetitle' );
       # take the best matching rule from the array (we apply it now and don't want it to match another time)
       my $rule = shift( @rules );
 
-      # end loop if thats not a mathing rule after all
+      # end loop if the best matching rule is not a mathing rule after all
       if( !defined( $rule->{score} ) ){
         last;
       }
@@ -170,6 +166,13 @@ my %simplerule = ( matchby => 'episodetitle' );
       }
       if( defined( $newprogram) ) {
         printf( "augmenting as follows:\n%s\n\n", Dumper( $newprogram ) );
+        while( my( $key, $value )=each( %$newprogram ) ) {
+          if( $value ) {
+            $ce->{$key} = $value;
+          } else {
+            delete( $ce->{$key} );
+          }
+        }
       }
 
       # go around and find the next best matching rule
