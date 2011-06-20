@@ -1,26 +1,28 @@
 package NonameTV::Importer::NonstopWeb;
 
-=pod
-
-This importer imports data from Nonstop TVs public website.The data is
-fetched as one html-file per day and channel.
-
-=cut
-
 use strict;
 use warnings;
 
+=pod
+
+Importer for data from Nonstop. 
+One file per channel and month downloaded from their site.
+The downloaded file is in xml-format.
+
+=cut
+
 use DateTime;
 use XML::LibXML;
-use Encode qw/decode/;
+use HTTP::Date;
 
-use NonameTV qw/norm Html2Xml ParseXml/;
-use NonameTV::DataStore::Helper;
-use NonameTV::Log qw/progress error/;
+use Compress::Zlib;
 
-use NonameTV::Importer::BaseDaily;
+use NonameTV qw/ParseXml norm AddCategory/;
+use NonameTV::Log qw/w progress error f/;
 
-use base 'NonameTV::Importer::BaseDaily';
+use NonameTV::Importer::BaseMonthly;
+
+use base 'NonameTV::Importer::BaseMonthly';
 
 sub new {
     my $proto = shift;
@@ -28,8 +30,17 @@ sub new {
     my $self  = $class->SUPER::new( @_ );
     bless ($self, $class);
 
-    my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
-    $self->{datastorehelper} = $dsh;
+
+    $self->{MinWeeks} = 0 unless defined $self->{MinWeeks};
+    $self->{MaxWeeks} = 4 unless defined $self->{MaxWeeks};
+
+    defined( $self->{UrlRoot} ) or die "You must specify UrlRoot";
+
+    # Canal Plus' webserver returns the following date in some headers:
+    # Fri, 31-Dec-9999 23:59:59 GMT
+    # This makes Time::Local::timegm and timelocal print an error-message
+    # when they are called from HTTP::Date::str2time.
+    # Therefore, I have included HTTP::Date and modified it slightly.
 
     return $self;
 }
@@ -38,16 +49,14 @@ sub Object2Url {
   my $self = shift;
   my( $objectname, $chd ) = @_;
 
-  my( $year, $month, $day ) = ($objectname =~ /_(\d\d\d\d)-(\d\d)-(\d\d)/);
+  my( $year, $month ) = ( $objectname =~ /(\d+)-(\d+)$/ );
+ 
+  # Find the first day in the given week.
+  # Copied from
+  # http://www.nntp.perl.org/group/perl.datetime/5417?show_headers=1 
+  my $url = $self->{UrlRoot} .
+    $chd->{grabber_info} . '/' . $year . '/' . $month;
 
-
-  my $dt = DateTime->new( year => $year,
-			  month => $month,
-			  day => $day );
-
-  my $url = $dt->strftime( $chd->{grabber_info} );
-
-  # Use DateTime->strftime to build url.
   return( $url, undef );
 }
 
@@ -55,83 +64,173 @@ sub FilterContent {
   my $self = shift;
   my( $cref, $chd ) = @_;
 
-  my $doc = Html2Xml( decode( "utf-8", $$cref ) );
+  my( $chid ) = ($chd->{grabber_info} =~ /^(\d+)/);
+
+  #my $uncompressed = Compress::Zlib::memGunzip($$cref);
+  my $doc;
+
+  #if( defined $uncompressed ) {
+  #    $doc = ParseXml( \$uncompressed );
+  #}
+  #else {
+      $doc = ParseXml( $cref );
+  #}
 
   if( not defined $doc ) {
-    return (undef, "Html2Xml failed" );
+    return (undef, "ParseXml failed" );
   } 
 
-  my $outdoc = XML::LibXML::Document->new("1.0", "utf-8" );
+  # Find all "Schedule"-entries.
+  my $ns = $doc->find( "//rs:data" );
 
-  my $ns = $doc->find( '//ul[@id="schedule_list"]' );
-
-  if( $ns->size() != 1 ) {
-    return (undef, "Expected one schedule_list, got " . $ns->size() );
+  if( $ns->size() == 0 ) {
+    return (undef, "No data found" );
   }
 
-  my $node = $ns->get_node(1);
-
-  $outdoc->setDocumentElement( $node );
-
-  my $str = $outdoc->toString(1);
+  my $str = $doc->toString( 1 );
 
   return( \$str, undef );
 }
 
 sub ContentExtension {
-  return 'html';
+  return 'xml';
 }
 
 sub FilteredExtension {
   return 'xml';
 }
 
-sub ImportContent {
+sub ImportContent
+{
   my $self = shift;
+
   my( $batch_id, $cref, $chd ) = @_;
 
   my $ds = $self->{datastore};
-  my $dsh = $self->{datastorehelper};
-
-  my( $date ) = ($batch_id =~ /_(.*)$/);
-
-  my $doc = ParseXml( $cref );
-
-  if( not defined( $doc ) ) {
-    error( "$batch_id: Failed to parse." );
+  $ds->{SILENCE_END_START_OVERLAP}=1;
+  $ds->{SILENCE_DUPLICATE_SKIP}=1;
+ 
+  my $xml = XML::LibXML->new;
+  my $doc;
+  eval { $doc = $xml->parse_string($$cref); };
+  if( $@ ne "" )
+  {
+    f "Failed to parse $@";
     return 0;
   }
   
-  my $ns = $doc->find( '/ul/li' );
-  if( $ns->size() == 0 ) {
-    error( "$batch_id: No data found" );
+  # Find all "Schedule"-entries.
+  my $ns = $doc->find( "//z:row" );
+
+  if( $ns->size() == 0 )
+  {
+    f "No data found 2";
     return 0;
   }
   
-  $dsh->StartDate( $date, "00:00" );
-  
-  foreach my $pgm ($ns->get_nodelist) {
-    # The data consists of alternating rows with time+title or description.
-    my $time = norm( $pgm->findvalue( './/span[@class="airtime"]//text()' ) );
+  foreach my $sc ($ns->get_nodelist)
+  {
+    # Sanity check. 
+    # What does it mean if there are several programs?
 
-    my $title = $pgm->findvalue( './/h2//text()' );
-    my $desc  = $pgm->findvalue( './/p//text()' );
+    my $title_original = $sc->findvalue( './@SeriesOriginalTitle' );
 
-    my $ce =  {
-      start_time  => $time,
-      title       => norm($title),
-      description => norm($desc),
+	my $title_programme = $sc->findvalue( './@ProgrammeSeriesTitle' );
+	
+	my $title = norm($title_programme) || norm($title_original);
+
+    my $start = $self->create_dt( $sc->findvalue( './@SlotLocalStartTime' ) );
+    if( not defined $start )
+    {
+      w "Invalid starttime '" 
+          . $sc->findvalue( './@SlotLocalStartTime' ) . "'. Skipping.";
+      next;
+    }
+    
+   # my $desc_episode = undef;
+   # my $desc_series = undef;
+    my $desc = undef;
+
+    my $desc_episode = $sc->findvalue( './@ProgrammeEpisodeLongSynopsis' );
+	my $desc_series  = $sc->findvalue( './@ProgrammeSeriesLongSynopsis' );
+	
+	$desc = norm($desc_episode) || norm($desc_series);
+	
+	my $genre = $sc->findvalue( './@SeriesGenreDescription' );
+	
+	my $production_year = $sc->findvalue( './@ProgrammeSeriesYear' );
+	
+	my $subtitle =  $sc->findvalue( './@ProgrammeEpisodeTitle' );
+
+	progress("Nonstopweb_v2: $chd->{xmltvid}: $start - $title");
+
+    my $ce = {
+      title 	  => norm($title),
+      channel_id  => $chd->{id},
+      description => $desc,
+      start_time  => $start->ymd("-") . " " . $start->hms(":"),
     };
     
-    extract_extra_info( $ce );
-    $dsh->AddProgramme( $ce );
+    $ce->{subtitle} = $subtitle if $subtitle;
+    
+    if( defined( $production_year ) and ($production_year =~ /(\d\d\d\d)/) )
+    {
+      $ce->{production_date} = "$1-01-01";
+    }
+    
+    if( $genre ){
+			my($program_type, $category ) = $ds->LookupCat( 'Nonstop', $genre );
+			AddCategory( $ce, $program_type, $category );
+	}
+
+    $ds->AddProgramme( $ce );
   }
   
+  # Success
   return 1;
 }
 
-sub extract_extra_info {
-  my( $ce ) = shift;
+sub create_dt
+{
+  my $self = shift;
+  my( $str ) = @_;
+  
+  my( $date, $time ) = split( 'T', $str );
+
+  if( not defined $time )
+  {
+    return undef;
+  }
+  my( $year, $month, $day ) = split( '-', $date );
+  
+  # Remove the dot and everything after it.
+  $time =~ s/\..*$//;
+  
+  my( $hour, $minute, $second ) = split( ":", $time );
+  
+  if( $second > 59 ) {
+    return undef;
+  }
+
+  my $dt = DateTime->new( year   => $year,
+                          month  => $month,
+                          day    => $day,
+                          hour   => $hour,
+                          minute => $minute,
+                          second => $second,
+                          time_zone => 'Europe/Stockholm',
+                          );
+  
+  $dt->set_time_zone( "UTC" );
+  
+  return $dt;
 }
 
+sub extract_extra_info
+{
+  my $self = shift;
+  my( $ce ) = @_;
+  
+}
+    
 1;

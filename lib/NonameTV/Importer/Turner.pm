@@ -5,7 +5,7 @@ use warnings;
 
 =pod
 
-Channels: Boomerang, TCM, Cartoon Network
+Channels: Boomerang, TCM, Cartoon Network, CNN
 
 Import data from Word or XLS files delivered via e-mail.  Each day
 is handled as a separate batch.
@@ -56,7 +56,7 @@ sub ImportContentFile
   my $ds = $self->{datastore};
 
   if( $file =~ /\.doc$/i ){
-    #$self->ImportDOC( $file, $channel_id, $xmltvid );
+    $self->ImportDOC( $file, $channel_id, $xmltvid );
   } elsif( $file =~ /\.xls$/i ){
     $self->ImportXLS( $file, $channel_id, $xmltvid );
   }
@@ -323,6 +323,8 @@ sub ParseDateXLS {
     ( $year, $month, $day ) = ( $text =~ /^(\d+)-(\d+)-(\d+)$/ );
   } elsif( $text =~ /^(\d+)-(\d+)-(\d+)$/ ){ # format '8-1-08'
     ( $month, $day, $year ) = ( $text =~ /^(\d+)-(\d+)-(\d+)$/ );
+  } elsif( $text =~ /^\d+\/\d+\/\d+$/ ) { # format '01/11/2008'
+    ( $day, $month, $year ) = ( $text =~ /^(\d+)\/(\d+)\/(\d+)$/ );
   }
 
   $year += 2000 if( $year < 100 );
