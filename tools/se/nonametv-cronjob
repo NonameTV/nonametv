@@ -1,9 +1,10 @@
 #!/bin/bash
 
-NROOT=/var/local/nonametv
-PROOT=/home/mattias/development/nonametv
+NROOT=/storage/xmltv/
+PROOT=/home/beatx/nonametv
 
 Q="--quiet --quiet"
+F="--force-update"
 
 h=true
 d=true
@@ -15,6 +16,9 @@ then
   # Run weekly commands.
   perl -I lib tools/nonametv-remove-old
   tools/se/nonametv-import-allhttp --remove-old
+
+  # Move away old files  after 6 weeks
+  tools/nonametv-filestore-moveold --all --leavedays 42
   exit
 fi
 
@@ -30,32 +34,34 @@ then
   h=
 fi
 
-tools/se/nonametv-process-mail
+#tools/se/nonametv-process-mail
 
 $d tools/se/nonametv-import-allhttp $Q
 $h tools/se/nonametv-import-allhttp $Q --short-grab
-$d perl -I lib tools/nonametv-import Discovery_xml $Q
 tools/se/nonametv-import-allmail $Q
 
 $d perl -I lib/ tools/nonametv-export Xmltv --remove-old
 $d perl -I lib/ tools/nonametv-export Json --remove-old
 $d tools/nonametv-icon-update --quiet --unattended
 
-tools/se/nonametv-updatesite $Q
+#tools/se/nonametv-updatesite $Q
 
 # This shouldn't produce any output, but there seems to be a bug
 # somewhere.
 $d perl -I lib tools/nonametv-export Xmltv --force-export --verbose 
+$d perl -I lib tools/nonametv-export Json --force-export --verbose
 
 # Update the Combiner-channels as well.
 $d perl -I lib tools/nonametv-import Combiner $Q
 $h perl -I lib tools/nonametv-import Combiner --short-grab $Q
 
-$d perl -I lib tools/nonametv-import Timeshifter $Q
-$h perl -I lib tools/nonametv-import Timeshifter --short-grab $Q
+#Timeshifter körs inte
+#$d perl -I lib tools/nonametv-import Timeshifter $Q
+#$h perl -I lib tools/nonametv-import Timeshifter --short-grab $Q
 
-tools/se/nonametv-updatesite $Q
+#tools/se/nonametv-updatesite $Q
 
 $d tools/se/nonametv-xmltv-compare-run
-perl -I lib tools/nonametv-batchlog > /srv/web/converter.xmltv.se/root/status/batchlog.html
+perl -I lib tools/se/nonametv-xmltv-genhtml /storage/xmltv/ .
+perl -I lib tools/nonametv-batchlog > /storage/xmltv/00status.html
 

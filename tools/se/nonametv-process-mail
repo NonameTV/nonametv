@@ -1,17 +1,28 @@
 #!/bin/sh
 
-getmail -q -rkanal9.rc
-getmail -q -rngcsverige.rc
+#getmail -q -rkanal9.rc
+#getmail -q --rcfile=/home/joakim/.getmail/ngc.rc --getmaildir=/home/joakim/maildir/.Projects/xmltv-data-in
 
 # These importers are disabled but we fetch mail for them anyway
-getmail -q -rdr.rc
-getmail -q -rdiscovery.rc
-getmail -q -raftonbladet.rc
-getmail -q -rexpressen.rc
-getmail -q -rtv-data-swedb.se.rc
-getmail -q -respn.rc
+#getmail -q -rdr.rc
+#getmail -q -rdiscovery.rc
+#getmail -q -raftonbladet.rc
+#getmail -q -rexpressen.rc
+#getmail -q -rtv-data-swedb.se.rc
+getmail -q --rcfile=/home/beatx/.getmail/espn.rc --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
+getmail -q --rcfile=/home/beatx/.getmail/extreme.rc --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
+getmail -q --rcfile=/home/beatx/.getmail/xmltv.rc --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
+getmail -q --rcfile=/home/beatx/.getmail/outtv.rc --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
+getmail -q --rcfile=/home/beatx/.getmail/natgeo.rc --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
+getmail -q --rcfile=/home/beatx/.getmail/travel.rc --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
+getmail -q --rcfile=/home/beatx/.getmail/disney.rc --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
+getmail -q --rcfile=/home/beatx/.getmail/poker.rc --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
+getmail -q --rcfile=/home/beatx/.getmail/cnbc.rc --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
+getmail -q --rcfile=/home/beatx/.getmail/ngcwild.rc --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
+getmail -q --rcfile=/home/beatx/.getmail/fox.rc --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
+
 
 # Mail is additionally delivered to the tv-data account.
 
-tools/se/nonametv-filter-mail
-tools/se/nonametv-parse-maildir
+/home/beatx/nonametv/tools/se/nonametv-filter-mail
+/home/beatx/nonametv/tools/se/nonametv-parse-maildir
