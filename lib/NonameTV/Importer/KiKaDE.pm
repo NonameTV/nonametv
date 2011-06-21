@@ -29,6 +29,8 @@ sub new {
       $self->{MaxWeeks} = 4;
     }
 
+    $self->{datastore}->{augment} = 1;
+
     return $self;
 }
 

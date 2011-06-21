@@ -3,6 +3,7 @@ package NonameTV::DataStore;
 use strict;
 
 use NonameTV qw/FixProgrammeData/;
+use NonameTV::Augmenter;
 use NonameTV::Log qw/d p w f/;
 use SQLAbstraction::mysql;
 
@@ -202,10 +203,14 @@ sub EndBatch {
       }
     );
 
+    if( exists( $self->{augment} ) ){
+      if( $self->{augment} == 1 ){
+        my $augmenter = NonameTV::Augmenter->new( $self );
+        $augmenter->AugmentBatch( $self->{currbatchname} );
+      }
+    }
+
     $self->{sa}->DoSql("Commit");
-
-# TODO start the to augment here
-
   }
   elsif ( $success == -1 ) {
     $self->{sa}->DoSql("Rollback");

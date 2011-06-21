@@ -18,3 +18,6 @@
 \N,Fixups,"^(Kommissar Wallander)\s+-\s+(.*)$",\N,\N,\N,splittitle
 \N,Fixups,"^(Mankells Wallander)\s+-\s+(.*)$",\N,\N,\N,splittitle
 74,Fixups,"^(Der Bug) - Gast:\s+(.*)$",\N,\N,\N,splitguesttitle
+58,Fixups,^(Netzmenschen)\s+-\s+(.*)$,\N,\N,\N,splittitle
+\N,Fixups,"^(Polizeiruf 110):\s+(.*)$",\N,\N,\N,splittitle
+49,Tvdb,\N,program_type,series,\N,episodetitle
