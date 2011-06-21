@@ -326,7 +326,10 @@ sub getUpdates {
 	# Determin which update xml file to download
 	my $now = time;
 	if ($period =~ /^(guess|now)$/) {
-		my $diff = $now - $self->{cache}->{Update}->{lastupdated};
+		my $diff = 2592000 + 1; # month + 1 to force period all on initial run
+                if (defined ($self->{cache}->{Update}->{lastupdated})) {
+                	$diff = $now - $self->{cache}->{Update}->{lastupdated};
+                }
 		if ($period eq 'guess' && $diff <= $self->{conf}->{minUpdateTime}) {
 			# We've updated recently (within 6 hours)
 			return;
