@@ -38,7 +38,7 @@ sub new {
     $self->{MaxDays} = 15 unless defined $self->{MaxDays};
 
     defined( $self->{UrlRoot} ) or die "You must specify UrlRoot";
-    my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore}, "Europe/Vienna" );
+    my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore}, "Europe/Stockholm" );
   	$self->{datastorehelper} = $dsh;
 
     return $self;
@@ -138,17 +138,6 @@ sub ImportContent
   	  	my $desc = $sc->findvalue( './info' );
 	
 		my $subtitle =  $sc->findvalue( './subtitel' );
-		
-		# Split the time to get if its less than 6 (hours)
-    	my ( $hour , $min ) = ( $time =~ /^(\d+):(\d+)$/ );
-		
-		#print("hour: $hour");
-		
-		#if( $hour == 00 ) {
-  		#	$date = Date_Add( $date );
-  		#	#print("hej");
-  		#}
-
 
 		progress("ORF_xml: $chd->{xmltvid}: $time - $title");
 
@@ -168,34 +157,8 @@ sub ImportContent
   return 1;
 }
 
-sub Date_Add {
-  my ( $text ) = @_;
-
-  my( $year, $month, $day );
-  print("text: $text");
-
-  # format '2011-04-13'
-  if( $text =~ /^\d{4}\-\d{2}\-\d{2}$/i ){
-    ( $year, $month, $day ) = ( $text =~ /^(\d{4})\-(\d{2})\-(\d{2})$/i );
-  }
-
-  my $dt = DateTime->new(
-    year => $year,
-    month => $month,
-    day => $day,
-    time_zone => "Europe/Stockholm"
-      );
-
-	$dt->add( days => 1 );
-  	$dt->set_time_zone( "UTC" );
-  	
-	return $dt->ymd("-");
-}
-
 sub ParseTime {
   my( $text ) = @_;
-
-#print "ParseTime: >$text<\n";
 
   my( $hour , $min );
 
