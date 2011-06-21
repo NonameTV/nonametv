@@ -121,6 +121,11 @@ foreach my $fsf (@fsfiles)
       next;
     }
 
+    if( $cff =~ '00files' ){
+	progress( "00files is very old, skipping or the parse-maildir complains." );
+	next;
+    }
+
     my $modified = File::Util->last_modified( "$filestore/$fsf/$cff" );
 
     print "  -> $cff (" . gmtime( $modified ) . ") ... ";
