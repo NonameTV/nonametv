@@ -127,9 +127,10 @@ sub AugmentProgram( $$$ ){
       }
 
       my $episodetitle = $ceref->{subtitle};
-      $episodetitle =~ s|,\sTeil (\d+)$| ($1)|;
-      $episodetitle =~ s|\s-\sTeil (\d+)$| ($1)|;
-      $episodetitle =~ s|\s\(Teil (\d+)\)$| ($1)|;
+      $episodetitle =~ s|,\s+Teil\s+(\d+)$| ($1)|;
+      $episodetitle =~ s|\s+-\s+Teil\s+(\d+)$| ($1)|;
+      $episodetitle =~ s|\s+\(Teil\s+(\d+)\)$| ($1)|;
+      $episodetitle =~ s|\s+-\s+(\d+)\.\s+Teil$| ($1)|;
 
       my $episode = $self->{tvdb}->getEpisodeByName( $series->{SeriesName}, $episodetitle );
       if( defined( $episode ) ) {
