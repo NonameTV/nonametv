@@ -1,6 +1,7 @@
 package NonameTV::Augmenter::Tmdb;
 
 use strict;
+use warnings;
 
 use Data::Dumper;
 use Encode;

@@ -1,6 +1,7 @@
 package NonameTV::Augmenter::Fixups;
 
 use strict;
+use warnings;
 
 use Data::Dumper;
 use Encode;
