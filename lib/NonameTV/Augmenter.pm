@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use NonameTV::Factory qw/CreateAugmenter/;
+use NonameTV::Log qw/d/;
 
 #
 # THIS IS NOT THE BASE CLASS FOR AUGMENTERS! (CONTRARY TO HOW IMPORTER.PM IS THE BASE CLASS FOR IMPORTERS)
@@ -207,7 +208,7 @@ sub AugmentBatch( @@ ) {
   while( defined( $iter = $sth->fetchrow_hashref() ) ){
     # set up augmenters
     if( !defined( $augmenter->{ $iter->{'augmenter'} } ) ){
-      printf( "creating '%s' augmenter\n", $iter->{'augmenter'} );
+      d( "creating augmenter '" . $iter->{'augmenter'} . "' augmenter\n" );
       $augmenter->{ $iter->{'augmenter'} }= CreateAugmenter( $iter->{'augmenter'}, $self->{datastore} );
     }
 
@@ -215,10 +216,15 @@ sub AugmentBatch( @@ ) {
     push( @ruleset, $iter );
   }
 
+  if( @ruleset == 0 ){
+    d( 'no augmenterrules for this batch' );
+    return;
+  }
 
-  print( "ruleset for this batch: \n" );
+
+  d( "ruleset for this batch: \n" );
   foreach my $therule ( @ruleset ) {
-    printf( "%s\n", sprint_rule( $therule ) );
+    d( sprint_rule( $therule ) . "\n" );
   }
 
 
@@ -245,9 +251,9 @@ sub AugmentBatch( @@ ) {
     my @rules = @ruleset;
 
     if( defined( $ce->{subtitle} ) ) {
-      printf( "\naugmenting program: %s - \"%s\"\n", $ce->{title}, $ce->{subtitle} );
+      d( "augmenting program: " . $ce->{title} . " - \"" . $ce->{subtitle} . "\"\n" );
     } else {
-      printf( "\naugmenting program: %s\n", $ce->{title} );
+      d( "augmenting program: " . $ce->{title} . "\n" );
     }
 
     # loop until no more rules match
@@ -289,12 +295,21 @@ sub AugmentBatch( @@ ) {
         }
 
         # match by other field
-        if( defined( $_->{otherfield} ) && defined( $_->{othervalue} ) ) {
-          if( $_->{othervalue} eq $ce->{$_->{otherfield}} ){
-            $score += 2;
+        if( defined( $_->{otherfield} ) ){
+          if( defined( $_->{othervalue} ) ) {
+            if( $_->{othervalue} eq $ce->{$_->{otherfield}} ){
+              $score += 2;
+            } else {
+              $_->{score} = undef;
+              next;
+            }
           } else {
-            $_->{score} = undef;
-            next;
+            if( !defined( $_->{othervalue} ) ){
+              $score += 2;
+            } else {
+              $_->{score} = undef;
+              next;
+            }
           }
         }
 
@@ -312,13 +327,13 @@ sub AugmentBatch( @@ ) {
         last;
       }
 
-      printf( "best matching rule: %s\n", sprint_rule( $rule ) );
+      d( 'best matching rule: ' . sprint_rule( $rule ) . "\n" );
 
       # apply the rule
       ( $newprogram, $result ) = $augmenter->{$rule->{augmenter}}->AugmentProgram( $ce, $rule );
 
       if( defined( $newprogram) ) {
-        printf( "augmenting as follows:\n%s", sprint_augment( $ce, $newprogram ) );
+        d( "augmenting as follows:\n" . sprint_augment( $ce, $newprogram ) );
         while( my( $key, $value )=each( %$newprogram ) ) {
           if( $value ) {
             $ce->{$key} = $value;
@@ -326,6 +341,19 @@ sub AugmentBatch( @@ ) {
             delete( $ce->{$key} );
           }
         }
+
+        # handle description as a special case. We will not remove it, only replace it.
+        if( exists( $newprogram->{description} ) ) {
+          if( !$newprogram->{description} ) {
+            delete( $newprogram->{description} );
+          }
+        }
+
+        # TODO collect updates, compare and only push back to database what really has been changed
+        $self->{datastore}->sa->Update( 'programs', {
+            channel_id => $ce->{channel_id},
+            start_time => $ce->{start_time}
+          }, $newprogram );
       }
 
       # go around and find the next best matching rule

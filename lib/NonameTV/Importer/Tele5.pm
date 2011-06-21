@@ -47,6 +47,8 @@ sub new {
     $self->{KeepDesc} = 1;
   }
 
+  $self->{datastore}->{augment} = 1;
+
   return $self;
 }
 

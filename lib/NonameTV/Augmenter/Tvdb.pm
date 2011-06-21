@@ -21,8 +21,6 @@ sub new {
     my $self  = $class->SUPER::new( @_ );
     bless ($self, $class);
 
-#    print Dumper( $self );
-
     defined( $self->{ApiKey} )   or die "You must specify ApiKey";
     defined( $self->{Language} ) or die "You must specify Language";
 
@@ -37,9 +35,10 @@ sub new {
                                      cache     => $cachefile,
                                      banner    => $bannerdir,
                                   });
-#    print Dumper( $self->{tvdb}->{cache}->{Update} ); #->{lastupdated};
-#    $self->{tvdb}->getUpdates( 'all' );
     $self->{tvdb}->getUpdates( 'guess' );
+
+    my $opt = { quiet => 1 };
+    Debug::Simple::debuglevels($opt);
 
     return $self;
 }
@@ -51,8 +50,6 @@ sub FillHash( $$$$ ) {
   return if( !defined $episode );
 
   my $episodeid = $series->{Seasons}[$episode->{SeasonNumber}][$episode->{EpisodeNumber}];
-
-#  print Dumper( $series, $episodeid, $episode );
 
   $resultref->{title} = $series->{SeriesName};
 
@@ -102,19 +99,35 @@ sub AugmentProgram( $$$ ){
 
   if( $ruleref->{matchby} eq 'episodeabs' ) {
     # match by absolute episode number from program hash
-    my $series;
-    if( defined( $ruleref->{remoteref} ) ) {
-      my $seriesname = $self->{tvdb}->getSeriesName( $ruleref->{remoteref} );
-      $series = $self->{tvdb}->getSeries( $seriesname );
+
+    if( defined $ceref->{episode} ){
+      my( $episodeabs )=( $ceref->{episode} =~ m|^\s*\.\s*(\d+)\s*/?\s*\d*\s*\.\s*$| );
+      if( defined $episodeabs ){
+        $episodeabs += 1;
+
+        my $series;
+        if( defined( $ruleref->{remoteref} ) ) {
+          my $seriesname = $self->{tvdb}->getSeriesName( $ruleref->{remoteref} );
+          $series = $self->{tvdb}->getSeries( $seriesname );
+        } else {
+          $series = $self->{tvdb}->getSeries( $ceref->{title} );
+        }
+        if( defined $series ){
+          my $episode = $self->{tvdb}->getEpisodeAbs( $series->{SeriesName}, $episodeabs );
+
+          if( defined( $episode ) ) {
+            $self->FillHash( $resultref, $series, $episode );
+          } else {
+            w( "no absolute episode " . $episodeabs . " found for '" . $ceref->{title} . "'" );
+            $resultref = undef;
+          }
+        }
+      } else {
+        $resultref = undef;
+      }
     } else {
-      $series = $self->{tvdb}->getSeries( $ceref->{title} );
+      $resultref = undef;
     }
-    my( $episodeabs )=( $ceref->{episode} =~ m|\.\s*(\d+)/*\d*\s*\.| );
-    $episodeabs += 1;
-    my $episode = $self->{tvdb}->getEpisodeAbs( $series->{SeriesName}, $episodeabs );
-
-    $self->FillHash( $resultref, $series, $episode );
-
   }elsif( $ruleref->{matchby} eq 'episodetitle' ) {
     # match by episode title from program hash
 
