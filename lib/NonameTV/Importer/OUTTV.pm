@@ -79,7 +79,7 @@ sub ImportFlatXLS
   # main loop
   foreach my $oWkS (@{$oBook->{Worksheet}}) {
 
-    progress("--------- SHEET: $oWkS->{Name}");
+   # progress("--------- SHEET: $oWkS->{Name}");
 
     # start from row 2
     # the first row looks like one cell saying like "EPG DECEMBER 2007  (Yamal - HotBird)"
@@ -117,13 +117,12 @@ sub ImportFlatXLS
         progress("OUTTV: Date is: $date");
       }
 
-	# time (column 1)
-	#   print "hejhejhej";
+	  # time (column 1)
       $oWkC = $oWkS->{Cells}[$iR][1];
       next if( ! $oWkC );
       my $time = ParseTime( $oWkC->Value );
       next if( ! $time );
-	  # print "hejhej";
+
       # program_title (column 2)
       $oWkC = $oWkS->{Cells}[$iR][2];
       $program_title = $oWkC->Value;
@@ -132,10 +131,9 @@ sub ImportFlatXLS
 	  $oWkC = $oWkS->{Cells}[$iR][3];
       my $genre = $oWkC->Value;
 	  
+	  # desc (column 4)
 	  $oWkC = $oWkS->{Cells}[$iR][4];
       my $desc = $oWkC->Value;
-	  # print "hej";
-	  #print ">$program_title<\n";
 
       if( $time and $program_title ){
 	  
