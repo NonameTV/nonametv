@@ -33,8 +33,6 @@ sub new {
 
   my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
   $self->{datastorehelper} = $dsh;
-  
-  $self->{datastore}->{augment} = 1;
 
   return $self;
 }
@@ -79,7 +77,6 @@ sub ImportFlatXLS
   # main loop
   foreach my $oWkS (@{$oBook->{Worksheet}}) {
 
-   # progress("--------- SHEET: $oWkS->{Name}");
 
     # start from row 2
     # the first row looks like one cell saying like "EPG DECEMBER 2007  (Yamal - HotBird)"
@@ -131,7 +128,7 @@ sub ImportFlatXLS
 	  $oWkC = $oWkS->{Cells}[$iR][3];
       my $genre = $oWkC->Value;
 	  
-	  # desc (column 4)
+	  # description (column 4)
 	  $oWkC = $oWkS->{Cells}[$iR][4];
       my $desc = $oWkC->Value;
 
@@ -148,18 +145,16 @@ sub ImportFlatXLS
           start_time   => $time,
 		  description  => $desc,
         };
-        
-          my ( $program_type, $category ) = ParseDescCatSwe( $ce->{description} );
-  			AddCategory( $ce, $program_type, $category );
     
 		if( $genre ){
 			my($program_type, $category ) = $ds->LookupCat( 'OUTTV', $genre );
 			AddCategory( $ce, $program_type, $category );
 		}
 		
+		# Extract episode info, categories in description
 		$self->extract_extra_info( $ce );
 		
-		# Make it readable
+		# Make it readable since extract need it per line.
 		$ce->{description} = norm($desc);
 		
         $dsh->AddProgramme( $ce );
@@ -175,8 +170,6 @@ sub ImportFlatXLS
   
   return;
 }
-
-## Extra thingies from Svt_web
 
 sub extract_extra_info
 {
@@ -205,7 +198,8 @@ sub extract_extra_info
 
   AddCategory( $ce, $program_type, $category );
 
-  $ce->{title} =~ s/^\(N\)\s*//;
+  # Remove (N) from title
+  $ce->{title} =~ s/\(N\)//g;
   
   $ce->{description} = join_text( @sentences );
 
@@ -310,12 +304,10 @@ sub extract_episode
   }
 }
 
-##END##
+
 
 sub isDate {
   my ( $text ) = @_;
-
-#print ">$text<\n";
 
 	unless( $text ) {
 		next;
@@ -335,8 +327,6 @@ sub isDate {
 
 sub ParseDate {
   my ( $text ) = @_;
-
-#print ">$text<\n";
 
   my( $year, $day, $month );
 
@@ -362,13 +352,10 @@ sub ParseDate {
 
 
 	return $dt->ymd("-");
-#return $year."-".$month."-".$day;
 }
 
 sub ParseTime {
   my( $text ) = @_;
-
-#print "ParseTime: >$text<\n";
 
   my( $hour , $min );
 
