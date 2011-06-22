@@ -1,6 +1,7 @@
 package NonameTV::Importer;
 
 use strict;
+use warnings;
 
 use File::Copy;
 use IO::Scalar;
