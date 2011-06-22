@@ -35,7 +35,9 @@ sub new {
                                      cache     => $cachefile,
                                      banner    => $bannerdir,
                                   });
-    $self->{tvdb}->getUpdates( 'guess' );
+    if( defined $self->{tvdb}->{cache}->{Update} ) {
+      $self->{tvdb}->getUpdates( 'guess' );
+    }
 
     my $opt = { quiet => 1 };
     Debug::Simple::debuglevels($opt);
