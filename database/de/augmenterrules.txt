@@ -11,7 +11,7 @@
 84,Fixups,^(Montage):\s+(.*)$,\N,\N,\N,splittitle
 84,Fixups,"^(splash! 2010):\s+(.*)$",\N,\N,\N,splittitle
 84,Fixups,^(Abgeschminkt):\s+(.*)$,\N,\N,\N,splittitle
-58,Fixups,^(neoMusic):\s+(?!(?:Wanted|90minutes))(.*)$,\N,\N,\N,splittitle
+58,Fixups,^(neoMusic):\s+(?!(?:Wanted|90minutes|backstage))(.*)$,\N,\N,\N,splittitle
 58,Fixups,"^(Adventure X):\s+(.*)$",\N,\N,\N,splittitle
 58,Fixups,"^(neoMusic Portrait):\s+(.*)$",\N,\N,\N,splittitle
 58,Tvdb,Glücksbärchis,\N,\N,76079,episodetitle
@@ -21,3 +21,7 @@
 58,Fixups,^(Netzmenschen)\s+-\s+(.*)$,\N,\N,\N,splittitle
 \N,Fixups,"^(Polizeiruf 110):\s+(.*)$",\N,\N,\N,splittitle
 49,Tvdb,\N,program_type,series,\N,episodetitle
+57,Tvdb,"Inspector Barnaby",subtitle,\N,\N,episodeabs
+57,Tvdb,"SOKO Leipzig",subtitle,\N,\N,episodeabs
+57,Tvdb,"SOKO Leipzig",\N,\N,\N,episodetitle
+57,Tvdb,"Inspector Barnaby",\N,\N,\N,episodetitle
