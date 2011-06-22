@@ -146,6 +146,10 @@ sub ImportFlatXLS
 		  description  => $desc,
         };
     
+    	# Check description after categories.
+      	my ( $program_type, $category ) = ParseDescCatSwe( $desc );
+  		AddCategory( $ce, $program_type, $category );
+    
 		if( $genre ){
 			my($program_type, $category ) = $ds->LookupCat( 'OUTTV', $genre );
 			AddCategory( $ce, $program_type, $category );
@@ -187,19 +191,9 @@ sub extract_extra_info
   #
 
   my @sentences = (split_text( $ce->{description} ), "");
-  
-  ( $program_type, $category ) = ParseDescCatSwe( $sentences[0] );
-
-  # If this is a movie we already know it from the svt_cat.
-  if( defined($program_type) and ($program_type eq "movie") )
-  {
-    $program_type = undef; 
-  }
-
-  AddCategory( $ce, $program_type, $category );
 
   # Remove (N) from title
-  $ce->{title} =~ s/\(N\)//g;
+  $ce->{title} =~ s/ \(N\)//g;
   
   $ce->{description} = join_text( @sentences );
 
