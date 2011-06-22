@@ -15,7 +15,9 @@ end_time is sometimes NULL, sometimes 00-00-00 00:00:00. Differs between grabber
 
 Add more aspect-info.
 
-Grab the season, episode and of_episode from OUTTV-importer.
+OUTTV: Grab the season, episode and of_episode from OUTTV-importer.
+
+ORF_xml: the importer uses the time in the xml files, may be 1hour off for foreign countries
 
 Update the trans_cat table with categories for more channels.
 
