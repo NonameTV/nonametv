@@ -148,7 +148,7 @@ sub ImportContent
  	      start_time  => $time,
    		};
    	 
-   	 	$ce->{subtitle} = $subtitle if $subtitle;
+   	 	$ce->{subtitle} = norm($subtitle) if $subtitle;
 	
   	  $dsh->AddProgramme( $ce );
  	 }
