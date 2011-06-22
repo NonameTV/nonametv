@@ -341,6 +341,7 @@ sub ParseExtraInfo
       }
 
       # strip dub, premiere
+      $line =~ s|, Zweikanalton$||;
       $line =~ s|, Synchronfassung$||;
       $line =~ s|, Erstausstrahlung$||;
       $line =~ s|, Schwarz-Wei\x{df}$||;
@@ -472,6 +473,7 @@ sub ParseExtraInfo
     }
 
     # strip dub, premiere
+    $line =~ s|, Zweikanalton$||;
     $line =~ s|, Synchronfassung$||;
     $line =~ s|, Erstausstrahlung$||;
     $line =~ s|, Schwerpunkt: [^,]+$||;
