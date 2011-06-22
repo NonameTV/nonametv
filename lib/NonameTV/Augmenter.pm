@@ -1,3 +1,11 @@
+package NonameTV::Augmenter;
+
+use strict;
+use warnings;
+
+use NonameTV::Factory qw/CreateAugmenter/;
+use NonameTV::Log qw/d/;
+
 #
 # THIS IS NOT THE BASE CLASS FOR AUGMENTERS! (CONTRARY TO HOW IMPORTER.PM IS THE BASE CLASS FOR IMPORTERS)
 #
@@ -65,7 +73,18 @@
 # output: programme + error
 #
 
-sub ReadLastUpdate {
+sub new( @@ ){
+  my $class = ref( $_[0] ) || $_[0];
+
+  my $self = { }; 
+  bless $self, $class;
+
+  $self->{datastore} = $_[1];
+
+  return $self;
+}
+
+sub ReadLastUpdate( @ ){
   my $self = shift;
 
   my $ds = $self->{datastore};
@@ -82,7 +101,7 @@ sub ReadLastUpdate {
   return $last_update;
 }
 
-sub WriteLastUpdate {
+sub WriteLastUpdate( @@ ){
   my $self = shift;
   my( $update_started ) = @_;
 
@@ -90,6 +109,256 @@ sub WriteLastUpdate {
 
   $ds->sa->Update( 'state', { name => "augmenter_last_update" }, 
                { value => $update_started } );
+}
+
+sub cmp_rules_by_score( ){
+  if(!defined( $a->{score} ) && !defined( $b->{score} )){
+    return 0;
+  } elsif(!defined( $a->{score} ) ){
+    return 1;
+  } elsif(!defined( $b->{score} ) ){
+    return -1;
+  } else {
+    return -($a->{score} <=> $b->{score});
+  }
+}
+
+sub sprint_rule( @ ){
+  my ($rule_ref) = @_;
+  my $result = '';
+
+  if( $rule_ref ){
+    if( $rule_ref->{channel_id} ){
+      $result .= 'channel=' . $rule_ref->{channel_id} . ', ';
+    }
+    if( $rule_ref->{title} ){
+      $result .= 'title=\'' . $rule_ref->{title} . '\', ';
+    }
+    if( $rule_ref->{otherfield} ){
+      if( defined( $rule_ref->{othervalue} ) ){
+        $result .= $rule_ref->{otherfield} . '=\'' . $rule_ref->{othervalue} . '\', ';
+      } else {
+        $result .= $rule_ref->{otherfield} . '=NULL, ';
+      }
+    }
+    if( $rule_ref->{augmenter} ){
+      $result .= $rule_ref->{augmenter};
+      if( $rule_ref->{matchby} ){
+        $result .= '::' . $rule_ref->{matchby};
+      }
+      if( $rule_ref->{remoteref} ){
+        $result .= '( ' . $rule_ref->{remoteref} . ' )';
+      }
+    }
+  }
+
+  return( $result );
+}
+
+sub sprint_augment( @@ ){
+  my ($programme_ref, $augment_ref) = @_;
+  my $result = '';
+
+  if( $programme_ref && $augment_ref){
+    foreach my $attribute ( 'title', 'subtitle', 'episode',
+                            'program_type', 'category', 'actors' ) {
+      if( exists( $augment_ref->{$attribute} ) ){
+        if( defined( $programme_ref->{$attribute} ) && defined( $augment_ref->{$attribute} ) ) {
+          if( $programme_ref->{$attribute} ne $augment_ref->{$attribute} ){
+            $result .= '  changing ' . $attribute . " to \'" .
+                       $augment_ref->{$attribute} .  "\' was \'" .
+                       $programme_ref->{$attribute} . "\'\n";
+# TODO add verbose mode
+#          } else {
+#            $result .= '  leaving  ' . $attribute . " unchanged\n";
+          }
+        } elsif( defined( $programme_ref->{$attribute} ) ){
+          $result .= '  removing ' . $attribute . "\n";
+        } elsif( defined( $augment_ref->{$attribute} ) ){
+          $result .= '  adding   ' . $attribute . " as \'" .
+                     $augment_ref->{$attribute} . "\'\n";
+        }
+      }
+    }
+  }
+
+  return( $result );
+}
+
+sub AugmentBatch( @@ ) {
+  my( $self, $batchid )=@_;
+
+  ###
+  # set up for augmenting one specific channel by batchid
+  ###
+  (my $channel_xmltvid )=($batchid =~ m|^(\S+)_|);
+
+  my( $res, $sth ) = $self->{datastore}->sa->Sql( "
+      SELECT ar.*
+        FROM channels c, augmenterrules ar
+       WHERE c.xmltvid LIKE ?
+         AND (ar.channel_id = c.id
+          OR  ar.channel_id IS NULL)",
+      [$channel_xmltvid] );
+
+  my $augmenter = { };
+  my @ruleset;
+
+  my $iter;
+  while( defined( $iter = $sth->fetchrow_hashref() ) ){
+    # set up augmenters
+    if( !defined( $augmenter->{ $iter->{'augmenter'} } ) ){
+      d( "creating augmenter '" . $iter->{'augmenter'} . "' augmenter\n" );
+      $augmenter->{ $iter->{'augmenter'} }= CreateAugmenter( $iter->{'augmenter'}, $self->{datastore} );
+    }
+
+    # append rule to array
+    push( @ruleset, $iter );
+  }
+
+  if( @ruleset == 0 ){
+    d( 'no augmenterrules for this batch' );
+    return;
+  }
+
+
+  d( "ruleset for this batch: \n" );
+  foreach my $therule ( @ruleset ) {
+    d( sprint_rule( $therule ) . "\n" );
+  }
+
+
+  ###
+  # augment all programs from one batch by batchid
+  ###
+
+  # program metadata from augmenter
+  my $newprogram;
+  # result code from augmenter
+  my $result;
+
+    ( $res, $sth ) = $self->{datastore}->sa->Sql( "
+        SELECT p.* from programs p, batches b
+        WHERE (p.batch_id = b.id)
+          AND (b.name LIKE ?)
+        ORDER BY start_time asc, end_time desc", 
+  # name of batch to use for testing
+      [$batchid] );
+  
+  my $ce;
+  while( defined( $ce = $sth->fetchrow_hashref() ) ) {
+    # copy ruleset to working set
+    my @rules = @ruleset;
+
+    if( defined( $ce->{subtitle} ) ) {
+      d( "augmenting program: " . $ce->{title} . " - \"" . $ce->{subtitle} . "\"\n" );
+    } else {
+      d( "augmenting program: " . $ce->{title} . "\n" );
+    }
+
+    # loop until no more rules match
+    while( 1 ){
+      ###
+      # order rules by quality of match
+      ###
+      foreach( @rules ){
+        my $score = 0;
+
+        # match by channel_id
+        if( defined( $_->{channel_id} ) ) {
+          if( $_->{channel_id} eq $ce->{channel_id} ){
+            $score += 1;
+          } else {
+            $_->{score} = undef;
+            next;
+          }
+        }
+
+        # match by title
+        if( defined( $_->{title} ) ) {
+          # regexp?
+          if( $_->{title} =~ m|^\^| ) {
+            if( $ce->{title} =~ m|$_->{title}| ){
+              $score += 4;
+            } else {
+              $_->{score} = undef;
+              next;
+            }
+          } else {
+            if( $_->{title} eq $ce->{title} ){
+              $score += 4;
+            } else {
+              $_->{score} = undef;
+              next;
+            }
+          }
+        }
+
+        # match by other field
+        if( defined( $_->{otherfield} ) ){
+          if( defined( $_->{othervalue} ) ) {
+            if( $_->{othervalue} eq $ce->{$_->{otherfield}} ){
+              $score += 2;
+            } else {
+              $_->{score} = undef;
+              next;
+            }
+          } else {
+            if( !defined( $_->{othervalue} ) ){
+              $score += 2;
+            } else {
+              $_->{score} = undef;
+              next;
+            }
+          }
+        }
+
+        $_->{score} = $score;
+      }
+
+      @rules = sort{ cmp_rules_by_score }( @rules );
+      #printf( "rules after sorting: %s\n", Dumper( \@rules ) );
+
+      # take the best matching rule from the array (we apply it now and don't want it to match another time)
+      my $rule = shift( @rules );
+
+      # end loop if the best matching rule is not a mathing rule after all
+      if( !defined( $rule->{score} ) ){
+        last;
+      }
+
+      d( 'best matching rule: ' . sprint_rule( $rule ) . "\n" );
+
+      # apply the rule
+      ( $newprogram, $result ) = $augmenter->{$rule->{augmenter}}->AugmentProgram( $ce, $rule );
+
+      if( defined( $newprogram) ) {
+        d( "augmenting as follows:\n" . sprint_augment( $ce, $newprogram ) );
+        while( my( $key, $value )=each( %$newprogram ) ) {
+          if( $value ) {
+            $ce->{$key} = $value;
+          } else {
+            delete( $ce->{$key} );
+          }
+        }
+
+        # handle description as a special case. We will not remove it, only replace it.
+        if( exists( $newprogram->{description} ) ) {
+          if( !$newprogram->{description} ) {
+            delete( $newprogram->{description} );
+          }
+        }
+
+        # TODO collect updates, compare and only push back to database what really has been changed
+        $self->{datastore}->sa->Update( 'programs', {
+            channel_id => $ce->{channel_id},
+            start_time => $ce->{start_time}
+          }, $newprogram );
+      }
+
+      # go around and find the next best matching rule
+    }
+  }
 }
 
 1;

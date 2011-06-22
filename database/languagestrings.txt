@@ -192,3 +192,7 @@ exporter-xmltv2,episode_part,dio,hr
 exporter-xmltv2,episode_number,epizoda,hr
 exporter-xmltv2,episode_season,sezona,hr
 exporter-xmltv2,of,od,hr
+exporter-conax,episode_season,Staffel,de
+exporter-conax,episode_number,Folge,de
+exporter-conax,episode_part,Teil,de
+exporter-conax,of,von,de
