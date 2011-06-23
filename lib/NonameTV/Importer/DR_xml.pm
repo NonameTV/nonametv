@@ -103,7 +103,7 @@ sub ImportContent {
       }
     
    $ce->{production_date} = "$year-01-01" if $year ne "";
-   #$ce->{country} = norm($country) if $country ne "";
+   $ce->{production_country} = norm($country) if $country ne "";
     
     my($program_type, $category ) = $ds->LookupCat( 'DR', $genre );
 	AddCategory( $ce, $program_type, $category );
