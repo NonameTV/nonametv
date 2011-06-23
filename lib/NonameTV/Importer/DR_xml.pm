@@ -103,7 +103,11 @@ sub ImportContent {
       }
     
    $ce->{production_date} = "$year-01-01" if $year ne "";
+<<<<<<< HEAD
    #$ce->{production_country} = norm($country) if $country ne "";
+=======
+   #$ce->{country} = norm($country) if $country ne "";
+>>>>>>> parent of b221d55... Production_country, just add:
     
     my($program_type, $category ) = $ds->LookupCat( 'DR', $genre );
 	AddCategory( $ce, $program_type, $category );

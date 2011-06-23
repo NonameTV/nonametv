@@ -668,11 +668,6 @@ sub WriteEntry
   {
     $d->{date} = substr( $data->{production_date}, 0, 4 );
   }
-  
-  ## Production country
-  $d->{country} = [[ $data->{production_country},$chd->{sched_lang} ]] 
-  if defined( $data->{production_country} ) and $data->{production_country} ne "";
-  ## END
 
   if( defined( $data->{aspect} ) and $data->{aspect} ne "unknown" )
   {
