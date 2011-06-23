@@ -304,7 +304,7 @@ sub AugmentBatch( @@ ) {
               next;
             }
           } else {
-            if( !defined( $_->{othervalue} ) ){
+            if( !defined( $ce->{$_->{otherfield}} ) ){
               $score += 2;
             } else {
               $_->{score} = undef;

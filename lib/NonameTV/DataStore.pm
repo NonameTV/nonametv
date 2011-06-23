@@ -1,6 +1,8 @@
 package NonameTV::DataStore;
 
 use strict;
+use utf8;
+use warnings;
 
 use NonameTV qw/FixProgrammeData/;
 use NonameTV::Augmenter;
@@ -12,8 +14,6 @@ use DateTime::Format::Strptime;
 
 use Storable qw/dclone/;
 use Encode qw/decode_utf8/;
-
-use utf8;
 
 =head1 NAME
 
