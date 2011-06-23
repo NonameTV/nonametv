@@ -670,8 +670,10 @@ sub WriteEntry
   }
   
   ## Production country
-  $d->{country} = [[ $data->{production_country},$chd->{sched_lang} ]] 
-  if defined( $data->{production_country} ) and $data->{production_country} ne "";
+  if( defined( $data->{production_country} ) and ($data->{production_country} =~ /\S/) )
+  {
+    push @{$d->{country}}, [$data->{production_country}, 'en'];
+  }
   ## END
 
   if( defined( $data->{aspect} ) and $data->{aspect} ne "unknown" )

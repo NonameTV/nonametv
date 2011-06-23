@@ -31,6 +31,7 @@ BEGIN {
 		      File2Xml Content2Xml
 		      FindParagraphs
                       norm AddCategory
+                      AddCountry
                       ParseDescCatSwe FixProgrammeData
 		      ParseXml ParseXmltv
                       MonthNumber
@@ -342,6 +343,25 @@ sub AddCategory
       and ( $category =~ /\S/ ) )
   {
     $ce->{category} = $category;
+  }
+}
+
+=item AddCountry
+
+Add a country to an entry if the entry does not already have a country.
+
+AddCountry( $ce, $country );
+
+=cut
+
+sub AddCountry
+{
+  my( $ce, $country ) = @_;
+
+  if( not defined( $ce->{production_country} ) and defined( $country ) 
+      and ( $country =~ /\S/ ) )
+  {
+    $ce->{production_country} = $country;
   }
 }
 

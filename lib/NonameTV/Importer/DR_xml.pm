@@ -14,7 +14,7 @@ use utf8;
 use DateTime;
 use XML::LibXML;
 
-use NonameTV qw/ParseXml AddCategory norm/;
+use NonameTV qw/ParseXml AddCategory AddCountry norm/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/f/;
 
@@ -76,7 +76,7 @@ sub ImportContent {
     #      end_time => ParseDateTime( $end ),
     my $title = $b->findvalue( "pro_title" );
     my $year = $b->findvalue( "prd_prodyear" );
-    my $country = $b->findvalue( "prd_prodcountry" );
+    my $country2 = $b->findvalue( "prd_prodcountry" );
     
     my $of_episode = undef;
     my $episode = undef;
@@ -103,7 +103,9 @@ sub ImportContent {
       }
     
    $ce->{production_date} = "$year-01-01" if $year ne "";
-   $ce->{production_country} = norm($country) if $country ne "";
+    my($country ) = $ds->LookupCountry( $country2 );
+	AddCountry( $ce, $country );
+   #$ce->{production_country} = norm($country) if $country ne "";
     
     my($program_type, $category ) = $ds->LookupCat( 'DR', $genre );
 	AddCategory( $ce, $program_type, $category );

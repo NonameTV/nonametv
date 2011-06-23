@@ -1,0 +1,23 @@
+asien,Asia
+australien,Australia
+belgien,Belgium
+canada,Canada
+danmark,Danmark
+"det sydlige sydamerika","South America"
+europa,Europe
+"frankrig & monaco","France & Monaco"
+"ikke placerbart på verdensdele","Non-placeable on the world"
+irland,Ireland
+italien,Italy
+japan,Japan
+kina,China
+norden,Nordic
+norge,Norway
+storbritannien,"United Kingdom"
+sverige,Sweden
+tyskland,Germany
+usa,U.S.A.
+vesteuropa,"West Europe"
+"vestlige mellem-europa","West Europe"
+øst-asien,Asia
+østrig,Austria

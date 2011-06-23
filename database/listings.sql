@@ -107,6 +107,13 @@ CREATE TABLE `trans_cat` (
   PRIMARY KEY  (`type`,`original`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `trans_country`;
+CREATE TABLE `trans_country` (
+  `original` varchar(60) NOT NULL DEFAULT '',
+  `country` varchar(60) DEFAULT NULL,
+  PRIMARY KEY (`original`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 DROP TABLE IF EXISTS `languagestrings`;
 CREATE TABLE `languagestrings` (
   `module` varchar(32) NOT NULL default '',
