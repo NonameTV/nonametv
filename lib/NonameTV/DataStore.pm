@@ -539,67 +539,6 @@ sub LookupCat {
 
 }
 
-=item LookupCountry
-
-Lookup a country, so it gets the american country name.
-Example:
-
-  my( $country ) = $ds->LookupCountry( 'Norge' );
-  $ds->AddProgramme( { ..., production_country => $ountry } );
-  
-Norge is automatic translated to Norway.
-
-=cut
-
-sub LookupCountry {
-  my $self = shift;
-  my ( $org ) = @_;
-
-  return ( undef ) if ( not defined($org) ) or ( $org !~ /\S/ );
-
-  $org =~ s/^\s+//;
-  $org =~ s/\s+$//;
-
-  # I should be using locales, but I don't dare turn them on.
-  $org = lc($org);
-  $org =~ tr/ÅÄÖ/åäö/;
-
-  # The field has room for 50 characters. Unicode may occupy
-  # several bytes with one character.
-  # Treat all categories with the same X character prefix
-  # as equal.
-  $org = substr( $org, 0, 44 );
-
-  $self->LoadCountries()
-    if not exists( $self->{countries} );
-
-  if ( not exists( $self->{countries}->{"$org"} ) ) {
-
-    # MySQL considers some characters as equal, e.g. e and é.
-    # Trying to insert both anime and animé will give an error-message
-    # from MySql. Therefore, I try to lookup the new entry before adding
-    # it to see if MySQL thinks it already exists. I should probably
-    # normalize the strings before inserting them instead...
-    my $data =
-      $self->{sa}->Lookup( "trans_country", { original => $org } );
-    if ( defined($data) ) {
-      $self->{countries}->{ $org } =
-        [ $data->{country} ];
-    }
-    else {
-      $self->AddCountry( $org );
-    }
-  }
-
-  if ( defined( $self->{countries}->{"$org"} ) ) {
-    return @{ ( $self->{countries}->{"$org"} ) };
-  }
-  else {
-    return ( undef, undef );
-  }
-
-}
-
 =item Reset
 
 Reset the datastore-object to its initial state. This method can be called
@@ -651,40 +590,6 @@ sub EndTransaction {
   else {
     $self->{sa}->DoSql("ROLLBACK");
   }
-}
-
-sub LoadCountries {
-  my $self = shift;
-
-  my $d = {};
-
-  my $sth = $self->{sa}->Iterate( 'trans_country', {} );
-  if ( not defined($sth) ) {
-    $self->{countries} = {};
-    w "No categories found in database.";
-    return;
-  }
-
-  while ( my $data = $sth->fetchrow_hashref() ) {
-    $d->{ $data->{original} } =
-      [ $data->{country} ];
-  }
-  $sth->finish();
-
-  $self->{countries} = $d;
-}
-
-sub AddCountry {
-  my $self = shift;
-  my ( $org ) = @_;
-
-  $self->{sa}->Add(
-    'trans_country',
-    {
-      original => $org
-    }
-  );
-  $self->{countries}->{"$org"} = [ undef, undef ];
 }
 
 sub LoadCategories {

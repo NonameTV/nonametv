@@ -32,7 +32,6 @@ The following tables are included:
 channels
 channelgroups
 trans_cat
-trans_country
 languagestrings
 epgservers
 dvb_cat
@@ -59,11 +58,10 @@ dump_structure( "$datadir/listings.sql" );
 dump_table( $ds, "languagestrings", "$datadir/languagestrings.txt" );
 dump_table( $ds, "dvb_cat", "$datadir/dvb_cat.txt" );
 
-#dump_table( $ds, "channels", "$datadir/$country/channels.txt" );
+dump_table( $ds, "channels", "$datadir/$country/channels.txt" );
 dump_table( $ds, "channelgroups", "$datadir/$country/channelgroups.txt" );
 dump_table( $ds, "trans_cat", "$datadir/$country/trans_cat.txt",
 	    "not (program_type='' and category='')" );
-dump_table( $ds, "trans_country", "$datadir/$country/trans_country.txt");
 dump_table( $ds, "epgservers", "$datadir/$country/epgservers.txt" );
 dump_table( $ds, "networks", "$datadir/$country/networks.txt" );
 dump_table( $ds, "services", "$datadir/$country/services.txt" );

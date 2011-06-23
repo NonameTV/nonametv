@@ -213,15 +213,12 @@ Nonstop,"sci fi",Sci-fi,movie
 Nonstop,short,Short,movie
 Nonstop,thriller,Thriller,movie
 Nonstop,western,Western,movie
-OUTTV,actionfilm,Action,movie
 OUTTV,dokumentär,Documentary,tvshow
 OUTTV,Drama,drama,
 OUTTV,Drama/Romantik,Drama/Romance,
 OUTTV,film,Movies,movie
 OUTTV,Komedi/Drama,Comedy/Drama,
-OUTTV,kortfilm,Short,movie
 OUTTV,musik,Music,tvshow
-OUTTV,quiz,Quiz,
 OUTTV,reality,Reality,series
 OUTTV,resa,Food/Travel,series
 OUTTV,serie,series,series
