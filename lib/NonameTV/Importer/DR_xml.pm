@@ -104,7 +104,11 @@ sub ImportContent {
     
    $ce->{production_date} = "$year-01-01" if $year ne "";
 <<<<<<< HEAD
+<<<<<<< HEAD
    #$ce->{production_country} = norm($country) if $country ne "";
+=======
+   #$ce->{country} = norm($country) if $country ne "";
+>>>>>>> parent of b221d55... Production_country, just add:
 =======
    #$ce->{country} = norm($country) if $country ne "";
 >>>>>>> parent of b221d55... Production_country, just add:
