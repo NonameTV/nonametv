@@ -735,6 +735,11 @@ sub WriteEntry
     $d->{credits}->{guest} = [split( ", ", $data->{guests})];
   }
 
+  if( $data->{url} )
+  {
+    $d->{url} = [ $data->{url} ];
+  }
+
   $w->write_programme( $d );
 }
 
