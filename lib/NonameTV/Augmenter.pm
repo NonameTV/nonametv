@@ -332,7 +332,7 @@ sub AugmentBatch( @@ ) {
       # apply the rule
       ( $newprogram, $result ) = $augmenter->{$rule->{augmenter}}->AugmentProgram( $ce, $rule );
 
-      if( defined( $newprogram) ) {
+      if( scalar keys %{$newprogram} ) {
         d( "augmenting as follows:\n" . sprint_augment( $ce, $newprogram ) );
         while( my( $key, $value )=each( %$newprogram ) ) {
           if( $value ) {
