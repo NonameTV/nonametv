@@ -254,9 +254,6 @@ sub _downloadZip {
 	# Remove empty tags
 	$xml =~ s/(<[^\/\s>]*\/>|<[^\/\s>]*><\/[^>]*>)//gs;
 
-	# Replace vertical tab \x{b} with normal whitespace
-	$xml =~ s/\x{b}/ /g;
-
 	&debug(4, "download Zip: $url\n", XML => \$xml);
 
 	# Return process XML into hashref
