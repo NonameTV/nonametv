@@ -55,6 +55,8 @@ sub new {
 
     $self->{SkipYesterday} = 1; # there is no data for the past
 
+    $self->{datastore}->{augment} = 1;
+
     return $self;
 }
 
