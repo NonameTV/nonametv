@@ -84,6 +84,7 @@ CREATE TABLE `programs` (
   `url_image_main` varchar(100) default NULL,
   `url_image_thumbnail` varchar(100) default NULL,
   `url_image_icon` varchar(100) default NULL,
+  `star_rating` varchar(20) default NULL,
   PRIMARY KEY  (`channel_id`,`start_time`),
   KEY `batch` (`batch_id`,`start_time`),
   CONSTRAINT `programs_ibfk_2` FOREIGN KEY (`batch_id`) REFERENCES `batches` (`id`),
@@ -207,7 +208,7 @@ CREATE TABLE `admins` (
 
 DROP TABLE IF EXISTS `augmenterrules`;
 CREATE TABLE `augmenterrules` (
-  `channel_id` int(11) NOT NULL,
+  `channel_id` int(11) default NULL,
   `augmenter` varchar(20) NOT NULL,
   `title` varchar(100) default NULL,
   `otherfield` varchar(20) default NULL,

@@ -740,6 +740,10 @@ sub WriteEntry
     $d->{url} = [ $data->{url} ];
   }
 
+  if( $data->{star_rating} )
+  {
+    $d->{'star-rating'} = [ [ $data->{star_rating}, undef ] ];
+  }
   $w->write_programme( $d );
 }
 

@@ -22,6 +22,8 @@
 \N,Fixups,"^(Polizeiruf 110):\s+(.*)$",\N,\N,\N,splittitle
 49,Tvdb,\N,program_type,series,\N,episodetitle
 57,Tvdb,"Inspector Barnaby",subtitle,\N,\N,episodeabs
-57,Tvdb,"SOKO Leipzig",subtitle,\N,\N,episodeabs
-57,Tvdb,"SOKO Leipzig",\N,\N,\N,episodetitle
+57,Tvdb,"SOKO Leipzig #broken, see http://forums.thetvdb.com/viewtopic.php?t=6892",subtitle,\N,\N,episodeabs
+57,Tvdb,"SOKO Leipzig #broken, see http://forums.thetvdb.com/viewtopic.php?t=6892",\N,\N,\N,episodetitle
 57,Tvdb,"Inspector Barnaby",\N,\N,\N,episodetitle
+57,Tvdb,Wilsberg,\N,\N,\N,episodetitle
+57,Tvdb,Wilsberg,subtitle,\N,\N,episodeabs

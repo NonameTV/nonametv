@@ -3,11 +3,9 @@ package NonameTV::Augmenter::Tvdb;
 use strict;
 use warnings;
 
-use Data::Dumper;
-use Encode;
 use TVDB::API;
 
-use NonameTV qw/norm/;
+use NonameTV qw/norm AddCategory/;
 use NonameTV::Augmenter::Base;
 use NonameTV::Config qw/ReadConfig/;
 use NonameTV::Log qw/w/;
@@ -39,6 +37,14 @@ sub new {
       $self->{tvdb}->getUpdates( 'guess' );
     }
 
+    my $langhash = $self->{tvdb}->getAvailableLanguages( );
+    $self->{LanguageNo} = $langhash->{$self->{Language}}->{id};
+
+    # only consider Ratings with 10 or more votes by default
+    if( !defined( $self->{MinRatingCount} ) ){
+      $self->{MinRatingCount} = 10;
+    }
+
     my $opt = { quiet => 1 };
     Debug::Simple::debuglevels($opt);
 
@@ -57,21 +63,30 @@ sub FillHash( $$$$ ) {
 
   $resultref->{episode} = ($episode->{SeasonNumber} - 1) . ' . ' . ($episode->{EpisodeNumber} - 1) . ' .';
 
-  $resultref->{subtitle} = decode( 'utf-8', $episode->{EpisodeName} );
+  $resultref->{subtitle} = $episode->{EpisodeName};
 
-  if( defined( $episode->{Overview} ) ) {
-    $resultref->{description} = decode( 'utf-8', $episode->{Overview} ) . "\nQuelle: Tvdb";
+# TODO skip the Overview for now, it falls back to english in a way we can not detect
+#  if( defined( $episode->{Overview} ) ) {
+#    $resultref->{description} = $episode->{Overview} . "\nQuelle: Tvdb";
+#  }
+
+  if( $episode->{FirstAired} ) {
+    $resultref->{production_date} = $episode->{FirstAired};
   }
 
-  $resultref->{production_date} = $episode->{FirstAired};
-
-  # FIXME link to the correct language instead of hardcoding german (14)
   $resultref->{url} = sprintf(
     'http://thetvdb.com/?tab=episode&seriesid=%d&seasonid=%d&id=%d&lid=%d',
-    $episode->{seriesid}, $episode->{seasonid}, $episodeid, 14
+    $episode->{seriesid}, $episode->{seasonid}, $episodeid, $self->{LanguageNo}
   );
 
-  my @actors = split( '\|', decode( 'utf-8', $series->{Actors} ) );
+  my @actors = ();
+  # TODO only add series actors if its not a special
+  if( $series->{Actors} ) {
+    push( @actors, split( '\|', $series->{Actors} ) );
+  }
+  if( $episode->{GuestStars} ) {
+    push( @actors, split( '\|', $episode->{GuestStars} ) );
+  }
   foreach( @actors ){
     $_ = norm( $_ );
     if( $_ eq '' ){
@@ -87,7 +102,37 @@ sub FillHash( $$$$ ) {
     $resultref->{actors} = undef;
   }
 
+  #more fields on episodes are, Director, Writer
+
   $resultref->{program_type} = 'series';  
+
+  # Genre
+  if( $series->{Genre} ){
+    # notice, Genre is ordered by some internal order, not by importance!
+    my @genres = split( '\|', $series->{Genre} );
+    foreach( @genres ){
+      $_ = norm( $_ );
+      if( $_ eq '' ){
+        $_ = undef;
+      }
+    }
+    @genres = grep{ defined } @genres;
+    foreach my $genre ( @genres ){
+      my ( $program_type, $categ ) = $self->{datastore}->LookupCat( "Tvdb", $genre );
+      # set category, unless category is already set!
+      AddCategory( $resultref, undef, $categ );
+    }
+  }
+
+  # Use episode rating if there are more then MinRatingCount ratings for the episode. If the
+  # episode does not have enough ratings consider using the series rating instead (if that has enough ratings)
+  # if not rating qualifies leave it away.
+  # the Rating at Tvdb is 1-10, turn that into 0-9 as xmltv ratings always must start at 0
+  if( $episode->{RatingCount} >= $self->{MinRatingCount} ){
+    $resultref->{'star_rating'} = $episode->{Rating}-1 . ' / 9';
+  } elsif( $series->{RatingCount} >= $self->{MinRatingCount} ){
+    $resultref->{'star_rating'} = $series->{Rating}-1 . ' / 9';
+  }
 }
 
 
@@ -98,6 +143,11 @@ sub AugmentProgram( $$$ ){
   my $resultref = {};
   # result string, empty/false for success, message/true for failure
   my $result = '';
+
+  if( $ceref->{title} eq 'SOKO Leipzig' ){
+    # broken dataset on Tvdb
+    return( undef, 'known bad data for SOKO Leipzig, skipping' );
+  }
 
   if( $ruleref->{matchby} eq 'episodeabs' ) {
     # match by absolute episode number from program hash
@@ -121,14 +171,9 @@ sub AugmentProgram( $$$ ){
             $self->FillHash( $resultref, $series, $episode );
           } else {
             w( "no absolute episode " . $episodeabs . " found for '" . $ceref->{title} . "'" );
-            $resultref = undef;
           }
         }
-      } else {
-        $resultref = undef;
       }
-    } else {
-      $resultref = undef;
     }
   }elsif( $ruleref->{matchby} eq 'episodetitle' ) {
     # match by episode title from program hash
@@ -151,15 +196,16 @@ sub AugmentProgram( $$$ ){
       my $episode = $self->{tvdb}->getEpisodeByName( $series->{SeriesName}, $episodetitle );
       if( defined( $episode ) ) {
         $self->FillHash( $resultref, $series, $episode );
-      } else {
-        $resultref = undef;
       }
-    } else {
-      $resultref = undef;
     }
 
   }else{
     $result = "don't know how to match by '" . $ruleref->{matchby} . "'";
+  }
+
+  if( !scalar keys %{$resultref} ){
+    $resultref = undef;
+  } else {
   }
 
   return( $resultref, $result );
