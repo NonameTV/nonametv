@@ -1,6 +1,7 @@
 package NonameTV::FileStore;
 
 use strict;
+use warnings;
 
 use NonameTV::Log qw/d p w f/;
 

@@ -1,6 +1,7 @@
 package NonameTV::Job;
 
 use strict;
+use warnings;
 
 =pod
 

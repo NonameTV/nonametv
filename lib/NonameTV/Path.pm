@@ -1,5 +1,8 @@
 package NonameTV::Path;
 
+use strict;
+use warnings;
+
 =head1 NAME
 
 NonameTV::Path - Locate different parts of the NonameTV source.

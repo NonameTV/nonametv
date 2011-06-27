@@ -1,6 +1,7 @@
 package NonameTV::ContentCache;
 
 use strict;
+use warnings;
 
 use Digest::MD5 qw/md5_hex/;
 use Encode qw(encode_utf8 from_to is_utf8);

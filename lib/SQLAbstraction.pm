@@ -2,6 +2,7 @@ package SQLAbstraction;
 use Carp;
 
 use strict;
+use warnings;
 
 =head1 NAME
 

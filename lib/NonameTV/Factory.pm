@@ -1,6 +1,7 @@
 package NonameTV::Factory;
 
 use strict;
+use warnings;
 
 =head1 NAME
 

@@ -6,6 +6,7 @@ package TVDB::API;
 
 require 5.008008;
 use strict;
+use warnings;
 
 use Compress::Zlib;
 use DBM::Deep;

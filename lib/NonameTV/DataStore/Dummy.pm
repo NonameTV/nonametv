@@ -1,6 +1,7 @@
 package NonameTV::DataStore::Dummy;
 
 use strict;
+use warnings;
 
 use Carp;
 
