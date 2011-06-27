@@ -27,3 +27,9 @@
 57,Tvdb,"Inspector Barnaby",\N,\N,\N,episodetitle
 57,Tvdb,Wilsberg,\N,\N,\N,episodetitle
 57,Tvdb,Wilsberg,subtitle,\N,\N,episodeabs
+48,Fixups,^(Universum):\s+(.*)$,\N,\N,\N,splittitle
+48,Fixups,^(makro):\s+(.*)$,\N,\N,\N,splittitle
+48,Fixups,^(hitec):\s+(.*)$,\N,\N,\N,splittitle
+48,Fixups,"^(scobel extra):\s+(.*)$",\N,\N,\N,splittitle
+48,Fixups,^(scobel)\s+-\s+(.*)$,\N,\N,\N,splittitle
+48,Fixups,"^(Kulturzeit extra):\s+(.*)$",\N,\N,\N,splittitle
