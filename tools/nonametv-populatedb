@@ -56,7 +56,9 @@ if( $opt->{rebuild} ) {
   }
 }
 
+populate_table( $ds, "dvb_cat", "$datadir/dvb_cat.txt" );
 populate_table( $ds, "languagestrings", "$datadir/languagestrings.txt" );
+populate_table( $ds, "augmenterrules", "$datadir/$country/augmenterrules.txt" );
 populate_table( $ds, "channels", "$datadir/$country/channels.txt" );
 populate_table( $ds, "trans_cat", "$datadir/$country/trans_cat.txt" );
 
