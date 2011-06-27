@@ -213,7 +213,7 @@ CREATE TABLE `augmenterrules` (
   `title` varchar(100) default NULL,
   `otherfield` varchar(20) default NULL,
   `othervalue` varchar(100) default NULL,
-  `remoteref` varchar(20) default NULL,
+  `remoteref` varchar(100) default NULL,
   `matchby` varchar(20) default NULL,
   UNIQUE KEY `channel_id` (`channel_id`,`augmenter`,`title`,`otherfield`,`othervalue`),
   CONSTRAINT `augmenterrules_ibfk_1` FOREIGN KEY (`channel_id`) REFERENCES `channels` (`id`)

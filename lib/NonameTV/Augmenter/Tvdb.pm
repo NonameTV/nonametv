@@ -8,7 +8,7 @@ use TVDB::API;
 use NonameTV qw/norm AddCategory/;
 use NonameTV::Augmenter::Base;
 use NonameTV::Config qw/ReadConfig/;
-use NonameTV::Log qw/w/;
+use NonameTV::Log qw/w d/;
 
 use base 'NonameTV::Augmenter::Base';
 
@@ -150,7 +150,7 @@ sub AugmentProgram( $$$ ){
   }
 
   if( $ruleref->{matchby} eq 'episodeabs' ) {
-    # match by absolute episode number from program hash
+    # match by absolute episode number from program hash. USE WITH CAUTION, NOT EVERYONE AGREES ON ANY ORDER!!!
 
     if( defined $ceref->{episode} ){
       my( $episodeabs )=( $ceref->{episode} =~ m|^\s*\.\s*(\d+)\s*/?\s*\d*\s*\.\s*$| );
@@ -186,16 +186,23 @@ sub AugmentProgram( $$$ ){
       } else {
         $series = $self->{tvdb}->getSeries( $ceref->{title} );
       }
+      if( defined $series ){
+        my $episodetitle = $ceref->{subtitle};
 
-      my $episodetitle = $ceref->{subtitle};
-      $episodetitle =~ s|,\s+Teil\s+(\d+)$| ($1)|;
-      $episodetitle =~ s|\s+-\s+Teil\s+(\d+)$| ($1)|;
-      $episodetitle =~ s|\s+\(Teil\s+(\d+)\)$| ($1)|;
-      $episodetitle =~ s|\s+-\s+(\d+)\.\s+Teil$| ($1)|;
+        $episodetitle =~ s|\s+-\s+Teil\s+(\d+)$| ($1)|;   # _-_Teil_#
+        $episodetitle =~ s|,\s+Teil\s+(\d+)$| ($1)|;      # ,_Teil #
+        $episodetitle =~ s|\s+Teil\s+(\d+)$| ($1)|;       # _Teil #
+        $episodetitle =~ s|\s+\(Teil\s+(\d+)\)$| ($1)|;   # _(Teil_#)
+        $episodetitle =~ s|\s+-\s+(\d+)\.\s+Teil$| ($1)|; # _-_#._Teil
 
-      my $episode = $self->{tvdb}->getEpisodeByName( $series->{SeriesName}, $episodetitle );
-      if( defined( $episode ) ) {
-        $self->FillHash( $resultref, $series, $episode );
+        my $episode = $self->{tvdb}->getEpisodeByName( $series->{SeriesName}, $episodetitle );
+        if( defined( $episode ) ) {
+          $self->FillHash( $resultref, $series, $episode );
+        } else {
+          w( "episode not found by title: " . $ceref->{title} . " - \"" . $ceref->{subtitle} . "\"" );
+        }
+      } else {
+        d( "series not found by title: " . $ceref->{title} );
       }
     }
 

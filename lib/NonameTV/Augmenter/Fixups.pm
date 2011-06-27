@@ -45,10 +45,33 @@ sub AugmentProgram( $$$ ){
     my( $title, $episodetitle )=( $ceref->{title} =~ m|$ruleref->{title}| );
     $resultref->{'title'} = $title;
     $resultref->{'subtitle'} = $episodetitle;
+    if( $ceref->{'subtitle'} ) {
+      $ceref->{'subtitle'} .= ': ' . $ceref->{'subtitle'};
+    }
+  }elsif( $ruleref->{matchby} eq 'splitguesttitle' ) {
+    # split the name of the guest from the title and put it into subtitle and guest
+    my( $title, $episodetitle )=( $ceref->{title} =~ m|$ruleref->{title}| );
+    $resultref->{'title'} = $title;
+    $resultref->{'subtitle'} = $episodetitle;
+    $resultref->{'guests'} = $episodetitle;
+  }elsif( $ruleref->{matchby} eq 'replacetitle' ) {
+    $resultref->{'title'} = $ruleref->{remoteref};
+  }elsif( $ruleref->{matchby} eq 'replacesubtitle' ) {
+    $resultref->{'subtitle'} = $ruleref->{remoteref};
   }elsif( $ruleref->{matchby} eq 'copylastdetails' ) {
-    # we have a program without details (no description) and want to
-    # copy all details from the last program with the same
-    # title/subtitle/episode number on the same (or another) channel
+    # We have a program without details (no description) and want to
+    # copy all details (all but details related to the transmission, like aspect
+    # and audio) from the last program with the same title/subtitle/episode
+    # number on the same (or another) channel.
+    #
+    # Remoteref can be a xmltvid of another channel to copy from there, in this case
+    # the search will be for the same or an earlier start time.
+    #
+    # If the programme to augment has a timestamp (UTC!) in previously-shown then
+    # try a programme with that start time first.
+    #
+    # FIXME what about series that air in pairs of two episodes?
+    #
   }else{
     $result = "don't know how to match by '" . $ruleref->{matchby} . "'";
     $resultref = undef;
