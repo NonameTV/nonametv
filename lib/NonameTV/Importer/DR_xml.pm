@@ -14,7 +14,7 @@ use utf8;
 use DateTime;
 use XML::LibXML;
 
-use NonameTV qw/ParseXml norm/;
+use NonameTV qw/ParseXml AddCategory norm/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/f/;
 
@@ -75,8 +75,15 @@ sub ImportContent {
     #my $end = $b->findvalue( "pro_publish[1]/ppu_stop_timestamp_presentation_utc" );
     #      end_time => ParseDateTime( $end ),
     my $title = $b->findvalue( "pro_title" );
-    my $episode = $b->findvalue( "prd_episode_number" );
+    my $year = $b->findvalue( "prd_prodyear" );
+    my $country = $b->findvalue( "prd_prodcountry" );
+    
+    my $of_episode = undef;
+    my $episode = undef;
+    $episode = $b->findvalue( "prd_episode_number" );
+    $of_episode = $b->findvalue( "prd_episode_total_number" );
     my $desc = $b->findvalue( "pro_publish[1]/ppu_description" );
+    my $genre = $b->findvalue( "prd_genre_text" );
 
     my $ce = {
       channel_id => $chd->{id},
@@ -85,7 +92,29 @@ sub ImportContent {
       description => norm($desc),
     };
 
-    $ce->{episode} = ". " . ($episode-1) . " ." if $episode ne "";
+	  # Episode info in xmltv-format
+      if( ($episode ne "") and ( $of_episode ne "") )
+      {
+        $ce->{episode} = sprintf( ". %d/%d .", $episode-1, $of_episode );
+      }
+      elsif( $episode ne "" )
+      {
+        $ce->{episode} = sprintf( ". %d .", $episode-1 );
+      }
+    
+   $ce->{production_date} = "$year-01-01" if $year ne "";
+<<<<<<< HEAD
+<<<<<<< HEAD
+   #$ce->{production_country} = norm($country) if $country ne "";
+=======
+   #$ce->{country} = norm($country) if $country ne "";
+>>>>>>> parent of b221d55... Production_country, just add:
+=======
+   #$ce->{country} = norm($country) if $country ne "";
+>>>>>>> parent of b221d55... Production_country, just add:
+    
+    my($program_type, $category ) = $ds->LookupCat( 'DR', $genre );
+	AddCategory( $ce, $program_type, $category );
 
     $ds->AddProgramme( $ce );
   }

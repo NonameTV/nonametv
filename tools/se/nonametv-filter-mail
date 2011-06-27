@@ -8,9 +8,9 @@ use lib "$FindBin::Bin/../../lib";
 use Mail::Box;
 use Mail::Box::Manager;
 
-my $maildir = "/home/mattias/Maildir";
-my $infoldername = ".Projects.xmltv-data-in";
-my $targetprefix = ".Projects.NonameTV-Data.";
+my $maildir = "/home/beatx/maildir/";
+my $infoldername = ".Projects/xmltv-data-in";
+my $targetprefix = ".Projects/.NonameTV-Data.";
 
 my $folders;
 
@@ -33,12 +33,6 @@ foreach my $msg ($infolder->messages) {
     # Matches both @millenniumgroup.se and 
     # millenniumgroup.se@bounce.maildirect.se
     MoveMessage( $msg, "Nonstop" );
-  }
-  elsif( $fromaddr =~ /\@voicetv.se/i ) {
-    MoveMessage( $msg, "TheVoice" );
-  }
-  elsif( $fromaddr =~ /\@kanallokal.tv/i ) {
-    MoveMessage( $msg, "KanalLokal" );
   }
   elsif( $fromaddr =~ /\@mtvne.com/i ) {
     MoveMessage( $msg, "MTV" );
@@ -64,7 +58,52 @@ foreach my $msg ($infolder->messages) {
   elsif( $fromaddr =~ /\@disney.com/i ) {
     MoveMessage( $msg, "Disney" );
   }
-
+  elsif( $fromaddr =~ /\@globallistings.info/i ) {
+    MoveMessage( $msg, "GlobalListings" );
+  }
+  elsif( $fromaddr =~ /\@tvzon.se/i ) {
+    MoveMessage( $msg, "YaS" );
+  }
+  elsif( $fromaddr =~ /\@rcs.it/i ) {
+    MoveMessage( $msg, "YaS" );
+  }
+  elsif( $fromaddr =~ /\@fox.com/i ) {
+    MoveMessage( $msg, "FOX" );
+  }
+  elsif( $fromaddr =~ /\@cnbc.com/i ) {
+    MoveMessage( $msg, "CNBC" );
+  }
+#  elsif( $fromaddr =~ /\@trustmark.no/i ) {
+#    MoveMessage( $msg, "GlobalListings" );
+#  }
+#  elsif( $fromaddr =~ /\@bskyb.com/i ) {
+#    MoveMessage( $msg, "GlobalListings" );
+#  }
+  elsif( $fromaddr =~ /\@tvzon.info/i ) {
+    # Matches beatx.espn@tvzon.info
+    MoveMessage( $msg, "OUTTV" );
+  }
+  elsif( $fromaddr =~ /\@pixur.se/i ) {
+    # Matches beatx.espn@pixur.se
+    MoveMessage( $msg, "PokerChannel" );
+  }
+  elsif( $fromaddr =~ /\@out.tv/i ) {
+    # Matches beatx.espn@tvzon.info
+    MoveMessage( $msg, "OUTTV" );
+  }
+  elsif( $fromaddr =~ /\@travelchannel.co.uk/i ) {
+    # Matches beatx.espn@tvzon.info
+    MoveMessage( $msg, "TravelChannel" );
+  }
+  elsif( $fromaddr =~ /\@turner.com/i ) {
+    MoveMessage( $msg, "Turner" );
+  }
+  elsif( $fromaddr =~ /\@espnamerica.com/i ) {
+    MoveMessage( $msg, "ESPN" );
+  }
+  elsif( $fromaddr =~ /\@pokerchanneleurope.com/i ) {
+    MoveMessage( $msg, "PokerChannel" );
+  }
 }
 
 sub MoveMessage {

@@ -68,7 +68,8 @@ sub FilterContent {
   my $root = $fdoc->createElement( 'tv' );
   $fdoc->setDocumentElement( $root );
 
-  my $ns = $doc->find( '//programme[@channel="' . $chd->{xmltvid} . '"]' );
+#  my $ns = $doc->find( '//programme[@channel="' . $chd->{xmltvid} . '"]' );
+my $ns = $doc->find( '//programme[@channel="' . $chd->{grabber_info} . '"]' );
 
   foreach my $node ($ns->get_nodelist()) {
     $fdoc->adoptNode( $node );

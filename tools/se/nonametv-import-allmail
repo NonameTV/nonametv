@@ -1,6 +1,19 @@
 #!/bin/bash
 
 tools/nonametv-import DisneyChannel $1 $2 $3
-tools/nonametv-import Discovery $1 $2 $3
+tools/nonametv-import NationalGeographic $1 $2 $3
+tools/nonametv-import HistoryChannel $1 $2 $3
+tools/nonametv-import ESPN $1 $2 $3
+tools/nonametv-import ESPNAmerica $1 $2 $3
+tools/nonametv-import PokerChannel $1 $2 $3
+tools/nonametv-import CNBC $1 $2 $3
+tools/nonametv-import Turner $1 $2 $3
+tools/nonametv-import OUTTV $1 $2 $3
+tools/nonametv-import NatGeoWild $1 $2 $3
+tools/nonametv-import NatGeoWildHD $1 $2 $3
+tools/nonametv-import ExtremeSports $1 $2 $3
+tools/nonametv-import YaS $1 $2 $3
+
+#tools/nonametv-import NationalGeographicDK $1 $2 $3
 
 

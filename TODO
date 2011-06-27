@@ -5,7 +5,7 @@ Clarify copyright and license (GPL)
 Validate data for AddProgramme and mark the batch so that it will be retried
 until it succeeds.
  
-TV4: Stabilt. Den gör en falblack till <program_description> om det inte finns episode_desc eller? du kan skriva upp på din todo då med att om den gör denna fallback, kan vi uppenbarligen inte identifiera ett specifikt avsnitt. då ska episodeid sättas till "0000", en indikation på just detta.
+TV4: Stabilt. Den gÃ¶r en falblack till <program_description> om det inte finns episode_desc eller? du kan skriva upp pÃ¥ din todo dÃ¥ med att om den gÃ¶r denna fallback, kan vi uppenbarligen inte identifiera ett specifikt avsnitt. dÃ¥ ska episodeid sÃ¤ttas till "0000", en indikation pÃ¥ just detta.
 
 Use Namespaces for channels.xml? This would make it easy to add more info to channels.xml in the future that can be removed by tv_grab_se_swedb without specific knowledge about the tags.
 

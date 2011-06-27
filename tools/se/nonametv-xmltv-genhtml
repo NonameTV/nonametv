@@ -79,12 +79,60 @@ print OUT << "EOHEAD";
 <html>
 <head>
 <style type="text/css">
-  .X {  text-align: center; }
-  .E {  text-align: center; background-color: grey; }
+body {
+				font: 13px lucida grande, arial;
+				color: #444;
+        padding: 20px;
+        background: #e0eff6;
+				background: rgba(221,238,246,0.898438);
+}
+
+  .X {  text-align: center; background-color: green; color:black; }
+  .E {  text-align: center; background-color: red; color:black; }
+  table { 
+ 		border:1px solid #bbbbbb;
+ 		border-spacing: 0px;
+		margin-top: 8px;
+ 		margin-bottom: 20px;
+	}
+	
+thead {
+  background: #eeeeee;
+}
+
+td, th { 
+  border:1px solid #cccccc;
+  padding:5px; 
+}
+p {
+        margin:8px 0px 8px 0px;
+        line-height:18px;
+}
+
+a img {
+        border: 0;
+}
+
+a {
+    text-decoration: none;
+}
+h1 {
+        font-family: Georgia,"Times New Roman",Times,serif;
+        font-size:26px;
+        color:#083772;
+        letter-spacing:-1px;
+        font-weight:normal;
+}
+
+p {
+        margin:8px 0px 8px 0px;
+        line-height:18px;
+}
 </style>
 </head>
 <body>
 <h1>Schedules</h1>
+<p>E=Doesn't Exist - X=Exists</p>
 <table>
 <thead>
   <tr>
@@ -123,7 +171,7 @@ EOD
     }
     else
     {
-      print OUT "<td class='$files{$file}'><a href='displayfile.html?$file'>$files{$file}</a></td>";
+      print OUT "<td class='$files{$file}'><a href='$file.xml.gz'>$files{$file}</a></td>";
     }
   }
 
@@ -177,9 +225,9 @@ foreach my $channel (@channels)
   print OUT << "EOREC";
 <tr>
   <td>$channel</td>
-  <td><img src="http://xmltv.tvsajten.com/chanlogos/$channel.png"></td>
-  <td><img src="http://xmltv.tvsajten.com/chanlogos/44x44/$channel.png"></td>
-  <td><img src="http://xmltv.tvsajten.com/chanlogos/16x16/$channel.png"></td>
+  <td><img src="http://xmltv.tvzon.se/chanlogos/$channel.png"></td>
+  <td><img src="http://xmltv.tvzon.se/chanlogos/44x44/$channel.png"></td>
+  <td><img src="http://xmltv.tvzon.se/chanlogos/16x16/$channel.png"></td>
 </tr>
 
 EOREC

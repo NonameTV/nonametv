@@ -6,7 +6,7 @@ use warnings;
 =pod
 
 Importer for data from Nonstop. 
-One file per channel and month downloaded from their site.
+One file per channel and week downloaded from their site.
 The downloaded file is in xml-format.
 
 =cut
@@ -15,7 +15,7 @@ use DateTime;
 use XML::LibXML;
 use HTTP::Date;
 
-use Compress::Zlib;
+#use Compress::Zlib;
 
 use NonameTV qw/ParseXml norm AddCategory/;
 use NonameTV::Log qw/w progress error f/;
@@ -35,12 +35,6 @@ sub new {
     $self->{MaxWeeks} = 4 unless defined $self->{MaxWeeks};
 
     defined( $self->{UrlRoot} ) or die "You must specify UrlRoot";
-
-    # Canal Plus' webserver returns the following date in some headers:
-    # Fri, 31-Dec-9999 23:59:59 GMT
-    # This makes Time::Local::timegm and timelocal print an error-message
-    # when they are called from HTTP::Date::str2time.
-    # Therefore, I have included HTTP::Date and modified it slightly.
 
     return $self;
 }
@@ -66,15 +60,8 @@ sub FilterContent {
 
   my( $chid ) = ($chd->{grabber_info} =~ /^(\d+)/);
 
-  #my $uncompressed = Compress::Zlib::memGunzip($$cref);
   my $doc;
-
-  #if( defined $uncompressed ) {
-  #    $doc = ParseXml( \$uncompressed );
-  #}
-  #else {
-      $doc = ParseXml( $cref );
-  #}
+  $doc = ParseXml( $cref );
 
   if( not defined $doc ) {
     return (undef, "ParseXml failed" );
