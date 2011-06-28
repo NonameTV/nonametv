@@ -38,3 +38,9 @@
 57,Fixups,"Spooks – Im Visier des MI5",program_type,series,Spooks,replacetitle
 57,Fixups,"Inspector Barnaby",subtitle,\N,\N,copylastdetails
 57,Fixups,\N,description,\N,\N,copylastdetails
+57,Fixups,"^(Rosamunde Pilcher):\s+(.*)$",\N,\N,\N,splittitle
+38,Fixups,"360º - Geo Reportage",\N,\N,"360° - Geo Reportage",replacetitle
+48,Fixups,"^(37 Grad):\s+(.*)$",\N,\N,\N,splittitle
+58,Fixups,\N,description,\N,\N,copylastdetails
+38,Fixups,\N,description,\N,\N,copylastdetails
+44,Fixups,\N,description,\N,\N,copylastdetails

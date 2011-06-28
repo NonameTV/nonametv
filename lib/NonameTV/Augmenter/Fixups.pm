@@ -30,6 +30,27 @@ sub new {
     return $self;
 }
 
+sub CopyProgramWithoutTransmission( $$ ){
+  my( $resultref, $ce ) = @_;
+
+        $resultref->{title} = $ce->{title};
+        $resultref->{subtitle} = $ce->{subtitle};
+        $resultref->{description} = $ce->{description};
+        $resultref->{actors} = $ce->{actors};
+        $resultref->{directors} = $ce->{directors};
+        $resultref->{writers} = $ce->{writers};
+        $resultref->{adapters} = $ce->{adapters};
+        $resultref->{producers} = $ce->{producers};
+        $resultref->{presenters} = $ce->{presenters};
+        $resultref->{commentators} = $ce->{commentators};
+        $resultref->{guests} = $ce->{guests};
+        $resultref->{star_rating} = $ce->{star_rating};
+        $resultref->{category} = $ce->{category};
+        $resultref->{program_type} = $ce->{program_type};
+        $resultref->{episode} = $ce->{episode};
+        $resultref->{production_date} = $ce->{production_date};
+        $resultref->{rating} = $ce->{rating};
+}
 
 sub AugmentProgram( $$$ ){
   my( $self, $ceref, $ruleref ) = @_;
@@ -72,42 +93,30 @@ sub AugmentProgram( $$$ ){
     #
     # FIXME what about series that air in pairs of two episodes?
     #
-    if( $ceref->{'title'} && $ceref->{subtitle} ){
+    if( $ceref->{'title'} && $ceref->{subtitle} && !$ceref->{description} ){
       my( $res, $sth ) = $self->{datastore}->sa->Sql( "
           SELECT * from programs
-          WHERE (channel_id = ? and title = ? and subtitle = ? and description is not null)
-          ORDER BY abs( timediff( ? , start_time ) ) asc, start_time asc, end_time desc", 
+          WHERE channel_id = ? and title = ? and subtitle = ? and description is not null
+          ORDER BY timediff( ? , start_time ) asc, start_time asc, end_time desc
+          LIMIT 1", 
         [$ceref->{channel_id}, $ceref->{title}, $ceref->{subtitle}, $ceref->{start_time}] );
       my $ce;
       while( defined( my $ce = $sth->fetchrow_hashref() ) ) {
-        printf STDERR ("candidate to copy from: %s\n", Dumper( $ce ) );
+        CopyProgramWithoutTransmission( $resultref, $ce );
       }
     }elsif( $ceref->{'title'} ){
       my( $res, $sth ) = $self->{datastore}->sa->Sql( "
           SELECT * from programs
-          WHERE (channel_id = ? and title = ? and subtitle is not null and description is not null)
-          ORDER BY abs( timediff( ? , start_time ) ) asc, start_time asc, end_time desc
+          WHERE channel_id = ? and title = ? and subtitle is not null and description is not null
+          ORDER BY timediff( ? , start_time ) asc, start_time asc, end_time desc
           LIMIT 1", 
         [$ceref->{channel_id}, $ceref->{title}, $ceref->{start_time}] );
       my $ce;
       if( defined( my $ce = $sth->fetchrow_hashref() ) ) {
-        $resultref->{subtitle} = $ce->{subtitle};
-        $resultref->{description} = $ce->{description};
-        $resultref->{actors} = $ce->{actors};
-        $resultref->{directors} = $ce->{directors};
-        $resultref->{writers} = $ce->{writers};
-        $resultref->{adapters} = $ce->{adapters};
-        $resultref->{producers} = $ce->{producers};
-        $resultref->{presenters} = $ce->{presenters};
-        $resultref->{commentators} = $ce->{commentators};
-        $resultref->{guests} = $ce->{guests};
-        $resultref->{star_rating} = $ce->{star_rating};
-        $resultref->{category} = $ce->{category};
-        $resultref->{program_type} = $ce->{program_type};
-        $resultref->{episode} = $ce->{episode};
-        $resultref->{production_date} = $ce->{production_date};
-        $resultref->{rating} = $ce->{rating};
+        CopyProgramWithoutTransmission( $resultref, $ce );
       }
+    }else{
+      w( "don't know how to copylastdetails for programme at " . $ceref->{start_time} );
     }
   }else{
     $result = "don't know how to match by '" . $ruleref->{matchby} . "'";
