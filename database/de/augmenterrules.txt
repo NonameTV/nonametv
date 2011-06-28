@@ -34,3 +34,7 @@
 39,Fixups,"Stargate SG-1",subtitle,Exodus,"Todfeinde (1)",replacesubtitle
 39,Fixups,"Earth: Final Conflict",program_type,series,"Mission Erde",replacetitle
 39,Fixups,"Stargate SG-1",subtitle,Todfeinde,"Todfeinde (2)",replacesubtitle
+58,Fixups,"Spooks – Im Visier des MI5",program_type,series,Spooks,replacetitle
+57,Fixups,"Spooks – Im Visier des MI5",program_type,series,Spooks,replacetitle
+57,Fixups,"Inspector Barnaby",subtitle,\N,\N,copylastdetails
+57,Fixups,\N,description,\N,\N,copylastdetails

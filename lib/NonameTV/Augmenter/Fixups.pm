@@ -46,7 +46,7 @@ sub AugmentProgram( $$$ ){
     $resultref->{'title'} = $title;
     $resultref->{'subtitle'} = $episodetitle;
     if( $ceref->{'subtitle'} ) {
-      $ceref->{'subtitle'} .= ': ' . $ceref->{'subtitle'};
+      $resultref->{'subtitle'} .= ': ' . $ceref->{'subtitle'};
     }
   }elsif( $ruleref->{matchby} eq 'splitguesttitle' ) {
     # split the name of the guest from the title and put it into subtitle and guest
@@ -72,6 +72,43 @@ sub AugmentProgram( $$$ ){
     #
     # FIXME what about series that air in pairs of two episodes?
     #
+    if( $ceref->{'title'} && $ceref->{subtitle} ){
+      my( $res, $sth ) = $self->{datastore}->sa->Sql( "
+          SELECT * from programs
+          WHERE (channel_id = ? and title = ? and subtitle = ? and description is not null)
+          ORDER BY abs( timediff( ? , start_time ) ) asc, start_time asc, end_time desc", 
+        [$ceref->{channel_id}, $ceref->{title}, $ceref->{subtitle}, $ceref->{start_time}] );
+      my $ce;
+      while( defined( my $ce = $sth->fetchrow_hashref() ) ) {
+        printf STDERR ("candidate to copy from: %s\n", Dumper( $ce ) );
+      }
+    }elsif( $ceref->{'title'} ){
+      my( $res, $sth ) = $self->{datastore}->sa->Sql( "
+          SELECT * from programs
+          WHERE (channel_id = ? and title = ? and subtitle is not null and description is not null)
+          ORDER BY abs( timediff( ? , start_time ) ) asc, start_time asc, end_time desc
+          LIMIT 1", 
+        [$ceref->{channel_id}, $ceref->{title}, $ceref->{start_time}] );
+      my $ce;
+      if( defined( my $ce = $sth->fetchrow_hashref() ) ) {
+        $resultref->{subtitle} = $ce->{subtitle};
+        $resultref->{description} = $ce->{description};
+        $resultref->{actors} = $ce->{actors};
+        $resultref->{directors} = $ce->{directors};
+        $resultref->{writers} = $ce->{writers};
+        $resultref->{adapters} = $ce->{adapters};
+        $resultref->{producers} = $ce->{producers};
+        $resultref->{presenters} = $ce->{presenters};
+        $resultref->{commentators} = $ce->{commentators};
+        $resultref->{guests} = $ce->{guests};
+        $resultref->{star_rating} = $ce->{star_rating};
+        $resultref->{category} = $ce->{category};
+        $resultref->{program_type} = $ce->{program_type};
+        $resultref->{episode} = $ce->{episode};
+        $resultref->{production_date} = $ce->{production_date};
+        $resultref->{rating} = $ce->{rating};
+      }
+    }
   }else{
     $result = "don't know how to match by '" . $ruleref->{matchby} . "'";
     $resultref = undef;
