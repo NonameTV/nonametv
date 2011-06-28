@@ -94,6 +94,7 @@ sub AugmentProgram( $$$ ){
     # FIXME what about series that air in pairs of two episodes?
     #
     if( $ceref->{'title'} && $ceref->{subtitle} && !$ceref->{description} ){
+      # try matching by title/subtitle first
       my( $res, $sth ) = $self->{datastore}->sa->Sql( "
           SELECT * from programs
           WHERE channel_id = ? and title = ? and subtitle = ? and description is not null
@@ -104,7 +105,20 @@ sub AugmentProgram( $$$ ){
       while( defined( my $ce = $sth->fetchrow_hashref() ) ) {
         CopyProgramWithoutTransmission( $resultref, $ce );
       }
+    }elsif( $ceref->{'title'} && $ceref->{episode} && !$ceref->{description} ){
+      # try matching by title/episode number next
+      my ( $res, $sth ) = $self->{datastore}->sa->Sql( "
+          SELECT * from programs
+          WHERE channel_id = ? and title = ? and episode = ? and description is not null
+          ORDER BY timediff( ? , start_time ) asc, start_time asc, end_time desc
+          LIMIT 1", 
+        [$ceref->{channel_id}, $ceref->{title}, $ceref->{episode}, $ceref->{start_time}] );
+      my $ce;
+      while( defined( my $ce = $sth->fetchrow_hashref() ) ) {
+        CopyProgramWithoutTransmission( $resultref, $ce );
+      }
     }elsif( $ceref->{'title'} ){
+      # try matching just by title number last
       my( $res, $sth ) = $self->{datastore}->sa->Sql( "
           SELECT * from programs
           WHERE channel_id = ? and title = ? and subtitle is not null and description is not null
