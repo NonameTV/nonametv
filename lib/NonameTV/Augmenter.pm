@@ -296,10 +296,19 @@ sub AugmentBatch( @@ ) {
         if( defined( $_->{otherfield} ) ){
           if( defined( $_->{othervalue} ) ) {
             if( defined( $ce->{$_->{otherfield}} ) ){
-              if( $_->{othervalue} eq $ce->{$_->{otherfield}} ){
-                $score += 2;
-              } else {
-                next;
+              if( $_->{othervalue} =~ m|^\^| ){
+                # regexp?
+                if( $ce->{$_->{otherfield}} =~ m|$_->{othervalue}| ){
+                  $score += 2;
+                } else {
+                  next;
+                }
+              }else{
+                if( $_->{othervalue} eq $ce->{$_->{otherfield}} ){
+                  $score += 2;
+                } else {
+                  next;
+                }
               }
             } else {
               next;

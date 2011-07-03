@@ -33,23 +33,23 @@ sub new {
 sub CopyProgramWithoutTransmission( $$ ){
   my( $resultref, $ce ) = @_;
 
-        $resultref->{title} = $ce->{title};
-        $resultref->{subtitle} = $ce->{subtitle};
-        $resultref->{description} = $ce->{description};
-        $resultref->{actors} = $ce->{actors};
-        $resultref->{directors} = $ce->{directors};
-        $resultref->{writers} = $ce->{writers};
-        $resultref->{adapters} = $ce->{adapters};
-        $resultref->{producers} = $ce->{producers};
-        $resultref->{presenters} = $ce->{presenters};
-        $resultref->{commentators} = $ce->{commentators};
-        $resultref->{guests} = $ce->{guests};
-        $resultref->{star_rating} = $ce->{star_rating};
-        $resultref->{category} = $ce->{category};
-        $resultref->{program_type} = $ce->{program_type};
-        $resultref->{episode} = $ce->{episode};
-        $resultref->{production_date} = $ce->{production_date};
-        $resultref->{rating} = $ce->{rating};
+  $resultref->{title} = $ce->{title};
+  $resultref->{subtitle} = $ce->{subtitle};
+  $resultref->{description} = $ce->{description};
+  $resultref->{actors} = $ce->{actors};
+  $resultref->{directors} = $ce->{directors};
+  $resultref->{writers} = $ce->{writers};
+  $resultref->{adapters} = $ce->{adapters};
+  $resultref->{producers} = $ce->{producers};
+  $resultref->{presenters} = $ce->{presenters};
+  $resultref->{commentators} = $ce->{commentators};
+  $resultref->{guests} = $ce->{guests};
+  $resultref->{star_rating} = $ce->{star_rating};
+  $resultref->{category} = $ce->{category};
+  $resultref->{program_type} = $ce->{program_type};
+  $resultref->{episode} = $ce->{episode};
+  $resultref->{production_date} = $ce->{production_date};
+  $resultref->{rating} = $ce->{rating};
 }
 
 sub AugmentProgram( $$$ ){
@@ -67,7 +67,10 @@ sub AugmentProgram( $$$ ){
     $resultref->{'title'} = $title;
     $resultref->{'subtitle'} = $episodetitle;
     if( $ceref->{'subtitle'} ) {
-      $resultref->{'subtitle'} .= ': ' . $ceref->{'subtitle'};
+      $resultref->{'description'} = $ceref->{'subtitle'};
+      if( $ceref->{'description'} ){
+        $resultref->{'description'} .= "\n" . $ceref->{'description'};
+      }
     }
   }elsif( $ruleref->{matchby} eq 'splitguesttitle' ) {
     # split the name of the guest from the title and put it into subtitle and guest
@@ -75,10 +78,22 @@ sub AugmentProgram( $$$ ){
     $resultref->{'title'} = $title;
     $resultref->{'subtitle'} = $episodetitle;
     $resultref->{'guests'} = $episodetitle;
+  }elsif( $ruleref->{matchby} eq 'splitstartitle' ) {
+    # split the name of the starring actor from the title and put it into actors
+    my( $actor, $title )=( $ceref->{title} =~ m|$ruleref->{title}| );
+    $resultref->{'title'} = $title;
+    $resultref->{'actors'} = join( ', ', $actor, $ceref->{actors} );
   }elsif( $ruleref->{matchby} eq 'replacetitle' ) {
     $resultref->{'title'} = $ruleref->{remoteref};
   }elsif( $ruleref->{matchby} eq 'replacesubtitle' ) {
     $resultref->{'subtitle'} = $ruleref->{remoteref};
+  }elsif( $ruleref->{matchby} eq 'splitsubtitle' ) {
+    if( $ruleref->{otherfield} eq 'subtitle' ){
+      my( $episodetitle )=( $ceref->{subtitle} =~ m|$ruleref->{othervalue}| );
+      $resultref->{'subtitle'} = $episodetitle;
+    }else{
+      w( "Fixups::splitsubtitle must have otherfield='subtitle' and the regexp in othervalue!" );
+    }
   }elsif( $ruleref->{matchby} eq 'copylastdetails' ) {
     # We have a program without details (no description) and want to
     # copy all details (all but details related to the transmission, like aspect
@@ -134,6 +149,7 @@ sub AugmentProgram( $$$ ){
     }
   }else{
     $result = "don't know how to match by '" . $ruleref->{matchby} . "'";
+    w( $result );
     $resultref = undef;
   }
 

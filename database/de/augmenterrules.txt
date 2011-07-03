@@ -44,3 +44,13 @@
 58,Fixups,\N,description,\N,\N,copylastdetails
 38,Fixups,\N,description,\N,\N,copylastdetails
 44,Fixups,\N,description,\N,\N,copylastdetails
+49,Fixups,"Gawayn™",\N,\N,Gawayn,replacetitle
+\N,Fixups,"Ein bisschen Spass muss sein",\N,\N,"Ein bisschen Spaß muss sein",replacetitle
+48,Fixups,"^(Das ganz normale Verhalten der Österreicher)\s+\.\.\.\s+(.*)$",\N,\N,\N,splittitle
+58,Fixups,"^(Ein Job in)\s*\.+\s+(.*)$",\N,\N,\N,splittitle
+57,Fixups,"^(ZDF WM live)\s+(.*)$",\N,\N,\N,splittitle
+57,Fixups,"^ZDF WM extra\s+(.*)$",category,documentary,\N,splittitle
+57,Fixups,"^(ZDF WM extra)\s+(.*)$",\N,\N,\N,splittitle
+39,Fixups,\N,description,\N,\N,copylastdetails
+39,Fixups,"^(Jackie Chan):\s+(.*)$",program_type,movie,\N,splitstartitle
+48,Fixups,neues,subtitle,^Them(?:a|en):\s+(.*)$,\N,splitsubtitle
