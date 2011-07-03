@@ -6,6 +6,7 @@ package TVDB::API;
 
 require 5.008008;
 use strict;
+use warnings;
 
 use Compress::Zlib;
 use DBM::Deep;
@@ -253,9 +254,6 @@ sub _downloadZip {
 
 	# Remove empty tags
 	$xml =~ s/(<[^\/\s>]*\/>|<[^\/\s>]*><\/[^>]*>)//gs;
-
-	# Replace vertical tab \x{b} with normal whitespace
-	$xml =~ s/\x{b}/ /g;
 
 	&debug(4, "download Zip: $url\n", XML => \$xml);
 
@@ -970,15 +968,32 @@ sub getEpisodeByName {
 	# Look for episode in cache
 	my $cache = $self->{cache};
 	unless ($nocache) {
-                my $match = $episodename;
-                utf8::encode( $match );
+                my $match = lc($episodename);
+#                utf8::encode( $match );
 		foreach my $season (@{$series->{Seasons}}) {
 			foreach my $eid (@$season) {
 				next unless $eid;
 				my $ep = $cache->{Episode}->{$eid};
 				next unless $ep->{EpisodeName};
-				return $ep if $ep->{EpisodeName} eq $match;
+				return $ep if lc($ep->{EpisodeName}) eq $match;
 			}
+		}
+                # try without part number, only accept a single hit
+		my $hitcount = 0;
+		my $hit;
+		foreach my $season (@{$series->{Seasons}}) {
+			foreach my $eid (@$season) {
+				next unless $eid;
+				my $ep = $cache->{Episode}->{$eid};
+				next unless $ep->{EpisodeName};
+                                if( lc($ep->{EpisodeName}) =~ m|^$match \(\d+\)$| ){
+					$hitcount ++;
+					$hit = $ep;
+				}
+			}
+		}
+		if( $hitcount == 1){
+			return( $hit );
 		}
 	}
 

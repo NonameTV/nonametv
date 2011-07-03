@@ -5,6 +5,7 @@
 package Debug::Simple;
 
 use strict;
+use warnings;
 require Exporter;
 use Data::Dumper;
 use Term::ANSIColor qw(:constants);

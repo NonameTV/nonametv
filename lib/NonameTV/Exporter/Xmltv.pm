@@ -735,6 +735,15 @@ sub WriteEntry
     $d->{credits}->{guest} = [split( ", ", $data->{guests})];
   }
 
+  if( $data->{url} )
+  {
+    $d->{url} = [ $data->{url} ];
+  }
+
+  if( $data->{star_rating} )
+  {
+    $d->{'star-rating'} = [ [ $data->{star_rating}, undef ] ];
+  }
   $w->write_programme( $d );
 }
 

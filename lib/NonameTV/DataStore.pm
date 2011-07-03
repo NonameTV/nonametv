@@ -13,7 +13,6 @@ use Carp qw/confess/;
 use DateTime::Format::Strptime;
 
 use Storable qw/dclone/;
-use Encode qw/decode_utf8/;
 
 =head1 NAME
 

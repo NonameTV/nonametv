@@ -34,6 +34,8 @@ sub new {
       w ( $self->{Type} . ": deprecated parameter UrlRoot");
     }
 
+    $self->{datastore}->{augment} = 1;
+
     return $self;
 }
 

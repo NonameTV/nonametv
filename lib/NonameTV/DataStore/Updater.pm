@@ -1,6 +1,7 @@
 package NonameTV::DataStore::Updater;
 
 use strict;
+use warnings;
 
 use Carp;
 use NonameTV::Log qw/progress error/;

@@ -1,10 +1,5 @@
 \N,Tmdb,\N,program_type,movie,\N,title
 \N,Fixups,Tagesschau,\N,\N,\N,setcategorynews
-58,Tvdb,"Being Erica - Alles auf Anfang",\N,\N,84414,episodetitle
-58,Tvdb,"Spooks - Im Visier des MI5",\N,\N,78890,episodetitle
-58,Tvdb,"Beverly Hills, 90210",\N,\N,74936,episodetitle
-58,Tvdb,"Dawsons Creek",\N,\N,72584,episodetitle
-58,Tvdb,"Hustle - Unehrlich währt am längsten",\N,\N,73028,episodetitle
 58,Tvdb,\N,program_type,series,\N,episodetitle
 84,Fixups,"^(Video Killed The Radio Star):\s+(.*)$",\N,\N,\N,splittitle
 84,Fixups,"^(Kopf der Woche):\s+(.*)$",\N,\N,\N,splittitle
@@ -14,14 +9,48 @@
 58,Fixups,^(neoMusic):\s+(?!(?:Wanted|90minutes|backstage))(.*)$,\N,\N,\N,splittitle
 58,Fixups,"^(Adventure X):\s+(.*)$",\N,\N,\N,splittitle
 58,Fixups,"^(neoMusic Portrait):\s+(.*)$",\N,\N,\N,splittitle
-58,Tvdb,Glücksbärchis,\N,\N,76079,episodetitle
 \N,Fixups,"^(Kommissar Wallander)\s+-\s+(.*)$",\N,\N,\N,splittitle
 \N,Fixups,"^(Mankells Wallander)\s+-\s+(.*)$",\N,\N,\N,splittitle
 74,Fixups,"^(Der Bug) - Gast:\s+(.*)$",\N,\N,\N,splitguesttitle
 58,Fixups,^(Netzmenschen)\s+-\s+(.*)$,\N,\N,\N,splittitle
 \N,Fixups,"^(Polizeiruf 110):\s+(.*)$",\N,\N,\N,splittitle
 49,Tvdb,\N,program_type,series,\N,episodetitle
-57,Tvdb,"Inspector Barnaby",subtitle,\N,\N,episodeabs
-57,Tvdb,"SOKO Leipzig",subtitle,\N,\N,episodeabs
-57,Tvdb,"SOKO Leipzig",\N,\N,\N,episodetitle
-57,Tvdb,"Inspector Barnaby",\N,\N,\N,episodetitle
+48,Fixups,^(Universum):\s+(.*)$,\N,\N,\N,splittitle
+48,Fixups,^(makro):\s+(.*)$,\N,\N,\N,splittitle
+48,Fixups,^(hitec):\s+(.*)$,\N,\N,\N,splittitle
+48,Fixups,"^(scobel extra):\s+(.*)$",\N,\N,\N,splittitle
+48,Fixups,^(scobel)\s+-\s+(.*)$,\N,\N,\N,splittitle
+48,Fixups,"^(Kulturzeit extra):\s+(.*)$",\N,\N,\N,splittitle
+58,Fixups,"30 Rock",subtitle,"Oh wie schön ist Cleveland","Oh, wie schön ist Cleveland",replacesubtitle
+58,Fixups,Seinfeld,subtitle,"Alles wegen Drake!","Alles wegen Drake",replacesubtitle
+58,Fixups,"Miami Vice",subtitle,"Frucht des Giftbaumes","Frucht des Giftbaums",replacesubtitle
+58,Fixups,"Raumschiff Enterprise",subtitle,"Der Zentralnervensystemmanipulator","Der Zentralnervensystem-Manipulator",replacesubtitle
+58,Fixups,"Miami Vice",subtitle,"In der Schusslinie","In der Schußlinie",replacesubtitle
+58,Fixups,"Raumschiff Enterprise",subtitle,"Ein Paralleluniversum","Ein Parallel-Universum",replacesubtitle
+58,Fixups,Seinfeld,subtitle,"Die Dinner-Party","Die Dinnerparty",replacesubtitle
+58,Fixups,"Raumschiff Enterprise",subtitle,"Kodos, der Henker","Kodos der Henker",replacesubtitle
+39,Tvdb,\N,program_type,series,\N,episodetitle
+39,Fixups,Stargate,program_type,series,"Stargate SG-1",replacetitle
+39,Fixups,"Stargate SG-1",subtitle,Exodus,"Todfeinde (1)",replacesubtitle
+39,Fixups,"Earth: Final Conflict",program_type,series,"Mission Erde",replacetitle
+39,Fixups,"Stargate SG-1",subtitle,Todfeinde,"Todfeinde (2)",replacesubtitle
+58,Fixups,"Spooks – Im Visier des MI5",program_type,series,Spooks,replacetitle
+57,Fixups,"Spooks – Im Visier des MI5",program_type,series,Spooks,replacetitle
+57,Fixups,"Inspector Barnaby",subtitle,\N,\N,copylastdetails
+57,Fixups,\N,description,\N,\N,copylastdetails
+57,Fixups,"^(Rosamunde Pilcher):\s+(.*)$",\N,\N,\N,splittitle
+38,Fixups,"360º - Geo Reportage",\N,\N,"360° - Geo Reportage",replacetitle
+48,Fixups,"^(37 Grad):\s+(.*)$",\N,\N,\N,splittitle
+58,Fixups,\N,description,\N,\N,copylastdetails
+38,Fixups,\N,description,\N,\N,copylastdetails
+44,Fixups,\N,description,\N,\N,copylastdetails
+49,Fixups,"Gawayn™",\N,\N,Gawayn,replacetitle
+\N,Fixups,"Ein bisschen Spass muss sein",\N,\N,"Ein bisschen Spaß muss sein",replacetitle
+48,Fixups,"^(Das ganz normale Verhalten der Österreicher)\s+\.\.\.\s+(.*)$",\N,\N,\N,splittitle
+58,Fixups,"^(Ein Job in)\s*\.+\s+(.*)$",\N,\N,\N,splittitle
+57,Fixups,"^(ZDF WM live)\s+(.*)$",\N,\N,\N,splittitle
+57,Fixups,"^ZDF WM extra\s+(.*)$",category,documentary,\N,splittitle
+57,Fixups,"^(ZDF WM extra)\s+(.*)$",\N,\N,\N,splittitle
+39,Fixups,\N,description,\N,\N,copylastdetails
+39,Fixups,"^(Jackie Chan):\s+(.*)$",program_type,movie,\N,splitstartitle
+48,Fixups,neues,subtitle,^Them(?:a|en):\s+(.*)$,\N,splitsubtitle

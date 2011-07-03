@@ -2,6 +2,8 @@ package NonameTV::DataStore::FilePrint;
 # $Id: FilePrint.pm,v 1.1 2005/09/02 12:38:11 frax Exp $
 
 use strict;
+use warnings;
+
 use IO::File;
 
 =head1 NAME

@@ -1,6 +1,7 @@
 package SQLAbstraction::SQLite;
 
 use strict;
+use warnings;
 
 =head1 NAME
 

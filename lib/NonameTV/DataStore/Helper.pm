@@ -1,6 +1,7 @@
 package NonameTV::DataStore::Helper;
 
 use strict;
+use warnings;
 
 use Carp;
 use NonameTV::Log qw/d p w f/;

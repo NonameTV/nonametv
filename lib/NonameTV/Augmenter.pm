@@ -263,13 +263,13 @@ sub AugmentBatch( @@ ) {
       ###
       foreach( @rules ){
         my $score = 0;
+        $_->{score} = undef;
 
         # match by channel_id
         if( defined( $_->{channel_id} ) ) {
           if( $_->{channel_id} eq $ce->{channel_id} ){
             $score += 1;
           } else {
-            $_->{score} = undef;
             next;
           }
         }
@@ -281,14 +281,12 @@ sub AugmentBatch( @@ ) {
             if( $ce->{title} =~ m|$_->{title}| ){
               $score += 4;
             } else {
-              $_->{score} = undef;
               next;
             }
           } else {
             if( $_->{title} eq $ce->{title} ){
               $score += 4;
             } else {
-              $_->{score} = undef;
               next;
             }
           }
@@ -297,17 +295,28 @@ sub AugmentBatch( @@ ) {
         # match by other field
         if( defined( $_->{otherfield} ) ){
           if( defined( $_->{othervalue} ) ) {
-            if( $_->{othervalue} eq $ce->{$_->{otherfield}} ){
-              $score += 2;
+            if( defined( $ce->{$_->{otherfield}} ) ){
+              if( $_->{othervalue} =~ m|^\^| ){
+                # regexp?
+                if( $ce->{$_->{otherfield}} =~ m|$_->{othervalue}| ){
+                  $score += 2;
+                } else {
+                  next;
+                }
+              }else{
+                if( $_->{othervalue} eq $ce->{$_->{otherfield}} ){
+                  $score += 2;
+                } else {
+                  next;
+                }
+              }
             } else {
-              $_->{score} = undef;
               next;
             }
           } else {
             if( !defined( $ce->{$_->{otherfield}} ) ){
               $score += 2;
             } else {
-              $_->{score} = undef;
               next;
             }
           }
@@ -332,7 +341,7 @@ sub AugmentBatch( @@ ) {
       # apply the rule
       ( $newprogram, $result ) = $augmenter->{$rule->{augmenter}}->AugmentProgram( $ce, $rule );
 
-      if( defined( $newprogram) ) {
+      if( scalar keys %{$newprogram} ) {
         d( "augmenting as follows:\n" . sprint_augment( $ce, $newprogram ) );
         while( my( $key, $value )=each( %$newprogram ) ) {
           if( $value ) {
