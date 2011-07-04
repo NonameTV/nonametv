@@ -969,7 +969,6 @@ sub getEpisodeByName {
 	my $cache = $self->{cache};
 	unless ($nocache) {
                 my $match = lc($episodename);
-#                utf8::encode( $match );
 		foreach my $season (@{$series->{Seasons}}) {
 			foreach my $eid (@$season) {
 				next unless $eid;
@@ -978,7 +977,7 @@ sub getEpisodeByName {
 				return $ep if lc($ep->{EpisodeName}) eq $match;
 			}
 		}
-                # try without part number, only accept a single hit
+                # try without part number, only accept a single hit (we don't use story arc numbering for uniquely named episodes over here)
 		my $hitcount = 0;
 		my $hit;
 		foreach my $season (@{$series->{Seasons}}) {
@@ -994,6 +993,25 @@ sub getEpisodeByName {
 		}
 		if( $hitcount == 1){
 			return( $hit );
+		}
+
+		if( eval "use Text::LevenshteinXS qw(distance)" ){
+			# try with levenshtein distance 2
+			$hitcount = 0;
+			foreach my $season (@{$series->{Seasons}}) {
+				foreach my $eid (@$season) {
+					next unless $eid;
+					my $ep = $cache->{Episode}->{$eid};
+					next unless $ep->{EpisodeName};
+       	                         if( distance( lc($ep->{EpisodeName}), $match ) <= 2 ){
+						$hitcount ++;
+						$hit = $ep;
+					}
+				}
+			}
+			if( $hitcount == 1){
+				return( $hit );
+			}
 		}
 	}
 
