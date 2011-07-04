@@ -2,6 +2,8 @@ package NonameTV::Importer::DR_xml;
 
 use strict;
 use warnings;
+use utf8;
+use Unicode::String;
 
 =pod
 
@@ -9,7 +11,6 @@ Import data for DR in xml-format.
 
 =cut
 
-use utf8;
 
 use DateTime;
 use XML::LibXML;
@@ -45,7 +46,9 @@ sub FilteredExtension {
 sub ImportContent {
   my $self = shift;
   my( $batch_id, $cref, $chd ) = @_;
-
+  
+  $$cref = Unicode::String::latin1 ($$cref)->utf8 ();
+  
   $self->{batch_id} = $batch_id;
 
   my $xmltvid=$chd->{xmltvid};
@@ -75,6 +78,7 @@ sub ImportContent {
     #my $end = $b->findvalue( "pro_publish[1]/ppu_stop_timestamp_presentation_utc" );
     #      end_time => ParseDateTime( $end ),
     my $title = $b->findvalue( "pro_title" );
+    my $subtitle = $b->findvalue( "pro_publish[1]/pro_punchline" );
     my $year = $b->findvalue( "prd_prodyear" );
     my $country = $b->findvalue( "prd_prodcountry" );
     
@@ -85,11 +89,13 @@ sub ImportContent {
     my $desc = $b->findvalue( "pro_publish[1]/ppu_description" );
     my $genre = $b->findvalue( "prd_genre_text" );
 
+	
     my $ce = {
       channel_id => $chd->{id},
       start_time => ParseDateTime( $start ),
       title => norm($title),
       description => norm($desc),
+      subtitle	  => norm($subtitle),
     };
 
 	  # Episode info in xmltv-format
@@ -102,7 +108,7 @@ sub ImportContent {
         $ce->{episode} = sprintf( ". %d .", $episode-1 );
       }
     
-   $ce->{production_date} = "$year-01-01" if $year ne "";
+   #$ce->{production_date} = "$year-01-01" if $year ne "";
     
     my($program_type, $category ) = $ds->LookupCat( 'DR', $genre );
 	AddCategory( $ce, $program_type, $category );
@@ -149,6 +155,19 @@ sub Object2Url {
 
 
   return( $url, undef );
+}
+
+sub toutf8 {
+#takes: $from_encoding, $text
+#returns: $text in utf8
+    my $encoding = shift;
+    my $text = shift;
+    if ($encoding =~ /utf\-?8/i) {
+        return $text;
+    }
+    else {
+        return Encode::encode("utf8", Encode::decode($encoding, $text));
+    }
 }
 
 1;
