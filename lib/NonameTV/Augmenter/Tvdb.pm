@@ -33,8 +33,14 @@ sub new {
                                      cache     => $cachefile,
                                      banner    => $bannerdir,
                                   });
-    if( defined $self->{tvdb}->{cache}->{Update} ) {
+    # only update if there is some data to be updated
+    if (defined ($self->{tvdb}->{cache}->{Update}->{lastupdated})) {
       $self->{tvdb}->getUpdates( 'guess' );
+    }else{
+      # on an empty cache set last update before fetching any data to
+      # avoid getting the list of all updates just to see that there is
+      # nothing to update
+      $self->{tvdb}->{cache}->{Update}->{lastupdated} = time( );
     }
 
     my $langhash = $self->{tvdb}->getAvailableLanguages( );
@@ -199,7 +205,7 @@ sub AugmentProgram( $$$ ){
         if( defined( $episode ) ) {
           $self->FillHash( $resultref, $series, $episode );
         } else {
-          w( "episode not found by title: " . $ceref->{title} . " - \"" . $ceref->{subtitle} . "\"" );
+          w( "episode not found by title: " . $ceref->{title} . " - \"" . $episodetitle . "\"" );
         }
       } else {
         d( "series not found by title: " . $ceref->{title} );
