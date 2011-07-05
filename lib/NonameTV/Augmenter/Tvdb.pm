@@ -65,11 +65,11 @@ sub FillHash( $$$$ ) {
 
   my $episodeid = $series->{Seasons}[$episode->{SeasonNumber}][$episode->{EpisodeNumber}];
 
-  $resultref->{title} = $series->{SeriesName};
+  $resultref->{title} = norm( $series->{SeriesName} );
 
   $resultref->{episode} = ($episode->{SeasonNumber} - 1) . ' . ' . ($episode->{EpisodeNumber} - 1) . ' .';
 
-  $resultref->{subtitle} = $episode->{EpisodeName};
+  $resultref->{subtitle} = norm( $episode->{EpisodeName} );
 
 # TODO skip the Overview for now, it falls back to english in a way we can not detect
 #  if( defined( $episode->{Overview} ) ) {
