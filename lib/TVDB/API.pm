@@ -995,8 +995,9 @@ sub getEpisodeByName {
 			return( $hit );
 		}
 
-		if( eval "use Text::LevenshteinXS qw(distance)" ){
-			# try with levenshtein distance 2
+		eval "use Text::LevenshteinXS qw/distance/;";
+		if( !$@ ){
+			# try with Levenshtein distance 2
 			$hitcount = 0;
 			foreach my $season (@{$series->{Seasons}}) {
 				foreach my $eid (@$season) {
