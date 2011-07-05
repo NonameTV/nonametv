@@ -15,8 +15,6 @@ use DateTime;
 use XML::LibXML;
 use HTTP::Date;
 
-#use Compress::Zlib;
-
 use NonameTV qw/ParseXml norm AddCategory/;
 use NonameTV::Log qw/w progress error f/;
 
@@ -31,8 +29,8 @@ sub new {
     bless ($self, $class);
 
 
-    $self->{MinWeeks} = 0 unless defined $self->{MinWeeks};
-    $self->{MaxWeeks} = 4 unless defined $self->{MaxWeeks};
+    $self->{MinMonths} = 0 unless defined $self->{MinMonths};
+    $self->{MaxMonths} = 4 unless defined $self->{MaxMonths};
 
     defined( $self->{UrlRoot} ) or die "You must specify UrlRoot";
 
@@ -44,14 +42,23 @@ sub Object2Url {
   my( $objectname, $chd ) = @_;
 
   my( $year, $month ) = ( $objectname =~ /(\d+)-(\d+)$/ );
- 
-  # Find the first day in the given week.
-  # Copied from
-  # http://www.nntp.perl.org/group/perl.datetime/5417?show_headers=1 
+
   my $url = $self->{UrlRoot} .
     $chd->{grabber_info} . '/' . $year . '/' . $month;
 
   return( $url, undef );
+}
+
+sub ApproveContent {
+  my $self = shift;
+  my( $cref, $callbackdata ) = @_;
+
+  if( $$cref =~ '<!--' ) {
+    return "404 not found";
+  }
+  else {
+    return undef;
+  }
 }
 
 sub FilterContent {
@@ -117,13 +124,8 @@ sub ImportContent
   
   foreach my $sc ($ns->get_nodelist)
   {
-    # Sanity check. 
-    # What does it mean if there are several programs?
-
     my $title_original = $sc->findvalue( './@SeriesOriginalTitle' );
-
 	my $title_programme = $sc->findvalue( './@ProgrammeSeriesTitle' );
-	
 	my $title = norm($title_programme) || norm($title_original);
 
     my $start = $self->create_dt( $sc->findvalue( './@SlotLocalStartTime' ) );
@@ -134,22 +136,17 @@ sub ImportContent
       next;
     }
     
-   # my $desc_episode = undef;
-   # my $desc_series = undef;
     my $desc = undef;
-
     my $desc_episode = $sc->findvalue( './@ProgrammeEpisodeLongSynopsis' );
 	my $desc_series  = $sc->findvalue( './@ProgrammeSeriesLongSynopsis' );
-	
 	$desc = norm($desc_episode) || norm($desc_series);
 	
 	my $genre = $sc->findvalue( './@SeriesGenreDescription' );
-	
 	my $production_year = $sc->findvalue( './@ProgrammeSeriesYear' );
-	
 	my $subtitle =  $sc->findvalue( './@ProgrammeEpisodeTitle' );
+	my $aspect =  $sc->findvalue( './@ProgrammeVersionTechnicalTypesAspect_Ratio' );
 
-	progress("Nonstopweb_v2: $chd->{xmltvid}: $start - $title");
+	progress("Nonstop: $chd->{xmltvid}: $start - $title");
 
     my $ce = {
       title 	  => norm($title),
@@ -165,10 +162,21 @@ sub ImportContent
       $ce->{production_date} = "$1-01-01";
     }
     
+    
+    
+    if( (defined $aspect) and ($aspect = "16*9 (2)")) {
+    	$ce->{aspect} = "16:9";
+    } else {
+    	$ce->{aspect} = "4:3";
+    }
+    
     if( $genre ){
 			my($program_type, $category ) = $ds->LookupCat( 'Nonstop', $genre );
 			AddCategory( $ce, $program_type, $category );
 	}
+
+	# Extract episode info
+	$self->extract_episode( $ce );
 
     $ds->AddProgramme( $ce );
   }
@@ -213,10 +221,45 @@ sub create_dt
   return $dt;
 }
 
-sub extract_extra_info
+sub extract_episode
 {
-  my $self = shift;
   my( $ce ) = @_;
+
+  return if not defined( $ce->{description} );
+
+  my $d = $ce->{description};
+
+  # Try to extract episode-information from the description.
+  my( $ep, $eps, $sea );
+  my $episode;
+
+  my $dummy;
+
+  # Säsong 2
+  ( $dummy, $sea ) = ($d =~ /\b(S.song)\s+(\d+)/ );
+
+  # Avsnitt 2
+  ( $dummy, $ep ) = ($d =~ /\b(avsnitt)\s+(\d+)/ );
+
+  # Episode info in xmltv-format
+  if( (defined $ep) and (defined $sea) )
+   {
+        $episode = sprintf( "%d . %d .", $sea-1, $ep-1 );
+        
+        # Remove episode details from description
+        $ce->{description} =~ s/ \(S.song $sea avsnitt $ep\)//g;
+        
+   }
+
+  # Avsnitt/Del 2 av 3
+  ( $dummy, $ep, $eps ) = ($d =~ /\b(Del|Avsnitt)\s+(\d+)\s*av\s*(\d+)/ );
+  $episode = sprintf( " . %d/%d . ", $ep-1, $eps ) 
+    if defined $eps;
+  
+  if( defined $episode ) {
+    $ce->{episode} = $episode;
+    $ce->{program_type} = 'series';
+  }
   
 }
     
