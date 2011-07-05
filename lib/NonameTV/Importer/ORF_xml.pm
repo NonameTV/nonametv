@@ -6,18 +6,16 @@ use warnings;
 =pod
 
 Importer for data from ORF.
-The data is downloaded from ORF's presservice.
-Every day is runned as a seperate batch.
+The data is downloaded from ORF's presservice at http://presse.orf.at/
+Every day is handled as a separate batch.
 
-Channels: ORF1, ORF2, DreiSat, (alot of radio stations)
+Channels: ORF1, ORF2, DreiSat, (a lot of radio stations)
 
 =cut
 
 use DateTime;
 use XML::LibXML;
 use HTTP::Date;
-
-#use Compress::Zlib;
 
 use NonameTV qw/ParseXml norm AddCategory/;
 use NonameTV::DataStore::Helper;
@@ -38,7 +36,7 @@ sub new {
     $self->{MaxDays} = 15 unless defined $self->{MaxDays};
 
     defined( $self->{UrlRoot} ) or die "You must specify UrlRoot";
-    my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore}, "Europe/Stockholm" );
+    my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore}, "Europe/Vienna" );
   	$self->{datastorehelper} = $dsh;
 
     return $self;
@@ -50,9 +48,6 @@ sub Object2Url {
 
   my( $year, $month, $day ) = ( $objectname =~ /(\d+)-(\d+)-(\d+)$/ );
  
-  # Find the first day in the given week.
-  # Copied from
-  # http://www.nntp.perl.org/group/perl.datetime/5417?show_headers=1 
   my $url = $self->{UrlRoot} .
     $chd->{grabber_info} . '&date=' . $year . $month . $day;
 
