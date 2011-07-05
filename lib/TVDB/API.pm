@@ -981,12 +981,13 @@ sub getEpisodeByName {
                 # try without part number, only accept a single hit (we don't use story arc numbering for uniquely named episodes over here)
 		my $hitcount = 0;
 		my $hit;
+		my $regexpmatch = ($match =~ s|([\Q()\E])|\\$1|);
 		foreach my $season (@{$series->{Seasons}}) {
 			foreach my $eid (@$season) {
 				next unless $eid;
 				my $ep = $cache->{Episode}->{$eid};
 				next unless $ep->{EpisodeName};
-                                if( lc($ep->{EpisodeName}) =~ m|^$match \(\d+\)$| ){
+                                if( lc($ep->{EpisodeName}) =~ m|^$regexpmatch \(\d+\)$| ){
 					$hitcount ++;
 					$hit = $ep;
 				}
