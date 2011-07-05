@@ -6,6 +6,7 @@ package TVDB::API;
 
 require 5.008008;
 use strict;
+use utf8; # the static strings in this program are utf8 encoded
 use warnings;
 
 use Compress::Zlib;
@@ -980,12 +981,13 @@ sub getEpisodeByName {
                 # try without part number, only accept a single hit (we don't use story arc numbering for uniquely named episodes over here)
 		my $hitcount = 0;
 		my $hit;
+		my $regexpmatch = ($match =~ s|([\Q()\E])|\\$1|);
 		foreach my $season (@{$series->{Seasons}}) {
 			foreach my $eid (@$season) {
 				next unless $eid;
 				my $ep = $cache->{Episode}->{$eid};
 				next unless $ep->{EpisodeName};
-                                if( lc($ep->{EpisodeName}) =~ m|^$match \(\d+\)$| ){
+                                if( lc($ep->{EpisodeName}) =~ m|^$regexpmatch \(\d+\)$| ){
 					$hitcount ++;
 					$hit = $ep;
 				}
@@ -995,8 +997,9 @@ sub getEpisodeByName {
 			return( $hit );
 		}
 
-		if( eval "use Text::LevenshteinXS qw(distance)" ){
-			# try with levenshtein distance 2
+		eval "use Text::LevenshteinXS qw/distance/;";
+		if( !$@ ){
+			# try with Levenshtein distance 2
 			$hitcount = 0;
 			foreach my $season (@{$series->{Seasons}}) {
 				foreach my $eid (@$season) {
