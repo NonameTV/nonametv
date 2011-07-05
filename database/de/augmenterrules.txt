@@ -54,3 +54,6 @@
 39,Fixups,\N,description,\N,\N,copylastdetails
 39,Fixups,"^(Jackie Chan):\s+(.*)$",program_type,movie,\N,splitstartitle
 48,Fixups,neues,subtitle,^Them(?:a|en):\s+(.*)$,\N,splitsubtitle
+38,Fixups,"^(Zu Tisch (?:auf|in|im) \.\.\.)\s+(.*)$",\N,\N,\N,splittitle
+38,Fixups,"Zu Tisch auf ...",\N,\N,"Zu Tisch in ...",replacetitle
+38,Fixups,"Zu Tisch im ...",\N,\N,"Zu Tisch in ...",replacetitle

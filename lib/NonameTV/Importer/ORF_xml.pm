@@ -66,6 +66,7 @@ sub FilterContent {
   my( $chid ) = ($chd->{grabber_info} =~ /^(\d+)/);
 
   my $doc;
+  $$cref =~ s|encoding="LATIN1"|encoding="windows-1252"|;
   $doc = ParseXml( $cref );
 
   if( not defined $doc ) {
