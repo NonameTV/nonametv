@@ -6,6 +6,7 @@ package TVDB::API;
 
 require 5.008008;
 use strict;
+use utf8; # the static strings in this program are utf8 encoded
 use warnings;
 
 use Compress::Zlib;
