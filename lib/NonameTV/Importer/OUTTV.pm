@@ -6,6 +6,8 @@ use warnings;
 =pod
 
 Import data from OUTTV
+Every week is handled as a seperate batch.
+The files is sent by OUTTV as mail.
 
 Features:
 
@@ -64,24 +66,19 @@ sub ImportFlatXLS
   my $date;
   my $currdate = "x";
 
-  progress( "OUTTV FlatXLS: $chd->{xmltvid}: Processing flat XLS $file" );
+  progress( "OUTTV: $chd->{xmltvid}: Processing flat XLS $file" );
 
   my $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
 
-    my($iR, $oWkS, $oWkC);
+  my($iR, $oWkS, $oWkC);
 	
-	  my( $time, $episode );
+  my( $time, $episode );
   my( $program_title , $program_description );
-    my @ces;
+  my @ces;
   
   # main loop
   foreach my $oWkS (@{$oBook->{Worksheet}}) {
 
-
-    # start from row 2
-    # the first row looks like one cell saying like "EPG DECEMBER 2007  (Yamal - HotBird)"
-    # the 2nd row contains column names Date, Time (local), Progran, Description
-    #for(my $iR = $oWkS->{MinRow} ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
     for(my $iR = 2 ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
 
       # date (column 1)
@@ -92,15 +89,13 @@ sub ImportFlatXLS
 	  }
       next if( ! $date );
 
+	  # No date? Skip.
 	  unless( $date ) {
-		progress("SKIPPING :D");
-	  next;
+	  	next;
 	  }
 	  
 	  if($date ne $currdate ) {
         if( $currdate ne "x" ) {
-			# save last day if we have it in memory
-		#	FlushDayData( $channel_xmltvid, $dsh , @ces );
 			$dsh->EndBatch( 1 );
         }
 
@@ -134,10 +129,10 @@ sub ImportFlatXLS
 
       if( $time and $program_title ){
 	  
-	  # empty last day array
-      undef @ces;
+	  	# empty last day array
+     	undef @ces;
 	  
-        progress("$time $program_title");
+        
 
         my $ce = {
           channel_id   => $chd->{id},
@@ -158,9 +153,9 @@ sub ImportFlatXLS
 		# Extract episode info, categories in description
 		$self->extract_extra_info( $ce );
 		
-		# Make it readable since extract need it per line.
-		$ce->{description} = norm($desc);
+		progress("$time $program_title");
 		
+		# Add programme
         $dsh->AddProgramme( $ce );
 		
 		push( @ces , $ce );
@@ -172,7 +167,8 @@ sub ImportFlatXLS
 
   $dsh->EndBatch( 1 );
   
-  return;
+  # Success
+  return 1;
 }
 
 sub extract_extra_info
@@ -184,12 +180,6 @@ sub extract_extra_info
 
   my( $program_type, $category );
 
-  #
-  # Try to extract category and program_type by matching strings
-  # in the description. The empty entry is to make sure that there
-  # is always at least one entry in @sentences.
-  #
-
   my @sentences = (split_text( $ce->{description} ), "");
 
   # Remove (N) from title
@@ -198,6 +188,9 @@ sub extract_extra_info
   $ce->{description} = join_text( @sentences );
 
   extract_episode( $ce );
+  
+  # Make it readable.
+  $ce->{description} = norm($ce->{description});
 }
 
 # Split a string into individual sentences.
@@ -218,15 +211,6 @@ sub split_text
 
   # Replace ... with ::.
   $t =~ s/\.{3,}/::./g;
-
-  # Lines ending with a comma is not the end of a sentence
-#  $t =~ s/,\s*\n+\s*/, /g;
-
-# newlines have already been removed by norm() 
-  # Replace newlines followed by a capital with space and make sure that there 
-  # is a dot to mark the end of the sentence. 
-#  $t =~ s/([\!\?])\s*\n+\s*([A-Z���])/$1 $2/g;
-#  $t =~ s/\.*\s*\n+\s*([A-Z���])/. $1/g;
 
   # Turn all whitespace into pure spaces and compress multiple whitespace 
   # to a single.
@@ -292,13 +276,9 @@ sub extract_episode
   
   if( defined $episode ) {
     $ce->{episode} = $episode;
-    # If this program has an episode-number, it is by definition
-    # a series (?). Svt often miscategorize series as movie.
     $ce->{program_type} = 'series';
   }
 }
-
-
 
 sub isDate {
   my ( $text ) = @_;
