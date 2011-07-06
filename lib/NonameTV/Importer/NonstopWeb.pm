@@ -139,7 +139,7 @@ sub ImportContent
     my $desc = undef;
     my $desc_episode = $sc->findvalue( './@ProgrammeEpisodeLongSynopsis' );
 	my $desc_series  = $sc->findvalue( './@ProgrammeSeriesLongSynopsis' );
-	$desc = norm($desc_episode) || norm($desc_series);
+	$desc = $desc_episode || $desc_series;
 	
 	my $genre = $sc->findvalue( './@SeriesGenreDescription' );
 	my $production_year = $sc->findvalue( './@ProgrammeSeriesYear' );
@@ -151,7 +151,7 @@ sub ImportContent
     my $ce = {
       title 	  => norm($title),
       channel_id  => $chd->{id},
-      description => $desc,
+      description => norm($desc),
       start_time  => $start->ymd("-") . " " . $start->hms(":"),
     };
     
@@ -164,7 +164,7 @@ sub ImportContent
     
     
     
-    if( (defined $aspect) and ($aspect = "16*9 (2)")) {
+    if( (defined $aspect) and ($aspect eq "16*9 (2)")) {
     	$ce->{aspect} = "16:9";
     } else {
     	$ce->{aspect} = "4:3";
@@ -174,9 +174,6 @@ sub ImportContent
 			my($program_type, $category ) = $ds->LookupCat( 'Nonstop', $genre );
 			AddCategory( $ce, $program_type, $category );
 	}
-
-	# Extract episode info
-	$self->extract_episode( $ce );
 
     $ds->AddProgramme( $ce );
   }
@@ -219,48 +216,6 @@ sub create_dt
   $dt->set_time_zone( "UTC" );
   
   return $dt;
-}
-
-sub extract_episode
-{
-  my( $ce ) = @_;
-
-  return if not defined( $ce->{description} );
-
-  my $d = $ce->{description};
-
-  # Try to extract episode-information from the description.
-  my( $ep, $eps, $sea );
-  my $episode;
-
-  my $dummy;
-
-  # Säsong 2
-  ( $dummy, $sea ) = ($d =~ /\b(S.song)\s+(\d+)/ );
-
-  # Avsnitt 2
-  ( $dummy, $ep ) = ($d =~ /\b(avsnitt)\s+(\d+)/ );
-
-  # Episode info in xmltv-format
-  if( (defined $ep) and (defined $sea) )
-   {
-        $episode = sprintf( "%d . %d .", $sea-1, $ep-1 );
-        
-        # Remove episode details from description
-        $ce->{description} =~ s/ \(S.song $sea avsnitt $ep\)//g;
-        
-   }
-
-  # Avsnitt/Del 2 av 3
-  ( $dummy, $ep, $eps ) = ($d =~ /\b(Del|Avsnitt)\s+(\d+)\s*av\s*(\d+)/ );
-  $episode = sprintf( " . %d/%d . ", $ep-1, $eps ) 
-    if defined $eps;
-  
-  if( defined $episode ) {
-    $ce->{episode} = $episode;
-    $ce->{program_type} = 'series';
-  }
-  
 }
     
 1;

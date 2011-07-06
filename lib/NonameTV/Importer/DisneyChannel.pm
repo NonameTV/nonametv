@@ -136,7 +136,7 @@ sub ImportContent {
     
     my $genre = norm( $row->findvalue( $column->{"Genre"} ) );
     
-    my $synopsis = $row->findvalue( $column->{SYNOPSIS} );
+    my $synopsis = norm( $row->findvalue( $column->{SYNOPSIS} ) );
 
     if( $orgdate !~ /\S/ ) {
 	w "Empty date for $title";
