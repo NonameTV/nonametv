@@ -102,7 +102,6 @@ sub ImportGridXLS
     my( $monthname, $year ) = ( $oWkC->Value =~ /^(\S+)-(\d+)$/ );
     $year += 2000 if $year < 100;
     my $month = MonthNumber( $monthname, "en" );
-print "$month $year\n";
 
     # Each column contains data for one day
     # starting with column 3 for monday to column 9 for sunday
@@ -116,9 +115,9 @@ print "$month $year\n";
         $oWkC = $oWkS->{Cells}[$iR][$iC];
         next if( ! $oWkC );
         next if( ! $oWkC->Value );
-print $oWkC->Value . "\n";
+
         if( $oWkC->Value =~ /^\d+-(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)$/i ){
-print "bingooooooooooooo\n";
+
           # DATE
           $date = ParseDate( $year, $month, $oWkC->Value );
           next if ( ! $date );
@@ -158,6 +157,10 @@ print "bingooooooooooooo\n";
         next if( ! $oWkC->Value );
         my $title = $oWkC->Value;
         next if ( ! $title );
+        
+        # Remove unnesscary shit.
+        $title =~ s/\(P\) //g;
+        $title =~ s/ \(taped\)//g;
 
         progress("Poker: $xmltvid: $time - $title");
 
@@ -196,8 +199,6 @@ sub ParseTime
 sub ParseDate
 {
   my ( $wksyear, $wksmonth, $text ) = @_;
-
-#print ">$text<\n";
 
   my( $day, $month, $monthname );
 

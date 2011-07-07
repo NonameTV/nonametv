@@ -22,7 +22,7 @@ use File::Temp qw/tempfile/;
 use File::Slurp qw/write_file/;
 use IO::Scalar;
 
-use NonameTV qw/norm/;
+use NonameTV qw/norm AddCategory/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/d p w f/;
 
@@ -133,6 +133,9 @@ sub ImportContent {
     my $orgdate = norm( $row->findvalue( $column->{Date} ) );
     my $orgstarttime = norm( $row->findvalue( $column->{Time} ) );
     my $title = norm( $row->findvalue( $column->{"(SWE) Title"} ) );
+    
+    my $genre = norm( $row->findvalue( $column->{"Genre"} ) );
+    
     my $synopsis = norm( $row->findvalue( $column->{SYNOPSIS} ) );
 
     if( $orgdate !~ /\S/ ) {
@@ -178,11 +181,27 @@ sub ImportContent {
       start_time => $start_dt->ymd('-') . " " . $start_dt->hms(':'),
     };
     
+    if( $genre and (isGenre($genre)) ){
+			my($program_type, $category ) = $ds->LookupCat( 'DisneyChannel', $genre );
+			AddCategory( $ce, $program_type, $category );
+	}
+    
     $ds->AddProgramme( $ce );
   }
 
   $ds->EndBatch( 1 );
     
+  return 1;
+}
+
+sub isGenre {
+  my( $text ) = @_;
+	
+  # format 'xx:xx'
+  if( $text =~ /^\d{2}\:\d{2}$/i ){
+    return 0;
+  }
+  
   return 1;
 }
 

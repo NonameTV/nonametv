@@ -46,7 +46,7 @@ sub ImportContentFile {
   if( $file =~ /\.xls$/i ){
     $self->ImportFlatXLS( $file, $chd );
   } else {
-    error( "Y&S: Unknown file format: $file" );
+    error( "YaS: Unknown file format: $file" );
   }
 
   return;
@@ -64,7 +64,7 @@ sub ImportFlatXLS
   my $date;
   my $currdate = "x";
 
-  progress( "Y&S FlatXLS: $chd->{xmltvid}: Processing flat XLS $file" );
+  progress( "YaS: $chd->{xmltvid}: Processing $file" );
 
   my $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
 
@@ -77,12 +77,6 @@ sub ImportFlatXLS
   # main loop
   foreach my $oWkS (@{$oBook->{Worksheet}}) {
 
-    progress("--------- SHEET: $oWkS->{Name}");
-
-    # start from row 2
-    # the first row looks like one cell saying like "EPG DECEMBER 2007  (Yamal - HotBird)"
-    # the 2nd row contains column names Date, Time (local), Progran, Description
-    #for(my $iR = $oWkS->{MinRow} ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
     for(my $iR = 2 ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
 
       # date (column 1)
@@ -94,37 +88,31 @@ sub ImportFlatXLS
       next if( ! $date );
 
 	  unless( $date ) {
-		progress("SKIPPING :D");
-	  next;
+	  	next;
 	  }
 	  
 	  if($date ne $currdate ) {
         if( $currdate ne "x" ) {
-			# save last day if we have it in memory
-		#	FlushDayData( $channel_xmltvid, $dsh , @ces );
 			$dsh->EndBatch( 1 );
         }
-
-
 
         my $batchid = $chd->{xmltvid} . "_" . $date;
         $dsh->StartBatch( $batchid , $chd->{id} );
         $dsh->StartDate( $date , "06:00" );
         $currdate = $date;
 
-        progress("OUTTV: Date is: $date");
+        progress("YaS: Date is: $date");
       }
 
-	# time (column 1)
-	#   print "hejhejhej";
+
       $oWkC = $oWkS->{Cells}[$iR][1];
       next if( ! $oWkC );
       my $time = ParseTime( $oWkC->Value );
       next if( ! $time );
-	  # print "hejhej";
-      # program_title (column 2)
+
       $oWkC = $oWkS->{Cells}[$iR][2];
-      $program_title = $oWkC->Value;
+      my $title =  ucfirst( lc( norm( $oWkC->Value ) ) );
+      
       
       $oWkC = $oWkS->{Cells}[$iR][3];
       my $subtitle = undef;
@@ -133,16 +121,16 @@ sub ImportFlatXLS
      		 $subtitle = $oWkC->Value;
      	}
 
-      if( $time and $program_title ){
+      if( $time and $title ){
 	  
 	  # empty last day array
       undef @ces;
 	  
-        progress("$time $program_title");
+        progress("$time $title");
 
         my $ce = {
           channel_id   => $chd->{id},
-          title        => norm($program_title),
+          title        => $title,
           start_time   => $time,
         };
 		
@@ -194,8 +182,7 @@ sub ParseDate {
   } elsif( $text =~ /^\d{2}\/\d{2}\/\d{3}$/i ){
     ( $day, $month, $year ) = ( $text =~ /^(\d{2})\/(\d{2})\/(\d{3})$/i );
   }
-
-  #$year += 2000 if $year < 100;
+  
   my $dt2 = DateTime->now;
   $year   = $dt2->year;
 
@@ -210,13 +197,10 @@ sub ParseDate {
 
 
 	return $dt->ymd("-");
-#return $year."-".$month."-".$day;
 }
 
 sub ParseTime {
   my( $text ) = @_;
-
-#print "ParseTime: >$text<\n";
 
   my( $hour , $min );
 
@@ -228,8 +212,3 @@ sub ParseTime {
 }
 
 1;
-
-### Setup coding system
-## Local Variables:
-## coding: utf-8
-## End:

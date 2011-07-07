@@ -2,6 +2,8 @@ package NonameTV::Importer::DR_xml;
 
 use strict;
 use warnings;
+use utf8;
+use Unicode::String;
 
 =pod
 
@@ -9,7 +11,6 @@ Import data for DR in xml-format.
 
 =cut
 
-use utf8;
 
 use DateTime;
 use XML::LibXML;
@@ -33,6 +34,17 @@ sub new {
   return $self;
 }
 
+sub ApproveContent {
+  my $self = shift;
+  my( $cref, $callbackdata ) = @_;
+
+  if( $$cref eq '<!--error in request: -->' ) {
+    return "404 not found";
+  }
+  else {
+    return undef;
+  }
+}
 
 sub ContentExtension {
   return 'xml';
@@ -45,7 +57,9 @@ sub FilteredExtension {
 sub ImportContent {
   my $self = shift;
   my( $batch_id, $cref, $chd ) = @_;
-
+  
+  $$cref = Unicode::String::latin1 ($$cref)->utf8 ();
+  
   $self->{batch_id} = $batch_id;
 
   my $xmltvid=$chd->{xmltvid};
@@ -68,28 +82,30 @@ sub ImportContent {
   }
   
   foreach my $b ($ns->get_nodelist) {
-    # Verify that there is only one program
-    # Verify that there is only one pro_public.
-
+  	# Start and so on
     my $start = $b->findvalue( "pro_publish[1]/ppu_start_timestamp_announced" );
-    #my $end = $b->findvalue( "pro_publish[1]/ppu_stop_timestamp_presentation_utc" );
-    #      end_time => ParseDateTime( $end ),
     my $title = $b->findvalue( "pro_title" );
+    my $subtitle = $b->findvalue( "pro_publish[1]/pro_punchline" );
     my $year = $b->findvalue( "prd_prodyear" );
     my $country = $b->findvalue( "prd_prodcountry" );
     
+    # Episode finder
     my $of_episode = undef;
     my $episode = undef;
     $episode = $b->findvalue( "prd_episode_number" );
     $of_episode = $b->findvalue( "prd_episode_total_number" );
+    
+    # Descr. and genre
     my $desc = $b->findvalue( "pro_publish[1]/ppu_description" );
     my $genre = $b->findvalue( "prd_genre_text" );
 
+	# Put everything in a array	
     my $ce = {
       channel_id => $chd->{id},
       start_time => ParseDateTime( $start ),
       title => norm($title),
       description => norm($desc),
+      subtitle	  => norm($subtitle),
     };
 
 	  # Episode info in xmltv-format
@@ -102,7 +118,7 @@ sub ImportContent {
         $ce->{episode} = sprintf( ". %d .", $episode-1 );
       }
     
-   $ce->{production_date} = "$year-01-01" if $year ne "";
+    $ce->{production_date} = "$year-01-01" if $year ne "";
     
     my($program_type, $category ) = $ds->LookupCat( 'DR', $genre );
 	AddCategory( $ce, $program_type, $category );
