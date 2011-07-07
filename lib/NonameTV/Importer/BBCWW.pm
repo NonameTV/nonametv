@@ -21,7 +21,7 @@ use DateTime;
 use XML::LibXML;
 use Spreadsheet::ParseExcel;
 
-use NonameTV qw/MyGet norm MonthNumber/;
+use NonameTV qw/norm MonthNumber/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/progress error/;
 use NonameTV::Config qw/ReadConfig/;
@@ -79,11 +79,9 @@ sub Object2Url {
       time_zone  => 'Europe/Stockholm',
   );
     
-  for( my $v=1; $v<=4; $v++ ){
-  		my $url = $self->{UrlRoot} . '/' .
-    		$chd->{grabber_info} . ' ' . $dt->month_name . ' ' . $dt->year . ' v' . $v . '.xls';
-        return( $url, undef );
-  }
+ my $url = $self->{UrlRoot} . '/' .
+    $chd->{grabber_info} . ' ' . $dt->month_name . ' ' . $dt->year . ' v1.xls';
+ return( $url, undef );
 
 }
 
@@ -112,17 +110,8 @@ sub ImportContent
 
 
       # get the names of the columns from the 1st row
-      # the columns that we use are
-      # Date
-      # Time
-      # Programme Title
-      # Series Number (Season)
-      # Episode Number
-      # Episode Title
-      # Synopsis
       if( not %columns ){
         for(my $iC = $oWkS->{MinCol} ; defined $oWkS->{MaxCol} && $iC <= $oWkS->{MaxCol} ; $iC++) {
-
           $columns{norm($oWkS->{Cells}[$iR][$iC]->Value)} = $iC;
         }
         next;
@@ -135,40 +124,38 @@ sub ImportContent
       $date = ParseDate( $oWkC->Value );
       next if( ! $date );
 
+	  # Startdate
       if( $date ne $currdate ) {
-
         progress("BBCWW: $chd->{xmltvid}: Date is $date");
-
         $dsh->StartDate( $date , "00:00" ); 
         $currdate = $date;
       }
 
-      # starttime - column ('Time')
+	  # time
       $oWkC = $oWkS->{Cells}[$iR][$columns{'Time'}];
       next if( ! $oWkC );
-      next if( ! $oWkC->Value );
-      my $starttime = ParseTime( $oWkC->Value );
-      next if( ! $starttime );
+      my $time = $oWkC->Value if( $oWkC->Value );
 
       # title
       $oWkC = $oWkS->{Cells}[$iR][$columns{'Programme Title'}];
       next if( ! $oWkC );
       my $title = $oWkC->Value if( $oWkC->Value );
 
+	  # episode and season
       my $epino = $oWkS->{Cells}[$iR][$columns{'Episode No.'}]->Value if $oWkS->{Cells}[$iR][$columns{'Episode No.'}];
       my $seano = $oWkS->{Cells}[$iR][$columns{'Series No.'}]->Value if $oWkS->{Cells}[$iR][$columns{'Series No.'}];
 
+	  # extra info
 	  my $desc = $oWkS->{Cells}[$iR][$columns{'Synopsis.'}]->Value if $oWkS->{Cells}[$iR][$columns{'Synopsis.'}];
-
 	  my $subtitle = $oWkS->{Cells}[$iR][$columns{'Episode Title'}]->Value if $oWkS->{Cells}[$iR][$columns{'Episode Title'}];
 
-      progress("BBCWW: $chd->{xmltvid}: $starttime - $title");
+      progress("BBCWW: $chd->{xmltvid}: $time - $title");
 
       my $ce = {
         channel_id => $chd->{channel_id},
-        title => $title,
-        start_time => $starttime,
-        description => $desc,
+        title => norm( $title ),
+        start_time => $time,
+        description => norm( $desc ),
       };
 
 	  # Subtitle
@@ -210,25 +197,4 @@ sub ParseDate {
   return sprintf( '%d-%02d-%02d', $year, $month, $day );
 }
 
-sub ParseTime {
-  my( $text ) = @_;
-
-  my( $hour , $min );
-
-  if( $text =~ /^\d+:\d+$/ ){
-    ( $hour , $min ) = ( $text =~ /^(\d+):(\d+)$/ );
-  } elsif( $text =~ /^0\.\d+$/){ # format '0.377962962962964'
-    my $daysecs = int( 86400 * $text );
-    $hour = int( $daysecs / 3600 );
-    $min =  int( ( $daysecs - ( $hour * 3600 ) ) / 60 );
-  }
-
-  return sprintf( "%02d:%02d", $hour, $min );
-}
-
 1;
-
-### Setup coding system
-## Local Variables:
-## coding: utf-8
-## End:
