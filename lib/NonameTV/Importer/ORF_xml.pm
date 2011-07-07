@@ -131,20 +131,54 @@ sub ImportContent
 
    	 my $time = ParseTime( $sc->findvalue( './zeit' ) );
 
-  	  	my $desc = $sc->findvalue( './info' );
-	
-		my $subtitle =  $sc->findvalue( './subtitel' );
 
 		progress("ORF_xml: $chd->{xmltvid}: $time - $title");
 
   		my $ce = {
   	      title 	  => norm($title),
- 	      channel_id  => $chd->{id},
-	      description => norm($desc),
  	      start_time  => $time,
    		};
    	 
+  	  	my $desc = $sc->findvalue( './info' );
+		# strip repeat
+		$desc =~ s|^\(Wh\..+\)$||;
+	      $ce->{description} = norm($desc) if $desc;
+
+		my $subtitle =  $sc->findvalue( './subtitel' );
    	 	$ce->{subtitle} = norm($subtitle) if $subtitle;
+	
+		my $stereo =  $sc->findvalue( './s' );
+		if( $stereo eq 'True' ){
+   	 		$ce->{stereo} = 'stereo';
+		}
+
+		# dolby surround sound
+		$stereo =  $sc->findvalue( './dss' );
+		if( $stereo eq 'True' ){
+   	 		$ce->{stereo} = 'surround';
+		}
+
+		# dolby digital surround / AC-3 5.1
+		$stereo =  $sc->findvalue( './dds' );
+		if( $stereo eq 'True' ){
+   	 		$ce->{stereo} = 'dolby digital';
+		}
+
+		$stereo =  $sc->findvalue( './zs' );
+		if( $stereo eq 'True' ){
+   	 		$ce->{stereo} = 'bilingual';
+		}
+
+		my $widescreen =  $sc->findvalue( './bb' );
+		if( $widescreen eq 'True' ){
+   	 		$ce->{aspect} = '16:9';
+		}
+
+#		my $captions =  $sc->findvalue( './ut' );
+#		if( $captions eq 'True' ){
+#   	 		$ce->{captions} = 'teletext';
+#		}
+
 	
   	  $dsh->AddProgramme( $ce );
  	 }
