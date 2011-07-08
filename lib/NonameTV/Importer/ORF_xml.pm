@@ -143,7 +143,18 @@ sub ImportContent
    	 
   	  	my $desc = $sc->findvalue( './info' );
 		# strip repeat
-		$desc =~ s|^\(Wh\..+\)$||;
+		$desc =~ s|\(Wh\..+?\)||;
+		my( $genre, $countries, $year )=( $desc =~ m|\((.+?), (.+?) (\d{4})\)| );
+		if( $year ){
+			$desc =~ s|\(.+?, .+? \d{4}\)||;
+			$ce->{production_date} = $year . '-01-01';
+
+			# split optional "original title - genre"
+			$genre =~ s|^.+ - (.+?)$|$1|;
+			my ( $program_type, $categ ) = $self->{datastore}->LookupCat( "ORF", $genre );
+			# set category, unless category is already set!
+			AddCategory( $ce, $program_type, $categ );
+		}
 	      $ce->{description} = norm($desc) if $desc;
 
 		my $subtitle =  $sc->findvalue( './subtitel' );
