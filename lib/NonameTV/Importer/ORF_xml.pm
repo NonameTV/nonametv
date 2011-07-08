@@ -154,6 +154,31 @@ sub ImportContent
 			my ( $program_type, $categ ) = $self->{datastore}->LookupCat( "ORF", $genre );
 			# set category, unless category is already set!
 			AddCategory( $ce, $program_type, $categ );
+		}else{
+			# TODO handle genre as first word
+		}
+		my( $actors )=( $desc =~ m|^M[Ii]t (.+?)$|m );
+		if( $actors ){
+			$desc =~ s|^M[Ii]t .+?$||m;
+			$actors =~ s| u\.a\.$||;
+			# TODO clean up the list of actors
+			$ce->{actors} = $actors;
+		}
+		my( $directors )=( $desc =~ m|^Regie:\s+(.+?)$|m );
+		if( $directors ){
+			$desc =~ s|^Regie:\s+.+?$||m;
+			# TODO clean up the list of directors
+			$ce->{directors} = $directors;
+		}
+		my( $running_time )=( $desc =~ m|^(\d+\.\d+)$|m );
+		if( $running_time ){
+			$desc =~ s|^\d+\.\d+$||m;
+			# TODO do we want to add running time?
+		}
+		( $running_time )=( $desc =~ m|^ca. (\d+)\'$|m );
+		if( $running_time ){
+			$desc =~ s|^ca. \d+\'$||m;
+			# TODO do we want to add running time?
 		}
 	      $ce->{description} = norm($desc) if $desc;
 
