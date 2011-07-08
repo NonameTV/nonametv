@@ -147,7 +147,12 @@ sub ImportContent
 		my $subtitle =  $sc->findvalue( './subtitel' );
    	 	$ce->{subtitle} = norm($subtitle) if $subtitle;
 	
-		my $stereo =  $sc->findvalue( './s' );
+		my $stereo =  $sc->findvalue( './m' );
+		if( $stereo eq 'True' ){
+   	 		$ce->{stereo} = 'mono';
+		}
+
+		$stereo =  $sc->findvalue( './s' );
 		if( $stereo eq 'True' ){
    	 		$ce->{stereo} = 'stereo';
 		}
