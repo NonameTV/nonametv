@@ -62,16 +62,18 @@ sub FilterContent {
 
   my $doc;
   $$cref =~ s|encoding="LATIN1"|encoding="windows-1252"|;
+  $$cref =~ s|<programmablauf>\n</programmtag>|<programmablauf>\n<programmtag />|s;
   $doc = ParseXml( $cref );
 
   if( not defined $doc ) {
     return (undef, "ParseXml failed" );
-  } 
+  }
 
   # Find all "Schedule"-entries.
   my $ns = $doc->find( "//programmablauf" );
 
   if( $ns->size() == 0 ) {
+    # TODO sometimes there seem to be no programs on sportplus
     return (undef, "No data found" );
   }
 
