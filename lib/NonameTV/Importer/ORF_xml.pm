@@ -93,6 +93,7 @@ sub FilteredExtension {
 my %genrewords = (
 	'Abenteuerserie' => 1,
 	'Actionserie' => 1,
+	'Animation' => 1,
 	'Anwaltsserie' => 1,
 	'Familienserie' => 1,
 	'Jugendserie' => 1,
@@ -102,6 +103,7 @@ my %genrewords = (
 	'Mysteryserie' => 1,
 	'Serie' => 1,
 	'Sitcom' => 1,
+	'Stop Motion Trick' => 1,
 	'Telenovela' => 1,
 	'Unterhaltungsserie' => 1,
 	'Zeichentrickserie' => 1,
@@ -173,10 +175,10 @@ sub ImportContent
 			# set category, unless category is already set!
 			AddCategory( $ce, $program_type, $categ );
 		}else{
-			my( $genreword )=( $desc =~ m|^(.*?)\n|s );
+			my( $genreword )=( $desc =~ m/^(.*?)(?:\n|$)/s );
 			if( $genreword ){
 				if( $genrewords{$genreword} ) {
-					$desc =~ s|^.*?\n||s;
+					$desc =~ s/^.*?(?:\n|$)//s;
 					my ( $program_type, $categ ) = $self->{datastore}->LookupCat( "ORF", $genreword );
 					AddCategory( $ce, $program_type, $categ );
 				}
@@ -186,6 +188,7 @@ sub ImportContent
 		# TODO handle more jobs
 		# Analytiker: Günther Neukirchner
 		# Buch: Verena Kurth
+		# Co-Kommentator: Alexander Wurz
 		# Kommentator: Ernst Hausleitner
 		# Moderation: Markus Mooslechner
 		# Präsentator: Boris Kastner-Jirka

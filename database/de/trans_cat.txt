@@ -102,6 +102,7 @@ ORF,"medical daily",,series
 ORF,mysteryserie,Mystery,series
 ORF,porträt,Documentary,
 ORF,science-fiction-film,SciFi,movie
+ORF,serie,,series
 ORF,spielfilm,,movie
 ORF,telenovela,,series
 ORF,unterhaltungsserie,,series
