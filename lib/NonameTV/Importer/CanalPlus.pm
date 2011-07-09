@@ -291,12 +291,6 @@ sub ImportContent
       if( $title =~ /^Del\s+(\d+),\s+(.*)/ )
       {
         $ce->{subtitle} = $2;
-        $ce->{episode} = ". " . ($1-1) . " .";
-        if( defined( $production_year ) and 
-            ($production_year =~ /\d{4}/) )
-        {
-          $ce->{episode } = $production_year-1 . " " . $ce->{episode};
-        }
       }
       elsif( $title ne $ce->{title} ) 
       {
@@ -352,6 +346,11 @@ sub ImportContent
           }
      	}else {
           $ce->{episode} = sprintf( ". %d .", $epino-1 );
+          if( defined( $production_year ) and 
+            ($production_year =~ /\d{4}/) )
+        	{
+          		$ce->{episode } = $production_year-1 . " " . $ce->{episode};
+        	}
         }
     }
     
