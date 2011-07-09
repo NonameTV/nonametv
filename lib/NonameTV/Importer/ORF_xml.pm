@@ -90,6 +90,24 @@ sub FilteredExtension {
   return 'xml';
 }
 
+my %genrewords = (
+	'Abenteuerserie' => 1,
+	'Actionserie' => 1,
+	'Anwaltsserie' => 1,
+	'Familienserie' => 1,
+	'Jugendserie' => 1,
+	'Kriminalserie' => 1,
+	'Krimiserie' => 1,
+	'Medical Daily' => 1,
+	'Mysteryserie' => 1,
+	'Serie' => 1,
+	'Sitcom' => 1,
+	'Telenovela' => 1,
+	'Unterhaltungsserie' => 1,
+	'Zeichentrickserie' => 1,
+);
+
+
 sub ImportContent
 {
   my $self = shift;
@@ -155,9 +173,27 @@ sub ImportContent
 			# set category, unless category is already set!
 			AddCategory( $ce, $program_type, $categ );
 		}else{
-			# TODO handle genre as first word
+			my( $genreword )=( $desc =~ m|^(.*?)\n|s );
+			if( $genreword ){
+				if( $genrewords{$genreword} ) {
+					$desc =~ s|^.*?\n||s;
+					my ( $program_type, $categ ) = $self->{datastore}->LookupCat( "ORF", $genreword );
+					AddCategory( $ce, $program_type, $categ );
+				}
+			}
 		}
-		my( $actors )=( $desc =~ m|^M[Ii]t (.+?)$|m );
+
+		# TODO handle more jobs
+		# Analytiker: Günther Neukirchner
+		# Buch: Verena Kurth
+		# Kommentator: Ernst Hausleitner
+		# Moderation: Markus Mooslechner
+		# Präsentator: Boris Kastner-Jirka
+		# Ratespiel mit Elton Co-Produktion ZDF/ORF
+		# 
+
+		# not actors: Mit welchen Psychotricks werden wir beeinflusst, ohne es zu merken?
+		my( $actors )=( $desc =~ m|^M[Ii]t ([A-Z].+?)$|m );
 		if( $actors ){
 			$desc =~ s|^M[Ii]t .+?$||m;
 			$actors =~ s| u\.a\.$||;

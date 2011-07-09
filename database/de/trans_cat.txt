@@ -76,6 +76,37 @@ DreiSat_genre,spielshow/quiz,,tvshow
 DreiSat_genre,talkshow,Talk,tvshow
 DreiSat_genre,tanzfilm,,movie
 DreiSat_genre,zeichentrickfilm,,movie
+ORF,abenteuerfilm,Action/Adv,movie
+ORF,abenteuerserie,Action/Adv,series
+ORF,actionfilm,Action,movie
+ORF,actionserie,Action,series
+ORF,animationsfilm,,movie
+ORF,anwaltsserie,,series
+ORF,dokumentarfilm,Documentary,movie
+ORF,dokumentation,Documentary,
+ORF,"dokumentation in fünf teilen",Documentary,
+ORF,drama,Drama,
+ORF,familienserie,,series
+ORF,fernsehfilm,,movie
+ORF,fernsehkomödie,Comedy,
+ORF,fernsehkrimi,Crime,
+ORF,fernsehserie,,series
+ORF,heimatfilm,,movie
+ORF,jugendserie,,series
+ORF,komödie,Comedy,
+ORF,krimikomödie,Crime,
+ORF,kriminalfilm,Crime,movie
+ORF,kriminalserie,Crime,series
+ORF,krimiserie,Crime,series
+ORF,"medical daily",,series
+ORF,mysteryserie,Mystery,series
+ORF,porträt,Documentary,
+ORF,science-fiction-film,SciFi,movie
+ORF,spielfilm,,movie
+ORF,telenovela,,series
+ORF,unterhaltungsserie,,series
+ORF,zeichentrickfilm,,movie
+ORF,zeichentrickserie,,series
 Tele5,abenteuer,Action/Adv,
 Tele5,abenteuer-mini-serie,Action/Adv,
 Tele5,abenteuer-serie,Action/Adv,
@@ -136,7 +167,6 @@ Tele5,thriller-serie,Crime/Mystery,
 Tele5,vampirfilm,,movie
 Tele5,western,Action/Adv,
 Tele5,westernparodie,Action/Adv,
-Tvdb,"action and adventure",Action/Adv,
 Tvdb,children,Kids,
 Tvdb,comedy,Comedy,
 Tvdb,documentary,Documentary,
