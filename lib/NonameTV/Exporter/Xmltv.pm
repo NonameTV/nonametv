@@ -671,12 +671,12 @@ sub WriteEntry
 
   if( defined( $data->{aspect} ) and $data->{aspect} ne "unknown" )
   {
-    $d->{video} = { aspect => $data->{aspect} };
+    $d->{video}->{aspect} = $data->{aspect};
   }
 
   if( $data->{quality} )
   {
-    $d->{video} = { quality => $data->{quality} };
+    $d->{video}->{quality} = $data->{quality};
   }
 
   if( defined( $data->{stereo} ) and $data->{stereo} =~ /\S/ )
