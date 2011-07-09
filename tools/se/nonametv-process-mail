@@ -10,19 +10,19 @@
 #getmail -q -rexpressen.rc
 #getmail -q -rtv-data-swedb.se.rc
 getmail -q --rcfile=/home/beatx/.getmail/espn.rc --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
-getmail -q --rcfile=/home/beatx/.getmail/extreme.rc --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
+#getmail -q --rcfile=/home/beatx/.getmail/extreme.rc --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
 getmail -q --rcfile=/home/beatx/.getmail/xmltv.rc --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
-getmail -q --rcfile=/home/beatx/.getmail/outtv.rc --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
+#getmail -q --rcfile=/home/beatx/.getmail/outtv.rc --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
 getmail -q --rcfile=/home/beatx/.getmail/natgeo.rc --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
 getmail -q --rcfile=/home/beatx/.getmail/travel.rc --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
 getmail -q --rcfile=/home/beatx/.getmail/disney.rc --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
 getmail -q --rcfile=/home/beatx/.getmail/poker.rc --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
-getmail -q --rcfile=/home/beatx/.getmail/cnbc.rc --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
+#getmail -q --rcfile=/home/beatx/.getmail/cnbc.rc --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
 getmail -q --rcfile=/home/beatx/.getmail/ngcwild.rc --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
-getmail -q --rcfile=/home/beatx/.getmail/fox.rc --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
+#getmail -q --rcfile=/home/beatx/.getmail/fox.rc --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
 
 
 # Mail is additionally delivered to the tv-data account.
 
-/home/beatx/nonametv/tools/se/nonametv-filter-mail
-/home/beatx/nonametv/tools/se/nonametv-parse-maildir
+/home/beatx/github/nonametv/tools/se/nonametv-filter-mail
+/home/beatx/github/nonametv/tools/se/nonametv-parse-maildir

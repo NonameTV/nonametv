@@ -165,50 +165,50 @@ sub guess_channel
   if( $dir =~ /Disney/ ) {
     # The Disney filenames are very unreliable. 
     if( $filename =~ /\bxd/i ) {
-      return "xd.disneychannel.se";
+      return "xd.disneychannel.tv.tvzon.se";
     }
     if( $filename =~ /\bdxd/i ) {
-      return "xd.disneychannel.se";
+      return "xd.disneychannel.tv.tvzon.se";
     }
     elsif( $filename =~ /playhouse/i ) {
-      return "playhouse.disneychannel.se";
+      return "playhouse.disneychannel.tv.tvzon.se";
     }
     elsif( $filename =~ /disney\s*channel/i ) {
-      return "disneychannel.se";
+      return "disneychannel.tv.tvzon.se";
     }
     elsif( $filename eq "noname" ) {
       return undef;
     }
     elsif( $subject =~ /toon\s*disney/i ) {
-      return "toon.disneychannel.se";
+      return "toon.disneychannel.tv.tvzon.se";
     }
     elsif( $subject =~ /playhouse/i ) {
-      return "playhouse.disneychannel.se";
+      return "playhouse.disneychannel.tv.tvzon.se";
     }
     elsif( $subject =~ /disney\s*channel/i ) {
-      return "disneychannel.se";
+      return "disneychannel.tv.tvzon.se";
     }
 
     return undef;
   }
 
    if( $dir =~ /GlobalListings/ ) {
-     return "hd.ngcsverige.com" if $filename =~ /^ng\s*swe\s*hd\b/i;
-     return "ngcsverige.com" if $filename =~ /^ng\s*swe\b/i;
+     return "nationalgeographichd.tv.tvzon.se" if $filename =~ /^ng\s*swe\s*hd\b/i;
+     return "nationalgeographic.tv.tvzon.se" if $filename =~ /^ng\s*swe\b/i;
 	# Nat geo wild sends in XLS format
-     return "wild.ngcsverige.com" if $filename =~ /^ngwscan\s*\b/i;
+     return "natgeowild.tv.tvzon.se" if $filename =~ /^ngwscan\s*\b/i;
 	# History Channel
-     return "scand.history.com" if $filename =~ /^his.sd.swe\s*\b/i;
-     return "hdscand.history.com" if $filename =~ /^his.hd.swe\s*\b/i;
+     return "history.tv.tvzon.se" if $filename =~ /^his.sd.swe\s*\b/i;
+     return "historyhd.tv.tvzon.se" if $filename =~ /^his.hd.swe\s*\b/i;
 	# ESPN Classic
-     return "classic.espn.com" if $filename =~ /^espn.eur.eng\s*\b/i;
+     return "espnclassic.tv.tvzon.se" if $filename =~ /^espn.eur.eng\s*\b/i;
  }
 
    if( $dir =~ /Turner/ and $filename =~ /\.xls$/i ) {
-     return "cartoonnetwork.se" if $filename =~ /^cn\s*nordic\s*\b/i;
-     return "boomerangtv.se" if $filename =~ /^boomerang\s*nordic\s*\b/i;
-     return "nordic.tcm.com" if $filename =~ /^tcm\s*nordic\s*\b/i;
-     return "cnn.com" if $filename =~ /^cnn\s*\b/i;
+     return "cartoonnetwork.tv.tvzon.se" if $filename =~ /^cn\s*nordic\s*\b/i;
+     return "boomerangtv.tv.tvzon.se" if $filename =~ /^boomerang\s*nordic\s*\b/i;
+     return "tcm.tv.tvzon.se" if $filename =~ /^tcm\s*nordic\s*\b/i;
+     return "cnn.tv.tvzon.se" if $filename =~ /^cnn\s*\b/i;
   }
 
 #   if( $dir =~ /Nonstop/ and $filename =~ /\.doc$/i ) {
@@ -216,27 +216,27 @@ sub guess_channel
 #  }
 
    if( $dir =~ /CNBC/ and $filename =~ /\.xls$/i ) {
-     return "europe.cnbc.com" if $filename =~ /^\s*\b/i;
+     return "cnbc.tv.tvzon.se" if $filename =~ /^\s*\b/i;
  }
 
    if( $dir =~ /ExtremeSports/ and $filename =~ /\.xls$/i ) {
-     return "extremesports.com" if $filename =~ /^\s*\b/i;
+     return "extremesports.tv.tvzon.se" if $filename =~ /^\s*\b/i;
  }
 
    if( $dir =~ /OUTTV/ and $filename =~ /\.xls$/i ) {
-     return "outtv.se" if $filename =~ /^outtv\s*\b/i;
+     return "outtv.tv.tvzon.se" if $filename =~ /^outtv\s*\b/i;
  }
 
    if( $dir =~ /YaS/ and $filename =~ /\.xls$/i ) {
-     return "europe.yachtandsail.com" if $filename =~ /^palinsesto\s*\b/i;
+     return "yachtandsail.tv.tvzon.se" if $filename =~ /^palinsesto\s*\b/i;
  }
 
    if( $dir =~ /FOX/ and $filename =~ /\.xls$/i ) {
-     return "wildhd.ngcsverige.com" if $filename =~ /^schedule\s*\b/i;
+     return "natgeowildhd.tv.tvzon.se" if $filename =~ /^schedule\s*\b/i;
  }
 
    if( $dir =~ /TravelChannel/ and $filename =~ /\.xls$/i ) {
-     return "europe.travelchannel.co.uk" if $filename =~ /^epg\s*\b/i;
+     return "travelchannel.tv.tvzon.se" if $filename =~ /^epg\s*\b/i;
  }
 
 #   if( $dir =~ /NATGEOWILD/ and $filename =~ /\.xls$/i ) {
@@ -254,7 +254,7 @@ sub guess_channel
 # }
 
    if( $dir =~ /PokerChannel/ and $filename =~ /\.xls$/i ) {
-     return "pokerchanneleurope.com" if $filename =~ /^f\s*\b/i;
+     return "pokerchannel.tv.tvzon.se" if $filename =~ /^g\s*\b/i;
  }
 
   return undef;

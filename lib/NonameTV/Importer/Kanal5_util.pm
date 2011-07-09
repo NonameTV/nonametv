@@ -338,7 +338,12 @@ sub extract_extra_info
       $ce->{actors} = parse_person_list( $actors );
       $sentences[$i] = "";
     }
-    elsif( my( $year ) = ($sentences[$i] =~ /^Från (\d+)$/))
+    elsif( my( $actors ) = ($sentences[$i] =~ /^I rollerna.\s*(.*)/ ) )
+    {
+      $ce->{actors} = parse_person_list( $actors );
+      $sentences[$i] = "";
+    }
+    elsif( my( $year ) = ($sentences[$i] =~ /^Frï¿½n (\d+)$/))
     {
       # This should go into previously shown.
 #      $sentences[$i] = "";
@@ -391,7 +396,7 @@ sub split_text
 
   # Replace newlines followed by a capital with space and make sure that there is a dot
   # to mark the end of the sentence. 
-  $t =~ s/\.*\s*\n\s*([A-ZÅÄÖ])/. $1/g;
+  $t =~ s/\.*\s*\n\s*([A-Zï¿½ï¿½ï¿½])/. $1/g;
 
   # Turn all whitespace into pure spaces and compress multiple whitespace to a single.
   $t =~ tr/\n\r\t \xa0/     /s;
@@ -402,13 +407,13 @@ sub split_text
   # Split on a dot and whitespace followed by a capital letter,
   # but the capital letter is included in the output string and
   # is not removed by split. (?=X) is called a look-ahead.
-#  my @sent = grep( /\S/, split( /\.\s+(?=[A-ZÅÄÖ])/, $t ) );
+#  my @sent = grep( /\S/, split( /\.\s+(?=[A-Zï¿½ï¿½ï¿½])/, $t ) );
 
   # Mark sentences ending with a dot for splitting.
-  $t =~ s/\.\s+([A-ZÅÄÖ])/;;$1/g;
+  $t =~ s/\.\s+([A-Zï¿½ï¿½ï¿½])/;;$1/g;
 
   # Mark sentences ending with ! or ? for split, but preserve the "!?".
-  $t =~ s/([\!\?])\s+([A-ZÅÄÖ])/$1;;$2/g;
+  $t =~ s/([\!\?])\s+([A-Zï¿½ï¿½ï¿½])/$1;;$2/g;
   
   my @sent = grep( /\S/, split( ";;", $t ) );
 
@@ -455,12 +460,12 @@ sub extract_episode
   $episode = sprintf( " . %d/%d . ", $ep-1, $eps ) 
     if defined $eps;
 
-  # Avsn 2/3 säs 2.
+  # Avsn 2/3 sï¿½s 2.
   ( $ep, $eps, $seas ) = ($d =~ /\bAvsn\s+(\d+)\s*\/\s*(\d+)\s+s.s\s+(\d+)/ );
   $episode = sprintf( " %d . %d/%d . ", $seas-1, $ep-1, $eps ) 
     if defined $seas;
 
-  # Avsn 2 säs 2.
+  # Avsn 2 sï¿½s 2.
   ( $ep, $seas ) = ($d =~ /\bAvsn\s+(\d+)\s+s.s\s+(\d+)/ );
   $episode = sprintf( " %d . %d . ", $seas-1, $ep-1 ) 
     if defined $seas;
@@ -474,15 +479,25 @@ sub extract_episode
   $episode = sprintf( " . %d/%d . ", $ep-1, $eps ) 
     if defined $eps;
 
-  # Del 2/3 säs 2.
+  # Del 2/3 sï¿½s 2.
   ( $ep, $eps, $seas ) = ($d =~ /\bDel\s+(\d+)\s*\/\s*(\d+)\s+s.s\s+(\d+)/ );
   $episode = sprintf( " %d . %d/%d . ", $seas-1, $ep-1, $eps ) 
     if defined $seas;
 
-  # Del 2 säs 2.
+  # Del 2 sï¿½s 2.
   ( $ep, $seas ) = ($d =~ /\bDel\s+(\d+)\s+s.s\s+(\d+)/ );
   $episode = sprintf( " %d . %d . ", $seas-1, $ep-1 ) 
     if defined $seas;
+  
+  # NEW
+  # S01E13
+  ( $seas, $ep ) = ($d =~ /\bS(\d+)E(\d+)/ );
+  $episode = sprintf( " %d . %d/%d . ", $seas-1, $ep-1, $eps ) 
+    if defined $eps;
+  $episode = sprintf( " %d . %d . ", $seas-1, $ep-1 ) 
+    if defined $seas;
+  
+  
   
   if( defined $episode )
   {
