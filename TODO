@@ -14,10 +14,6 @@ Nonstop: Add actors and directors. Also add season and episode to xmltv.
 
 		 and Season and episode is at the end of description:: (Säsong 1 avsnitt 19)
 
-Kanal5: They're going to add a line at the end of the docs now. (per programme): S01E19.
-		We should start using that instead, or start using the XML files instead.
-
-
 Use Namespaces for channels.xml? This would make it easy to add more info to channels.xml in the future that can be removed by tv_grab_se_swedb without specific knowledge about the tags.
 
 Eurosport: Subtitles are sometimes empty, sometimes NULL. Should be NULL.
