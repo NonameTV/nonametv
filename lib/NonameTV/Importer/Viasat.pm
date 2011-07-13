@@ -156,7 +156,7 @@ sub ImportContent {
         # The character name is sometimes given in parentheses. Remove it.
         # The Cast-entry is sometimes cutoff, which means that the
         # character name might be missing a trailing ).
-        s/\s*\(.*$//;
+        #s/\s*\(.*$//;
       }
       $ce->{actors} = join( ", ", grep( /\S/, @actors ) );
     }
