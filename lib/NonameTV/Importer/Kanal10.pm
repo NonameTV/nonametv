@@ -89,7 +89,7 @@ sub ImportContentFile
 
     my( $text ) = norm( $div->findvalue( '.' ) );
 
-    if( isDate( $text ) ) { # the line with the date in format 'Måndag 11 juli'
+    if( isDate( $text ) ) { # the line with the date in format 'Måndag 11 Juli'
 
       $date = ParseDate( $text );
 
@@ -171,8 +171,6 @@ sub ParseDate {
     ( $dayname, $day, $monthname ) = ( $text =~ /^(\S+)\s+(\d+)\s+(\S+)$/i );
 
     $month = MonthNumber( $monthname, 'sv' );
-    
-    
   }
 	
 my $dt_now = DateTime->now();
@@ -182,7 +180,6 @@ my $dt_now = DateTime->now();
   				year => $dt_now->year,
     			month => $month,
     			day => $day,
-    			time_zone => "Europe/Stockholm"
       		);
   
   # Add a year if the month is January
