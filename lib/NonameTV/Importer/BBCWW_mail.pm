@@ -108,9 +108,9 @@ sub ImportXLS
             $foundcolumns = 1 if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Date/ );
           }
         }
-foreach my $cl (%columns) {
-	print "$cl\n";
-}
+#foreach my $cl (%columns) {
+#	print "$cl\n";
+#}
         %columns = () if( $foundcolumns eq 0 );
 
         next;
