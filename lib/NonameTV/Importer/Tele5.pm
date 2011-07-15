@@ -98,6 +98,7 @@ sub ImportRTF {
     return;
   }
 
+  my $enoughtext = 0;
   my $text = '';
   my $textfull = 0;
   my $date;
@@ -147,9 +148,14 @@ sub ImportRTF {
       }
     } elsif( $type eq 'eof' ){
       $text .= "\n\n";
-    } elsif( ( $type eq 'text' ) and ( $infooter == 0 ) ){
-      $text .= ' ' . $arg;
-      d( 'text:' . $arg );
+    } elsif( ( $type eq 'text' ) and ( $infooter == 0 ) and ( $enoughtext == 0 ) ){
+      if( $arg =~ m/^(?:Auszeichnungen|Hintergrund der Handlung|Hintergrund zur Serie|Serienkurztext|Starinfo.*?|Zur Serie):/ ){
+        # ignore text from here on
+        $enoughtext = 1;
+      } else {
+        $text .= ' ' . $arg;
+        d( 'text:' . $arg );
+      }
     } else {
       d( 'unknown type: ' . $type . ':' . $arg );
     }
@@ -348,6 +354,7 @@ sub ImportRTF {
         $ce->{title} = $title;
         $self->{datastore}->AddProgramme ($ce);
       }
+      $enoughtext = 0;
       $text = '';
     }
 

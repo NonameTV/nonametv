@@ -63,11 +63,14 @@ sub FilterContent {
   $$cref =~ s|http://www.kika-presse.de/scripts/media/export/dtd/kika_programmWoche.dtd|http://www.kika-presse.de/media/export/dtd/kika_programmWoche.dtd|;
   # misescaped entities
   $$cref =~ s|&amp;#(\d+);|&#$1;|g;
-  # convert misencoded entities (always unicode, never anything else in xml!)
+  # convert misencoded entities (always unicode, never anything else in xml! its windows-1252 in this case)
   $$cref =~ s|&#x80;|&#x20AC;|g; # Euro
   $$cref =~ s|&#x82;|'|g;
   $$cref =~ s|&#x84;|"|g;
   $$cref =~ s|&#x85;|...|g;
+  $$cref =~ s|&#x8a;|&#x160;|gi; # S
+  $$cref =~ s|&#x8c;|&#x152;|gi; # OE
+  $$cref =~ s|&#x8e;|&#x17d;|gi; # Z
   $$cref =~ s|&#x91;|'|g;
   $$cref =~ s|&#x92;|'|g;
   $$cref =~ s|&#x93;|"|g;
@@ -75,6 +78,10 @@ sub FilterContent {
   $$cref =~ s|&#x96;|-|g;
   $$cref =~ s|&#x97;|-|g;
   $$cref =~ s|&#x99;|&#x2122;|g; # TM
+  $$cref =~ s|&#x9a;|&#x161;|gi; # s
+  $$cref =~ s|&#x9c;|&#x153;|gi; # oe
+  $$cref =~ s|&#x9e;|&#x17e;|gi; # z
+  $$cref =~ s|&#x9f;|&#x178;|gi; # Y
 
   return( $cref, undef);
 }
