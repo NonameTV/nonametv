@@ -131,7 +131,19 @@ sub ImportContentFile
       };
 
       if( $desc ){
-        $ce->{description} = norm($desc);
+      	my ($ep, $eps);
+      	
+      	
+        	$ce->{description} = norm($desc);
+        	my $d = norm($desc);
+          # Del 2
+  				( $ep ) = ($d =~ /\bdel\s+(\d+)/ );
+  				$ce->{episode} = sprintf( " . %d .", $ep-1 ) if defined $ep;
+
+  			# Del 2 av 3
+  			( $ep, $eps ) = ($d =~ /\bdel\s+(\d+)\((\d+)\)/ );
+  			$ce->{episode} = sprintf( " . %d/%d . ", $ep-1, $eps ) 
+    		if defined $eps;
       }
 
       $dsh->AddProgramme( $ce );
