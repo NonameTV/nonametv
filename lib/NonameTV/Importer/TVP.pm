@@ -15,6 +15,7 @@ The data is downloaded in ;-separated text-files.
 
 use DateTime;
 use Encode;
+##use Roman;
 
 use NonameTV qw/AddCategory norm/;
 use NonameTV::DataStore::Helper;
@@ -107,14 +108,14 @@ sub ImportContent {
         }
       }
 
-  for ( my $i = 2; $i < scalar @rows; $i++ )
+  for ( my $i = 1; $i < scalar @rows; $i++ )
   {
   	
   	
   	my $test = norm($rows[$i]);
   	
   	if( isShow( $test ) ) {
-  		my( $time, $title ) = ParseShow( norm($test) );
+  		my( $time, $title, $episode, $epi_title ) = ParseShow( norm($test) );
   		
   		
   		progress("TVP: $chd->{xmltvid}: $time - $title");
@@ -125,6 +126,10 @@ sub ImportContent {
         start_time => $time,
         title => norm($title),
       };
+      
+      $ce->{episode} = $episode if $episode;
+      
+      $ce->{subtitle} = norm($epi_title) if $epi_title;
       
       $dsh->AddProgramme( $ce );
   	}
@@ -154,20 +159,49 @@ sub isShow {
 sub ParseShow {
   my( $text ) = @_;
 
-  my( $time, $title, $desc );
+  my( $time, $title, $desc, $ep, $eps, $episode_title, $seas );
 
   ( $time, $title ) = ( $text =~ /^(\d+\:\d+)\s+(.*)$/ );
 
-  # parse description
+  # parse episode id, 
   # format '14.00 Gudstjänst med LArs Larsson - detta är texten'
   if( $title =~ /-\s+(.*)$/ ){
-    ( $desc ) = ( $title =~ /-\s+(.*)$/ );
+    my ( $esen ) = ( $title =~ /-\s+(.*)$/ );
+    
+    ## Parse episode
+    ( $ep, $eps ) = ($esen =~ /odc.\s+(\d+)\/(\d+)/ );
+    ( $ep ) = ($esen =~ /odc.\s+(\d+)/ );
+    
+    ## Parse season <- NOT WORKING
+    ##my ( $roman ) = ($esen =~ /seria\s+(\w+)\s+/ );
+    ##if((defined $roman) and (isroman($roman))) {
+    ##	my $seas = arabic($roman);
+		##}
+    ## Parse episode title
+    ( $episode_title ) = ($title =~ /\"(.*)\"/ );
+    $title =~ s/\"(.*)\"//;
+    
+    
     $title =~ s/-\s+(.*)$//;
   }
   
+  ## I don't know how to extract the description, but it is on the end of the ; (last ;)
   if( $title =~ /;\s+(.*)$/ ){
     ( $desc ) = ( $title =~ /;\s+(.*)$/ );
     $title =~ s/;\s+(.*)$//;
+  }
+  
+  ## Extract extra shit in the title.
+  if( $title =~ /,\s+(.*)$/ ){
+    $title =~ s/,\s+(.*)$//;
+  }
+  
+  if( $title =~ /\s+\((.*)\)/ ){
+    $title =~ s/\s+\((.*)\)//;
+  }
+  
+  if( $title =~ /\/(.*)\// ){
+    $title =~ s/\/(.*)\///;
   }
  	
  	$title =~ s/\((.*)\)//g;
@@ -181,7 +215,27 @@ sub ParseShow {
   
 	$time = sprintf( "%02d:%02d", $hour, $min );
 
-  return( $time, $title );
+
+			my( $episode );
+    # Episode info in xmltv-format
+      if( (defined $ep) and (defined $seas) and (defined $eps) )
+      {
+        $episode = sprintf( "%d . %d/%d .", $seas-1, $ep-1, $eps );
+      }
+      elsif( (defined $ep) and (defined $seas) and !(defined $eps) )
+      {
+        $episode = sprintf( "%d . %d .", $seas-1, $ep-1 );
+      }
+      elsif( (defined $ep) and (defined $eps) and !(defined $seas) )
+      {
+        $episode = sprintf( ". %d/%s .", $ep-1, $eps );
+      }
+      elsif( (defined $ep) and !(defined $seas) and !(defined $eps) )
+      {
+        $episode = sprintf( ". %d .", $ep-1 );
+      }
+
+  return( $time, $title, $episode, $episode_title );
 }
 
 1;
