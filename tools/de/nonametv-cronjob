@@ -72,5 +72,5 @@ perl -I lib tools/nonametv-batchlog > $NROOT/xmltv_staging/00status.html
 tools/de/nonametv-updatesite $Q
 
 $d tools/de/nonametv-xmltv-compare-run
-perl -I lib tools/nonametv-batchlog > $NROOT/xmltv_compare/00status.html
+#perl -I lib tools/nonametv-batchlog > $NROOT/xmltv_compare/00status.html
 
