@@ -3,7 +3,7 @@ package NonameTV::Importer::TVP;
 use strict;
 use warnings;
 use utf8;
-use Unicode::String;
+#use Unicode::String;
 
 =pod
 
@@ -14,7 +14,9 @@ The data is downloaded in ;-separated text-files.
 
 
 use DateTime;
-use Encode;
+#use Encode;
+#use Encode::Encoding;
+##use utf8::is_utf8;
 ##use Roman;
 
 use NonameTV qw/AddCategory norm/;
@@ -70,7 +72,8 @@ sub ImportContent {
 
   my( $batch_id, $cref, $chd ) = @_;
 
-	my $str = decode( "utf-8", $$cref );
+	#my $str = decode( "utf8", $$cref );
+	#my $str = Unicode::String::utf8 ($$cref)->utf8 ();
 
   my $ds = $self->{datastore};
   my $dsh = $self->{datastorehelper};
@@ -117,6 +120,13 @@ sub ImportContent {
   	if( isShow( $test ) ) {
   		my( $time, $title, $episode, $epi_title ) = ParseShow( norm($test) );
   		
+  		#$title = decode( "iso-8859-1", $title );
+  		
+  		#$title = encode("utf8", $title);
+  		
+  		#Encode::from_to($title, "latin7", "iso-8859-1"); #1
+  		
+  		$title = norm($title);
   		
   		progress("TVP: $chd->{xmltvid}: $time - $title");
   		
@@ -124,7 +134,7 @@ sub ImportContent {
   		my $ce = {
         channel_id => $chd->{id},
         start_time => $time,
-        title => norm($title),
+        title => $title,
       };
       
       $ce->{episode} = $episode if $episode;
