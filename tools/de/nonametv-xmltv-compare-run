@@ -9,15 +9,19 @@ cd $NROOT/xmltv_compare
 $PROOT/tools/nonametv-xmltv-compare $NROOT/xmltv_staging $NROOT/xmltv_old
 
 # remove derived channels (SD versions of HD/SD simulcast channels. The only interesting bit is the mixing of HDTV and widescreen signaling)
-rm -f $NROOT/xmltv_compare/arte.de_*.diff
-rm -f $NROOT/xmltv_compare/daserste.de_*.diff
-rm -f $NROOT/xmltv_compare/einsfestival.ard.de_*.diff
-rm -f $NROOT/xmltv_compare/zdf.de_*.diff
+# rm -f $NROOT/xmltv_compare/arte.de_*.diff
+# rm -f $NROOT/xmltv_compare/daserste.de_*.diff
+# rm -f $NROOT/xmltv_compare/einsfestival.ard.de_*.diff
+# rm -f $NROOT/xmltv_compare/zdf.de_*.diff
 
 # keep time shared channels (to debug the time around the switching point)
 # rf -f $NROOT/xmltv_compare/arteeinsextra.ard.de_*.diff
 # rf -f $NROOT/xmltv_compare/neokika.zdfmobil.de_*.diff
 
+# push delta to website
+rsync -a --delete $NROOT/xmltv_compare/ nonametv@xmltv.spaetfruehstuecken.org:/home/ispman/spaetfruehstuecken.org/vhosts/xmltv/htdocs/xmltv_compare/
+
+# prepare todays data for tomorrows compare run
 rm -rf $NROOT/xmltv_old
 mkdir $NROOT/xmltv_old
 rsync -a $NROOT/xmltv_staging/ $NROOT/xmltv_old

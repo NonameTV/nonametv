@@ -9,6 +9,8 @@ Features:
 
 Episode-info parsed from description.
 
+This mode of access is documented at https://presse.daserste.de/pages/programm/xmldownload.aspx
+
 =cut
 
 use strict;
