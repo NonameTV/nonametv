@@ -95,8 +95,37 @@ sub ImportContent
         #}
         
         my $desc = $sc->findvalue( './RUBRIKKTEKST' );
+        my( $episode, $ep, $eps, $seas, $dummy );
+        # Säsong 2
+  			( $seas ) = ($desc =~ /Sesong\s+(\d+)./ );
+
+  			
+  			
+  			# Avsnitt 2
+  			( $ep, $eps ) = ($desc =~ /\((\d+)\:(\d+)\)/ );
         
+        # Avsnitt 2
+  			( $ep ) = ($desc =~ /\s+\((\d+)\)/ ) if not $ep;
         # my $text = $sc->findvalue( './TEKSTEKODE' );
+        
+        
+    # Episode info in xmltv-format
+      if( (defined $ep) and (defined $seas) and (defined $eps) )
+      {
+        $episode = sprintf( "%d . %d/%d .", $seas-1, $ep-1, $eps );
+      }
+      elsif( (defined $ep) and (defined $seas) and !(defined $eps) )
+      {
+        $episode = sprintf( "%d . %d .", $seas-1, $ep-1 );
+      }
+      elsif( (defined $ep) and (defined $eps) and !(defined $seas) )
+      {
+        $episode = sprintf( ". %d/%s .", $ep-1, $eps );
+      }
+      elsif( (defined $ep) and !(defined $seas) and !(defined $eps) )
+      {
+        $episode = sprintf( ". %d .", $ep-1 );
+      }
         
         my $ce = {
             start_time  => $start,
@@ -108,6 +137,7 @@ sub ImportContent
         
         };
         
+        $ce->{episode} = $episode if $episode;
         
         $dsh->AddProgramme( $ce );
     
