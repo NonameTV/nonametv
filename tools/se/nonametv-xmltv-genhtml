@@ -1,27 +1,22 @@
 #!/usr/bin/perl -w
 
-use strict;
-
-use FindBin;
-use lib "$FindBin::Bin/../../lib";
-
-use NonameTV::Factory qw/CreateDataStore/;
-
 use File::Copy;
-
+use POSIX qw(strftime);
 # How large an empty xmltv-file can be.
 use constant EMPTY_SIZE => 140;
 
-if( scalar( @ARGV ) != 2 )
+use strict;
+
+my $today = strftime "%m-%d", localtime;
+
+if( scalar( @ARGV ) != 1 )
 {
   print << 'EODOC';
-nonametv-xmltv-genhtml <outputdir> <installationdir>
+nonametv-xmltv-genhtml <dir>
 
 Generate a table with data for each day and channel. The .xml.gz-files
 should be located in <dir> and the table will be written to 
 <dir>/00index.html.
-
-<installationdir> should be the basedir for a nonametv installation.
 
 Furthermore, the program generates a file 00logos.html that contains
 a list of all channels and shows their logos.
@@ -34,9 +29,7 @@ EODOC
   exit 1;
 }
 
-my( $dir, $installdir ) = @ARGV;
-
-my $ds = CreateDataStore();
+my( $dir ) = @ARGV;
 
 # Build list of files
 my %files;
@@ -57,18 +50,14 @@ foreach my $file (keys %files)
   }
 }
 
-my @channels;
+my %channels;
 my %dates;
 
-my $ch = $ds->sa->LookupMany( "channels", { export => 1 }, ['xmltvid'] );
-
-foreach my $c (@{$ch}) {
-  push @channels, $c->{xmltvid};
-}
- 
 foreach my $file (keys %files)
 {
   my( $channel, $date ) = split( "_", $file );
+
+  $channels{$channel} = 1;
   $dates{$date} = 1;
 }
 
@@ -76,73 +65,41 @@ open OUT, "> $dir/00index.html.new"
   or die "Failed to open output file: $@";
 
 print OUT << "EOHEAD";
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" 
+   "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 <style type="text/css">
-body {
-				font: 13px lucida grande, arial;
-				color: #444;
-        padding: 20px;
-        background: #e0eff6;
-				background: rgba(221,238,246,0.898438);
-}
-
-  .X {  text-align: center; background-color: green; color:black; }
-  .E {  text-align: center; background-color: red; color:black; }
-  table { 
- 		border:1px solid #bbbbbb;
- 		border-spacing: 0px;
-		margin-top: 8px;
- 		margin-bottom: 20px;
-	}
-	
-thead {
-  background: #eeeeee;
-}
-
-td, th { 
-  border:1px solid #cccccc;
-  padding:5px; 
-}
-p {
-        margin:8px 0px 8px 0px;
-        line-height:18px;
-}
-
-a img {
-        border: 0;
-}
-
-a {
-    text-decoration: none;
-}
-h1 {
-        font-family: Georgia,"Times New Roman",Times,serif;
-        font-size:26px;
-        color:#083772;
-        letter-spacing:-1px;
-        font-weight:normal;
-}
-
-p {
-        margin:8px 0px 8px 0px;
-        line-height:18px;
-}
+  * { margin: 0px; padding: 0px; }
+  table { border: 1px solid #CCC; border-collapse:collapse; }
+  td,th { border: 1px solid #CCC; border-collapse:collapse; padding: 2px;}
+  .X {  text-align: center; background-color: #90EE90; }
+  .E {  text-align: center; background-color: #FF6347; }
+  td.today { background-color: #A0FFA0; }
+  th.today { background-color: #000; color: #FFF; }
 </style>
+<title>Channel status</title>
+<!-- today: $today -->
 </head>
 <body>
-<h1>Schedules</h1>
-<p>E=Doesn't Exist - X=Exists</p>
+<h1>Data status</h1>
+<p>E=Doesnt Exist - X=Exists</p>
 <table>
 <thead>
   <tr>
-    <td>Channel</td>
+    <th>Channel</th>
 EOHEAD
 
 foreach my $date (sort keys %dates)
 {
   my( $s ) = ($date =~ m/(\d\d-\d\d)$/);
-  print OUT "    <td>$s</td>\n";
+  if ($s ne $today) {
+  	print OUT "    <th scope='col'>$s</th>\n";
+  } else {
+  	print OUT "    <th scope='col' class='today'>$s</th>\n";
+  }
+  
+  #print OUT "    <td>$s</td>\n";
 }
 
 print OUT << "EOD";
@@ -152,11 +109,11 @@ print OUT << "EOD";
 
 EOD
 
-foreach my $channel (@channels)
+foreach my $channel (sort keys %channels)
 {
   print OUT << "EOD";
 <tr>
-  <td>$channel</td>
+  <th scope='row'>$channel</th>
 
 EOD
 
@@ -164,14 +121,21 @@ EOD
   {
     my $file = "${channel}_$date";
     $files{$file} = ' ' unless defined $files{$file};
-
+    my $short = substr( $date, 5, 5 );
+    #print OUT "<!-- $short - $today -->";
     if( $files{$file} eq 'U' )
     {
       print OUT "<td class='$files{$file}'><a href='$file.diff'>$files{$file}</a></td>";
     }
     else
     {
-      print OUT "<td class='$files{$file}'><a href='$file.xml.gz'>$files{$file}</a></td>";
+      if ($short ne $today) {
+      	print OUT "<td class='$files{$file}'><a href='$file.xml.gz'>$files{$file}</a></td>";
+      } else {
+      	print OUT "<td class='$files{$file} today'><a href='$file.xml.gz'>$files{$file}</a></td>";
+      }
+      
+      #print OUT "<td class='$files{$file}'><a href='displayfile.html?$file'>$files{$file}</a></td>";
     }
   }
 
@@ -188,8 +152,15 @@ print OUT << "EOD";
 EOD
 
 close(OUT);
-
-update_if_changed( "$dir/00index.html.new", "$dir/00index.html" );
+system("diff $dir/00index.html.new $dir/00index.html > /dev/null 2>&1");
+if( $? )
+{
+  move( "$dir/00index.html.new", "$dir/00index.html" );
+}
+else
+{
+  unlink( "$dir/00index.html.new" );
+}
 
 open OUT, "> $dir/00logos.html.new" 
   or die "Failed to open output file: $@";
@@ -220,7 +191,7 @@ Background:
   
 EOHEAD
 
-foreach my $channel (@channels)
+foreach my $channel (sort keys %channels)
 {
   print OUT << "EOREC";
 <tr>
@@ -244,8 +215,7 @@ EOFOOT
 close(OUT);
 
 update_if_changed( "$dir/00logos.html.new", "$dir/00logos.html" );
-
-system( "zcat $dir/channels.xml.gz | xsltproc $installdir/examples/channel-list.xsl - > $dir/channels.html.new" );
+system( "zcat $dir/channels.xml.gz | xsltproc /home/beatx/github/nonametv/examples/channel-list.xsl - > $dir/channels.html.new" );
 
 update_if_changed( "$dir/channels.html.new", "$dir/channels.html" );
 
