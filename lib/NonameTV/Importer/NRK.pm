@@ -129,6 +129,8 @@ sub FetchDataFromSite
 
     my $u = URI->new($self->{UrlRoot});
     $u->query_form( {
+    		d2_proxy_skip_encoding_all => 'true',
+    		d2_proxy_komponent => '/!potkomp.d2d_pressetjeneste.fkt_pressesoket_flex',
         p_fom_dag => $day,
         p_tom_dag => $day,
         p_fom_mnd => $month,
