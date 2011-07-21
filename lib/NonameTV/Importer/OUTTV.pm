@@ -4,21 +4,22 @@ use strict;
 use warnings;
 
 =pod
+Importer for OUTTV Sweden
 
-Import data from OUTTV
-Every week is handled as a seperate batch.
-The files is sent by OUTTV as mail.
+The excel files is sent via mail
 
-Features:
+Every week is runned as a seperate batch.
 
 =cut
 
 use utf8;
 
+use POSIX;
 use DateTime;
+use XML::LibXML;
 use Spreadsheet::ParseExcel;
 
-use NonameTV qw/norm AddCategory ParseDescCatSwe MonthNumber/;
+use NonameTV qw/norm AddCategory ParseDescCatSwe/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/progress error/;
 use NonameTV::Config qw/ReadConfig/;
@@ -33,6 +34,10 @@ sub new {
   my $self  = $class->SUPER::new( @_ );
   bless ($self, $class);
 
+  my $conf = ReadConfig();
+
+  $self->{FileStore} = $conf->{FileStore};
+
   my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
   $self->{datastorehelper} = $dsh;
 
@@ -46,7 +51,7 @@ sub ImportContentFile {
   $self->{fileerror} = 0;
 
   if( $file =~ /\.xls$/i ){
-    $self->ImportFlatXLS( $file, $chd );
+    $self->ImportXLS( $file, $chd );
   } else {
     error( "OUTTV: Unknown file format: $file" );
   }
@@ -54,7 +59,7 @@ sub ImportContentFile {
   return;
 }
 
-sub ImportFlatXLS
+sub ImportXLS
 {
   my $self = shift;
   my( $file, $chd ) = @_;
@@ -65,244 +70,194 @@ sub ImportFlatXLS
   my %columns = ();
   my $date;
   my $currdate = "x";
-
+  my @ces;
+  
   progress( "OUTTV: $chd->{xmltvid}: Processing flat XLS $file" );
 
   my $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
 
-  my($iR, $oWkS, $oWkC);
-	
-  my( $time, $episode );
-  my( $program_title , $program_description );
-  my @ces;
-  
   # main loop
+  #for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
   foreach my $oWkS (@{$oBook->{Worksheet}}) {
 
-    for(my $iR = 2 ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
+    #my $oWkS = $oBook->{Worksheet}[$iSheet];
+    #progress( "BBCWW: $chd->{xmltvid}: Processing worksheet: $oWkS->{Name}" );
 
-      # date (column 1)
-      $oWkC = $oWkS->{Cells}[$iR][0];
+	my $foundcolumns = 0;
+
+    # browse through rows
+    for(my $iR = 1 ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
+
+
+      if( not %columns ){
+        # the column names are stored in the first row
+        # so read them and store their column positions
+        # for further findvalue() calls
+
+        for(my $iC = $oWkS->{MinCol} ; defined $oWkS->{MaxCol} && $iC <= $oWkS->{MaxCol} ; $iC++) {
+          if( $oWkS->{Cells}[$iR][$iC] ){
+            $columns{$oWkS->{Cells}[$iR][$iC]->Value} = $iC;
+
+						$columns{'Date'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Date/ );
+						$columns{'Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Titel/ );
+						$columns{'Time'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Time/ );
+
+          	$columns{'Genre'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Genre/ );
+          	$columns{'Episode'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Episode number/ );
+          
+          	$columns{'Description'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Program info/ );
+
+            $foundcolumns = 1 if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Date/ );
+          }
+        }
+#foreach my $cl (%columns) {
+#	print "$cl\n";
+#}
+        %columns = () if( $foundcolumns eq 0 );
+
+        next;
+      }
+
+
+
+      # date - column 0 ('Date')
+      my $oWkC = $oWkS->{Cells}[$iR][$columns{'Date'}];
       next if( ! $oWkC );
-	  if( isDate( $oWkC->Value ) ){
-		$date = ParseDate( $oWkC->Value );
-	  }
+      next if( ! $oWkC->Value );
+      $date = ParseDate( $oWkC->Value );
       next if( ! $date );
 
-	  # No date? Skip.
-	  unless( $date ) {
-	  	next;
-	  }
-	  
-	  if($date ne $currdate ) {
-        if( $currdate ne "x" ) {
+	  # Startdate
+      if( $date ne $currdate ) {
+      	if( $currdate ne "x" ) {
 			$dsh->EndBatch( 1 );
         }
-
-
-
-        my $batchid = $chd->{xmltvid} . "_" . $date;
+      
+      	my $batchid = $chd->{xmltvid} . "_" . $date;
         $dsh->StartBatch( $batchid , $chd->{id} );
-        $dsh->StartDate( $date , "06:00" );
+        progress("OUTTV: $chd->{xmltvid}: Date is $date");
+        $dsh->StartDate( $date , "00:00" ); 
         $currdate = $date;
-
-        progress("OUTTV: Date is: $date");
       }
 
-	  # time (column 1)
-      $oWkC = $oWkS->{Cells}[$iR][1];
+	  	# time
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'Time'}];
       next if( ! $oWkC );
-      my $time = ParseTime( $oWkC->Value );
-      next if( ! $time );
+      my $time = ParseTime($oWkC->Value) if( $oWkC->Value );
 
-      # program_title (column 2)
-      $oWkC = $oWkS->{Cells}[$iR][2];
-      $program_title = $oWkC->Value;
-	  
-	  # genre (column 3)
-	  $oWkC = $oWkS->{Cells}[$iR][3];
+      # title
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'Title'}];
+      next if( ! $oWkC );
+      my $title = $oWkC->Value if( $oWkC->Value );
+      
+      # Remove (N) from title
+      $title =~ s/ \(N\)//g; 
+
+	  	# Episode info (column 6)
+	  	$oWkC = $oWkS->{Cells}[$iR][$columns{'Episode'}] if $columns{'Episode'};
+      my $episode = $oWkC->Value;
+      
+      # genre (column 5)
+	  	$oWkC = $oWkS->{Cells}[$iR][$columns{'Genre'}];
       my $genre = $oWkC->Value;
-	  
-	  # description (column 4)
-	  $oWkC = $oWkS->{Cells}[$iR][4];
-      my $desc = $oWkC->Value;
 
-      if( $time and $program_title ){
-	  
-	  	# empty last day array
+	  	# descr (column 7)
+	  	my $desc = $oWkS->{Cells}[$iR][$columns{'Description'}]->Value if $oWkS->{Cells}[$iR][$columns{'Description'}];
+
+      
+
+			# empty last day array
      	undef @ces;
-	  
-        
 
-        my $ce = {
-          channel_id   => $chd->{id},
-          title        => norm($program_title),
-          start_time   => $time,
-		  description  => $desc,
-        };
-    
-    	# Check description after categories.
-      	my ( $program_type, $category ) = ParseDescCatSwe( $desc );
-  		AddCategory( $ce, $program_type, $category );
-    
-		if( $genre ){
-			my($program_type, $category ) = $ds->LookupCat( 'OUTTV', $genre );
-			AddCategory( $ce, $program_type, $category );
-		}
-		
-		# Extract episode info, categories in description
-		$self->extract_extra_info( $ce );
-		
-		progress("$time $program_title");
-		
-		# Add programme
-        $dsh->AddProgramme( $ce );
-		
-		push( @ces , $ce );
-      }
+      my $ce = {
+        channel_id => $chd->{channel_id},
+        title => norm( $title ),
+        start_time => $time,
+        description => norm( $desc ),
+      };
+      
+      		my $film = 0;
+      
+      		# Get genre
+      		if( $genre ){
+						my($program_type, $category ) = $ds->LookupCat( 'OUTTV', $genre );
+						AddCategory( $ce, $program_type, $category );
+					}
+      
+      		# Get production date and category
+					if(($genre =~ /film/) and (defined $episode)) {
+						# Find production year from description.
+  					if( $episode =~ /\((\d\d\d\d)\)/ )
+  					{
+    					$ce->{production_date} = "$1-01-01";
+  					}
+						
+						# Check description after categories.
+      			my ( $program_type, $category ) = ParseDescCatSwe( $episode );
+  					AddCategory( $ce, $program_type, $category );
+  					
+  					$ce->{program_type} = 'movies';
+  					
+  					$film = 1;
+					}
+
+				# Try to extract episode-information from the description.
+				if((defined $episode) and ($film eq 0)) {
+  				my( $ep, $eps, $sea, $dummy );
+
+  				# Säsong 2
+  				( $dummy, $sea ) = ($episode =~ /\b(S.song)\s+(\d+)/ );
+
+  				# Avsnitt 2
+					( $dummy, $ep ) = ($episode =~ /\b(Avsnitt)\s+(\d+)/ );
+
+  				# Episode info in xmltv-format
+  				if( (defined $ep) and (defined $sea) )
+   				{
+        		$ce->{episode} = sprintf( "%d . %d .", $sea-1, $ep-1 );
+   				}
+
+  				# Avsnitt/Del 2 av 3
+  				( $dummy, $ep, $eps ) = ($episode =~ /\b(Del|Avsnitt)\s+(\d+)\s*av\s*(\d+)/ );
+					$ce->{episode} = sprintf( " . %d/%d . ", $ep-1, $eps ) 
+    			if defined $eps;
+  
+  				if( defined $ce->{episode} ) {
+    				$ce->{program_type} = 'series';
+					}
+				}
+
+
+			progress("OUTTV: $chd->{xmltvid}: $time - $title");
+      $dsh->AddProgramme( $ce );
+
+			push( @ces , $ce );
 
     } # next row
-	
   } # next worksheet
 
-  $dsh->EndBatch( 1 );
-  
-  # Success
+	$dsh->EndBatch( 1 );
+
   return 1;
-}
-
-sub extract_extra_info
-{
-  my $self = shift;
-  my( $ce ) = shift;
-
-  my( $ds ) = $self->{datastore};
-
-  my( $program_type, $category );
-
-  my @sentences = (split_text( $ce->{description} ), "");
-
-  # Remove (N) from title
-  $ce->{title} =~ s/ \(N\)//g;
-  
-  $ce->{description} = join_text( @sentences );
-
-  extract_episode( $ce );
-  
-  # Make it readable.
-  $ce->{description} = norm($ce->{description});
-}
-
-# Split a string into individual sentences.
-sub split_text
-{
-  my( $t ) = @_;
-
-  return () if not defined( $t );
-
-  # Remove any trailing whitespace
-  $t =~ s/\s*$//;
-
-  # Replace strange dots.
-  $t =~ tr/\x2e/./;
-
-  # We might have introduced some errors above. Fix them.
-  $t =~ s/([\?\!])\./$1/g;
-
-  # Replace ... with ::.
-  $t =~ s/\.{3,}/::./g;
-
-  # Turn all whitespace into pure spaces and compress multiple whitespace 
-  # to a single.
-  $t =~ tr/\n\r\t \xa0/     /s;
-
-  # Mark sentences ending with '.', '!', or '?' for split, but preserve the 
-  # ".!?".
-  $t =~ s/([\.\!\?])\s+([A-Z���])/$1;;$2/g;
-  
-  my @sent = grep( /\S\S/, split( ";;", $t ) );
-
-  if( scalar( @sent ) > 0 )
-  {
-    # Make sure that the last sentence ends in a proper way.
-    $sent[-1] =~ s/\s+$//;
-    $sent[-1] .= "." 
-      unless $sent[-1] =~ /[\.\!\?]$/;
-  }
-
-  return @sent;
-}
-
-# Join a number of sentences into a single paragraph.
-# Performs the inverse of split_text
-sub join_text
-{
-  my $t = join( " ", grep( /\S/, @_ ) );
-  $t =~ s/::/../g;
-
-  return $t;
-}
-
-sub extract_episode
-{
-  my( $ce ) = @_;
-
-  return if not defined( $ce->{description} );
-
-  my $d = $ce->{description};
-
-  # Try to extract episode-information from the description.
-  my( $ep, $eps, $sea );
-  my $episode;
-
-  my $dummy;
-
-  # Säsong 2
-  ( $dummy, $sea ) = ($d =~ /\b(S.song)\s+(\d+)/ );
-
-  # Avsnitt 2
-  ( $dummy, $ep ) = ($d =~ /\b(Avsnitt)\s+(\d+)/ );
-
-  # Episode info in xmltv-format
-  if( (defined $ep) and (defined $sea) )
-   {
-        $episode = sprintf( "%d . %d .", $sea-1, $ep-1 );
-   }
-
-  # Avsnitt/Del 2 av 3
-  ( $dummy, $ep, $eps ) = ($d =~ /\b(Del|Avsnitt)\s+(\d+)\s*av\s*(\d+)/ );
-  $episode = sprintf( " . %d/%d . ", $ep-1, $eps ) 
-    if defined $eps;
-  
-  if( defined $episode ) {
-    $ce->{episode} = $episode;
-    $ce->{program_type} = 'series';
-  }
-}
-
-sub isDate {
-  my ( $text ) = @_;
-
-	unless( $text ) {
-		next;
-	}
-
-  # format '2011-04-13'
-  if( $text =~ /^\d{4}\-\d{2}\-\d{2}$/i ){
-    return 1;
-
-  # format '2011/05/12'
-  } elsif( $text =~ /^\d{4}\/\d{2}\/\d{2}$/i ){
-    return 1;
-  }
-
-  next;
 }
 
 sub ParseDate {
   my ( $text ) = @_;
 
   my( $year, $day, $month );
+  
+  # Empty string
+  unless( $text ) {
+		return 0;
+	}
+	
+	if($text eq "") {
+		return 0;
+	}
+	
+	if($text eq "Date") {
+		return 0;
+	}
 
   # format '2011-04-13'
   if( $text =~ /^\d{4}\-\d{2}\-\d{2}$/i ){
@@ -315,17 +270,8 @@ sub ParseDate {
 
   $year += 2000 if $year < 100;
 
-  my $dt = DateTime->new(
-    year => $year,
-    month => $month,
-    day => $day,
-    time_zone => "Europe/Stockholm"
-      );
 
-  $dt->set_time_zone( "UTC" );
-
-
-	return $dt->ymd("-");
+return sprintf( '%d-%02d-%02d', $year, $month, $day );
 }
 
 sub ParseTime {
@@ -341,8 +287,3 @@ sub ParseTime {
 }
 
 1;
-
-### Setup coding system
-## Local Variables:
-## coding: utf-8
-## End:

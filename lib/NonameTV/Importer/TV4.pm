@@ -187,8 +187,10 @@ sub ImportContent
       	$name = $name." (".$role.")";
       }
       
-      if( $name eq "Regissör" )
+    if( $name =~ /Regissör/ )
       {
+      	$title =~ s/ \(Regissör\)//g; 
+      	
         push @directors, $name;
       }
       else
