@@ -6,7 +6,9 @@ use warnings;
 use Data::Dumper;
 use Encode;
 
-use NonameTV qw/norm/;
+use WWW::TheMovieDB::Search;
+
+use NonameTV qw/norm ParseXml/;
 use NonameTV::Augmenter::Base;
 use NonameTV::Config qw/ReadConfig/;
 use NonameTV::Log qw/w/;
@@ -22,8 +24,13 @@ sub new {
 
 #    print Dumper( $self );
 
-#    defined( $self->{ApiKey} )   or die "You must specify ApiKey";
-#    defined( $self->{Language} ) or die "You must specify Language";
+    defined( $self->{ApiKey} )   or die "You must specify ApiKey";
+    defined( $self->{Language} ) or die "You must specify Language";
+
+    # only consider Ratings with 10 or more votes by default
+    if( !defined( $self->{MinRatingCount} ) ){
+      $self->{MinRatingCount} = 10;
+    }
 
     # need config for main content cache path
     my $conf = ReadConfig( );
@@ -31,9 +38,36 @@ sub new {
 #    my $cachefile = $conf->{ContentCachePath} . '/' . $self->{Type} . '/tvdb.db';
 #    my $bannerdir = $conf->{ContentCachePath} . '/' . $self->{Type} . '/banner';
 
+    $self->{themoviedb} = new WWW::TheMovieDB::Search;
+    $self->{themoviedb}->key( $self->{ApiKey} );
+    $self->{themoviedb}->lang( $self->{Language} );
+
     return $self;
 }
 
+sub FillHash( $$$ ) {
+  my( $self, $resultref, $movieId )=@_;
+
+  my $apiresult = $self->{themoviedb}->Movie_getInfo( $movieId );
+  my $doc = ParseXml( \$apiresult );
+
+  if (not defined ($doc)) {
+    w( $self->{Type} . ' failed to parse result.' );
+    return;
+  }
+
+  $resultref->{title} = $doc->findvalue( '/OpenSearchDescription/movies/movie/name' );
+  $resultref->{subtitle} = undef; # shall we add the tagline as subtitle?
+  my $votes = $doc->findvalue( '/OpenSearchDescription/movies/movie/votes' );
+  if( $votes >= $self->{MinRatingCount} ){
+    # ratings range from 0 to 10
+    $resultref->{'star_rating'} = $doc->findvalue( '/OpenSearchDescription/movies/movie/rating' ) . ' / 10';
+  }
+  $resultref->{production_date} = $doc->findvalue( '/OpenSearchDescription/movies/movie/released' );
+  $resultref->{url} = $doc->findvalue( '/OpenSearchDescription/movies/movie/url' );
+
+#  print STDERR Dumper( $apiresult );
+}
 
 sub AugmentProgram( $$$ ){
   my( $self, $ceref, $ruleref ) = @_;
@@ -43,8 +77,46 @@ sub AugmentProgram( $$$ ){
   # result string, empty/false for success, message/true for failure
   my $result = '';
 
-  if( $ruleref->{matchby} eq 'samlpetitle' ) {
+  if( $ruleref->{matchby} eq 'title' ) {
+    # search by title and year (if present)
 
+    my $searchTerm = $ceref->{title};
+    if( $ceref->{production_date} ){
+      my( $year )=( $ceref->{production_date} =~ m|^(\d{4})\-\d+\-\d+$| );
+      $searchTerm .= ' ' . $year;
+    }
+
+    # filter characters that confuse the search api
+    $searchTerm =~ s|[-#]||g;
+
+    my $apiresult = $self->{themoviedb}->Movie_search( $searchTerm );
+
+    my $doc = ParseXml( \$apiresult );
+
+    if (not defined ($doc)) {
+      return( undef, $self->{Type} . ' failed to parse result.' );
+    }
+
+    # The data really looks like this...
+    my $ns = $doc->find ('/OpenSearchDescription/opensearch:totalResults');
+    if( $ns->size() == 0 ) {
+      return( undef,  "No valid search result returned" );
+    }
+
+    my $numResult = $doc->findvalue( '/OpenSearchDescription/opensearch:totalResults' );
+    if( $numResult < 1 ){
+      return( undef,  "No matching movie found when searching for: " . $searchTerm );
+    }elsif( $numResult > 1 ){
+      return( undef,  "More then one matching movie found when searching for: " . $searchTerm );
+    }else{
+#      print STDERR Dumper( $apiresult );
+
+      my $movieId = $doc->findvalue( '/OpenSearchDescription/movies/movie/id' );
+      my $movieLanguage = $doc->findvalue( '/OpenSearchDescription/movies/movie/language' );
+      my $movieTranslated = $doc->findvalue( '/OpenSearchDescription/movies/movie/translated' );
+
+      $self->FillHash( $resultref, $movieId );
+    }
   }else{
     $result = "don't know how to match by '" . $ruleref->{matchby} . "'";
     $resultref = undef;
