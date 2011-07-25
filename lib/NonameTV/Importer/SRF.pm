@@ -15,9 +15,10 @@ TODO handle regional programmes on DRS
 
 =cut
 
-use Encode qw/from_to/;
+use Encode qw/decode encode/;
+use utf8;
 
-use NonameTV qw/AddCategory ParseXml/;
+use NonameTV qw/AddCategory normLatin1 ParseXml/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/w f/;
 
@@ -58,6 +59,13 @@ sub Object2Url {
 sub FilterContent {
   my $self = shift;
   my( $cref, $chd ) = @_;
+
+  $$cref = decode( 'utf-8', $$cref );
+
+  $$cref =~ s|\x0C$||g; # strip carriage return from the line endings
+  $$cref = normLatin1( $$cref );
+
+  $$cref = encode( 'utf-8', $$cref );
 
   return( $cref, undef);
 }
