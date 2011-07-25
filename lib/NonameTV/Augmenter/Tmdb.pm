@@ -56,8 +56,14 @@ sub FillHash( $$$ ) {
     return;
   }
 
-  $resultref->{title} = $doc->findvalue( '/OpenSearchDescription/movies/movie/name' );
-  $resultref->{subtitle} = undef; # shall we add the tagline as subtitle?
+  # FIXME shall we use the alternative name if that's what was in the guide???
+  # on one hand the augmenters are here to unify various styles on the other
+  # hand matching the other guides means less surprise for the users
+  $resultref->{title} = norm( $doc->findvalue( '/OpenSearchDescription/movies/movie/name' ) );
+
+  # TODO shall we add the tagline as subtitle?
+  $resultref->{subtitle} = undef;
+
   my $votes = $doc->findvalue( '/OpenSearchDescription/movies/movie/votes' );
   if( $votes >= $self->{MinRatingCount} ){
     # ratings range from 0 to 10
@@ -84,6 +90,8 @@ sub AugmentProgram( $$$ ){
     if( $ceref->{production_date} ){
       my( $year )=( $ceref->{production_date} =~ m|^(\d{4})\-\d+\-\d+$| );
       $searchTerm .= ' ' . $year;
+    }else{
+      return( undef,  "Year unknown, not searching at themoviedb.org!" );
     }
 
     # filter characters that confuse the search api
