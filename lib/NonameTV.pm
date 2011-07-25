@@ -30,7 +30,7 @@ BEGIN {
                       Word2Xml Wordfile2Xml 
 		      File2Xml Content2Xml
 		      FindParagraphs
-                      norm AddCategory
+                      norm normLatin1 AddCategory
                       ParseDescCatSwe FixProgrammeData
 		      ParseXml ParseXmltv
                       MonthNumber
@@ -316,6 +316,22 @@ sub norm
   $str =~ s/\s+$//;
   $str =~ tr/\n\r\t /    /s;
   
+  return $str;
+}
+
+#
+# fixup utf8 with the microsoft variant of latin1 instead of iso-8859-1 in the lower 256 code points
+#
+# see http://en.wikipedia.org/wiki/Windows-1252
+#
+sub normLatin1
+{
+  my( $str ) = @_;
+
+  return undef if not defined( $str );
+
+  $str =~ tr/\x{80}\x{82}\x{83}\x{84}\x{85}\x{86}\x{87}\x{88}\x{89}\x{8a}\x{8b}\x{8c}\x{8e}\x{91}\x{92}\x{93}\x{94}\x{95}\x{96}\x{97}\x{98}\x{99}\x{9a}\x{9b}\x{9c}\x{9e}\x{9f}/\x{20ac}\x{201a}\x{0192}\x{201e}\x{2026}\x{2020}\x{2021}\x{02c6}\x{2030}\x{0160}\x{2039}\x{0152}\x{017d}\x{2018}\x{2019}\x{201c}\x{201d}\x{2022}\x{2012}\x{2014}\x{02dc}\x{2122}\x{0161}\x{203a}\x{0153}\x{017e}\x{0178}/; #
+
   return $str;
 }
 
