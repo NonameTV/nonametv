@@ -67,7 +67,12 @@ sub FillHash( $$$$ ) {
 
   $resultref->{title} = norm( $series->{SeriesName} );
 
-  $resultref->{episode} = ($episode->{SeasonNumber} - 1) . ' . ' . ($episode->{EpisodeNumber} - 1) . ' .';
+  if( $episode->{SeasonNumber} == 0 ){
+    # it's a special
+    $resultref->{episode} = undef;
+  }else{
+    $resultref->{episode} = ($episode->{SeasonNumber} - 1) . ' . ' . ($episode->{EpisodeNumber} - 1) . ' .';
+  }
 
   $resultref->{subtitle} = norm( $episode->{EpisodeName} );
 

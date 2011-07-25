@@ -1,6 +1,6 @@
 \N,Tmdb,\N,program_type,movie,\N,title
 \N,Fixups,Tagesschau,\N,\N,\N,setcategorynews
-58,Tvdb,\N,program_type,series,\N,episodetitle
+58,Tvdb,^.*$,program_type,series,\N,episodetitle
 84,Fixups,"^(Video Killed The Radio Star):\s+(.*)$",\N,\N,\N,splittitle
 84,Fixups,"^(Kopf der Woche):\s+(.*)$",\N,\N,\N,splittitle
 84,Fixups,^(Montage):\s+(.*)$,\N,\N,\N,splittitle
@@ -14,7 +14,7 @@
 74,Fixups,"^(Der Bug) - Gast:\s+(.*)$",\N,\N,\N,splitguesttitle
 58,Fixups,^(Netzmenschen)\s+-\s+(.*)$,\N,\N,\N,splittitle
 \N,Fixups,"^(Polizeiruf 110):\s+(.*)$",\N,\N,\N,splittitle
-49,Tvdb,\N,program_type,series,\N,episodetitle
+49,Tvdb,^.*$,program_type,series,\N,episodetitle
 48,Fixups,^(Universum):\s+(.*)$,\N,\N,\N,splittitle
 48,Fixups,^(makro):\s+(.*)$,\N,\N,\N,splittitle
 48,Fixups,^(hitec):\s+(.*)$,\N,\N,\N,splittitle
@@ -29,9 +29,9 @@
 58,Fixups,"Raumschiff Enterprise",subtitle,"Ein Paralleluniversum","Ein Parallel-Universum",replacesubtitle
 58,Fixups,Seinfeld,subtitle,"Die Dinner-Party","Die Dinnerparty",replacesubtitle
 58,Fixups,"Raumschiff Enterprise",subtitle,"Kodos, der Henker","Kodos der Henker",replacesubtitle
-39,Tvdb,\N,program_type,series,\N,episodetitle
+39,Tvdb,^.*$,program_type,series,\N,episodetitle
 39,Fixups,Stargate,program_type,series,"Stargate SG-1",replacetitle
-39,Fixups,"Stargate SG-1",subtitle,Exodus,"Todfeinde (1)",replacesubtitle
+39,Fixups,"Stargate SG-1",subtitle,Exodus,"Exodus (1)",replacesubtitle
 39,Fixups,"Earth: Final Conflict",program_type,series,"Mission Erde",replacetitle
 39,Fixups,"Stargate SG-1",subtitle,Todfeinde,"Todfeinde (2)",replacesubtitle
 58,Fixups,"Spooks – Im Visier des MI5",program_type,series,Spooks,replacetitle
@@ -57,3 +57,13 @@
 38,Fixups,"^(Zu Tisch (?:auf|in|im) \.\.\.)\s+(.*)$",\N,\N,\N,splittitle
 38,Fixups,"Zu Tisch auf ...",\N,\N,"Zu Tisch in ...",replacetitle
 38,Fixups,"Zu Tisch im ...",\N,\N,"Zu Tisch in ...",replacetitle
+39,Fixups,"Star Trek - Das nächste Jahrhundert",program_type,series,"Raumschiff Enterprise - Das nächste Jahrhundert",replacetitle
+39,Fixups,Smallville,subtitle,"Small)willenlos (Spirit",(Small)willenlos,replacesubtitle
+39,Fixups,"^(Charles Bronson):\s+(.*)$",program_type,movie,\N,splitstartitle
+39,Fixups,Smallville,subtitle,"Der Anfang","Der Anfang...",replacesubtitle
+39,Fixups,Highlander,subtitle,"Der König vom Amazonas (Saving Grace","Der König vom Amazonas",replacesubtitle
+48,Fixups,"^(Deutschland, deine Künstler):\s+(.*)$",\N,\N,\N,splittitle
+57,Fixups,"^(An einem Tag in Duisburg) (Todesfalle Loveparade)$",\N,\N,\N,splittitle
+58,Tvdb,"Unter anderen Umständen",\N,\N,\N,episodetitle
+39,Fixups,"^(Michael Dudikoff):\s+(.*)$",program_type,movie,\N,splitstartitle
+39,Fixups,"^(Chuck Norris):\s+(.*)$",program_type,movie,\N,splitstartitle

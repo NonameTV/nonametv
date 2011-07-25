@@ -431,10 +431,12 @@ sub clean_untertitel
   #
   # Französischer Spielfilm von 2003
   #
-  if ($subtitle =~ m|^\S+ischer [\S+]ilm von [0-9][0-9][0-9][0-9]$|) {
-    my ($pcountries, $pyear) = ($subtitle =~ m|^(\S+) \S+ von (\d+)$|);
+  if ($subtitle =~ m|^\S+ischer \S+ilm von \d{4}$|) {
+    my ($pcountries, $format, $pyear) = ($subtitle =~ m|^(\S+) (\S+) von (\d{4})$|);
 
     $sce->{production_date} = "$pyear-01-01";
+    my ( $program_type, $categ ) = $ds->LookupCat( "DreiSat_genre", $format );
+    AddCategory( $sce, $program_type, $categ );
     return undef;
   }
 
