@@ -306,6 +306,15 @@ Tele5,thriller-serie,Crime/Mystery,
 Tele5,vampirfilm,,movie
 Tele5,western,Action/Adv,
 Tele5,westernparodie,Action/Adv,
+TV5Monde,documentary,Documentary,
+TV5Monde,drama,Drama,
+TV5Monde,entertainment,Entertainment,
+TV5Monde,magazine,Magazine,
+TV5Monde,movie,movie,movies
+TV5Monde,newscast,News,
+TV5Monde,"short program",Short,
+TV5Monde,sport,Sports,sports
+TV5Monde,"youth program",Youth,
 Viasat_category,filmer,Movies,movie
 Viasat_category,miniserier,,series
 Viasat_category,musik,Music,
