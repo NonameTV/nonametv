@@ -417,6 +417,19 @@ sub clean_untertitel
     return undef;
   }
   #
+  # [format,] production countries [year of production] (seen on 3sat)
+  # Fernsehfilm, BRD 1980
+  #
+  if ($subtitle =~ m|^[^ ,]+ [^ ]+, [0-9][0-9][0-9][0-9]$|) {
+    my ($format, $pcountries, $pyear) = ($subtitle =~ m|^([^ ,]+) ([^ ,]+), ([0-9]+)$|);
+
+    $sce->{production_date} = "$pyear-01-01";
+    # programme format is mostly reported in genre, too. so just reuse that
+    my ( $program_type, $categ ) = $ds->LookupCat( "DreiSat_genre", $format );
+    AddCategory( $sce, $program_type, $categ );
+    return undef;
+  }
+  #
   # production countries [year of production]
   # Deutschland/Polen 2008
   # Deutschland 2007
