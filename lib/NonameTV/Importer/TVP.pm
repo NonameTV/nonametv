@@ -2,16 +2,14 @@ package NonameTV::Importer::TVP;
 
 use strict;
 use warnings;
-use Unicode::String;
 
 =pod
 
 Importer for TVP
-Channels: TVPolonia, TVP, TVP2, TVPKultura
+Channels: TVPolonia, TVP, TVP2, TVPKultura, more.
 
 =cut
 
-use Encode qw/decode encode/;
 use utf8;
 
 use NonameTV qw/AddCategory normLatin1 ParseXml norm/;
@@ -26,7 +24,7 @@ sub new {
     my $self  = $class->SUPER::new( @_ );
     bless ($self, $class);
 
-    $self->{datastorehelper} = NonameTV::DataStore::Helper->new( $self->{datastore} );#, 'Europe/Zurich'
+    $self->{datastorehelper} = NonameTV::DataStore::Helper->new( $self->{datastore} );
 
     $self->{datastore}->{augment} = 0;
 
@@ -52,14 +50,6 @@ sub Object2Url {
 sub FilterContent {
   my $self = shift;
   my( $cref, $chd ) = @_;
-
-  #$$cref = decode( 'utf-8', $$cref );
-
-  #$$cref =~ s|\x0C$||g; # strip carriage return from the line endings
-  #$$cref = normLatin1( $$cref );
-
-  #$$cref = encode( 'utf-8', $$cref );
-  #$$cref = Unicode::String::latin1 ($$cref)->utf8 ();
 
   return( $cref, undef);
 }
