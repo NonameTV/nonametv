@@ -62,7 +62,8 @@ sub FilterContent {
 
   $$cref = decode( 'utf-8', $$cref );
 
-  $$cref =~ s|\x0C$||g; # strip carriage return from the line endings
+  $$cref =~ s|\x{0d}$||g;      # strip carriage return from the line endings
+  $$cref =~ s|\x{a0}+(?=<)||g; # strip trailing non-breaking whitespace
   $$cref = normLatin1( $$cref );
 
   $$cref = encode( 'utf-8', $$cref );
