@@ -72,6 +72,7 @@ sub AugmentProgram( $$$ ){
         $resultref->{'description'} .= "\n" . $ceref->{'description'};
       }
     }
+    $resultref->{program_type} = 'series';
   }elsif( $ruleref->{matchby} eq 'splitguesttitle' ) {
     # split the name of the guest from the title and put it into subtitle and guest
     my( $title, $episodetitle )=( $ceref->{title} =~ m|$ruleref->{title}| );
