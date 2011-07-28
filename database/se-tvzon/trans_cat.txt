@@ -315,6 +315,59 @@ TV5Monde,newscast,News,
 TV5Monde,"short program",Short,
 TV5Monde,sport,Sports,sports
 TV5Monde,"youth program",Youth,
+TVNorge,"amerikansk action",Action,movie
+TVNorge,"amerikansk action-eventyr",Action/Adventure,movie
+TVNorge,"amerikansk actionserie",Action,movie
+TVNorge,"amerikansk animasjon",Animation,movie
+TVNorge,"amerikansk dokumentarserie",Documentary,series
+TVNorge,"amerikansk drama",Drama,movie
+TVNorge,"amerikansk dramaserie",Drama,series
+TVNorge,"amerikansk komedie",Comedy,movie
+TVNorge,"amerikansk komiserie",Comedy,series
+TVNorge,"amerikansk krimserie",Crime,series
+TVNorge,"amerikansk musical",Musical,movie
+TVNorge,"amerikansk realityserie",Reality,series
+TVNorge,"amerikansk romantisk komedie",Romance/Comedy,movie
+TVNorge,"amerikansk serie",series,series
+TVNorge,"amerikansk skrekkfilm",Horror,movie
+TVNorge,"amerikansk thriller",Thriller,movie
+TVNorge,"amerikansk underholdning",Entertainment,
+TVNorge,"australsk dokumentarserie",Documentary,series
+TVNorge,"australsk realityserie",Reality,series
+TVNorge,"britisk dokumentarserie",Documentary,series
+TVNorge,"britisk dramaserie",Drama,series
+TVNorge,"britisk livsstilserie",Lifestyle,series
+TVNorge,"britisk realityserie",Reality,series
+TVNorge,"britisk talkshow",Talk,tvshow
+TVNorge,"britisk thriller",Thriller,movie
+TVNorge,"kanadisk dokumentarserie",Documentary,series
+TVP,"cykl dokumentalny",Documentary,series
+TVP,"cykl reportaå¼y",News,
+TVP,"cykl reportaży",News,
+TVP,"dokument fabularyzowany",Documentary,
+TVP,dramat,Drama,
+TVP,"film dokumentalny",Documentary,movie
+TVP,"film fabularny",\N,movie
+TVP,"film tvp",\N,movie
+TVP,koncert,Concert,
+TVP,"koncert å¼yczeå",Concert,
+TVP,"koncert życzeń",Concert,
+TVP,magazyn,Magazine,
+TVP,"magazyn kulinarny",Magazine,
+TVP,"magazyn turystyczny",Magazine,
+TVP,"program kabaretowy",\N,tvshow
+TVP,"program rozrywkowy",\N,tvshow
+TVP,reportaå¼,News,
+TVP,reportaż,News,
+TVP,serial,\N,series
+TVP,"serial animowany",Animation,series
+TVP,"serial dokumentalny",Documentary,series
+TVP,"serial dokumentalny tvp",Documentary,series
+TVP,"serial kryminalny tvp",Crime,series
+TVP,"serial obyczajowy tvp",\N,series
+TVP,"serial przygodowy tvp",\N,series
+TVP,"serial tvp",\N,series
+TVP,talk-show,Talk,tvshow
 Viasat_category,filmer,Movies,movie
 Viasat_category,miniserier,,series
 Viasat_category,musik,Music,
