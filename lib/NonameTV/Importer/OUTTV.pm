@@ -179,10 +179,8 @@ sub ImportXLS
       		my $film = 0;
       
       		# Get genre
-      		if( $genre ){
 						my($program_type, $category ) = $ds->LookupCat( 'OUTTV', $genre );
 						AddCategory( $ce, $program_type, $category );
-					}
       
       		# Get production date and category
 					if(($genre =~ /film/) and (defined $episode)) {
@@ -196,7 +194,7 @@ sub ImportXLS
       			my ( $program_type, $category ) = ParseDescCatSwe( $episode );
   					AddCategory( $ce, $program_type, $category );
   					
-  					$ce->{program_type} = 'movies';
+  					$ce->{program_type} = 'movie';
   					
   					$film = 1;
 					}

@@ -12,7 +12,7 @@ Channels: TVPolonia, TVP, TVP2, TVPKultura, more.
 
 use utf8;
 
-use NonameTV qw/AddCategory normLatin1 ParseXml norm/;
+use NonameTV qw/AddCategory ParseXml norm/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/w f progress/;
 
@@ -45,13 +45,6 @@ sub Object2Url {
 
   # Only one url to look at and no error
   return ([$url], undef);
-}
-
-sub FilterContent {
-  my $self = shift;
-  my( $cref, $chd ) = @_;
-
-  return( $cref, undef);
 }
 
 sub ContentExtension {
@@ -127,19 +120,19 @@ sub ImportContent {
 
 			# Stereo (It's actually in the correct form)
 			my ($stereo) = $programme->findvalue ('./DZWIEK');
-			$ce->{stereo} = $stereo if $stereo;
+			$ce->{stereo} = norm($stereo) if $stereo;
 
 			# Aspect (It's actually in the correct form)
 			my ($aspect) = $programme->findvalue ('./FORMAT_OBRAZU');
-			$ce->{aspect} = $aspect if $aspect;
+			$ce->{aspect} = norm($aspect) if $aspect;
 
 			# Actors (It's actually in the correct form)
 			my ($actors) = $programme->findvalue ('./WYKONAWCY');
-			$ce->{actors} = $actors if $actors;
+			$ce->{actors} = norm($actors) if $actors;
 
 			# Presenters (It's actually in the correct form)
 			my ($presenters) = $programme->findvalue ('./REZYSER');
-			$ce->{presenters} = $presenters;
+			$ce->{presenters} = norm($presenters) if $presenters;
 
 			# Genre
       my ($genre) = $programme->findvalue ('./RODZAJ');
