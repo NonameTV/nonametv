@@ -1,7 +1,7 @@
 #!/bin/bash
 
-NROOT=/storage/xmltv/
-PROOT=/home/beatx/nonametv
+NROOT=/storage/xmltv
+PROOT=/home/beatx/github/nonametv/
 
 Q="--quiet --quiet"
 F="--force-update"
@@ -34,13 +34,15 @@ then
   h=
 fi
 
+
+
 #tools/se/nonametv-process-mail
 
 $d tools/se/nonametv-import-allhttp $Q
 $h tools/se/nonametv-import-allhttp $Q --short-grab
 tools/se/nonametv-import-allmail $Q
 
-$d perl -I lib/ tools/nonametv-import SverigesRadio --force-update
+#$d perl -I lib/ tools/nonametv-import SverigesRadio --force-update
 $d perl -I lib/ tools/nonametv-export Xmltv --remove-old
 $d perl -I lib/ tools/nonametv-export Json --remove-old
 $d tools/nonametv-icon-update --quiet --unattended
@@ -52,9 +54,17 @@ $d tools/nonametv-icon-update --quiet --unattended
 $d perl -I lib tools/nonametv-export Xmltv --force-export --verbose 
 $d perl -I lib tools/nonametv-export Json --force-export --verbose
 
+# Run hourly export
+$h perl -I lib tools/nonametv-export Xmltv --verbose
+$h perl -I lib tools/nonametv-export Json --verbose
+
+# Update the Downvonverter-channels as well.
+$d perl -I lib tools/nonametv-import Downconverter $Q
+$h perl -I lib tools/nonametv-import Downconverter --short-grab $Q
+
 # Update the Combiner-channels as well.
-$d perl -I lib tools/nonametv-import Combiner $Q
-$h perl -I lib tools/nonametv-import Combiner --short-grab $Q
+#$d perl -I lib tools/nonametv-import Combiner $Q
+#$h perl -I lib tools/nonametv-import Combiner --short-grab $Q
 
 #Timeshifter körs inte
 #$d perl -I lib tools/nonametv-import Timeshifter $Q
@@ -62,7 +72,7 @@ $h perl -I lib tools/nonametv-import Combiner --short-grab $Q
 
 #tools/se/nonametv-updatesite $Q
 
-$d tools/se/nonametv-xmltv-compare-run
-perl -I lib tools/se/nonametv-xmltv-genhtml /storage/xmltv/ .
-perl -I lib tools/nonametv-batchlog > /storage/xmltv/00status.html
+#$d tools/se/nonametv-xmltv-compare-run
+perl -I lib tools/se/nonametv-xmltv-genhtml $NROOT/xmltv/
+perl -I lib tools/nonametv-batchlog > $NROOT/00status.html
 
