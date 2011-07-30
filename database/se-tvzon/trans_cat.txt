@@ -5,12 +5,18 @@ Arte_genre,dokumentarfilmreihe,Documentary,series
 Arte_genre,dokumentation,Documentary,
 Arte_genre,dokumentationsreihe,Documentary,series
 Arte_genre,fernsehfilm,,movie
+Arte_genre,fernsehserie,,series
 Arte_genre,gala,Musical,
+Arte_genre,kurzfilm,,movie
+Arte_genre,magazin,Magazine,
 Arte_genre,musik,Music,
 Arte_genre,nachrichten,,news
+Arte_genre,oper,Musical,
+Arte_genre,operette,Musical,
 Arte_genre,reportage,Documentary,
 Arte_genre,spielfilm,,movie
 Arte_genre,stummfilm,,movie
+Arte_genre,theater,,tvshow
 CanalPlus,action,Action,
 CanalPlus,"action drama",Action/Drama,
 CanalPlus,actionäventyr,Action/Adventure,
@@ -169,15 +175,18 @@ DreiSat_category,konzert,Music,
 DreiSat_category,"musik allgemein",Music,
 DreiSat_category,musikshow,Music,tvshow
 DreiSat_category,nachrichten,,news
+DreiSat_category,politik,Politics,
 DreiSat_category,regionalinformation,,news
 DreiSat_category,reisen/urlaub/touristik,Food/Travel,
 DreiSat_category,"rock, pop",Music,
+DreiSat_category,specials,Special,
 DreiSat_category,spielfilm,,movie
 DreiSat_category,sport,,sports
 DreiSat_category,"verbrechen, kriminalität",Crime,
 DreiSat_category,"volksmusik, volkstümliche musik, folklore",Music,
 DreiSat_category,"wissenschaft technik umwelt",Science/Nature,
 DreiSat_genre,animationsfilm,,movie
+DreiSat_genre,doku-drama,Documentary/Drama,
 DreiSat_genre,dokumentarfilm,Documentary,movie
 DreiSat_genre,dokumentarspiel,Documentary,
 DreiSat_genre,dokumentation,Documentary,
@@ -193,6 +202,7 @@ DreiSat_genre,krimi,Crime,
 DreiSat_genre,kriminalfilm,Crime,movie
 DreiSat_genre,krimiserie,Crime,
 DreiSat_genre,liebesfilm,,movie
+DreiSat_genre,magazin,Magazine,
 DreiSat_genre,märchenfilm,,movie
 DreiSat_genre,marionettenfilm,,movie
 DreiSat_genre,musikdokumentarfilm,,movie
@@ -201,14 +211,43 @@ DreiSat_genre,musiktheater,Music,
 DreiSat_genre,nachrichten,,news
 DreiSat_genre,reisedokumentation,Food/Travel,
 DreiSat_genre,reportage,Documentary,
+DreiSat_genre,serie,,series
 DreiSat_genre,spielfilm,,movie
 DreiSat_genre,spielshow/quiz,,tvshow
 DreiSat_genre,talkshow,Talk,tvshow
 DreiSat_genre,tanzfilm,,movie
 DreiSat_genre,thriller,Thriller,
 DreiSat_genre,zeichentrickfilm,,movie
+DreiSat_thember,affären/intrigen,News,
+DreiSat_thember,"bildende kunst",Art,
+DreiSat_thember,"country und western",Western/Country,
+DreiSat_thember,erotik/sexualität,Adult,
+DreiSat_thember,familie,Family,
+DreiSat_thember,"film, kino, video",,movie
+DreiSat_thember,"fußball",Football,sports
+DreiSat_thember,jazz,Music,
+DreiSat_thember,klassik,Music,
+DreiSat_thember,"krieg, konflikt, unruhen",War,
+DreiSat_thember,"lifestyle, personality",Lifestyle,
+DreiSat_thember,literatur,Art,
+DreiSat_thember,"mode, schönheit, kosmetik",Fashion,
 DreiSat_thember,moral/ethik/gewissen,Religion,
 DreiSat_thember,motorsport,Motors,sports
+DreiSat_thember,"natur- und umweltkatastrophen",Nature,
+DreiSat_thember,natur/geographie,Nature/Geographic,
+DreiSat_thember,natur/umwelt/ökologie,Nature,
+DreiSat_thember,naturwissenschaften,Nature,
+DreiSat_thember,"politik allgemein",Politics,
+DreiSat_thember,"politik ausland",Politics,
+DreiSat_thember,"religion, kirche",Religion,
+DreiSat_thember,"rock, pop",Music,
+DreiSat_thember,"schule, erziehung, ausbildung",School,
+DreiSat_thember,"slapstick, ulk, humor",Comedy,
+DreiSat_thember,"sport allgemein",,sports
+DreiSat_thember,"sport zum mitmachen/freizeitsport",\N,sports
+DreiSat_thember,umweltpolitik,Politics,
+DreiSat_thember,"verbrechen, kriminalität",Crime,
+DreiSat_thember,"volksmusik, volkstümliche musik, folklore",Music,
 Kanal5,documentary,Documentary,
 Kanal5,film,,movie
 Kanal5,series,,series
@@ -360,10 +399,10 @@ Tele5,sci-fi-action,SciFi,
 Tele5,sci-fi-horror,SciFi,
 Tele5,sci-fi-miniserie,SciFi,
 Tele5,sci-fi-parodie,SciFi,
-Tele5,sci-fi-serie,SciFi,
+Tele5,sci-fi-serie,SciFi,series
 Tele5,science-fiction,SciFi,
-Tele5,science-fiction-serie,SciFi,
-Tele5,science-fiction-thriller,SciFi,
+Tele5,science-fiction-serie,SciFi,series
+Tele5,science-fiction-thriller,SciFi/Thriller,
 Tele5,scifi-serie,SciFi,
 Tele5,spielfilm,,movie
 Tele5,tanzfilm,,movie
@@ -376,7 +415,7 @@ TV5Monde,documentary,Documentary,
 TV5Monde,drama,Drama,
 TV5Monde,entertainment,Entertainment,
 TV5Monde,magazine,Magazine,
-TV5Monde,movie,movie,movies
+TV5Monde,movie,movies,movie
 TV5Monde,newscast,News,
 TV5Monde,"short program",Short,
 TV5Monde,sport,Sports,sports
@@ -412,6 +451,7 @@ TVNorge,"australsk realityserie",Reality,series
 TVNorge,"britisk dokumentar fra",Documentary,
 TVNorge,"britisk dokumentar fra 2008",Documentary,
 TVNorge,"britisk dokumentar fra 2010",Documentary,
+TVNorge,"britisk dokumentar fra 2011",Documentary,
 TVNorge,"britisk dokumentarserie",Documentary,series
 TVNorge,"britisk dramaserie",Drama,series
 TVNorge,"britisk komiserie",Comedy,series
