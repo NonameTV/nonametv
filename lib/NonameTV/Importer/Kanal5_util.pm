@@ -328,25 +328,92 @@ sub extract_extra_info
       $found_episode = 1;
     }
 
-    if( my( $directors ) = ($sentences[$i] =~ /^Regi:\s*(.*)/) )
+    if( my( $directors ) = ($sentences[$i] =~ /Regi:\s*(.*)/) )
     {
       $ce->{directors} = parse_person_list( $directors );
       $sentences[$i] = "";
     }
-    elsif( my( $actors ) = ($sentences[$i] =~ /^I rollerna:\s*(.*)/ ) )
+    elsif( my( $teller ) = ($sentences[$i] =~ /Ber.ttare:\s*(.*)/ ) )
+    {
+      $ce->{commentators} = parse_person_list( $teller );
+      $sentences[$i] = "";
+    }
+    elsif( my( $actors ) = ($sentences[$i] =~ /I rollerna:\s*(.*)/ ) )
     {
       $ce->{actors} = parse_person_list( $actors );
       $sentences[$i] = "";
     }
-    elsif( my( $actors ) = ($sentences[$i] =~ /^I rollerna.\s*(.*)/ ) )
+    elsif( my( $actors2 ) = ($sentences[$i] =~ /Medverkande:\s*(.*)/ ) )
     {
-      $ce->{actors} = parse_person_list( $actors );
+      $ce->{actors} = parse_person_list( $actors2 );
       $sentences[$i] = "";
     }
-    elsif( my( $year ) = ($sentences[$i] =~ /^Fr�n (\d+)$/))
+    elsif( my( $actors3 ) = ($sentences[$i] =~ /Sk.despelare:\s*(.*)/ ) )
     {
-      # This should go into previously shown.
-#      $sentences[$i] = "";
+      $ce->{actors} = parse_person_list( $actors3 );
+      $sentences[$i] = "";
+    }
+    elsif( my( $actors4 ) = ($sentences[$i] =~ /I rollerna.\s*(.*)/ ) )
+    {
+      $ce->{actors} = parse_person_list( $actors4 );
+      $sentences[$i] = "";
+    }
+    elsif( my( $gueststar ) = ($sentences[$i] =~ /G.ststj.rna:\s*(.*)/ ) )
+    {
+      $ce->{guests} = parse_person_list( $gueststar );
+      $sentences[$i] = "";
+    }
+    elsif( my( $guestactor ) = ($sentences[$i] =~ /G.stsk.despelare:\s*(.*)/ ) )
+    {
+    	# Kanal5 listes it in Skådespelare. No need to have it in guests.
+      #$ce->{guests} = parse_person_list( $guestactor );
+      $sentences[$i] = "";
+    }
+    elsif( my( $guests ) = ($sentences[$i] =~ /G.ster:\s*(.*)/ ) )
+    {
+      $ce->{guests} = parse_person_list( $guests );
+      $sentences[$i] = "";
+    }
+    elsif( my( $presenters ) = ($sentences[$i] =~ /Programledare:\s*(.*)/ ) )
+    {
+      $ce->{presenters} = parse_person_list( $presenters );
+      $sentences[$i] = "";
+    }
+    elsif( my( $guest ) = ($sentences[$i] =~ /G.stv.rd:\s*(.*)/ ) )
+    {
+    	# Series like Saturday Night Live.
+      $ce->{subtitle} = parse_person_list( $guest );
+      $sentences[$i] = "";
+    }
+    elsif( my( $originaltitle ) = ($sentences[$i] =~ /Originaltitel:\s*(.*)/ ) )
+    {
+    	# Remove originaltitle from description, maybe use originaltitle instead of
+    	# swedish title?
+      $sentences[$i] = "";
+    }
+    elsif( my( $fran ) = ($sentences[$i] =~ /Fr.n\s*(.*)/ ) )
+    {
+    	# Previous air
+      $sentences[$i] = "";
+    }
+    elsif( my( $next ) = ($sentences[$i] =~ /.ven\s*(.*)/ ) )
+    {
+    	# Next air
+      $sentences[$i] = "";
+    }
+    elsif( my( $rating ) = ($sentences[$i] =~ /.ldersgr.ns:\s*(.*)./ ) )
+    {
+    	# Agerating
+      $ce->{rating} = norm($rating);
+      $sentences[$i] = "";
+    }
+    elsif( my( $seaso, $episod ) = ($sentences[$i] =~ /^S(\d+)E(\d+)/ ) )
+    {
+    	$ce->{episode} = sprintf( " %d . %d . ", $seaso-1, $episod-1 ) if $episod;
+    	$ce->{program_type} = 'series';
+    	
+    	# Remove from description
+      $sentences[$i] = "";
     }
     
     # Delete the episode and everything after it from the description.
@@ -357,6 +424,8 @@ sub extract_extra_info
   }
 
   $ce->{description} = join_text( @sentences );
+  
+  
 }
 
 sub parse_person_list
@@ -486,14 +555,6 @@ sub extract_episode
 
   # Del 2 s�s 2.
   ( $ep, $seas ) = ($d =~ /\bDel\s+(\d+)\s+s.s\s+(\d+)/ );
-  $episode = sprintf( " %d . %d . ", $seas-1, $ep-1 ) 
-    if defined $seas;
-  
-  # NEW
-  # S01E13
-  ( $seas, $ep ) = ($d =~ /\bS(\d+)E(\d+)/ );
-  $episode = sprintf( " %d . %d/%d . ", $seas-1, $ep-1, $eps ) 
-    if defined $eps;
   $episode = sprintf( " %d . %d . ", $seas-1, $ep-1 ) 
     if defined $seas;
   
