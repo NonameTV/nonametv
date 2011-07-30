@@ -316,12 +316,17 @@ sub extract_extra_info
   }
 
   my @sentences = (split_text( $ce->{description} ), "");
-  
+  my $found_episode=0;
   for( my $i=0; $i<scalar(@sentences); $i++ )
   {
     $sentences[$i] =~ tr/\n\r\t /    /s;
 
     $sentences[$i] =~ s/^I detta (avsnitt|program):\s*//;
+
+    if( extract_episode( $sentences[$i], $ce ) )
+    {
+      $found_episode = 1;
+    }
 
     if( my( $directors ) = ($sentences[$i] =~ /Regi:\s*(.*)/) )
     {
@@ -410,6 +415,12 @@ sub extract_extra_info
     	# Remove from description
       $sentences[$i] = "";
     }
+    
+    # Delete the episode and everything after it from the description.
+    if( $found_episode ) 
+    {
+      $sentences[$i] = "";
+    }
   }
 
   $ce->{description} = join_text( @sentences );
@@ -495,6 +506,68 @@ sub join_text
   $t =~ s/([\!\?])\./$1/g;
 
   return $t;
+}
+
+sub extract_episode
+{
+  my( $d, $ce ) = @_;
+
+  return 0 unless defined( $d );
+
+  #
+  # Try to extract episode-information from the description.
+  #
+  my( $ep, $eps, $seas );
+  my $episode;
+
+  # Avsn 2
+  ( $ep ) = ($d =~ /\bAvsn\s+(\d+)/ );
+  $episode = sprintf( " . %d .", $ep-1 ) if defined $ep;
+
+  # Avsn 2/3
+  ( $ep, $eps ) = ($d =~ /\bAvsn\s+(\d+)\s*\/\s*(\d+)/ );
+  $episode = sprintf( " . %d/%d . ", $ep-1, $eps ) 
+    if defined $eps;
+
+  # Avsn 2/3 s�s 2.
+  ( $ep, $eps, $seas ) = ($d =~ /\bAvsn\s+(\d+)\s*\/\s*(\d+)\s+s.s\s+(\d+)/ );
+  $episode = sprintf( " %d . %d/%d . ", $seas-1, $ep-1, $eps ) 
+    if defined $seas;
+
+  # Avsn 2 s�s 2.
+  ( $ep, $seas ) = ($d =~ /\bAvsn\s+(\d+)\s+s.s\s+(\d+)/ );
+  $episode = sprintf( " %d . %d . ", $seas-1, $ep-1 ) 
+    if defined $seas;
+
+  # Del 2
+  ( $ep ) = ($d =~ /\bDel\s+(\d+)/ );
+  $episode = sprintf( " . %d .", $ep-1 ) if defined $ep;
+
+  # Del 2/3
+  ( $ep, $eps ) = ($d =~ /\bDel\s+(\d+)\s*\/\s*(\d+)/ );
+  $episode = sprintf( " . %d/%d . ", $ep-1, $eps ) 
+    if defined $eps;
+
+  # Del 2/3 s�s 2.
+  ( $ep, $eps, $seas ) = ($d =~ /\bDel\s+(\d+)\s*\/\s*(\d+)\s+s.s\s+(\d+)/ );
+  $episode = sprintf( " %d . %d/%d . ", $seas-1, $ep-1, $eps ) 
+    if defined $seas;
+
+  # Del 2 s�s 2.
+  ( $ep, $seas ) = ($d =~ /\bDel\s+(\d+)\s+s.s\s+(\d+)/ );
+  $episode = sprintf( " %d . %d . ", $seas-1, $ep-1 ) 
+    if defined $seas;
+  
+  
+  
+  if( defined $episode )
+  {
+    $ce->{episode} = $episode;
+    $ce->{program_type} = 'series';
+    return 1
+  }
+
+  return 0;
 }
   
 1;
