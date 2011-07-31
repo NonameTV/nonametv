@@ -327,8 +327,20 @@ sub extract_extra_info
     {
       $found_episode = 1;
     }
-
-    if( my( $directors ) = ($sentences[$i] =~ /Regi:\s*(.*)/) )
+		
+		if( my( $originaltitle ) = ($sentences[$i] =~ /Originaltitel:\s*(.*)/ ) )
+    {
+    	# Remove originaltitle from description, maybe use originaltitle instead of
+    	# swedish title?
+      $sentences[$i] = "";
+    }
+    elsif( my( $rating ) = ($sentences[$i] =~ /.ldersgr.ns:\s*(.*)$/ ) )
+    {
+    	# Agerating
+      #$ce->{rating} = norm($rating);
+      $sentences[$i] = "";
+    }
+    elsif( my( $directors ) = ($sentences[$i] =~ /Regi:\s*(.*)/) )
     {
       $ce->{directors} = parse_person_list( $directors );
       $sentences[$i] = "";
@@ -385,12 +397,6 @@ sub extract_extra_info
       $ce->{subtitle} = parse_person_list( $guest );
       $sentences[$i] = "";
     }
-    elsif( my( $originaltitle ) = ($sentences[$i] =~ /Originaltitel:\s*(.*)/ ) )
-    {
-    	# Remove originaltitle from description, maybe use originaltitle instead of
-    	# swedish title?
-      $sentences[$i] = "";
-    }
     elsif( my( $fran ) = ($sentences[$i] =~ /Fr.n\s*(.*)/ ) )
     {
     	# Previous air
@@ -399,12 +405,6 @@ sub extract_extra_info
     elsif( my( $next ) = ($sentences[$i] =~ /.ven\s*(.*)/ ) )
     {
     	# Next air
-      $sentences[$i] = "";
-    }
-    elsif( my( $rating ) = ($sentences[$i] =~ /.ldersgr.ns:\s*(.*)/ ) )
-    {
-    	# Agerating
-      $ce->{rating} = norm($rating);
       $sentences[$i] = "";
     }
     elsif( my( $seaso, $episod ) = ($sentences[$i] =~ /^S(\d+)E(\d+)/ ) )
