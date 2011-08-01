@@ -42,7 +42,7 @@ our @EXPORT_OK;
 my $wvhtml = 'wvHtml --charset=utf-8';
 # my $wvhtml = '/usr/bin/wvHtml';
 
-my $ua = LWP::UserAgent->new( agent => "Grabber from http://tv.swedb.se", 
+my $ua = LWP::UserAgent->new( agent => "nonametv (http://nonametv.org)", 
                               cookie_jar => {},
                               env_proxy => 1 );
 
