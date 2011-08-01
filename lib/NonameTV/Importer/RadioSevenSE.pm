@@ -54,8 +54,8 @@ sub ImportContent
   my( $batch_id, $cref, $chd ) = @_;
 
   my $ds = $self->{datastore};
-  my $dsh = $self->{datastorehelper};
-  my $currdate = "x";
+  #my $dsh = $self->{datastorehelper};
+  #my $currdate = "x";
   
   $ds->{SILENCE_END_START_OVERLAP}=1;
   $ds->{SILENCE_DUPLICATE_SKIP}=1;
@@ -84,31 +84,28 @@ sub ImportContent
 		
 		# Date
 		my $start = $self->create_dt( $sc->findvalue( './start' ) );
+		my $start_time = $start->ymd("-").' '.$start->hms(":");
 		
-		my $date = $start->ymd("-");
-		my $time = $start->hms(":");
+		my $end = $self->create_dt_end( $sc->findvalue( './end' ) );
+		my $end_time = $end->ymd("-").' '.$end->hms(":");
 		
-		# Startdate
-    if( $date ne $currdate ) {
-      progress("RadioSeven: $chd->{xmltvid}: Date is $date");
-    	$dsh->StartDate( $date , "00:00" ); 
-     	$currdate = $date;
-    }
 	
 		my $title = $sc->findvalue( './title' );
 		my $desc = $sc->findvalue( './description' );
 		my $url = $sc->findvalue( './link' );
 
-		progress("RadioSeven: $chd->{xmltvid}: $time - $title");
+		progress("RadioSeven: $chd->{xmltvid}: $start_time - $title");
 
   	my $ce = {
+  		channel_id	=> $chd->{id},
   		title 	  	=> norm($title),
- 	  	start_time  => $time,
+ 	  	start_time  => $start_time,
+ 	  	end_time 		=> $end_time,
  	  	description	=> norm($desc),
- 	  	url => norm($url),
+ 	  	url => $url,
    	};
 	
-  	  $dsh->AddProgramme( $ce );
+  	  $ds->AddProgramme( $ce );
  	 }
 
   # Success
@@ -116,6 +113,27 @@ sub ImportContent
 }
 
 sub create_dt
+{
+  my $self = shift;
+  my( $str ) = @_;
+  
+  my( $year, $month, $day, $hour, $minute ) = 
+      ($str =~ /(\d+)-(\d+)-(\d+) (\d+):(\d+)$/ );
+
+  my $dt = DateTime->new( year   => $year,
+                          month  => $month,
+                          day    => $day,
+                          hour   => $hour,
+                          minute => $minute,
+                          time_zone => 'Europe/Stockholm',
+                          );
+  
+  $dt->set_time_zone( "UTC" );
+  
+  return $dt;
+}
+
+sub create_dt_end
 {
   my $self = shift;
   my( $str ) = @_;
