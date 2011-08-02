@@ -86,7 +86,7 @@ sub ImportContent
 		my $start = $self->create_dt( $sc->findvalue( './start' ) );
 		my $start_time = $start->ymd("-").' '.$start->hms(":");
 		
-		my $end = $self->create_dt_end( $sc->findvalue( './end' ) );
+		my $end = $self->create_dt( $sc->findvalue( './end' ) );
 		my $end_time = $end->ymd("-").' '.$end->hms(":");
 		
 	
@@ -113,27 +113,6 @@ sub ImportContent
 }
 
 sub create_dt
-{
-  my $self = shift;
-  my( $str ) = @_;
-  
-  my( $year, $month, $day, $hour, $minute ) = 
-      ($str =~ /(\d+)-(\d+)-(\d+) (\d+):(\d+)$/ );
-
-  my $dt = DateTime->new( year   => $year,
-                          month  => $month,
-                          day    => $day,
-                          hour   => $hour,
-                          minute => $minute,
-                          time_zone => 'Europe/Stockholm',
-                          );
-  
-  $dt->set_time_zone( "UTC" );
-  
-  return $dt;
-}
-
-sub create_dt_end
 {
   my $self = shift;
   my( $str ) = @_;
