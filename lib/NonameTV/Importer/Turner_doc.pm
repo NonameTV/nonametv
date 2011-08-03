@@ -120,8 +120,6 @@ sub ImportContentFile
       next if( ! $time );
       next if( ! $title );
 
-      #$title = decode( "iso-8859-2" , $title );
-
       progress("Turner_doc: $xmltvid: $time - $title");
 
       my $ce = {
@@ -158,35 +156,24 @@ sub ParseDate {
 
   my( $dayname, $day, $monthname, $month, $year, $dummy );
 
-
-  # format 'Måndag 11 06'
   if( $text =~ /^(M.ndag|Tisdag|Onsdag|Torsdag|Fredag|L.rdag|S.ndag)\s+\d+(st|nd|rd|th)\s+(Januari|Februari|Mars|April|Maj|Juni|Juli|Augusti|September|November|December)\s+(\d+)$/i ){ # format 'Måndag 11 Juli'
     ( $dayname, $day, $dummy, $monthname, $year ) = ( $text =~ /^(\S+)\s+(\d+)(st|nd|rd|th)\s+(\S+)\s+(\d+)$/i );
 
     $month = MonthNumber( $monthname, 'sv' );
   }
-	
-my $dt_now = DateTime->now();
 
   my $dt = DateTime->new(
   				year => $year,
     			month => $month,
     			day => $day,
       		);
-  
-  # Add a year if the month is January
-  if($month eq 1) {
-    	$dt->add( year => 1 );
-  }
 
-  #return sprintf( '%d-%02d-%02d', $year, $month, $day );
   return $dt->ymd("-");
 }
 
 sub isShow {
   my ( $text ) = @_;
 
-  # format '14.00 Gudstjänst med LArs Larsson - detta är texten'
   if( $text =~ /^CET\s+\d+\.\d+\s+\S+/i ){
     return 1;
   }
@@ -201,10 +188,6 @@ sub ParseShow {
 
   ( $time, $title ) = ( $text =~ /^CET\s+(\d+\.\d+)\s+(.*)$/ );
 
-
-  # parse description
-  # format '14.00 Gudstjänst med LArs Larsson - detta är texten'
-
   my ( $hour , $min ) = ( $time =~ /^(\d+).(\d+)$/ );
   
   $time = sprintf( "%02d:%02d", $hour, $min );
@@ -213,8 +196,3 @@ sub ParseShow {
 }
 
 1;
-
-### Setup coding system
-## Local Variables:
-## coding: utf-8
-## End:
