@@ -99,6 +99,7 @@ sub ImportRTF {
   }
 
   my $enoughtext = 0;
+  my $desc = '';
   my $text = '';
   my $textfull = 0;
   my $date;
@@ -138,6 +139,7 @@ sub ImportRTF {
         if( $grouplevel == $infooter ) {
           d( 'footerend' );
           $infooter = 0;
+          $desc = '';
           $text = '';
         }
         $grouplevel -= 1;
@@ -153,8 +155,12 @@ sub ImportRTF {
         # ignore text from here on
         $enoughtext = 1;
       } else {
-        $text .= ' ' . $arg;
-        d( 'text:' . $arg );
+        if( $grouplevel == 3 ) {
+          $desc .= ' ' . $arg;
+        }else{
+          $text .= ' ' . $arg;
+        }
+        d( 'text(' . $grouplevel .'):' . $arg );
       }
     } else {
       d( 'unknown type: ' . $type . ':' . $arg );
@@ -188,6 +194,7 @@ sub ImportRTF {
         p( "new day: $daystring == " . $currdate->ymd( '-' ));
         $laststart = undef;
       } else { 
+        $text =~ s|^\s+||mg;
         d "TEXT: $text";
         from_to ($text, "windows-1252", "utf8");
 
@@ -255,7 +262,7 @@ sub ImportRTF {
         }
 
         # episode number
-        my ($episodenum) = ($text =~ m |^\s*Folge\s+(\d+)$|m);
+        my ($episodenum) = ($text =~ m/^\s*Folge\s+(\d+)(?:\s+von\s+\d+$|$)/m);
         if ($episodenum) {
           $ce->{episode} = ' . ' . ($episodenum - 1) . ' . ';
 
@@ -298,7 +305,7 @@ sub ImportRTF {
 
         # synopsis
         if ($self->{KeepDesc}) {
-          my ($desc) = ($text =~ m|^.*\n\n(.*?)$|s);
+#          my ($desc) = ($text =~ m|^.*\n\n(.*?)$|s);
           if ($desc) {
             $ce->{description} = $desc . $copyrightstring;
           }
