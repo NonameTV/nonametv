@@ -9,7 +9,7 @@ use Encode;
 use NonameTV qw/norm/;
 use NonameTV::Augmenter::Base;
 use NonameTV::Config qw/ReadConfig/;
-use NonameTV::Log qw/w/;
+use NonameTV::Log qw/w d/;
 
 use base 'NonameTV::Augmenter::Base';
 
@@ -109,8 +109,12 @@ sub AugmentProgram( $$$ ){
     #
     # FIXME what about series that air in pairs of two episodes?
     #
+    # FIXME what about programmes that have been augmented in between? (rewrite of episode number / typo fixes in episode title)
+    #
+    my $matchdone = 0;
     if( $ceref->{'title'} && $ceref->{subtitle} && !$ceref->{description} ){
       # try matching by title/subtitle first
+      d( 'matching by title/subtitle' );
       my( $res, $sth ) = $self->{datastore}->sa->Sql( "
           SELECT * from programs
           WHERE channel_id = ? and title = ? and subtitle = ? and description is not null
@@ -120,9 +124,12 @@ sub AugmentProgram( $$$ ){
       my $ce;
       while( defined( my $ce = $sth->fetchrow_hashref() ) ) {
         CopyProgramWithoutTransmission( $resultref, $ce );
+        $matchdone=1;
       }
-    }elsif( $ceref->{'title'} && $ceref->{episode} && !$ceref->{description} ){
+    }
+    if( !$matchdone && $ceref->{'title'} && $ceref->{episode} && !$ceref->{description} ){
       # try matching by title/episode number next
+      d( 'matching by title/episode number' );
       my ( $res, $sth ) = $self->{datastore}->sa->Sql( "
           SELECT * from programs
           WHERE channel_id = ? and title = ? and episode = ? and description is not null
@@ -132,21 +139,22 @@ sub AugmentProgram( $$$ ){
       my $ce;
       while( defined( my $ce = $sth->fetchrow_hashref() ) ) {
         CopyProgramWithoutTransmission( $resultref, $ce );
+        $matchdone=1;
       }
-    }elsif( $ceref->{'title'} ){
+    }
+    if( !$matchdone && $ceref->{'title'} ){
       # try matching just by title number last
+      d( 'matching by title' );
       my( $res, $sth ) = $self->{datastore}->sa->Sql( "
           SELECT * from programs
           WHERE channel_id = ? and title = ? and subtitle is not null and description is not null
-          ORDER BY timediff( ? , start_time ) asc, start_time asc, end_time desc
+          ORDER BY abs( timediff( start_time, ? ) ) asc, start_time asc, end_time desc
           LIMIT 1", 
         [$ceref->{channel_id}, $ceref->{title}, $ceref->{start_time}] );
       my $ce;
       if( defined( my $ce = $sth->fetchrow_hashref() ) ) {
         CopyProgramWithoutTransmission( $resultref, $ce );
       }
-    }else{
-      w( "don't know how to copylastdetails for programme at " . $ceref->{start_time} );
     }
   }else{
     $result = "don't know how to match by '" . $ruleref->{matchby} . "'";
