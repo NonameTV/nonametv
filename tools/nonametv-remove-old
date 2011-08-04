@@ -15,7 +15,7 @@ my $conf = ReadConfig();
 my $ds = NonameTV::DataStore->new( $conf->{DataStore} );
 
 # print "Deleting old programs and batches from database\n";
-$ds->sa->DoSql( "delete from programs where TO_DAYS(now()) - TO_DAYS(start_time) > 1" ); 
+$ds->sa->DoSql( "delete from programs where TO_DAYS(now()) - TO_DAYS(start_time) > 7" ); 
 
 # print "Deleting batches\n";
 
