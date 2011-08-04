@@ -249,10 +249,14 @@ sub ImportRTF {
           }
         }
 
+        # strip first line / title
+        $text =~ s|^[^\n]*\n|\n|s;
+
         # skip if SWR an wrong region
         if( $channel_name eq 'SWR' ) {
           if( $text =~ m/^\s*(?:BW|RP|SR)$/m ) {
             my( $programregion )=( $text =~ m/^\s*(BW|RP|SR)$/m );
+            $text =~ s/^\s*(?:BW|RP|SR)$//m;
             if( $region_name ne $programregion ) {
               d( 'skipping for region ' . $programregion . ' we want ' . $region_name );
               $text = '';
@@ -262,7 +266,7 @@ sub ImportRTF {
         }
 
         # episode number
-        my ($episodenum) = ($text =~ m/^\s*Folge\s+(\d+)(?:\s+von\s+\d+$|$)/m);
+        my ($episodenum) = ($text =~ m/^\s*Folge\s+(\d+)(?:\/\d+$|\s+von\s+\d+$|$)/m);
         if ($episodenum) {
           $ce->{episode} = ' . ' . ($episodenum - 1) . ' . ';
 
@@ -360,6 +364,7 @@ sub ImportRTF {
 
         $ce->{title} = $title;
         $self->{datastore}->AddProgramme ($ce);
+        d( 'left over text: ' . $text );
       }
       $enoughtext = 0;
       $text = '';
