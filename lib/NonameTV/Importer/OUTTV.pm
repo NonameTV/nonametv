@@ -103,8 +103,12 @@ sub ImportXLS
 						$columns{'Time'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Time/ );
 
           	$columns{'Genre'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Genre/ );
-          	$columns{'Episode'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Episode number/ );
-          
+          	$columns{'Season'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Säsong/ );
+          	$columns{'Episode'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Avsnitt/ );
+          	
+          	$columns{'Year'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Year/ );
+          	$columns{'Movie'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Movie Genre/ );
+          	
           	$columns{'Description'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Program info/ );
 
             $foundcolumns = 1 if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Date/ );
@@ -153,13 +157,25 @@ sub ImportXLS
       # Remove (N) from title
       $title =~ s/ \(N\)//g; 
 
-	  	# Episode info (column 6)
+	  	# Season
+	  	$oWkC = $oWkS->{Cells}[$iR][$columns{'Season'}] if $columns{'Season'};
+      my $season = $oWkC->Value;
+      
+      # Episode
 	  	$oWkC = $oWkS->{Cells}[$iR][$columns{'Episode'}] if $columns{'Episode'};
       my $episode = $oWkC->Value;
       
       # genre (column 5)
 	  	$oWkC = $oWkS->{Cells}[$iR][$columns{'Genre'}];
       my $genre = $oWkC->Value;
+      
+      # movie genre
+	  	$oWkC = $oWkS->{Cells}[$iR][$columns{'Movie'}];
+      my $moviegenre = $oWkC->Value;
+      
+      # Year
+	  	$oWkC = $oWkS->{Cells}[$iR][$columns{'Year'}];
+      my $year = $oWkC->Value;
 
 	  	# descr (column 7)
 	  	my $desc = $oWkS->{Cells}[$iR][$columns{'Description'}]->Value if $oWkS->{Cells}[$iR][$columns{'Description'}];
@@ -183,15 +199,15 @@ sub ImportXLS
 						AddCategory( $ce, $program_type, $category );
       
       		# Get production date and category
-					if(($genre =~ /film/) and (defined $episode)) {
+					if(($genre =~ /film/)) {
 						# Find production year from description.
-  					if( $episode =~ /\((\d\d\d\d)\)/ )
+  					if( $year =~ /\((\d\d\d\d)\)/ )
   					{
     					$ce->{production_date} = "$1-01-01";
   					}
 						
 						# Check description after categories.
-      			my ( $program_type, $category ) = ParseDescCatSwe( $episode );
+      			my ( $program_type, $category ) = $ds->LookupCat( 'OUTTV', $moviegenre );
   					AddCategory( $ce, $program_type, $category );
   					
   					$ce->{program_type} = 'movie';
@@ -200,25 +216,13 @@ sub ImportXLS
 					}
 
 				# Try to extract episode-information from the description.
-				if((defined $episode) and ($film eq 0)) {
-  				my( $ep, $eps, $sea, $dummy );
-
-  				# Säsong 2
-  				( $dummy, $sea ) = ($episode =~ /\b(S.song)\s+(\d+)/ );
-
-  				# Avsnitt 2
-					( $dummy, $ep ) = ($episode =~ /\b(Avsnitt)\s+(\d+)/ );
+				if(($season ne "") and ($film eq 0)) {
 
   				# Episode info in xmltv-format
-  				if( (defined $ep) and (defined $sea) )
+  				if( ($episode ne "") and ($season ne "") )
    				{
-        		$ce->{episode} = sprintf( "%d . %d .", $sea-1, $ep-1 );
+        		$ce->{episode} = sprintf( "%d . %d .", $season-1, $episode-1 );
    				}
-
-  				# Avsnitt/Del 2 av 3
-  				( $dummy, $ep, $eps ) = ($episode =~ /\b(Del|Avsnitt)\s+(\d+)\s*av\s*(\d+)/ );
-					$ce->{episode} = sprintf( " . %d/%d . ", $ep-1, $eps ) 
-    			if defined $eps;
   
   				if( defined $ce->{episode} ) {
     				$ce->{program_type} = 'series';
