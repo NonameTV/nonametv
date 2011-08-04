@@ -13,7 +13,7 @@ $V && echo "Local rsync"
 rsync -c --delete -r $NROOT/xmltv_staging/ $NROOT/xmltv/
 rsync -c --delete -r $NROOT/json_staging/ $NROOT/json/
 
-$V && echo "tv.swedb.se"
-sitecopy --update $SC_OPT tv.swedb.se
+#$V && echo "tvzon"
+#sitecopy --update $SC_OPT tvzon
 
-tools/nonametv-upload xmltv1 xmltv2
+tools/nonametv-upload xmltv1 

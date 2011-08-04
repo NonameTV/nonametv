@@ -1,9 +1,10 @@
 #!/bin/bash
 
-NROOT=/storage/xmltv
+NROOT=/var/local/nonametv
 PROOT=/home/beatx/github/nonametv/
 
-Q="--quiet --quiet"
+#Q="--quiet --quiet"
+Q="--verbose --force-update"
 F="--force-update"
 
 h=true
@@ -35,30 +36,28 @@ then
 fi
 
 
-
+# This runs by cronjob - seperately
 #tools/se/nonametv-process-mail
 
 $d tools/se/nonametv-import-allhttp $Q
 $h tools/se/nonametv-import-allhttp $Q --short-grab
 tools/se/nonametv-import-allmail $Q
 
-#$d perl -I lib/ tools/nonametv-import SverigesRadio --force-update
 $d perl -I lib/ tools/nonametv-export Xmltv --remove-old
 $d perl -I lib/ tools/nonametv-export Json --remove-old
 $d tools/nonametv-icon-update --quiet --unattended
 
-#tools/se/nonametv-updatesite $Q
+tools/se/nonametv-updatesite $Q
 
 # This shouldn't produce any output, but there seems to be a bug
 # somewhere.
 $d perl -I lib tools/nonametv-export Xmltv --force-export --verbose 
-$d perl -I lib tools/nonametv-export Json --force-export --verbose
 
 # Run hourly export
-$h perl -I lib tools/nonametv-export Xmltv --verbose
-$h perl -I lib tools/nonametv-export Json --verbose
+#$h perl -I lib tools/nonametv-export Xmltv --verbose
+#$h perl -I lib tools/nonametv-export Json --verbose
 
-# Update the Downvonverter-channels as well.
+# Update the Downconverter-channels as well.
 $d perl -I lib tools/nonametv-import Downconverter $Q
 $h perl -I lib tools/nonametv-import Downconverter --short-grab $Q
 
@@ -66,13 +65,10 @@ $h perl -I lib tools/nonametv-import Downconverter --short-grab $Q
 #$d perl -I lib tools/nonametv-import Combiner $Q
 #$h perl -I lib tools/nonametv-import Combiner --short-grab $Q
 
-#Timeshifter körs inte
-#$d perl -I lib tools/nonametv-import Timeshifter $Q
-#$h perl -I lib tools/nonametv-import Timeshifter --short-grab $Q
+perl -I lib tools/nonametv-batchlog > $NROOT/html/00status.html
 
-#tools/se/nonametv-updatesite $Q
+tools/se/nonametv-updatesite $Q
+$d tools/se/nonametv-xmltv-compare-run
 
-#$d tools/se/nonametv-xmltv-compare-run
-perl -I lib tools/se/nonametv-xmltv-genhtml $NROOT/xmltv/
-perl -I lib tools/nonametv-batchlog > $NROOT/00status.html
-
+# Run after, everything
+$d rsync -rsh=ssh --delete /var/local/nonametv/html/00status.html tvzon:/var/www/xmltv/

@@ -1,11 +1,13 @@
 #!/bin/bash
 
 tools/nonametv-import CNBC $1 $2 $3
+tools/nonametv-import Discovery $1 $2 $3
 tools/nonametv-import DisneyChannel $1 $2 $3
 tools/nonametv-import ExtremeSports $1 $2 $3
 tools/nonametv-import FTV $1 $2 $3
 tools/nonametv-import Kanal10 $1 $2 $3
 tools/nonametv-import Motors $1 $2 $3
+tools/nonametv-import Mtve_mail $1 $2 $3
 tools/nonametv-import NatGeoWild $1 $2 $3
 tools/nonametv-import NatGeoWildHD $1 $2 $3
 tools/nonametv-import OutdoorChannel $1 $2 $3
@@ -13,6 +15,7 @@ tools/nonametv-import OUTTV $1 $2 $3
 tools/nonametv-import PokerChannel $1 $2 $3
 tools/nonametv-import History $1 $2 $3
 tools/nonametv-import TravelChannel $1 $2 $3
+tools/nonametv-import Turner_doc $1 $2 $3
 tools/nonametv-import Turner $1 $2 $3
 tools/nonametv-import TV5Monde $1 $2 $3
 tools/nonametv-import YaS $1 $2 $3

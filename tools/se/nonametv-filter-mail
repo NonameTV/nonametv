@@ -77,12 +77,15 @@ foreach my $msg ($infolder->messages) {
     MoveMessage( $msg, "OUTTV" );
   }
   elsif( $fromaddr =~ /\@tv5monde.org/i ) {
-    MoveMessage( $msg, "OUTTV" );
+    MoveMessage( $msg, "TV5Monde" );
   }
   elsif( $fromaddr =~ /\@travelchannel.co.uk/i ) {
     MoveMessage( $msg, "TravelChannel" );
   }
   elsif( $fromaddr =~ /\@turner.com/i ) {
+    MoveMessage( $msg, "Turner" );
+  }
+  elsif( $fromaddr =~ /\@pixur.se/i ) {
     MoveMessage( $msg, "Turner" );
   }
   elsif( $fromaddr =~ /\@espnamerica.com/i ) {
