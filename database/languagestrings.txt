@@ -12,7 +12,7 @@ exporter-xmltv,episode_season,season,en
 exporter-xmltv,of,of,en
 exporter-xmltv,episode_part,Part,sv
 exporter-xmltv,episode_number,Del,sv
-exporter-xmltv,episode_season,"sÃ¤song",sv
+exporter-xmltv,episode_season,säsong,sv
 exporter-xmltv,of,av,sv
 exporter-xmltv,episode_part,dio,hr
 exporter-xmltv,episode_number,epizoda,hr
