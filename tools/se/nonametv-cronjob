@@ -3,8 +3,8 @@
 NROOT=/var/local/nonametv
 PROOT=/home/beatx/github/nonametv/
 
-#Q="--quiet --quiet"
-Q="--verbose --force-update"
+Q="--quiet --quiet"
+#Q="--verbose --force-update"
 F="--force-update"
 
 h=true
@@ -39,36 +39,38 @@ fi
 # This runs by cronjob - seperately
 #tools/se/nonametv-process-mail
 
+# Import everything
 $d tools/se/nonametv-import-allhttp $Q
 $h tools/se/nonametv-import-allhttp $Q --short-grab
 tools/se/nonametv-import-allmail $Q
 
+# Remove old
 $d perl -I lib/ tools/nonametv-export Xmltv --remove-old
 $d perl -I lib/ tools/nonametv-export Json --remove-old
 $d tools/nonametv-icon-update --quiet --unattended
 
+# Export
 tools/se/nonametv-updatesite $Q
 
 # This shouldn't produce any output, but there seems to be a bug
 # somewhere.
 $d perl -I lib tools/nonametv-export Xmltv --force-export --verbose 
 
-# Run hourly export
-#$h perl -I lib tools/nonametv-export Xmltv --verbose
-#$h perl -I lib tools/nonametv-export Json --verbose
-
 # Update the Downconverter-channels as well.
 $d perl -I lib tools/nonametv-import Downconverter $Q
 $h perl -I lib tools/nonametv-import Downconverter --short-grab $Q
 
-# Update the Combiner-channels as well.
-#$d perl -I lib tools/nonametv-import Combiner $Q
-#$h perl -I lib tools/nonametv-import Combiner --short-grab $Q
-
+# Batchlog
 perl -I lib tools/nonametv-batchlog > $NROOT/html/00status.html
 
+# Export
 tools/se/nonametv-updatesite $Q
+
+# Compare
 $d tools/se/nonametv-xmltv-compare-run
+
+# Upload to www
+tools/se/nonametv-upload $Q
 
 # Run after, everything
 $d rsync -rsh=ssh --delete /var/local/nonametv/html/00status.html tvzon:/var/www/xmltv/
