@@ -37,6 +37,8 @@ sub new {
 
 
     defined( $self->{UrlRoot} ) or die "You must specify UrlRoot";
+    
+    $self->{datastore}->{augment} = 1;
 
     # Canal Plus' webserver returns the following date in some headers:
     # Fri, 31-Dec-9999 23:59:59 GMT

@@ -33,6 +33,8 @@ sub new {
     $self->{MaxMonths} = 4 unless defined $self->{MaxMonths};
 
     defined( $self->{UrlRoot} ) or die "You must specify UrlRoot";
+    
+    $self->{datastore}->{augment} = 1;
 
     return $self;
 }

@@ -34,6 +34,8 @@ sub new {
   my $self  = $class->SUPER::new( @_ );
   bless ($self, $class);
 
+  $self->{MinDays} = 0 unless defined $self->{MinDays};
+  $self->{MaxDays} = 15 unless defined $self->{MaxDays};
 
   push @{$self->{OptionSpec}}, "list-channels";
   $self->{OptionDefaults}->{'list-channels'} = 0;
@@ -68,8 +70,7 @@ sub FilterContent {
   my $root = $fdoc->createElement( 'tv' );
   $fdoc->setDocumentElement( $root );
 
-#  my $ns = $doc->find( '//programme[@channel="' . $chd->{xmltvid} . '"]' );
-my $ns = $doc->find( '//programme[@channel="' . $chd->{grabber_info} . '"]' );
+  my $ns = $doc->find( '//programme[@channel="' . $chd->{xmltvid} . '"]' );
 
   foreach my $node ($ns->get_nodelist()) {
     $fdoc->adoptNode( $node );

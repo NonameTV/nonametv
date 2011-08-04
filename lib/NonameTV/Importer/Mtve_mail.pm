@@ -162,9 +162,12 @@ sub ImportXLS
       };
       
       # Seperate :
-      ( $ce->{subtitle} ) = ($ce->{title} =~ /:\s*(.+)$/);
+      my ( $subtitle ) = ($ce->{title} =~ /:\s*(.+)$/);
   		$ce->{title} =~ s/:\s*(.+)//;
       
+      
+      # Uc First it
+      ( $ce->{subtitle} ) = (ucfirst($subtitle)) if $subtitle;
 
 			progress("Mtve_mail: $chd->{xmltvid}: $time - $title");
       $dsh->AddProgramme( $ce );

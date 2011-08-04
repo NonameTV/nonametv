@@ -104,6 +104,11 @@ sub ImportContent
  	  	description	=> norm($desc),
  	  	url => $url,
    	};
+   	
+   	if( my( $presenters ) = ($desc =~ /med\s*(.*)/ ) )
+    {
+      $ce->{presenters} = parse_person_list( $presenters );
+    }
 	
   	  $ds->AddProgramme( $ce );
  	 }
@@ -131,6 +136,30 @@ sub create_dt
   $dt->set_time_zone( "UTC" );
   
   return $dt;
+}
+
+# From Kanal5_util
+sub parse_person_list
+{
+  my( $str ) = @_;
+
+  # Remove all variants of m.fl.
+  $str =~ s/\s*m[\. ]*fl\.*\b//;
+  
+  # Remove trailing '.'
+  $str =~ s/\.$//;
+
+  $str =~ s/\boch\b/,/;
+  $str =~ s/\bsamt\b/,/;
+
+  my @persons = split( /\s*,\s*/, $str );
+  foreach (@persons)
+  {
+    # The character name is sometimes given . Remove it.
+    s/^.*\s+-\s+//;
+  }
+
+  return join( ", ", grep( /\S/, @persons ) );
 }
     
 1;

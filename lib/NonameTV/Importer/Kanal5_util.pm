@@ -350,6 +350,11 @@ sub extract_extra_info
       $ce->{commentators} = parse_person_list( $teller );
       $sentences[$i] = "";
     }
+    elsif( my( $audioactors ) = ($sentences[$i] =~ /R.ster:\s*(.*)/ ) )
+    {
+      $ce->{actors} = parse_person_list( $audioactors );
+      $sentences[$i] = "";
+    }
     elsif( my( $actors ) = ($sentences[$i] =~ /I rollerna:\s*(.*)/ ) )
     {
       $ce->{actors} = parse_person_list( $actors );
