@@ -84,6 +84,11 @@ sub FillHash( $$$$ ) {
   if( $episode->{FirstAired} ) {
     $resultref->{production_date} = $episode->{FirstAired};
   }
+  
+  # episodepic
+  if( $episode->{filename} ) {
+    $resultref->{url_image_main} = sprintf('http://thetvdb.com/banners/%s', $episode->{filename});
+  }
 
   $resultref->{url} = sprintf(
     'http://thetvdb.com/?tab=episode&seriesid=%d&seasonid=%d&id=%d&lid=%d',
@@ -182,6 +187,33 @@ sub AugmentProgram( $$$ ){
             $self->FillHash( $resultref, $series, $episode );
           } else {
             w( "no absolute episode " . $episodeabs . " found for '" . $ceref->{title} . "'" );
+          }
+        }
+      }
+    }
+  }elsif( $ruleref->{matchby} eq 'episodeseason' ) {
+    # match by episode and season
+		
+		if( defined $ceref->{episode} ){
+      my( $season, $episode )=( $ceref->{episode} =~ m|^(\d+)\s*\.\s*(\d+)\s*/?\s*\d*\s*\.\s*$| );
+      if( (defined $episode) and (defined $season) ){
+        $episode += 1;
+        $season += 1;
+
+        my $series;
+        if( defined( $ruleref->{remoteref} ) ) {
+          my $seriesname = $self->{tvdb}->getSeriesName( $ruleref->{remoteref} );
+          $series = $self->{tvdb}->getSeries( $seriesname );
+        } else {
+          $series = $self->{tvdb}->getSeries( $ceref->{title} );
+        }
+        if( (defined $series) and ($season ne "") and $episode ne "" ){
+        	my $episode2 = $self->{tvdb}->getEpisode($series->{SeriesName}, $season, $episode);
+
+          if( defined( $episode2 ) ) {
+            $self->FillHash( $resultref, $series, $episode2 );
+          } else {
+            w( "no episode " . $episode . " or season " . $season . " found for '" . $ceref->{title} . "'" );
           }
         }
       }
