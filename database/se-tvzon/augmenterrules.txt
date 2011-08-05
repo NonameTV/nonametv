@@ -1,2 +1,65 @@
-93,Fixups,\N,\N,\N,\N,splittitle
-108,Tvdb,\N,series,\N,\N,episodetitle
+2,Fixups,\N,description,\N,\N,copylastdetails
+111,Fixups,\N,description,\N,\N,copylastdetails
+28,Tvdb,^.*$,program_type,series,\N,episodetitle
+97,Tvdb,^.*$,program_type,series,\N,episodeseason
+99,Tvdb,^.*$,program_type,series,\N,episodeseason
+\N,Tvdb,"Våra bästa år",program_type,series,70366,episodeseason
+\N,Tvdb,"Jims värld",program_type,series,75926,episodeseason
+\N,Tvdb,"Våra värsta år",program_type,series,76385,episodeseason
+\N,Tvdb,"$#*! My Dad Says",program_type,series,164951,episodeseason
+\N,Tvdb,Skål!,program_type,series,77623,episodeseason
+\N,Tvdb,"Fear Factor USA",program_type,series,76707,episodeseason
+\N,Tvdb,Simpsons,program_type,series,71663,episodeseason
+\N,Tvdb,"The Legend Of The Seeker",program_type,series,82672,episodeseason
+\N,Tvdb,Magnum,program_type,series,74380,episodeseason
+\N,Tvdb,"Miami Ink.",program_type,series,78816,episodeseason
+\N,Tvdb,Cops,program_type,series,74709,episodeseason
+\N,Tvdb,"Gumball 3000 med Erik & Mackan",program_type,series,186521,episodeseason
+\N,Tvdb,"Ska du säga",program_type,series,78462,episodeseason
+\N,Tvdb,Cityakuten,program_type,series,70761,episodeseason
+\N,Tvdb,"Extreme Home Makeover",program_type,series,73444,episodeseason
+\N,Tvdb,"Hell's Kitchen UK",program_type,series,74549,episodeseason
+\N,Tvdb,"Supersize VS. Superskinny",program_type,series,81582,episodeseason
+\N,Tvdb,"Kath and Kim",program_type,series,83092,episodeseason
+\N,Tvdb,"Lois & Clark: The New Adventures of Superman",program_type,series,72468,episodeseason
+\N,Tvdb,Parenthood,program_type,series,94551,episodeseason
+100,Tvdb,^.*$,program_type,series,\N,episodeseason
+\N,Tvdb,"Öga för mord",program_type,series,140781,episodeseason
+100,Tvdb,"En plats på landet",program_type,series,91171,episodeseason
+85,Tvdb,"Historiens värsta jobb",program_type,series,78995,episodeseason
+85,Tvdb,"Garrow's Law",program_type,series,122281,episodeseason
+85,Tvdb,"Helena från Troja",program_type,series,81739,episodeseason
+85,Tvdb,Kolonin,program_type,series,142011,episodeseason
+\N,Tvdb,Seinfeld,program_type,series,79169,episodeseason
+50,Tvdb,^.*$,program_type,series,\N,episodeseason
+51,Tvdb,^.*$,program_type,series,\N,episodeseason
+50,Tvdb,Vänner,program_type,series,79168,episodeseason
+\N,Tvdb,CSI,program_type,series,72546,episodeseason
+51,Tvdb,"Skitiga jobb",program_type,series,78904,episodeseason
+51,Tvdb,Tidsresenärerna,program_type,series,73096,episodeseason
+51,Tvdb,"Murdoch Mysteries",program_type,series,81670,episodeseason
+51,Tvdb,"Gamla snutar, nya spår",program_type,series,78823,episodeseason
+51,Tvdb,"Kommissarie Gently",program_type,series,80226,episodeseason
+51,Tvdb,"Tummen mitt i handen",program_type,series,77537,episodeseason
+\N,Tvdb,"Kommissarie Morse",program_type,series,76582,episodeseason
+51,Tvdb,"Dr Oz",program_type,series,123401,episodeseason
+51,Tvdb,"Vita Huset",program_type,series,72521,episodeseason
+51,Tvdb,"Gränsbevakarna UK",program_type,series,83324,episodeseason
+\N,Tvdb,"CSI Miami",program_type,series,78310,episodeseason
+50,Tvdb,"Jamies matrevolution",program_type,series,151421,episodeseason
+50,Tvdb,"Sjunde himlen",program_type,series,73928,episodeseason
+\N,Tvdb,"Ellen DeGeneres Show",program_type,series,72194,episodeseason
+\N,Tvdb,"CSI NY",program_type,series,73696,episodeseason
+50,Tvdb,ATOM,program_type,series,85791,episodeseason
+50,Tvdb,"Gordon Ramsay's The F-Word",program_type,series,79609,episodeseason
+50,Tvdb,"Gordon's Kitchen Nightmares",program_type,series,74584,episodeseason
+50,Tvdb,"Las Vegas",program_type,series,72229,episodeseason
+50,Tvdb,Pantertanter,program_type,series,71292,episodeseason
+50,Tvdb,"Kommissarie Lewis",program_type,series,79864,episodeseason
+50,Tvdb,D.E.A.,program_type,series,76722,episodeseason
+50,Tvdb,"Biggest Loser",program_type,series,75166,episodeseason
+50,Tvdb,"Magi på Waverly Place",program_type,series,80726,episodeseason
+50,Tvdb,Wipeout,program_type,series,149051,episodeseason
+63,Tvdb,^.*$,program_type,series,\N,episodeseason
+125,Tvdb,^.*$,program_type,series,\N,episodeseason
+125,Tvdb,"Queer As Folk UK",program_type,series,75625,episodeseason
