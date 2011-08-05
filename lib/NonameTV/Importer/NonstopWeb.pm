@@ -159,6 +159,17 @@ sub ImportContent
     
     $ce->{subtitle} = $subtitle if $subtitle;
     
+    my ( $season, $episode ) = ($desc =~ /\(Säsong\s*(\d+)\s*avsnitt\s*(\d+)\)/ );
+    
+    if((defined $season) and ($episode > 0) and ($season > 0) )
+    {
+      $ce->{episode} = sprintf( "%d . %d .", $season-1, $episode-1 );
+    }
+    elsif((defined $episode) and ($episode > 0) )
+    {
+      $ce->{episode} = sprintf( ". %d .", $episode-1 );
+    }
+    
     if( defined( $production_year ) and ($production_year =~ /(\d\d\d\d)/) )
     {
       $ce->{production_date} = "$1-01-01";

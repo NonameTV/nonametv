@@ -127,9 +127,14 @@ sub ImportContent {
     
     # Del 3:13 in description - of_episod is not in use at the moment
     my ( $ep_nr2, $eps ) = ($description =~ /del\s+(\d+):(\d+)/ );
+    my ( $ep_nr3, $eps2 ) = ($description =~ /Del\s+(\d+):(\d+)/ );
     
     if((defined $ep_nr2)) {
     	$ep_nr = $ep_nr2;
+    }
+    
+    if((defined $ep_nr3)) {
+    	$ep_nr = $ep_nr3;
     }
     
     if((defined $ep_nr) and ($ep_nr > 0) and ($ep_se > 0) )
