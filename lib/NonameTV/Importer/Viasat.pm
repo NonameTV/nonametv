@@ -126,7 +126,7 @@ sub ImportContent {
     my $episode = undef;
     
     # Del 3:13 in description - of_episod is not in use at the moment
-    my ( $ep_nr2, $eps ) = ($description =~ /\bDel\s+(\d+):(\d+)/ );
+    my ( $ep_nr2, $eps ) = ($description =~ /del\s+(\d+):(\d+)/ );
     
     if((defined $ep_nr2)) {
     	$ep_nr = $ep_nr2;
