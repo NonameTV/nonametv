@@ -194,8 +194,9 @@ sub AugmentProgram( $$$ ){
   }elsif( $ruleref->{matchby} eq 'episodeseason' ) {
     # match by episode and season
 		
+		
 		if( defined $ceref->{episode} ){
-      my( $season, $episode )=( $ceref->{episode} =~ m|^(\d+)\s*\.\s*(\d+)\s*/?\s*\d*\s*\.\s*$| );
+      my( $season, $episode )=( $ceref->{episode} =~ m|^\s*(\d+)\s*\.\s*(\d+)\s*/?\s*\d*\s*\.\s*$| );
       if( (defined $episode) and (defined $season) ){
         $episode += 1;
         $season += 1;
@@ -213,7 +214,7 @@ sub AugmentProgram( $$$ ){
           if( defined( $episode2 ) ) {
             $self->FillHash( $resultref, $series, $episode2 );
           } else {
-            w( "no episode " . $episode . " or season " . $season . " found for '" . $ceref->{title} . "'" );
+            w( "no episode " . $episode . " of season " . $season . " found for '" . $ceref->{title} . "'" );
           }
         }
       }
