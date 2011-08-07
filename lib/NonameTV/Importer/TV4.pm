@@ -90,6 +90,10 @@ sub new {
     $dsh->{DETECT_SEGMENTS} = 1;
     $self->{datastorehelper} = $dsh;
 
+    # use augment
+    $self->{datastore}->{augment} = 1;
+
+
     return $self;
 }
 
@@ -179,18 +183,16 @@ sub ImportContent
   
     foreach my $act ($ns2->get_nodelist)
     {
+    	my $role = undef;
       my $name = norm( $act->findvalue('./real_name') );
       
       # Role played
       if( $act->findvalue('./role_played') ) {
-      	my $role = norm( $act->findvalue('./role_played') );
-      	$name = $name." (".$role.")";
+      	$role = norm( $act->findvalue('./role_played') );
       }
       
-    if( $name =~ /Regissör/ )
+    if( (defined $role) and ( $role =~ /Regissör/ ) )
       {
-      	$title =~ s/ \(Regissör\)//g; 
-      	
         push @directors, $name;
       }
       else
