@@ -45,6 +45,9 @@ sub new {
 
     $self->{datastore}->{SILENCE_DUPLICATE_SKIP} = 1;
 
+    # use augment
+    $self->{datastore}->{augment} = 1;
+
     return $self;
 }
 
