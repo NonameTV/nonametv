@@ -260,6 +260,10 @@ Kanal5_fallback,magazine,Kanal5-Magazine,
 Kanal5_fallback,specials,Kanal5-Specials,
 Kanal5_fallback,sport,Sports,
 Kanal5_fallback,talkshows,Talk,
+Kanal5_xml,children,Children's,series
+Kanal5_xml,film,,movie
+Kanal5_xml,program,,series
+Kanal5_xml,series,,series
 Nonstop,action,Action,movie
 Nonstop,adventure,Adventure,movie
 Nonstop,"award show",Award,tvshow

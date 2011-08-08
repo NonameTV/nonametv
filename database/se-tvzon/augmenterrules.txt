@@ -3,7 +3,7 @@
 28,Tvdb,^.*$,program_type,series,\N,episodetitle
 97,Tvdb,^.*$,program_type,series,\N,episodeseason
 99,Tvdb,^.*$,program_type,series,\N,episodeseason
-\N,Tvdb,"Våra bästa år",program_type,series,70366,episodeseason
+\N,Fixups,"Våra bästa år",program_type,series,"Days of our Lives",replacetitle
 \N,Tvdb,"Jims värld",program_type,series,75926,episodeseason
 \N,Tvdb,"Våra värsta år",program_type,series,76385,episodeseason
 \N,Tvdb,"$#*! My Dad Says",program_type,series,164951,episodeseason
@@ -32,9 +32,8 @@
 85,Tvdb,Kolonin,program_type,series,142011,episodeseason
 \N,Tvdb,Seinfeld,program_type,series,79169,episodeseason
 50,Tvdb,^.*$,program_type,series,\N,episodeseason
-51,Tvdb,^.*$,program_type,series,\N,episodeseason
 50,Tvdb,Vänner,program_type,series,79168,episodeseason
-\N,Tvdb,CSI,program_type,series,72546,episodeseason
+50,Tvdb,CSI,program_type,series,72546,episodeseason
 51,Tvdb,"Skitiga jobb",program_type,series,78904,episodeseason
 51,Tvdb,Tidsresenärerna,program_type,series,73096,episodeseason
 51,Tvdb,"Murdoch Mysteries",program_type,series,81670,episodeseason
@@ -58,8 +57,47 @@
 50,Tvdb,"Kommissarie Lewis",program_type,series,79864,episodeseason
 50,Tvdb,D.E.A.,program_type,series,76722,episodeseason
 50,Tvdb,"Biggest Loser",program_type,series,75166,episodeseason
-50,Tvdb,"Magi på Waverly Place",program_type,series,80726,episodeseason
+\N,Tvdb,"Magi på Waverly Place",program_type,series,80726,episodeseason
 50,Tvdb,Wipeout,program_type,series,149051,episodeseason
 63,Tvdb,^.*$,program_type,series,\N,episodeseason
 125,Tvdb,^.*$,program_type,series,\N,episodeseason
 125,Tvdb,"Queer As Folk UK",program_type,series,75625,episodeseason
+4,Tvdb,^.*$,program_type,series,\N,episodeseason
+5,Tvdb,^.*$,program_type,series,\N,episodeseason
+6,Tvdb,^.*$,program_type,series,\N,episodeseason
+7,Tvdb,^.*$,program_type,series,\N,episodeseason
+5,Tvdb,Life,program_type,series,118421,episodeseason
+\N,Tvdb,"Mildred Pierce",program_type,series,211681,episodeseason
+\N,Tvdb,"This is England '86",program_type,series,187351,episodeseason
+\N,Tmdb,\N,program_type,movie,\N,title
+109,Fixups,"Star Wars",subtitle,"The clone wars","Star Wars: The Clone Wars",replacetitle
+109,Fixups,"Project runway - designers på uppdrag",program_type,series,"Project runway - designers på uppdrag",replacetitle
+\N,Fixups,"Full fräs med Stefan och Krister",program_type,series,"Full Fräs",replacetitle
+\N,Fixups,"Star trek",subtitle,"Deep space nine","Star Trek: Deep Space Nine",replacetitle
+\N,Fixups,"Star trek",subtitle,Voyager,"Star Trek: Voyager",replacetitle
+\N,Fixups,"^(En bok, en författare):\s+(.*)$",program_type,,\N,splittitle
+\N,Fixups,"Childrens hospital",program_type,series,"Children's Hospital",replacetitle
+\N,Fixups,"^(Berulfsens pengebinge):\s+(.*)$",program_type,series,\N,splittitle
+49,Fixups,"^(Al Jazeera World):\s+(.*)$",program_type,series,\N,splittitle
+109,Fixups,"American idol",program_type,series,"American Idol",replacetitle
+38,Fixups,"^(Discovery Atlas):\s+(.*)$",program_type,,\N,splittitle
+38,Fixups,"^(Surfkungarna 2):\s+(.*)$",program_type,,\N,splittitle
+\N,Fixups,TV4Nyheterna,program_type,,Nyheterna,replacetitle
+\N,Fixups,"V75 direkt",program_type,,Trav,replacetitle
+\N,Fixups,"TV4Nyheterna och Sport",program_type,,"Nyheterna och Sport",replacetitle
+\N,Fixups,"Nyhetsmorgon söndag",program_type,,Nyhetsmorgon,replacetitle
+\N,Fixups,"^(Minnenas television):\s+(.*)$",program_type,,\N,splittitle
+\N,Fixups,"Nyhetsmorgon lördag",program_type,,Nyhetsmorgon,replacetitle
+51,Tvdb,^.*$,program_type,series,\N,episodeseason
+\N,Tvdb,"Spanien runt med Gwyneth & Co",program_type,series,84181,episodeseason
+51,Fixups,Galileo,program_type,series,"Galileo (Sverige)",replacetitle
+51,Fixups,"Biggest Loser",program_type,series,"The Biggest Loser",replacetitle
+52,Fixups,"Jims Värld",program_type,series,"According to Jim",replacetitle
+\N,Fixups,"Två och en halv män",program_type,series,"2 1/2 män",replacetitle
+\N,Fixups,"Total Recall",program_type,series,"Total Recall 2070",replacetitle
+50,Tvdb,Frisörakuten,program_type,series,88321,episodeseason
+\N,Tvdb,"Law and Order Los Angeles",program_type,series,168161,episodeseason
+114,Fixups,\N,description,\N,\N,copylastdetails
+115,Fixups,\N,description,\N,\N,copylastdetails
+116,Fixups,\N,description,\N,\N,copylastdetails
+28,Tvdb,V,program_type,series,94971,episodeseason
