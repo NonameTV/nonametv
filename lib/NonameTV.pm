@@ -414,7 +414,10 @@ $sm->AddRegexp( qr/talkshow/i,         				[ 'series', 'Talk' ] );
 $sm->AddRegexp( qr/relationsserie/i,         	[ 'series', 'Relationship' ] );
 $sm->AddRegexp( qr/actionthrillerserie/i,     [ 'series', 'Action/Thriller' ] );
 $sm->AddRegexp( qr/kriminalkomediserie/i,     [ 'series', 'Crime/Comedy' ] );
+$sm->AddRegexp( qr/intervjuserie/i,     			[ 'series', 'Talk' ] );
 
+# If has *film in name set it as movie.
+#$sm->AddRegexp( qr/\b\s*film\b/i,        					[ 'movie', "Movies" ] );
 
 # Movies
 $sm->AddRegexp( qr/\b(familje|drama|action)*komedi\b/i,  [ 'movie', "Comedy" ] );
@@ -438,6 +441,11 @@ $sm->AddRegexp( qr/\bkomedifilm\b/i,             [ 'movie', "Comedy" ] );
 $sm->AddRegexp( qr/\banimerad komedifilm\b/i,    [ 'movie', "Animated/Comedy" ] );
 $sm->AddRegexp( qr/\bthrillerfilm\b/i,    			 [ 'movie', "Thriller" ] );
 $sm->AddRegexp( qr/\bdramafilm\b/i,        			 [ 'movie', "Drama" ] );
+$sm->AddRegexp( qr/\bactionthrillerfilm\b/i,     [ 'movie', "Action/Thriller" ] );
+$sm->AddRegexp( qr/\bkriminaldramafilm\b/i,      [ 'movie', "Crime/Drama" ] );
+$sm->AddRegexp( qr/\bdramathrillerfilm\b/i,        [ 'movie', "Crime" ] );
+
+
 
 sub ParseDescCatSwe
 {
