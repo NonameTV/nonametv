@@ -615,6 +615,21 @@ sub WriteEntry
     $d->{credits}->{guest} = [split( ", ", $entry->{guests})];
   }
 
+  if( $entry->{url} )
+  {
+    $d->{url} = [ $entry->{url} ];
+  }
+
+  if( $entry->{star_rating} )
+  {
+    $d->{rating}->{stars} = $entry->{star_rating};
+  }
+  
+  if( $entry->{rating} )
+  {
+    $d->{rating}->{mpaa} = $entry->{rating};
+  }
+
   push @{$data}, $d;
 }
 
