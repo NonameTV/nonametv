@@ -62,6 +62,8 @@ sub AugmentProgram( $$$ ){
 
   if( $ruleref->{matchby} eq 'setcategory' ) {
     $resultref->{'category'} = $ruleref->{remoteref};
+  }elsif( $ruleref->{matchby} eq 'setsubtitle' ) {
+    $resultref->{'subtitle'} = $ruleref->{remoteref};
   }elsif( $ruleref->{matchby} eq 'splittitle' ) {
     my( $title, $episodetitle )=( $ceref->{title} =~ m|$ruleref->{title}| );
     $resultref->{'title'} = $title;
