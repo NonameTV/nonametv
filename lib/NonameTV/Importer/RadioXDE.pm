@@ -208,8 +208,8 @@ sub ImportContent {
               my ($episode) = ($desc =~ /^show (\d+):/);
               $ce->{episode} = ' . ' . ($episode-1) . ' . ';
               $desc =~ s/^show \d+: //;
-            } elsif ($desc =~ /^#\d+$/) {
-              my ($episode) = ($desc =~ /^#(\d+)$/);
+            } elsif ($desc =~ /^#\s*\d+$/) {
+              my ($episode) = ($desc =~ /^#\s*(\d+)$/);
               $ce->{episode} = ' . ' . ($episode-1) . ' . ';
               $desc = undef;
             } elsif ($desc =~ /^\d+:/) {
