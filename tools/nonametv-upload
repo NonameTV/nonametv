@@ -47,7 +47,7 @@ sub RsyncUpload {
 
   foreach my $local (keys %{$sc->{Paths}}) {
     my $remote = $sc->{Paths}->{$local};
-    my $command = "rsync -rsh=ssh $verbose --delete $local $server:$remote";
+    my $command = "rsync --rsh=ssh $verbose --archive --delete $local $server:$remote";
     d "$command";
     # Capture STDERR and let STDOUT come out on STDERR. From perldoc perlop
     my $res = qx/$command 3>&1 1>&2 2>&3 3>&-/;
