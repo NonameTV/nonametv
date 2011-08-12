@@ -28,6 +28,8 @@ sub new {
   my $self  = $class->SUPER::new( @_ );
   bless ($self, $class);
 
+    # use augment
+    $self->{datastore}->{augment} = 1;
 
   return $self;
 }

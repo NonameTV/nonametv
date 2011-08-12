@@ -1,14 +1,14 @@
-package NonameTV::Importer::OUTTV;
+package NonameTV::Importer::TV5Monde_Europe;
 
 use strict;
 use warnings;
 
 =pod
-Importer for OUTTV Sweden
+Importer for TV5Monde, Europe EPG.
 
 The excel files is sent via mail
 
-Every week is runned as a seperate batch.
+Every day is runned as a seperate batch.
 
 =cut
 
@@ -16,7 +16,6 @@ use utf8;
 
 use POSIX;
 use DateTime;
-use XML::LibXML;
 use Spreadsheet::ParseExcel;
 
 use NonameTV qw/norm AddCategory ParseDescCatSwe/;
@@ -41,8 +40,6 @@ sub new {
   my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
   $self->{datastorehelper} = $dsh;
 
-    $self->{datastore}->{augment} = 1;
-
   return $self;
 }
 
@@ -55,7 +52,7 @@ sub ImportContentFile {
   if( $file =~ /\.xls$/i ){
     $self->ImportXLS( $file, $chd );
   } else {
-    error( "OUTTV: Unknown file format: $file" );
+    error( "TV5Monde: Unknown file format: $file" );
   }
 
   return;
@@ -74,23 +71,15 @@ sub ImportXLS
   my $currdate = "x";
   my @ces;
   
-  progress( "OUTTV: $chd->{xmltvid}: Processing flat XLS $file" );
+  progress( "TV5Monde: $chd->{xmltvid}: Processing flat XLS $file" );
 
   my $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
 
   # main loop
-  #for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
   foreach my $oWkS (@{$oBook->{Worksheet}}) {
-
-    #my $oWkS = $oBook->{Worksheet}[$iSheet];
-    #progress( "BBCWW: $chd->{xmltvid}: Processing worksheet: $oWkS->{Name}" );
-
-	my $foundcolumns = 0;
-
-    # browse through rows
-    for(my $iR = 1 ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
-
-
+  	my $foundcolumns = 0;
+  	# browse through rows
+    for(my $iR = 5 ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
       if( not %columns ){
         # the column names are stored in the first row
         # so read them and store their column positions
@@ -101,17 +90,10 @@ sub ImportXLS
             $columns{$oWkS->{Cells}[$iR][$iC]->Value} = $iC;
 
 						$columns{'Date'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Date/ );
-						$columns{'Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Titel/ );
-						$columns{'Time'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Time/ );
-
-          	$columns{'Genre'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Genre/ );
-          	$columns{'Season'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Säsong/ );
-          	$columns{'Episode'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Avsnitt/ );
-          	
-          	$columns{'Year'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Year/ );
-          	$columns{'Movie'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Movie Genre/ );
-          	
-          	$columns{'Description'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Program info/ );
+						$columns{'Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Titre/ );
+						$columns{'Time'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Horaire/ );
+          
+          	$columns{'Description'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Summary/ );
 
             $foundcolumns = 1 if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Date/ );
           }
@@ -136,12 +118,12 @@ sub ImportXLS
 	  # Startdate
       if( $date ne $currdate ) {
       	if( $currdate ne "x" ) {
-			$dsh->EndBatch( 1 );
+					$dsh->EndBatch( 1 );
         }
       
       	my $batchid = $chd->{xmltvid} . "_" . $date;
         $dsh->StartBatch( $batchid , $chd->{id} );
-        progress("OUTTV: $chd->{xmltvid}: Date is $date");
+        progress("TV5Monde: $chd->{xmltvid}: Date is $date");
         $dsh->StartDate( $date , "00:00" ); 
         $currdate = $date;
       }
@@ -156,30 +138,11 @@ sub ImportXLS
       next if( ! $oWkC );
       my $title = $oWkC->Value if( $oWkC->Value );
       
-      # Remove (N) from title
-      $title =~ s/ \(N\)//g; 
-
-	  	# Season
-	  	$oWkC = $oWkS->{Cells}[$iR][$columns{'Season'}] if $columns{'Season'};
-      my $season = $oWkC->Value;
-      
-      # Episode
-	  	$oWkC = $oWkS->{Cells}[$iR][$columns{'Episode'}] if $columns{'Episode'};
-      my $episode = $oWkC->Value;
-      
-      # genre (column 5)
-	  	$oWkC = $oWkS->{Cells}[$iR][$columns{'Genre'}];
+      # genre (column 8)
+	  	$oWkC = $oWkS->{Cells}[$iR][8];
       my $genre = $oWkC->Value;
-      
-      # movie genre
-	  	$oWkC = $oWkS->{Cells}[$iR][$columns{'Movie'}];
-      my $moviegenre = $oWkC->Value;
-      
-      # Year
-	  	$oWkC = $oWkS->{Cells}[$iR][$columns{'Year'}];
-      my $year = $oWkC->Value;
 
-	  	# descr (column 7)
+	  	# descr (column 9)
 	  	my $desc = $oWkS->{Cells}[$iR][$columns{'Description'}]->Value if $oWkS->{Cells}[$iR][$columns{'Description'}];
 
       
@@ -194,45 +157,12 @@ sub ImportXLS
         description => norm( $desc ),
       };
       
-      		my $film = 0;
-      
-      		# Get genre
-						my($program_type, $category ) = $ds->LookupCat( 'OUTTV', $genre );
-						AddCategory( $ce, $program_type, $category );
-      
-      		# Get production date and category
-					if(($genre =~ /film/)) {
-						# Find production year from description.
-  					if( $year =~ /\((\d\d\d\d)\)/ )
-  					{
-    					$ce->{production_date} = "$1-01-01";
-  					}
-						
-						# Check description after categories.
-      			my ( $program_type, $category ) = $ds->LookupCat( 'OUTTV', $moviegenre );
-  					AddCategory( $ce, $program_type, $category );
-  					
-  					$ce->{program_type} = 'movie';
-  					
-  					$film = 1;
-					}
+      # Get genre
+			my($program_type, $category ) = $ds->LookupCat( 'TV5Monde', $genre );
+			AddCategory( $ce, $program_type, $category );
 
-				# Try to extract episode-information from the description.
-				if(($season ne "") and ($film eq 0)) {
-
-  				# Episode info in xmltv-format
-  				if( ($episode ne "") and ($season ne "") )
-   				{
-        		$ce->{episode} = sprintf( "%d . %d .", $season-1, $episode-1 );
-   				}
-  
-  				if( defined $ce->{episode} ) {
-    				$ce->{program_type} = 'series';
-					}
-				}
-
-
-			progress("OUTTV: $chd->{xmltvid}: $time - $title");
+			# Add
+			progress("TV5Monde: $chd->{xmltvid}: $time - $title");
       $dsh->AddProgramme( $ce );
 
 			push( @ces , $ce );
@@ -268,8 +198,8 @@ sub ParseDate {
     ( $year, $month, $day ) = ( $text =~ /^(\d{4})\-(\d{2})\-(\d{2})$/i );
 
   # format '2011/05/16'
-  } elsif( $text =~ /^\d{4}\/\d{2}\/\d{2}$/i ){
-    ( $year, $month, $day ) = ( $text =~ /^(\d{4})\/(\d{2})\/(\d{2})$/i );
+  } elsif( $text =~ /^\d{2}\/\d{2}\/\d{4}$/i ){
+    ( $day, $month, $year ) = ( $text =~ /^(\d{2})\/(\d{2})\/(\d{4})$/i );
   }
 
   $year += 2000 if $year < 100;

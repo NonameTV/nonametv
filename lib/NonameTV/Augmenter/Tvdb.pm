@@ -84,6 +84,11 @@ sub FillHash( $$$$ ) {
   if( $episode->{FirstAired} ) {
     $resultref->{production_date} = $episode->{FirstAired};
   }
+  
+  # episodepic
+  if( $episode->{filename} ) {
+    $resultref->{url_image_main} = sprintf('http://thetvdb.com/banners/%s', $episode->{filename});
+  }
 
   $resultref->{url} = sprintf(
     'http://thetvdb.com/?tab=episode&seriesid=%d&seasonid=%d&id=%d&lid=%d',
@@ -182,6 +187,50 @@ sub AugmentProgram( $$$ ){
             $self->FillHash( $resultref, $series, $episode );
           } else {
             w( "no absolute episode " . $episodeabs . " found for '" . $ceref->{title} . "'" );
+          }
+        }
+      }
+    }
+  }elsif( $ruleref->{matchby} eq 'episodeseason' ) {
+    # match by episode and season - Note that the episode and season
+    # must be the real episode and season, often on swedish channels
+    # like TV4 the season is year, this will not work. As TheTVDb only
+    # use the real season, like 5. And about episodes, some channels like
+    # Viasat uses the total number of episodes, like 121 in Simpsons.
+    # This will not work either. But Viasat often have the real episodes
+    # in description, paste it from there. Sorry about the long text.
+		
+		if( defined $ceref->{episode} ){
+      my( $season, $episode )=( $ceref->{episode} =~ m|^\s*(\d+)\s*\.\s*(\d+)\s*/?\s*\d*\s*\.\s*$| );
+      if( (defined $episode) and (defined $season) ){
+        $episode += 1;
+        $season += 1;
+
+        my $series;
+        if( defined( $ruleref->{remoteref} ) ) {
+          my $seriesname = $self->{tvdb}->getSeriesName( $ruleref->{remoteref} );
+          $series = $self->{tvdb}->getSeries( $seriesname );
+        } else {
+          $series = $self->{tvdb}->getSeries( $ceref->{title} );
+        }
+        
+        if( (defined $series)){
+        	# Set the title right, even if no season nor episode is found.
+        	# This does so there is not any diffrences in title between
+        	# a series with episode of 100+ when there's only 20 episodes of
+        	# the season, like Simpsons. Simpsons becomes The Simpsons if seriesname
+        	# is found.
+        	$resultref->{title} = norm( $series->{SeriesName} );
+        	
+        	# Find season and episode
+        	if(($season ne "") and ($episode ne "")) {
+        		my $episode2 = $self->{tvdb}->getEpisode($series->{SeriesName}, $season, $episode);
+
+          	if( defined( $episode2 ) ) {
+            	$self->FillHash( $resultref, $series, $episode2 );
+          	} else {
+            	w( "no episode " . $episode . " of season " . $season . " found for '" . $ceref->{title} . "'" );
+          	}
           }
         }
       }

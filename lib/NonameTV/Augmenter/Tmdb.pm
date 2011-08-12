@@ -46,7 +46,7 @@ sub new {
 }
 
 sub FillHash( $$$ ) {
-  my( $self, $resultref, $movieId )=@_;
+  my( $self, $resultref, $movieId, $ceref )=@_;
 
   my $apiresult = $self->{themoviedb}->Movie_getInfo( $movieId );
   my $doc = ParseXml( \$apiresult );
@@ -69,6 +69,18 @@ sub FillHash( $$$ ) {
     # ratings range from 0 to 10
     $resultref->{'star_rating'} = $doc->findvalue( '/OpenSearchDescription/movies/movie/rating' ) . ' / 10';
   }
+  
+  # MPAA - G, PG, PG-13, R, NC-17 - No rating is: NR or Unrated
+  if(defined($doc->findvalue( '/OpenSearchDescription/movies/movie/certification' ) )) {
+  	$resultref->{rating} = norm( $doc->findvalue( '/OpenSearchDescription/movies/movie/certification' ) );
+  }
+  
+  # No description when adding? Add the description from themoviedb
+  if((!defined $ceref->{description}) or ($ceref->{description} eq "")) {
+  	$resultref->{description} = norm( $doc->findvalue( '/OpenSearchDescription/movies/movie/overview' ) );
+  }
+  
+  
   $resultref->{production_date} = $doc->findvalue( '/OpenSearchDescription/movies/movie/released' );
   $resultref->{url} = $doc->findvalue( '/OpenSearchDescription/movies/movie/url' );
 
@@ -123,7 +135,7 @@ sub AugmentProgram( $$$ ){
       my $movieLanguage = $doc->findvalue( '/OpenSearchDescription/movies/movie/language' );
       my $movieTranslated = $doc->findvalue( '/OpenSearchDescription/movies/movie/translated' );
 
-      $self->FillHash( $resultref, $movieId );
+      $self->FillHash( $resultref, $movieId, $ceref );
     }
   }else{
     $result = "don't know how to match by '" . $ruleref->{matchby} . "'";

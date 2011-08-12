@@ -95,9 +95,38 @@ sub ImportContent
         #}
         
         my $desc = $sc->findvalue( './RUBRIKKTEKST' );
+        my( $episode, $ep, $eps, $seas, $dummy );
+        # Säsong 2
+  			( $seas ) = ($desc =~ /Sesong\s+(\d+)./ );
+
+  			
+  			# Avsnitt 2
+  			( $ep, $eps ) = ($desc =~ /\((\d+)\:(\d+)\)/ );
         
+        # Avsnitt 2
+  			( $ep ) = ($desc =~ /\s+\((\d+)\)/ ) if not $ep;
         # my $text = $sc->findvalue( './TEKSTEKODE' );
         
+        
+    # Episode info in xmltv-format
+      if( (defined $ep) and (defined $seas) and (defined $eps) )
+      {
+        $episode = sprintf( "%d . %d/%d .", $seas-1, $ep-1, $eps );
+      }
+      elsif( (defined $ep) and (defined $seas) and !(defined $eps) )
+      {
+        $episode = sprintf( "%d . %d .", $seas-1, $ep-1 );
+      }
+      elsif( (defined $ep) and (defined $eps) and !(defined $seas) )
+      {
+        $episode = sprintf( ". %d/%s .", $ep-1, $eps );
+      }
+      elsif( (defined $ep) and !(defined $seas) and !(defined $eps) )
+      {
+        $episode = sprintf( ". %d .", $ep-1 );
+      }
+        
+         
         my $ce = {
             start_time  => $start,
             #end_time   => $stop,
@@ -108,6 +137,19 @@ sub ImportContent
         
         };
         
+        $ce->{episode} = $episode if $episode;
+        
+        # Producers
+        #if( my( $directors ) = ($desc =~ /^Produsert\s+av\s*(.*)/) )
+    		#{
+      	#	$ce->{directors} = parse_person_list( $directors );
+    		#}
+        
+        # Get actors
+        #if( my( $actors ) = ($desc =~ /^Med\s*(.*)/ ) )
+    		#{
+      	#	$ce->{actors} = parse_person_list( $actors );
+   			#}
         
         $dsh->AddProgramme( $ce );
     
@@ -129,6 +171,8 @@ sub FetchDataFromSite
 
     my $u = URI->new($self->{UrlRoot});
     $u->query_form( {
+    		d2_proxy_skip_encoding_all => 'true',
+    		d2_proxy_komponent => '/!potkomp.d2d_pressetjeneste.fkt_pressesoket_flex',
         p_fom_dag => $day,
         p_tom_dag => $day,
         p_fom_mnd => $month,
@@ -158,6 +202,31 @@ sub createDate
     
     return "$year-$month-$date";
 
+}
+
+sub parse_person_list
+{
+  my( $str ) = @_;
+  
+  # Remove all variants of m.fl.
+  $str =~ s/\s*m[\. ]*fl\.*\b//;
+  
+  # Remove trailing '.'
+  $str =~ s/\.$//;
+
+  $str =~ s/\bog\b/,/;
+
+  my @persons = split( /\s*,\s*/, $str );
+  foreach (@persons)
+  {
+    # The character name is sometimes given . Remove it.
+    # The Cast-entry is sometimes cutoff, which means that the
+    # character name might be missing a trailing ).
+    s/\s*\(.*$//;
+    s/.*\s+-\s+//;
+  }
+
+  return join( ", ", grep( /\S/, @persons ) );
 }
 
 1;

@@ -49,8 +49,7 @@ CREATE TABLE `files` (
   `latestdate` datetime default NULL,
   `md5sum` varchar(33) NOT NULL default '',
   PRIMARY KEY  (`id`),
-  KEY `channelid` (`channelid`),
-  CONSTRAINT `files_ibfk_1` FOREIGN KEY (`channelid`) REFERENCES `channels` (`id`)
+  KEY `channelid` (`channelid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `programs`;
@@ -86,9 +85,7 @@ CREATE TABLE `programs` (
   `url_image_icon` varchar(100) default NULL,
   `star_rating` varchar(20) default NULL,
   PRIMARY KEY  (`channel_id`,`start_time`),
-  KEY `batch` (`batch_id`,`start_time`),
-  CONSTRAINT `programs_ibfk_2` FOREIGN KEY (`batch_id`) REFERENCES `batches` (`id`),
-  CONSTRAINT `programs_ibfk_1` FOREIGN KEY (`channel_id`) REFERENCES `channels` (`id`)
+  KEY `batch` (`batch_id`,`start_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `state`;
@@ -146,8 +143,7 @@ CREATE TABLE `networks` (
   `charset` varchar(100) NOT NULL default '',
   `type` enum('DVB-C','DVB-S','DVB-T','IPTV','GENERIC') NOT NULL,
   PRIMARY KEY  (`id`),
-  KEY `epgserver` (`epgserver`),
-  CONSTRAINT `networks_ibfk_1` FOREIGN KEY (`epgserver`) REFERENCES `epgservers` (`id`)
+  KEY `epgserver` (`epgserver`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `services`;
@@ -190,8 +186,7 @@ CREATE TABLE `transportstreams` (
   `dsysfecinnerschemeid` varchar(100) NOT NULL,
   `dsyssymbolrate` varchar(100) NOT NULL,
   PRIMARY KEY  (`id`),
-  KEY `network` (`network`),
-  CONSTRAINT `transportstreams_ibfk_1` FOREIGN KEY (`network`) REFERENCES `networks` (`id`)
+  KEY `network` (`network`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `admins`;
@@ -215,8 +210,7 @@ CREATE TABLE `augmenterrules` (
   `othervalue` varchar(100) default NULL,
   `remoteref` varchar(100) default NULL,
   `matchby` varchar(20) default NULL,
-  UNIQUE KEY `channel_id` (`channel_id`,`augmenter`,`title`,`otherfield`,`othervalue`),
-  CONSTRAINT `augmenterrules_ibfk_1` FOREIGN KEY (`channel_id`) REFERENCES `channels` (`id`)
+  UNIQUE KEY `channel_id` (`channel_id`,`augmenter`,`title`,`otherfield`,`othervalue`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `jobs`;

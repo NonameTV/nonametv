@@ -64,6 +64,8 @@ my @folders = qw(NonameTV-Data.Disney
 		 NonameTV-Data.ExtremeSports
 		 NonameTV-Data.TravelChannel
 		 NonameTV-Data.FOX
+		 NonameTV-Data.Kanal10
+		 NonameTV-Data.TV5Monde
                  );
 
 # Flag messages AFTER they have been processed. Then I normally
@@ -193,68 +195,61 @@ sub guess_channel
   }
 
    if( $dir =~ /GlobalListings/ ) {
-     return "hd.ngcsverige.com" if $filename =~ /^ng\s*swe\s*hd\b/i;
-     return "ngcsverige.com" if $filename =~ /^ng\s*swe\b/i;
+     return "natgeo.se" if $filename =~ /^ng\s*swe\s*hd\b/i;
+     return "natgeo.se" if $filename =~ /^ng\s*swe\b/i;
 	# Nat geo wild sends in XLS format
-     return "wild.ngcsverige.com" if $filename =~ /^ngwscan\s*\b/i;
+     return "wild.natgeo.se" if $filename =~ /^ngwscan\s*\b/i;
 	# History Channel
-     return "scand.history.com" if $filename =~ /^his.sd.swe\s*\b/i;
-     return "hdscand.history.com" if $filename =~ /^his.hd.swe\s*\b/i;
+     if( $filename =~ /\.xml$/i ) { 
+     	return "historytv.se" if $filename =~ /^his.sd.swe\s*\b/i;
+			return "hd.historytv.se" if $filename =~ /^his.hd.swe\s*\b/i;
+     }
 	# ESPN Classic
      return "classic.espn.com" if $filename =~ /^espn.eur.eng\s*\b/i;
  }
 
-   if( $dir =~ /Turner/ and $filename =~ /\.xls$/i ) {
-     return "cartoonnetwork.se" if $filename =~ /^cn\s*nordic\s*\b/i;
-     return "boomerangtv.se" if $filename =~ /^boomerang\s*nordic\s*\b/i;
-     return "nordic.tcm.com" if $filename =~ /^tcm\s*nordic\s*\b/i;
-     return "cnn.com" if $filename =~ /^cnn\s*\b/i;
+   if( $dir =~ /Turner/ ) {
+		if( $filename =~ /\.doc$/i ) { 
+			return "cartoonnetwork.se" if $filename =~ /^cn\s+nordic\s+\(swe\)\s*\b/i;
+			return "boomerangtv.se" if $filename =~ /^boomerang\s+nordic\s'\(swe\)\s*\b/i;
+     }
+     elsif( $filename =~ /\.xls$/i ) {
+			return "tcmeurope.com" if $filename =~ /^tcm\s*nordic\s*swe\s*\b/i;
+			return "cnn.com" if $filename =~ /^cnn\s*\b/i;
+     }
   }
 
-#   if( $dir =~ /Nonstop/ and $filename =~ /\.doc$/i ) {
-#     return "showtime.nonstop.tv" if $filename =~ /^showtime\s*\b/i;
-#  }
-
    if( $dir =~ /CNBC/ and $filename =~ /\.xls$/i ) {
-     return "europe.cnbc.com" if $filename =~ /^\s*\b/i;
+     return "cnbceurope.com" if $filename =~ /^\s*\b/i;
  }
 
    if( $dir =~ /ExtremeSports/ and $filename =~ /\.xls$/i ) {
      return "extremesports.com" if $filename =~ /^\s*\b/i;
  }
-
+   if( $dir =~ /Kanal10/ and $filename =~ /\.doc$/i ) {
+     return "kanal10.se" if $filename =~ /^Program\s*\b/i;
+ }
+   if( $dir =~ /TV5Monde/ and $filename =~ /\.xls$/i ) {
+     return "tv5monde.org" if $filename =~ /^EPG\s*\b/i;
+ }
    if( $dir =~ /OUTTV/ and $filename =~ /\.xls$/i ) {
      return "outtv.se" if $filename =~ /^outtv\s*\b/i;
  }
 
    if( $dir =~ /YaS/ and $filename =~ /\.xls$/i ) {
-     return "europe.yachtandsail.com" if $filename =~ /^palinsesto\s*\b/i;
+     return "yachtandsail.com" if $filename =~ /^palinsesto\s*\b/i;
  }
 
    if( $dir =~ /FOX/ and $filename =~ /\.xls$/i ) {
-     return "wildhd.ngcsverige.com" if $filename =~ /^schedule\s*\b/i;
+     return "wildhd.natgeo.se" if $filename =~ /^schedule\s*\b/i;
  }
 
    if( $dir =~ /TravelChannel/ and $filename =~ /\.xls$/i ) {
-     return "europe.travelchannel.co.uk" if $filename =~ /^epg\s*\b/i;
+     return "travelchanneltv.se" if $filename =~ /^epg\s*\b/i;
  }
 
-#   if( $dir =~ /NATGEOWILD/ and $filename =~ /\.xls$/i ) {
-#     return "wild.ngcsverige.com" if $filename =~ /^ngwscan\s*\b/i;
-# }
-
-
-#   if( $dir =~ /HistoryChannel/ and $filename =~ /\.doc$/i ) {
-#     return "scand.history.com" if $filename =~ /^his.sd.swe\s*\b/i;
-#     return "hdscand.history.com" if $filename =~ /^his.hd.swe\s*\b/i;
-# }
-
-#   if( $dir =~ /ESPN/ and $filename =~ /\.xls$/i ) {
-#     return "america.espn.com" if $filename =~ /^espnamerica\s*\b/i;
-# }
-
    if( $dir =~ /PokerChannel/ and $filename =~ /\.xls$/i ) {
-     return "pokerchanneleurope.com" if $filename =~ /^f\s*\b/i;
+     return "pokerchanneleurope.com" if $filename =~ /^g\s*\b/i;
  }
 
   return undef;

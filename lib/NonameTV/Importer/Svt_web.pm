@@ -45,6 +45,9 @@ sub new {
 
     $self->{datastore}->{SILENCE_DUPLICATE_SKIP} = 1;
 
+    # use augment
+    $self->{datastore}->{augment} = 1;
+
     return $self;
 }
 
@@ -215,6 +218,12 @@ sub ImportContent {
     my $time  = $pgm->findvalue( 'td[1]//text()' );
     my $title = $pgm->findvalue( 'td[2]//font[@class="text"]//text()' );
     my $desc  = $pgm->findvalue( 'td[2]//font[@class="textshorttabla"]//text()' );
+    
+    
+    # If schedule not yet published, do a next;
+    if($desc eq "Tablån ännu ej publicerad") {
+    	next;
+    }
 
     # SVt can have titles that include program block information.
     # Ideally we should use the fact that they are separated by <br>

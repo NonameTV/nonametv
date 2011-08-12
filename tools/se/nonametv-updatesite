@@ -7,7 +7,6 @@ tools/nonametv-export Xmltv $1 $2 $3
 tools/nonametv-export Json --export-channels $1 $2 $3
 tools/nonametv-export Json $1 $2 $3
 
-tools/se/nonametv-xmltv-genhtml $NROOT/xmltv_staging .
+tools/se/nonametv-xmltv-genhtml $NROOT/xmltv_staging
 rsync examples/displayfile.html $NROOT/xmltv_staging
-
-tools/se/nonametv-upload $1 $2 $3
+rsync examples/listing.xsl $NROOT/xmltv_staging

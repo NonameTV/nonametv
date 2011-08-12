@@ -13,7 +13,7 @@ This is supposedly the format defined by TTSpektra.
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/progress error/;
 
-use NonameTV qw/ParseXml norm/;
+use NonameTV qw/ParseXml ParseDescCatSwe AddCategory norm/;
 
 use DateTime;
 
@@ -148,7 +148,7 @@ sub ImportContent {
       'tt:TVRBroadcast/tt:BroadcastInformation/tt:WebPage/@URL', $pb );
     my $title = norm( $xp->findvalue( 'tt:TVRProgram/tt:Title', $pb ) );
     my $subtitle = norm( 
-      $xp->findvalue( 'tt:TVRProgram/tt:EpisodeTitle', $pb ) );
+      $xp->findvalue( 'tt:TVRProgram/tt:VersionableInfo/tt:Version/tt:EpisodeTitle', $pb ) );
 
     if( $title eq $subtitle ) {
       my( $title2, $subtitle2 ) = ( $title =~ /(.*?) - (.*)/ );
@@ -166,6 +166,9 @@ sub ImportContent {
       'tt:TVRProgram/tt:Description/tt:TextDesc', $pb );
     my $episodenum = $xp->findvalue( 'tt:TVRProgram/tt:EpisodeNumber', $pb );
 
+		# Del 3 av 13 in description - of_episod is not in use at the moment
+    my ( $ep_nr, $eps ) = ($description =~ /Del\s+(\d+)\s+av\s+(\d+)/ );
+
     my $ce = {
       channel_id  => $chd->{id},
       start_time  => ParseDateTime( $start ),
@@ -173,6 +176,14 @@ sub ImportContent {
       description => norm( "$intro $description" ),
       url         => $url,
     };
+
+		my ( $program_type, $category ) = ParseDescCatSwe( $ce->{description} );
+  	AddCategory( $ce, $program_type, $category );
+    
+    if( my( $year ) = ($description =~ /Produktions.r:\s+(\d\d\d\d)./) )
+    {
+      $ce->{production_date} = "$year-01-01";
+    }
 
     if( $end ne "" ) {
 	$ce->{end_time} = ParseDateTime( $end );
@@ -184,6 +195,11 @@ sub ImportContent {
 
     if( $episodenum ne "" ) {
       $ce->{episode} = " . " . ($episodenum-1) . " . ";
+    }
+    
+    
+    if( defined($ep_nr) ) {
+      $ce->{episode} = sprintf( " . %d/%d . ", $ep_nr-1, $eps );
     }
 
     $ds->AddProgramme( $ce );
@@ -221,6 +237,30 @@ sub ParseDateTime {
   $dt->set_time_zone( 'UTC' );
   
   return $dt->ymd() . " " . $dt->hms();
+}
+
+# Kanal5 Util
+sub parse_person_list
+{
+  my( $str ) = @_;
+
+  # Remove all variants of m.fl.
+  $str =~ s/\s*m[\. ]*fl\.*\b//;
+  
+  # Remove trailing '.'
+  $str =~ s/\.$//;
+
+  $str =~ s/\boch\b/,/;
+  $str =~ s/\bsamt\b/,/;
+
+  my @persons = split( /\s*,\s*/, $str );
+  foreach (@persons)
+  {
+    # The character name is sometimes given . Remove it.
+    s/^.*\s+-\s+//;
+  }
+
+  return join( ", ", grep( /\S/, @persons ) );
 }
 
 1;

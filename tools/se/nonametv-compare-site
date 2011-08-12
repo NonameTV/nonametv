@@ -7,4 +7,3 @@ rm -rf /tmp/xmltv_compare
 mkdir -p /tmp/xmltv_compare
 cd /tmp/xmltv_compare
 /home/mattias/development/nonametv/tools/nonametv-xmltv-compare /var/local/nonametv/xmltv_site /var/local/nonametv/xmltv_staging
-

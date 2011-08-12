@@ -61,8 +61,8 @@ foreach my $msg ($infolder->messages) {
   elsif( $fromaddr =~ /\@globallistings.info/i ) {
     MoveMessage( $msg, "GlobalListings" );
   }
-  elsif( $fromaddr =~ /\@tvzon.se/i ) {
-    MoveMessage( $msg, "YaS" );
+  elsif( $fromaddr =~ /\@kanal10.se/i ) {
+    MoveMessage( $msg, "Kanal10" );
   }
   elsif( $fromaddr =~ /\@rcs.it/i ) {
     MoveMessage( $msg, "YaS" );
@@ -73,29 +73,19 @@ foreach my $msg ($infolder->messages) {
   elsif( $fromaddr =~ /\@cnbc.com/i ) {
     MoveMessage( $msg, "CNBC" );
   }
-#  elsif( $fromaddr =~ /\@trustmark.no/i ) {
-#    MoveMessage( $msg, "GlobalListings" );
-#  }
-#  elsif( $fromaddr =~ /\@bskyb.com/i ) {
-#    MoveMessage( $msg, "GlobalListings" );
-#  }
-  elsif( $fromaddr =~ /\@tvzon.info/i ) {
-    # Matches beatx.espn@tvzon.info
-    MoveMessage( $msg, "OUTTV" );
-  }
-  elsif( $fromaddr =~ /\@pixur.se/i ) {
-    # Matches beatx.espn@pixur.se
-    MoveMessage( $msg, "PokerChannel" );
-  }
   elsif( $fromaddr =~ /\@out.tv/i ) {
-    # Matches beatx.espn@tvzon.info
     MoveMessage( $msg, "OUTTV" );
+  }
+  elsif( $fromaddr =~ /\@tv5monde.org/i ) {
+    MoveMessage( $msg, "TV5Monde" );
   }
   elsif( $fromaddr =~ /\@travelchannel.co.uk/i ) {
-    # Matches beatx.espn@tvzon.info
     MoveMessage( $msg, "TravelChannel" );
   }
   elsif( $fromaddr =~ /\@turner.com/i ) {
+    MoveMessage( $msg, "Turner" );
+  }
+  elsif( $fromaddr =~ /\@pixur.se/i ) {
     MoveMessage( $msg, "Turner" );
   }
   elsif( $fromaddr =~ /\@espnamerica.com/i ) {

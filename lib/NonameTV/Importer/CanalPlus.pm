@@ -37,6 +37,8 @@ sub new {
 
 
     defined( $self->{UrlRoot} ) or die "You must specify UrlRoot";
+    
+    $self->{datastore}->{augment} = 1;
 
     # Canal Plus' webserver returns the following date in some headers:
     # Fri, 31-Dec-9999 23:59:59 GMT
@@ -202,7 +204,10 @@ sub ImportContent
 
     my $series_title = $sc->findvalue( './Program/@SeriesTitle' );
     my $org_title = $sc->findvalue( './Program/@OriginalTitle' );
-    my $desc  = $sc->findvalue( './Program/@LongSynopsis' );
+    
+    my $org_desc = $sc->findvalue( './Program/@LongSynopsis' );
+    my $epi_desc = $sc->findvalue( './Program/@EpisodeLongSynopsis' );
+    my $desc  = $epi_desc || $org_desc;
     
     my $genre = norm($sc->findvalue( './Program/@Genre' ));
 #    my $country = $sc->findvalue( './Program/@Country' );
@@ -225,7 +230,13 @@ sub ImportContent
     my $production_year = $sc->findvalue( './Program/@ProductionYear' );
 
     my $sixteen_nine = $sc->findvalue( './Program/@SixteenNine' );
-#    my $letterbox = $sc->findvalue( './Program/@Letterbox' );
+    my $soundfive_one = $sc->findvalue( './Program/@SoundFiveOne' );
+	#    my $letterbox = $sc->findvalue( './Program/@Letterbox' );
+    
+    # Episode info
+    my $epino = $sc->findvalue( './Program/@EpisodeNo' );
+    my $seano = $sc->findvalue( './Program/@SeasonNo' );
+    my $of_episode = $sc->findvalue( './Program/@NumberOfEpisodes' );
     
     # The director and actor info is in a somewhat strange format. 
     # Actor is a child of Director and the data seems to contain
@@ -282,12 +293,6 @@ sub ImportContent
       if( $title =~ /^Del\s+(\d+),\s+(.*)/ )
       {
         $ce->{subtitle} = $2;
-        $ce->{episode} = ". " . ($1-1) . " .";
-        if( defined( $production_year ) and 
-            ($production_year =~ /\d{4}/) )
-        {
-          $ce->{episode } = $production_year-1 . " " . $ce->{episode};
-        }
       }
       elsif( $title ne $ce->{title} ) 
       {
@@ -328,6 +333,27 @@ sub ImportContent
     if( scalar( @actors ) > 0 )
     {
       $ce->{actors} = join ", ", @actors;
+    }
+  
+  	if( $soundfive_one eq 1 )
+  	{
+  		$ce->{stereo} = 'surround';
+  	}
+  
+    if( $epino ){
+        if( $seano ){
+          $ce->{episode} = sprintf( "%d . %d .", $seano-1, $epino-1 );
+          if($of_episode) {
+          	$ce->{episode} = sprintf( "%d . %d/%d .", $seano-1, $epino-1, $of_episode );
+          }
+     	}else {
+          $ce->{episode} = sprintf( ". %d .", $epino-1 );
+          if( defined( $production_year ) and 
+            ($production_year =~ /\d{4}/) )
+        	{
+          		$ce->{episode } = $production_year-1 . " " . $ce->{episode};
+        	}
+        }
     }
     
     $self->extract_extra_info( $ce );

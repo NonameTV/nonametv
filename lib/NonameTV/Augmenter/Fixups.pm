@@ -60,8 +60,10 @@ sub AugmentProgram( $$$ ){
   # result string, empty/false for success, message/true for failure
   my $result = '';
 
-  if( $ruleref->{matchby} eq 'setcategorynews' ) {
-    $resultref->{'category'} = 'news';
+  if( $ruleref->{matchby} eq 'setcategory' ) {
+    $resultref->{'category'} = $ruleref->{remoteref};
+  }elsif( $ruleref->{matchby} eq 'setsubtitle' ) {
+    $resultref->{'subtitle'} = $ruleref->{remoteref};
   }elsif( $ruleref->{matchby} eq 'splittitle' ) {
     my( $title, $episodetitle )=( $ceref->{title} =~ m|$ruleref->{title}| );
     $resultref->{'title'} = $title;
@@ -73,6 +75,13 @@ sub AugmentProgram( $$$ ){
       }
     }
     $resultref->{program_type} = 'series';
+  }elsif( $ruleref->{matchby} eq 'setseason' ) {
+  	# Used like:
+  	# title: Jersey Shoe 2
+  	# remoteref: Jersey Shoe|2
+  	my( $title, $season ) = split( /|/, $ruleref->{remoteref} );
+  	$resultref->{'title'} = $title;
+  	$resultref->{'season'} = $season;
   }elsif( $ruleref->{matchby} eq 'splitguesttitle' ) {
     # split the name of the guest from the title and put it into subtitle and guest
     my( $title, $episodetitle )=( $ceref->{title} =~ m|$ruleref->{title}| );

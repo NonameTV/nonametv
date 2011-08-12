@@ -26,6 +26,10 @@ sub new {
     defined( $self->{UrlRoot} ) or die "You must specify UrlRoot";
 
     my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
+    
+    # use augment
+    $self->{datastore}->{augment} = 1;
+
     $self->{datastorehelper} = $dsh;
 
     return $self;

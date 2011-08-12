@@ -1,15 +1,24 @@
 Arte_genre,diskussion,Talk,
+Arte_genre,doku-soap,Documentary/Soap,
 Arte_genre,dokumentarfilm,Documentary,movie
 Arte_genre,dokumentarfilmreihe,Documentary,series
 Arte_genre,dokumentation,Documentary,
 Arte_genre,dokumentationsreihe,Documentary,series
 Arte_genre,fernsehfilm,,movie
+Arte_genre,fernsehserie,,series
+Arte_genre,gala,Musical,
+Arte_genre,kurzfilm,,movie
+Arte_genre,magazin,Magazine,
 Arte_genre,musik,Music,
 Arte_genre,nachrichten,,news
+Arte_genre,oper,Musical,
+Arte_genre,operette,Musical,
 Arte_genre,reportage,Documentary,
 Arte_genre,spielfilm,,movie
 Arte_genre,stummfilm,,movie
+Arte_genre,theater,,tvshow
 CanalPlus,action,Action,
+CanalPlus,"action drama",Action/Drama,
 CanalPlus,actionäventyr,Action/Adventure,
 CanalPlus,actiondrama,Action/Drama,
 CanalPlus,actionkomedi,Action,
@@ -40,6 +49,7 @@ CanalPlus,"endast tjejer",Adult,
 CanalPlus,"engelsk ligafotboll",Sports,
 CanalPlus,"erotic feature",Adult,
 CanalPlus,erotik,Adult,
+CanalPlus,"erotik soft",Adult,
 CanalPlus,erotik.,Adult,
 CanalPlus,erotik/hard,Adult,
 CanalPlus,erotik/soft,Adult,
@@ -67,14 +77,18 @@ CanalPlus,komediserie,Comedy,series
 CanalPlus,konsertfilm,Musical,movie
 CanalPlus,kortfilm,Short,movie
 CanalPlus,krigsdrama,War/Drama,
+CanalPlus,krigsfilm,War,movie
 CanalPlus,krigsthriller,War/Thriller,
 CanalPlus,kriminaldrama,Crime/Drama,
 CanalPlus,kriminalserie,Crime,series
 CanalPlus,"la liga",Football,Sports
+CanalPlus,milf,Adult,movie
 CanalPlus,motor,Motors,Sports
 CanalPlus,musikal,Music,
+CanalPlus,musikalkomedi,Musical/Comedy,
 CanalPlus,musikdrama,Music/Drama,
 CanalPlus,nöjesnyheter,News,
+CanalPlus,program,\N,tvshow
 CanalPlus,"romantisk dramakomedi",Romance/Drama/Comedy,
 CanalPlus,"romantisk komedi",Romance/Comedy,
 CanalPlus,"romantiskt drama",Romance/Drama,
@@ -92,7 +106,9 @@ CanalPlus,"tecknad saga",Children's,
 CanalPlus,"tecknat äventyr",Children's/Adventure,
 CanalPlus,"tecknat familjeäventyr",Children's/Family/Ad,
 CanalPlus,tennis,Tennis,sports
+CanalPlus,tennisturnering,Tennis,sports
 CanalPlus,thriller,Thriller,
+CanalPlus,"unga tjejer",Adult,movie
 CanalPlus,ungdomsdrama,Drama,
 CanalPlus,ungdomsfilm,movies,movie
 DasErste_type,3d-animationsfilm,,movie
@@ -124,13 +140,18 @@ DisneyChannel,"pre school",Children's,series
 DisneyChannel,series,\N,series
 DisneyChannel,sitcom,Sitcom,series
 DR,actionfilm,Action,movie
+DR,"ãkonomi",News,
+DR,"bã¸rn & ungdom",Children's/Youth,
 DR,"børn & ungdom",Children's,
 DR,dokumentar,Documentary,
 DR,film,Movies,movie
 DR,"for de mindste",Kids,
+DR,"for stã¸rre bã¸rn",Adult,
 DR,komedie,Comedy,
+DR,krigsfilm,War,movie
 DR,kærlighedsfilm,Romance,movie
 DR,musik,Music,
+DR,"natur & miljã¸",Nature,
 DR,"natur & miljø",Nature,
 DR,"nyheder & aktualitet",News,
 DR,quiz,Talk,
@@ -140,6 +161,7 @@ DR,sport,Sports,sports
 DR,thriller,Thriller,
 DR,ukategoriseret,\N,series
 DR,underholdning,Entertainment,
+DR,"videnskab & teknologi",Tech,
 DR,økonomi,News,
 DreiSat_category,"chansons und lieder",Music,
 DreiSat_category,jazz,Music,
@@ -153,15 +175,18 @@ DreiSat_category,konzert,Music,
 DreiSat_category,"musik allgemein",Music,
 DreiSat_category,musikshow,Music,tvshow
 DreiSat_category,nachrichten,,news
+DreiSat_category,politik,Politics,
 DreiSat_category,regionalinformation,,news
 DreiSat_category,reisen/urlaub/touristik,Food/Travel,
 DreiSat_category,"rock, pop",Music,
+DreiSat_category,specials,Special,
 DreiSat_category,spielfilm,,movie
 DreiSat_category,sport,,sports
 DreiSat_category,"verbrechen, kriminalität",Crime,
 DreiSat_category,"volksmusik, volkstümliche musik, folklore",Music,
 DreiSat_category,"wissenschaft technik umwelt",Science/Nature,
 DreiSat_genre,animationsfilm,,movie
+DreiSat_genre,doku-drama,Documentary/Drama,
 DreiSat_genre,dokumentarfilm,Documentary,movie
 DreiSat_genre,dokumentarspiel,Documentary,
 DreiSat_genre,dokumentation,Documentary,
@@ -177,6 +202,7 @@ DreiSat_genre,krimi,Crime,
 DreiSat_genre,kriminalfilm,Crime,movie
 DreiSat_genre,krimiserie,Crime,
 DreiSat_genre,liebesfilm,,movie
+DreiSat_genre,magazin,Magazine,
 DreiSat_genre,märchenfilm,,movie
 DreiSat_genre,marionettenfilm,,movie
 DreiSat_genre,musikdokumentarfilm,,movie
@@ -185,16 +211,48 @@ DreiSat_genre,musiktheater,Music,
 DreiSat_genre,nachrichten,,news
 DreiSat_genre,reisedokumentation,Food/Travel,
 DreiSat_genre,reportage,Documentary,
+DreiSat_genre,serie,,series
 DreiSat_genre,spielfilm,,movie
 DreiSat_genre,spielshow/quiz,,tvshow
 DreiSat_genre,talkshow,Talk,tvshow
 DreiSat_genre,tanzfilm,,movie
+DreiSat_genre,thriller,Thriller,
 DreiSat_genre,zeichentrickfilm,,movie
+DreiSat_thember,affären/intrigen,News,
+DreiSat_thember,"bildende kunst",Art,
+DreiSat_thember,"country und western",Western/Country,
+DreiSat_thember,erotik/sexualität,Adult,
+DreiSat_thember,familie,Family,
+DreiSat_thember,"film, kino, video",,movie
+DreiSat_thember,"fußball",Football,sports
+DreiSat_thember,jazz,Music,
+DreiSat_thember,klassik,Music,
+DreiSat_thember,"krieg, konflikt, unruhen",War,
+DreiSat_thember,"lifestyle, personality",Lifestyle,
+DreiSat_thember,literatur,Art,
+DreiSat_thember,"mode, schönheit, kosmetik",Fashion,
+DreiSat_thember,moral/ethik/gewissen,Religion,
+DreiSat_thember,motorsport,Motors,sports
+DreiSat_thember,"natur- und umweltkatastrophen",Nature,
+DreiSat_thember,natur/geographie,Nature/Geographic,
+DreiSat_thember,natur/umwelt/ökologie,Nature,
+DreiSat_thember,naturwissenschaften,Nature,
+DreiSat_thember,"politik allgemein",Politics,
+DreiSat_thember,"politik ausland",Politics,
+DreiSat_thember,"religion, kirche",Religion,
+DreiSat_thember,"rock, pop",Music,
+DreiSat_thember,"schule, erziehung, ausbildung",School,
+DreiSat_thember,"slapstick, ulk, humor",Comedy,
+DreiSat_thember,"sport allgemein",,sports
+DreiSat_thember,"sport zum mitmachen/freizeitsport",\N,sports
+DreiSat_thember,umweltpolitik,Politics,
+DreiSat_thember,"verbrechen, kriminalität",Crime,
+DreiSat_thember,"volksmusik, volkstümliche musik, folklore",Music,
 Kanal5,documentary,Documentary,
 Kanal5,film,,movie
 Kanal5,series,,series
 Kanal5,sport,,sports
-Kanal5,talkshows,,tvshow
+Kanal5,talkshows,Talk,tvshow
 Kanal5_fallback,adventure/nature,Kanal5-Adventure,
 Kanal5_fallback,children,Children's,
 Kanal5_fallback,film,Movies,
@@ -202,8 +260,13 @@ Kanal5_fallback,magazine,Kanal5-Magazine,
 Kanal5_fallback,specials,Kanal5-Specials,
 Kanal5_fallback,sport,Sports,
 Kanal5_fallback,talkshows,Talk,
+Kanal5_xml,children,Children's,series
+Kanal5_xml,film,,movie
+Kanal5_xml,program,,series
+Kanal5_xml,series,,series
 Nonstop,action,Action,movie
 Nonstop,adventure,Adventure,movie
+Nonstop,"award show",Award,tvshow
 Nonstop,biography,Biography,movie
 Nonstop,comedy,Comedy,movie
 Nonstop,"comedy series",Comedy,series
@@ -212,6 +275,7 @@ Nonstop,documentary,Documentary,movie
 Nonstop,drama,Drama,movie
 Nonstop,"drama series",Drama,series
 Nonstop,entertainment,Entertainment,movie
+Nonstop,fantasy,Fantasy,
 Nonstop,"fashion magazine",Fashion,tvshow
 Nonstop,horror,Horror,movie
 Nonstop,"lifestyle program",Lifestyle,tvshow
@@ -221,19 +285,67 @@ Nonstop,romance,Romance,movie
 Nonstop,"sci fi",Sci-fi,movie
 Nonstop,short,Short,movie
 Nonstop,thriller,Thriller,movie
+Nonstop,war,War,
 Nonstop,western,Western,movie
+ORF,abenteuerfilm,\N,movie
+ORF,abenteuerserie,\N,series
+ORF,actionfilm,Action,movie
+ORF,actionserie,Action,series
+ORF,animation,Animation,
+ORF,animationsfilm,Animation,movie
+ORF,anwaltsserie,\N,series
+ORF,beziehungskomödie,Comedy,
+ORF,dokumentarfilm,Documentary,movie
+ORF,dokumentation,Documentary,
+ORF,"dokumentation in fünf teilen",Documentary,
+ORF,drama,Drama,
+ORF,familienserie,Family,series
+ORF,fernsehfilm,\N,movie
+ORF,fernsehkomödie,Comedy,
+ORF,fernsehkrimi,Crime,
+ORF,fernsehserie,series,series
+ORF,heimatfilm,\N,movie
+ORF,jugendserie,\N,series
+ORF,komödie,Comedy,
+ORF,krimikomödie,Crime/Comedy,
+ORF,kriminalfilm,Crime,movie
+ORF,kriminalserie,Crime,series
+ORF,krimiserie,Crime,series
+ORF,märchenfilm,\N,movie
+ORF,"medical daily",Talk,tvshow
+ORF,monsters,Sci-Fi,
+ORF,murder,Crime,
+ORF,musical,Musical,
+ORF,mysteryserie,Crime,series
+ORF,porträt,Biography,
+ORF,"romantic comedy",Romance/Comedy,
+ORF,romanze,Romance,
+ORF,science-fiction-film,Sci-Fi,movie
+ORF,serie,series,series
+ORF,sitcom,Sitcom,
+ORF,spielfilm,\N,movie
+ORF,thriller,Thriller,
+ORF,"true story","True Story",
+ORF,unterhaltungsserie,\N,series
+ORF,western,Western,
+ORF,zeichentrickfilm,\N,movie
+ORF,zeichentrickserie,\N,series
 OUTTV,actionfilm,Action,movie
+OUTTV,concert,Musical,
+OUTTV,concert/musik,Concert/Music,
 OUTTV,dokumentär,Documentary,tvshow
-OUTTV,Drama,drama,
+OUTTV,Drama,Drama,
 OUTTV,Drama/Romantik,Drama/Romance,
-OUTTV,film,Movies,movie
+OUTTV,film,,movie
 OUTTV,Komedi/Drama,Comedy/Drama,
 OUTTV,kortfilm,Short,movie
 OUTTV,musik,Music,tvshow
 OUTTV,quiz,Quiz,
 OUTTV,reality,Reality,series
 OUTTV,resa,Food/Travel,series
-OUTTV,serie,series,series
+OUTTV,serie,,series
+OUTTV,thriller,Thriller,
+OUTTV,thriller/skräck,Thriller/Horror,
 Svt,barn,Children's,
 Svt,film,,movie
 Svt,musik/dans,Music,
@@ -294,35 +406,244 @@ Tele5,sci-fi-action,SciFi,
 Tele5,sci-fi-horror,SciFi,
 Tele5,sci-fi-miniserie,SciFi,
 Tele5,sci-fi-parodie,SciFi,
-Tele5,sci-fi-serie,SciFi,
+Tele5,sci-fi-serie,SciFi,series
 Tele5,science-fiction,SciFi,
-Tele5,science-fiction-serie,SciFi,
-Tele5,science-fiction-thriller,SciFi,
+Tele5,science-fiction-serie,SciFi,series
+Tele5,science-fiction-thriller,SciFi/Thriller,
 Tele5,scifi-serie,SciFi,
 Tele5,spielfilm,,movie
 Tele5,tanzfilm,,movie
 Tele5,thriller,Crime/Mystery,
 Tele5,thriller-serie,Crime/Mystery,
-Tele5,vampirfilm,,movie
+Tele5,vampirfilm,Vampire,movie
 Tele5,western,Action/Adv,
 Tele5,westernparodie,Action/Adv,
+TV5Monde,documentary,Documentary,
+TV5Monde,drama,Drama,
+TV5Monde,entertainment,Entertainment,
+TV5Monde,magazine,Magazine,
+TV5Monde,movie,movies,movie
+TV5Monde,newscast,News,
+TV5Monde,"short program",Short,
+TV5Monde,sport,Sports,sports
+TV5Monde,"youth program",Youth,
+Tvdb,"action and adventure",Action/Adventure,
+Tvdb,animation,Animation,
+Tvdb,comedy,Comedy,
+Tvdb,documentary,Documentary,
+Tvdb,drama,Drama,
+Tvdb,fantasy,Fantasy,
+Tvdb,"game show",Gameshow,
+Tvdb,"home and garden",Home/Nature,
+Tvdb,reality,Reality,
+Tvdb,science-fiction,Sci-Fi,
+Tvdb,soap,Soap,
+Tvdb,"special interest","Special Interest",
+TVNorge,"amerikansk action",Action,movie
+TVNorge,"amerikansk action-eventyr",Action/Adventure,movie
+TVNorge,"amerikansk actionserie",Action,movie
+TVNorge,"amerikansk animasjon",Animation,movie
+TVNorge,"amerikansk dokumentar fra 2007",Documentary,
+TVNorge,"amerikansk dokumentar fra 2009",Documentary,
+TVNorge,"amerikansk dokumentarserie",Documentary,series
+TVNorge,"amerikansk drama",Drama,movie
+TVNorge,"amerikansk dramaserie",Drama,series
+TVNorge,"amerikansk familiefilm",Family,movie
+TVNorge,"amerikansk komedie",Comedy,movie
+TVNorge,"amerikansk komiserie",Comedy,series
+TVNorge,"amerikansk krimserie",Crime,series
+TVNorge,"amerikansk livsstilserie",Lifestyle,series
+TVNorge,"amerikansk musical",Musical,movie
+TVNorge,"amerikansk paranormal serie",Paranormal,series
+TVNorge,"amerikansk program",\N,tvshow
+TVNorge,"amerikansk realityserie",Reality,series
+TVNorge,"amerikansk romantisk komedie",Romance/Comedy,movie
+TVNorge,"amerikansk serie",series,series
+TVNorge,"amerikansk skrekkfilm",Horror,movie
+TVNorge,"amerikansk talkshow",Talk,tvshow
+TVNorge,"amerikansk thriller",Thriller,movie
+TVNorge,"amerikansk underholdning",Entertainment,
+TVNorge,"australsk dokumentarserie",Documentary,series
+TVNorge,"australsk dramaserie",Drama,series
+TVNorge,"australsk livsstilserie",Lifestyle,series
+TVNorge,"australsk realityserie",Reality,series
+TVNorge,"britisk dokumentar fra",Documentary,
+TVNorge,"britisk dokumentar fra 2008",Documentary,
+TVNorge,"britisk dokumentar fra 2010",Documentary,
+TVNorge,"britisk dokumentar fra 2011",Documentary,
+TVNorge,"britisk dokumentarserie",Documentary,series
+TVNorge,"britisk dramaserie",Drama,series
+TVNorge,"britisk komiserie",Comedy,series
+TVNorge,"britisk livsstilserie",Lifestyle,series
+TVNorge,"britisk program",\N,tvshow
+TVNorge,"britisk realityserie",Reality,series
+TVNorge,"britisk talkshow",Talk,tvshow
+TVNorge,"britisk thriller",Thriller,movie
+TVNorge,"dansk dokumentarserie",Documentary,series
+TVNorge,"fransk romantisk komedie",Romance/Comedy,
+TVNorge,"kanadisk dokumentarserie",Documentary,series
+TVNorge,"new zealandsk paranormal serie",Paranormal,series
+TVNorge,"norsk dokumentarserie",Documentary,series
+TVNorge,"norsk livsstilserie",Lifestyle,series
+TVNorge,"svensk livsstilserie",Lifestyle,series
+TVP,"cykl dokumentalny",Documentary,series
+TVP,"cykl reportaå¼y",News,
+TVP,"cykl reportaży",News,
+TVP,"dokument fabularyzowany",Documentary,
+TVP,dramat,Drama,
+TVP,"film dokumentalny",Documentary,movie
+TVP,"film fabularny",\N,movie
+TVP,"film obyczajowy",\N,movie
+TVP,"film tvp",\N,movie
+TVP,koncert,Concert,
+TVP,"koncert å¼yczeå",Concert,
+TVP,"koncert życzeń",Concert,
+TVP,magazyn,Magazine,
+TVP,"magazyn kulinarny",Magazine,
+TVP,"magazyn turystyczny",Magazine,
+TVP,"program kabaretowy",\N,tvshow
+TVP,"program rozrywkowy",\N,tvshow
+TVP,reportaå¼,News,
+TVP,reportaż,News,
+TVP,serial,\N,series
+TVP,"serial animowany",Animation,series
+TVP,"serial dokumentalny",Documentary,series
+TVP,"serial dokumentalny tvp",Documentary,series
+TVP,"serial kryminalny tvp",Crime,series
+TVP,"serial obyczajowy tvp",\N,series
+TVP,"serial przygodowy tvp",\N,series
+TVP,"serial tvp",\N,series
+TVP,talk-show,Talk,tvshow
+Viasat_category,film,movie,movie
 Viasat_category,filmer,Movies,movie
 Viasat_category,miniserier,,series
 Viasat_category,musik,Music,
+Viasat_category,nyheder/aktuelt,News,
+Viasat_category,"nyheter/aktuella händelser",News,
+Viasat_category,nyheter/aktuelt,News,
 Viasat_category,serier,,series
 Viasat_category,sport,Sports,sports
 Viasat_genre,action,Action,
+Viasat_genre,action/äventyr,Action/Adventure,
+Viasat_genre,action/äventyr/deckare,Action/Adventure/Cri,
+Viasat_genre,action/äventyr/deckare/drama,Action/Adventure/Cri,
+Viasat_genre,action/äventyr/drama,Action/Adventure/Dra,
+Viasat_genre,action/äventyr/drama/fantasy,Action/Adventure/Dra,
+Viasat_genre,"action/äventyr/drama/fantasy/science fiction",Action/Adventure/Dra,
+Viasat_genre,action/äventyr/drama/romantik,Action/Adventure/Dra,
+Viasat_genre,action/äventyr/familj/fantasy,Family/Fantasy,
+Viasat_genre,action/äventyr/fantasy,Action/Adventure/Fan,
+Viasat_genre,"action/äventyr/fantasy/science fiction",Action/Adventure/Fan,
+Viasat_genre,action/äventyr/fantasy/thriller,Fantasy/Thriller,
+Viasat_genre,action/äventyr/komedi,Action/Adventure/Com,
+Viasat_genre,action/äventyr/komedi/fantasy,Action/Adventure/Com,
+Viasat_genre,action/äventyr/komedi/skräck,Action/Adventure/Com,
+Viasat_genre,action/äventyr/komedi/western,Action/Adventure/Com,
+Viasat_genre,"action/äventyr/science fiction",Action/Adventure/Sci,
+Viasat_genre,"action/äventyr/science fiction/thriller",Sci-Fi/Thriller,
+Viasat_genre,action/äventyr/thriller,Action/Adventure/Thr,
+Viasat_genre,action/äventyr/western,Action/Adventure/Wes,
+Viasat_genre,action/deckare,Action/Crime,
+Viasat_genre,action/deckare/deckare/romantik,Action/Crime/Romance,
+Viasat_genre,action/deckare/drama,Action/Crime/Drama,
+Viasat_genre,action/deckare/drama/thriller,Action/Crime/Drama/T,
+Viasat_genre,action/deckare/fantasy/thriller,Action/Crime/Fantasy,
+Viasat_genre,action/deckare/thriller,Action/Crime/Thrille,
+Viasat_genre,action/drama,Action/Drama,
+Viasat_genre,action/drama/krig,Action/Drama/War,
+Viasat_genre,"action/drama/science fiction",Action/Drama/Sci-Fi,
+Viasat_genre,action/drama/skräck/krig,Action/Drama/Horror/,
+Viasat_genre,action/drama/thriller,Action/Drama/Thrille,
+Viasat_genre,action/drama/thriller/krig,Action/Drama/Thrille,
+Viasat_genre,action/eventyr,Action/Adventure,
+Viasat_genre,action/eventyr/fantasi,Action/Adventure/Fan,
+Viasat_genre,action/eventyr/komedie,Action/Adventure/Com,
+Viasat_genre,"action/eventyr/science fiction",Adventure/Sci-Fi,
+Viasat_genre,action/fantasi,Action/Fantasy,
+Viasat_genre,action/fantasy,Action/Fantasy,
+Viasat_genre,action/fantasy/skräck,Action/Fantasy/Horro,
+Viasat_genre,"action/fantasy/skräck/science fiction",Action/Fantasy/Horro,
+Viasat_genre,action/fantasy/thriller,Action/Fantasy/Thril,
+Viasat_genre,action/gyser,Action,
 Viasat_genre,action/komedi,Action,
+Viasat_genre,action/komedi/deckare,Action/Comedy/Crime,
+Viasat_genre,action/komedi/deckare/familj,Action/Comedy/Crime/,
+Viasat_genre,action/komedi/drama,Action/Comedy/Drama,
+Viasat_genre,action/komedi/drama/fantasy/romantik/thrille,Action/Comedy/Drama/,
+Viasat_genre,action/komedi/drama/thriller,Action/Comedy/Drama/,
 Viasat_genre,action/komedi/familj,Action,
+Viasat_genre,"action/komedi/science fiction",Action/Comedy/Sci-Fi,
+Viasat_genre,action/komedi/thriller,Action/Comedy/Thrill,
+Viasat_genre,action/komedie,Action/Comedy,
+Viasat_genre,action/komedie/drama,Action/Comedy/Drama,
+Viasat_genre,action/krim/thriller,Action/Crime/Thrille,
+Viasat_genre,action/krimi,Action/Crime,
+Viasat_genre,action/krimi/drama,Action/Crime/Drama,
+Viasat_genre,action/krimi/thriller,Action/Crime/Thrille,
+Viasat_genre,action/reality,Action/Reality,
+Viasat_genre,"action/science fiction",Action/Sci-Fi,
+Viasat_genre,"action/science fiction/thriller",Action/Sci-Fi/Thrill,
 Viasat_genre,action/science-fiction,Action,
+Viasat_genre,"action/skräck/science fiction",Action/Horror/Sci-Fi,
+Viasat_genre,action/skräck/thriller,Action/Horror/Thrill,
+Viasat_genre,action/tecknat/animerat/äventyr/familj,Action/Animation/Adv,
+Viasat_genre,action/tecknat/animerat/komedi,Action/Animated/Come,
 Viasat_genre,action/thriller,Action,
 Viasat_genre,action/thriller/deckare,Action,
 Viasat_genre,action/thriller/komedi,Action,
 Viasat_genre,action/thriller/science-fiction,Action,
 Viasat_genre,action/western,Action,
+Viasat_genre,äventyr,Adventure,
+Viasat_genre,äventyr/barn,Adventure/Children's,
+Viasat_genre,äventyr/deckare/drama,Adventure/Crime/Dram,
+Viasat_genre,äventyr/deckare/drama/thriller,Adventure/Crime/Dram,
+Viasat_genre,äventyr/dokumentär,Adventure/Documentar,
+Viasat_genre,äventyr/drama,Adventure/Drama,
+Viasat_genre,äventyr/drama/fantasy,Adventure/Drama/Thri,
+Viasat_genre,äventyr/drama/krig,Adventure/Drama/War,
+Viasat_genre,äventyr/drama/skräck,Action/Drama/Horror,
+Viasat_genre,äventyr/drama/thriller,Adventure/Drama/Thri,
+Viasat_genre,äventyr/familj,Adventure/Family,
+Viasat_genre,äventyr/familj/deckare,Adventure/Family/Cri,
+Viasat_genre,äventyr/familj/fantasy,Adventure/Family/Fan,
+Viasat_genre,äventyr/familj/fantasy/barn,Adventure/Family/Fan,
+Viasat_genre,äventyr/fantasy,Adventure/Fantasy,
+Viasat_genre,äventyr/fantasy/deckare,Adventure/Fantasy/Cr,
+Viasat_genre,äventyr/komedi,Adventure/Comedy,
+Viasat_genre,äventyr/komedi/drama/familj,Adventure/Comedy/Dra,
+Viasat_genre,äventyr/komedi/familj,Adventure/Comedy/Fam,
+Viasat_genre,äventyr/komedi/fantasy,Adventure/Comedy/Fan,
+Viasat_genre,äventyr/komedi/romantik,Adventure/Comedy/Rom,
+Viasat_genre,äventyr/nature,Adventure/Nature,
+Viasat_genre,"äventyr/science fiction",Adventure/Sci-Fi,
+Viasat_genre,äventyr/thriller,Adventure/Thriller,
+Viasat_genre,äventyr/underhållning,Adventure,
+Viasat_genre,äventyr/western,Adventure/Western,
 Viasat_genre,barn,Children's,
 Viasat_genre,deckare,Crime,
+Viasat_genre,deckare/deckare,Crime,
+Viasat_genre,deckare/deckare/thriller,Crime/Thriller,
+Viasat_genre,deckare/dokumentär,Crime/Documentary,
+Viasat_genre,deckare/dokumentär/thriller,Crime/Documentary/Th,
+Viasat_genre,deckare/drama,Crime/Drama,
+Viasat_genre,deckare/drama/deckare,Crime/Drama,
+Viasat_genre,"deckare/drama/film noir",Crime/Drama,movie
+Viasat_genre,"deckare/drama/film noir/thriller",Crime/Drama/Thriller,movie
+Viasat_genre,deckare/drama/romantik,Crime/Drama/Romance,
+Viasat_genre,deckare/drama/thriller,Crime/Drama/Thriller,
+Viasat_genre,deckare/romantik/thriller,Crime/Romance/Thrill,
+Viasat_genre,"deckare/science fiction/thriller",Crime/Sci-Fi/Thrille,
+Viasat_genre,deckare/skräck/thriller,Crime/Horror/Thrille,
+Viasat_genre,deckare/thriller,Crime/Thriller,
+Viasat_genre,deckare/western,Crime/Western,
 Viasat_genre,dokumentar,Documentary,
+Viasat_genre,dokumentär/deckare,Documentary/Crime,
+Viasat_genre,dokumentär/drama,Documentary/Drama,
+Viasat_genre,dokumentär/nature,Documentary/Nature,
+Viasat_genre,dokumentar/reality,Documentary/Reality,
+Viasat_genre,dokumentär/underhållning,Documentary,
+Viasat_genre,dokumentar/underholdning,Documentary/Entertai,
+Viasat_genre,dokumentär/verklighets,"Documentary/True Sto",
 Viasat_genre,"dokumentarni film",Documentary,movie
 Viasat_genre,drama,Drama,
 Viasat_genre,drama/action,Drama,
@@ -331,37 +652,158 @@ Viasat_genre,drama/action/krig,Drama,
 Viasat_genre,drama/action/thriller,Drama,
 Viasat_genre,drama/deckare,Drama,
 Viasat_genre,drama/deckare/deckare,Drama,
+Viasat_genre,drama/deckare/romantik,Drama/Crime/Romance,
+Viasat_genre,"drama/deckare/science fiction",Crime/Drama/Sci-Fi,
 Viasat_genre,drama/deckare/science-fiction,Drama,
+Viasat_genre,drama/familie,Drama/Family,
 Viasat_genre,drama/familj,Drama,
 Viasat_genre,drama/familj/fantasy,Drama,
+Viasat_genre,drama/fantasi/romanse,Drama/Fantasy/Romanc,
+Viasat_genre,drama/fantasy,Drama/Fantasy,
+Viasat_genre,drama/fantasy/romantik,Drama/Fantasy/Romanc,
+Viasat_genre,drama/fantasy/thriller,Drama/Fantasy/Thrill,
 Viasat_genre,"drama/film noir/krig",Drama,
+Viasat_genre,drama/film-noir/thriller,Drama/Thriller,movie
 Viasat_genre,drama/komedi,Drama,
 Viasat_genre,drama/komedi/familj,Drama,
 Viasat_genre,drama/krig,Drama,
+Viasat_genre,drama/musical,Drama/Musical,
 Viasat_genre,drama/musikal,Musical,
+Viasat_genre,drama/musikal/romantik,Drama/Musical/Romanc,
+Viasat_genre,drama/romanse,Drama/Romance,
+Viasat_genre,drama/romantik,Drama/Romance,
+Viasat_genre,drama/romantik/krig,Drama/Romance/War,
+Viasat_genre,drama/romantik/thriller,Drama/Romance/Thrill,
+Viasat_genre,"drama/science fiction",Drama/Sci-Fi,
+Viasat_genre,"drama/science fiction/thriller",Drama/Sci-Fi/Thrille,
 Viasat_genre,drama/science-fiction,SciFi,
+Viasat_genre,drama/skräck,Drama/Horror,
+Viasat_genre,drama/skräck/thriller,Drama/Horror/Thrille,
 Viasat_genre,drama/thriller,Drama,
 Viasat_genre,drama/thriller/deckare,Drama,
 Viasat_genre,drama/western,Drama,
 Viasat_genre,erotik,Adult,
 Viasat_genre,"erotik (klippt version)",Adult,
+Viasat_genre,eventyr/drama,Adventure/Drama,
+Viasat_genre,eventyr/drama/fantasi,Adventure/Drama/Fant,
+Viasat_genre,eventyr/fantasi,Adventure/Fantasy,
+Viasat_genre,eventyr/komedie,Adventure/Comedy,
+Viasat_genre,eventyr/komedie/drama/romanse,Adventure/Comedy/Dra,
+Viasat_genre,"eventyr/science fiction",Adventure/Sci-Fi,
+Viasat_genre,familie/underholdning,Family,
+Viasat_genre,familj,Family,
 Viasat_genre,familj/barn,Kids,
+Viasat_genre,familj/fantasy,Family/Fantasy,
 Viasat_genre,familj/musikal,Musical,
 Viasat_genre,familj/science-fiction,SciFi,
+Viasat_genre,familj/underhållning,Family,
+Viasat_genre,"fantasi/science fiction/thriller",Fantasy/Sci-Fi/Thril,
+Viasat_genre,fantasi/thriller,Fantasy/Thriller,
+Viasat_genre,fantasy,Fantasy,
+Viasat_genre,fantasy/romantik,Fantasy/Romance,
+Viasat_genre,fantasy/romantik/thriller,Fantasy/Romance/Thri,
+Viasat_genre,fantasy/thriller,Fantasy/Thriller,
+Viasat_genre,"film noir",,movie
+Viasat_genre,"film noir/thriller",Thriller,movie
+Viasat_genre,frågesport/verklighets,Questions,
 Viasat_genre,gameshow,Game,
+Viasat_genre,gameshow/reality,Gameshow/Reality,tvshow
+Viasat_genre,gameshow/reality/underholdning,Gameshow/Reality/Ent,tvshow
+Viasat_genre,"gyser/science fiction/thriller",Sci-Fi/Thriller,
 Viasat_genre,komedi,Comedy,
 Viasat_genre,komedi/deckare,Comedy,
+Viasat_genre,komedi/deckare/drama,Comedy/Crime/Drama,
+Viasat_genre,komedi/deckare/drama/thriller,Comedy/Crime/Drama/T,
+Viasat_genre,komedi/deckare/familj,Comedy/Crime/Family,
+Viasat_genre,komedi/deckare/gangster/thriller,Comedy/Crime/Thrille,
 Viasat_genre,komedi/deckare/musikal,Comedy,
+Viasat_genre,komedi/deckare/romantik,Comedy/Crime/Romance,
+Viasat_genre,komedi/deckare/thriller,Comedy/Crime/Thrille,
+Viasat_genre,komedi/dokumentär/romantik,Comedy/Documentary/R,
+Viasat_genre,komedi/drama,Comedy/Drama,
+Viasat_genre,komedi/drama/familj,Comedy/Drama/Family,
+Viasat_genre,komedi/drama/familj/musikal/romantik,Comedy/Drama/Family/,
+Viasat_genre,komedi/drama/krig,Comedy/Drama/War,
+Viasat_genre,komedi/drama/romantik,Comedy/Drama/Romance,
+Viasat_genre,komedi/drama/thriller,Comedy/Drama/Thrille,
+Viasat_genre,komedi/drama/verklighets/romantik,Comedy/Drama/Real/Ro,
 Viasat_genre,komedi/familj,Comedy,
+Viasat_genre,komedi/familj/barn,Comedy/Family/Childr,
+Viasat_genre,komedi/familj/fantasy,Comedy/Family/Fantas,
 Viasat_genre,komedi/familj/musikal,Comedy,
+Viasat_genre,komedi/familj/romantik,Comedy/Family/Romanc,
+Viasat_genre,komedi/fantasy,Comedy/Family,
+Viasat_genre,komedi/krig,Comedy/War,
 Viasat_genre,komedi/musikal,Comedy,
+Viasat_genre,komedi/musikal/romantik,Comedy/Musical,
 Viasat_genre,komedi/musikal/science-fiction,Comedy,
+Viasat_genre,komedi/romantik,Comedy/Romance,
+Viasat_genre,"komedi/science fiction",Comedy/Sci-Fi,
 Viasat_genre,komedi/science-fiction,Comedy,
+Viasat_genre,komedi/skräck,Comedy/Horror,
+Viasat_genre,komedi/thriller,Comedy/Thriller,
+Viasat_genre,komedie,Comedy,
+Viasat_genre,komedie/dokumentar/romantik,Comedy/Documentary/R,
+Viasat_genre,komedie/drama,Comedy/Drama,
+Viasat_genre,komedie/drama/romanse,Comedy/Drama/Romance,
+Viasat_genre,komedie/drama/romantik,Comedy/Drama/Romance,
+Viasat_genre,komedie/familie,Comedy/Family,
+Viasat_genre,komedie/familie/barn,Comedy/Family/Childr,
+Viasat_genre,komedie/krimi,Comedy/Crime,
+Viasat_genre,komedie/reality,Comedy/Reality,
+Viasat_genre,komedie/romanse,Comedy/Romance,
+Viasat_genre,komedie/romantik,Comedy/Romance,
+Viasat_genre,"komedie/science fiction",Comedy/Sci-Fi,
+Viasat_genre,komedie/underholdning,Comedy,
+Viasat_genre,krim,Crime,
+Viasat_genre,krim/drama,Crime/Drama,
+Viasat_genre,krim/drama/romanse,Crime/Drama/Romance,
+Viasat_genre,krim/drama/thriller,Crime/Drama/Thriller,
+Viasat_genre,krim/thriller,Crime/Thriller,
+Viasat_genre,krimi,Crime,
+Viasat_genre,krimi/drama,Crime/Drama,
 Viasat_genre,musikal,Musical,
+Viasat_genre,mystik/thriller,Thriller,
+Viasat_genre,nature,Nature,
+Viasat_genre,pratshow,Talkshow,
 Viasat_genre,reality,Reality,
+Viasat_genre,reality/talkshow,Reality/Talk,tvshow
+Viasat_genre,reality/underholdning,Reality,
+Viasat_genre,romantik/thriller,Romance/Thriller,
+Viasat_genre,"science fiction",Sci-Fi,
+Viasat_genre,"science fiction/thriller",Sci-Fi/Thriller,
+Viasat_genre,skräck,Horror,
+Viasat_genre,skräck/deckare/thriller,Horror/Crime/Thrille,
+Viasat_genre,"skräck/science fiction",Horror/Sci-Fi,
+Viasat_genre,"skräck/science fiction/thriller",Horror/Sci-Fi/Thrill,
+Viasat_genre,skräck/thriller,Horror/Thriller,
+Viasat_genre,skrekkfilm,Horror,movie
+Viasat_genre,specialmagasin,Magazine,
 Viasat_genre,talkshow,Talk,
+Viasat_genre,tecknat/animerat,Animated,
+Viasat_genre,tecknat/animerat/äventyr,Animated/Adventure,
+Viasat_genre,tecknat/animerat/äventyr/drama/fantasy,Animated/Adventure/D,
+Viasat_genre,tecknat/animerat/äventyr/familj,Animated/Adventure/F,
+Viasat_genre,tecknat/animerat/äventyr/familj/fantasy,Animated/Adventure/F,
+Viasat_genre,tecknat/animerat/äventyr/komedi,Animated/Adventure/C,
+Viasat_genre,tecknat/animerat/äventyr/komedi/familj,Animated/Adventure/C,
+Viasat_genre,tecknat/animerat/barn,Animated/Children's,
+Viasat_genre,tecknat/animerat/deckare/thriller,Animated/Crime/Thril,
+Viasat_genre,tecknat/animerat/drama/familj,Animated/Drama/Famil,
+Viasat_genre,tecknat/animerat/familj,Animated/Family,
+Viasat_genre,tecknat/animerat/fantasy,Animated/Fantasy,
+Viasat_genre,tecknat/animerat/komedi,Animated/Comedy,
+Viasat_genre,tecknat/animerat/komedi/familj,Animated/Comedy/Fami,
 Viasat_genre,tecknat/barn,Children's,
+Viasat_genre,tegnefilm,\N,movie
+Viasat_genre,tegnefilm/komedie,Comedy,movie
+Viasat_genre,tegnefilm/komedie/familie,Comedy/Family,movie
 Viasat_genre,thriller,Mystery,
 Viasat_genre,thriller/deckare,Mystery,
 Viasat_genre,thriller/komedi,Comedy,
 Viasat_genre,thriller/science-fiction,SciFi,
+Viasat_genre,underhållning,Entertainment,
+Viasat_genre,underholdning,Entertainment,
+Viasat_genre,verklighets,"True Story",
+Viasat_genre,verklighets/underhållning,"True Story/Entertain",
+Viasat_genre,western,Western,

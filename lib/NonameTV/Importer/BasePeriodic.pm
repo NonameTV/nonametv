@@ -58,7 +58,7 @@ sub new {
       basedir => $conf->{ContentCachePath} . $self->{ConfigName},
       credentials => $conf->{ContentCacheCredentials},
       callbackobject => $self,
-      useragent => "Grabber from http://tv.swedb.se", 
+      useragent => "nonametv (http://nonametv.org)", 
     } );
 
     return $self;

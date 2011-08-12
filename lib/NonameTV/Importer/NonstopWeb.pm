@@ -33,6 +33,8 @@ sub new {
     $self->{MaxMonths} = 4 unless defined $self->{MaxMonths};
 
     defined( $self->{UrlRoot} ) or die "You must specify UrlRoot";
+    
+    $self->{datastore}->{augment} = 1;
 
     return $self;
 }
@@ -156,6 +158,17 @@ sub ImportContent
     };
     
     $ce->{subtitle} = $subtitle if $subtitle;
+    
+    my ( $season, $episode ) = ($desc =~ /\(Säsong\s*(\d+)\s*avsnitt\s*(\d+)\)/ );
+    
+    if((defined $season) and ($episode > 0) and ($season > 0) )
+    {
+      $ce->{episode} = sprintf( "%d . %d .", $season-1, $episode-1 );
+    }
+    elsif((defined $episode) and ($episode > 0) )
+    {
+      $ce->{episode} = sprintf( ". %d .", $episode-1 );
+    }
     
     if( defined( $production_year ) and ($production_year =~ /(\d\d\d\d)/) )
     {

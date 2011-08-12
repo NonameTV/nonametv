@@ -37,6 +37,9 @@ sub new {
   bless ($self, $class);
 
 
+		# use augment
+    $self->{datastore}->{augment} = 1;
+
   return $self;
 }
 

@@ -46,6 +46,9 @@ sub new {
 
     # flag to enable decoding according to charset in Content-Type header
     $self->{cc}->{wantdecode} = 1;
+    
+    # use augment
+    $self->{datastore}->{augment} = 1;
 
     return $self;
 }
@@ -106,6 +109,11 @@ sub ImportContent {
     my $start = $inrow->{'Start time'};
 
     my $title = norm( $inrow->{'name'} );
+    
+    # Maybe we should put original title in a column sometime?
+    #my $title_org = norm( $inrow->{'org name'} );
+
+		#my $title = $title_org || $title_normal;
 
     my $description = $inrow->{'Synopsis this episode'}
     || $inrow->{'Synopsis'}; 
@@ -117,11 +125,23 @@ sub ImportContent {
     my $ep_se = $inrow->{'Season number'} || 0;
     my $episode = undef;
     
-    if( ($ep_nr > 0) and ($ep_se > 0) )
+    # Del 3:13 in description - of_episod is not in use at the moment
+    my ( $ep_nr2, $eps ) = ($description =~ /del\s+(\d+):(\d+)/ );
+    my ( $ep_nr3, $eps2 ) = ($description =~ /Del\s+(\d+):(\d+)/ );
+    
+    if((defined $ep_nr2)) {
+    	$ep_nr = $ep_nr2;
+    }
+    
+    if((defined $ep_nr3)) {
+    	$ep_nr = $ep_nr3;
+    }
+    
+    if((defined $ep_nr) and ($ep_nr > 0) and ($ep_se > 0) )
     {
       $episode = sprintf( "%d . %d .", $ep_se-1, $ep_nr-1 );
     }
-    elsif( $ep_nr > 0 )
+    elsif((defined $ep_nr) and ($ep_nr > 0) )
     {
       $episode = sprintf( ". %d .", $ep_nr-1 );
     }
@@ -134,6 +154,11 @@ sub ImportContent {
       Viasat_category => norm( $inrow->{Category} ),
       Viasat_genre => norm( $inrow->{Genre} ),
     };
+    
+    if( my( $commentators ) = ($description =~ /Kommentatorer:\s*(.*)/ ) )
+    {
+      $ce->{commentators} = parse_person_list( $commentators );
+    }
 
     if( defined( $inrow->{'Production Year'} ) and
         $inrow->{'Production Year'} =~ /(\d\d\d\d)/ )
@@ -172,8 +197,46 @@ sub ImportContent {
       my @directors = split( /\s*,\s*/, $director );
       $ce->{directors} = join( ", ", grep( /\S/, @directors ) );
     }
+    
+    my $guest = norm( $inrow->{'Guest'} );
+    if( $guest =~ /\S/ )
+    {
+      # Remove all variants of m.fl.
+      $guest =~ s/\s*m[\. ]*fl\.*\b//;
+      
+      # Remove trailing '.'
+      $guest =~ s/\.$//;
+      my @guests = split( /\s*,\s*/, $guest );
+      $ce->{guests} = join( ", ", grep( /\S/, @guests ) );
+    }
+    
+    my $host = norm( $inrow->{'Host'} );
+    if( $host =~ /\S/ )
+    {
+      # Remove all variants of m.fl.
+      $host =~ s/\s*m[\. ]*fl\.*\b//;
+      
+      # Remove trailing '.'
+      $host =~ s/\.$//;
+      my @hosts = split( /\s*,\s*/, $host );
+      $ce->{presenters} = join( ", ", grep( /\S/, @hosts ) );
+    }
+    
+    my $commentator = norm( $inrow->{'Commentator'} );
+    if( $commentator =~ /\S/ )
+    {
+      # Remove all variants of m.fl.
+      $commentator =~ s/\s*m[\. ]*fl\.*\b//;
+      
+      # Remove trailing '.'
+      $commentator =~ s/\.$//;
+      my @commentators = split( /\s*,\s*/, $commentator );
+      $ce->{commentators} = join( ", ", grep( /\S/, @commentators ) );
+    }
 
     $self->extract_extra_info( $ce );
+    
+    progress("Viasat: $chd->{xmltvid}: $start - $title");
     $dsh->AddProgramme( $ce );
   }
 
@@ -240,6 +303,30 @@ sub extract_extra_info
   
   delete( $ce->{Viasat_category} );
   delete( $ce->{Viasat_genre} );
+}
+
+# From Kanal5_util
+sub parse_person_list
+{
+  my( $str ) = @_;
+
+  # Remove all variants of m.fl.
+  $str =~ s/\s*m[\. ]*fl\.*\b//;
+  
+  # Remove trailing '.'
+  $str =~ s/\.$//;
+
+  $str =~ s/\boch\b/,/;
+  $str =~ s/\bsamt\b/,/;
+
+  my @persons = split( /\s*,\s*/, $str );
+  foreach (@persons)
+  {
+    # The character name is sometimes given . Remove it.
+    s/^.*\s+-\s+//;
+  }
+
+  return join( ", ", grep( /\S/, @persons ) );
 }
 
 1;

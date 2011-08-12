@@ -2,171 +2,198 @@ package NonameTV::Importer::TVNORGE;
 
 =pod
 
-This importer fetches a single XML-file from
-TVNorges website. This file contains a whole month worth
-of programinfo.
+This importer works for both TVNorge and FEM.
+It downloads per day xml files from respective channel's
+pressweb. The files are in xml-style
 
 =cut
 
-use strict;
-use warnings;
-
 use DateTime;
 use XML::LibXML;
+use HTTP::Date;
 
-use NonameTV qw/MyGet norm/;
+use NonameTV qw/ParseXml norm AddCategory/;
+use NonameTV::Log qw/w progress error f/;
 use NonameTV::DataStore::Helper;
-use NonameTV::Log qw/progress error/;
+use NonameTV::Importer::BaseDaily;
 
-use NonameTV::Importer::BaseOne;
-
-use base 'NonameTV::Importer::BaseOne';
+use base 'NonameTV::Importer::BaseDaily';
 
 sub new {
     my $proto = shift;
     my $class = ref($proto) || $proto;
     my $self  = $class->SUPER::new( @_ );
     bless ($self, $class);
-    
-    
+
+
+    $self->{MinDays} = 0 unless defined $self->{MinDays};
+    $self->{MaxDays} = 4 unless defined $self->{MaxDays};
+
     defined( $self->{UrlRoot} ) or die "You must specify UrlRoot";
-    
-    
-    my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
-    $self->{datastorehelper} = $dsh;
-    
+    my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore}, "Europe/Vienna" );
+  	$self->{datastorehelper} = $dsh;
+
     return $self;
+}
+
+sub Object2Url {
+  my $self = shift;
+  my( $objectname, $chd ) = @_;
+
+  my( $year, $month, $day ) = ( $objectname =~ /(\d+)-(\d+)-(\d+)$/ );
+
+  my $url = $self->{UrlRoot} .
+    $chd->{grabber_info} . '/' . $day . $month . $year;
+
+  return( $url, undef );
+}
+
+sub FilterContent {
+  my $self = shift;
+  my( $cref, $chd ) = @_;
+
+  my( $chid ) = ($chd->{grabber_info} =~ /^(\d+)/);
+
+  my $doc;
+  $doc = ParseXml( $cref );
+
+  if( not defined $doc ) {
+    return (undef, "ParseXml failed" );
+  } 
+
+  # Find all "Schedule"-entries.
+  my $ns = $doc->find( "//program" );
+
+  if( $ns->size() == 0 ) {
+    return (undef, "No data found" );
+  }
+
+  my $str = $doc->toString( 1 );
+
+  return( \$str, undef );
+}
+
+sub ContentExtension {
+  return 'xml';
+}
+
+sub FilteredExtension {
+  return 'xml';
 }
 
 sub ImportContent
 {
-    my $self = shift;
+  my $self = shift;
+
+  my( $batch_id, $cref, $chd ) = @_;
+  
+  my( $date ) = ($batch_id =~ /_(.*)$/);
+  
+
+  my $ds = $self->{datastore};
+  my $dsh = $self->{datastorehelper};
+  $ds->{SILENCE_END_START_OVERLAP}=1;
+  $ds->{SILENCE_DUPLICATE_SKIP}=1;
+ 
+ 	$dsh->StartDate( $date , "00:00" ); 
+ 
+  my $xml = XML::LibXML->new;
+  my $doc;
+  eval { $doc = $xml->parse_string($$cref); };
+  if( $@ ne "" )
+  {
+    f "Failed to parse $@";
+    return 0;
+  }
+  
+  # Find all "Schedule"-entries.
+  my $ns = $doc->find( "//program" );
+
+  if( $ns->size() == 0 )
+  {
+    f "No data found 2";
+    return 0;
+  }
+  
+  
+  
+  foreach my $sc ($ns->get_nodelist)
+  {
+  	
+  	
+  	
+    my $title_original = $sc->findvalue( './originaltitle' );
+	my $title_programme = $sc->findvalue( './title' );
+	my $title = norm($title_programme) || norm($title_original);
+
+    my $start = $sc->findvalue( './starttime' );
+
     
-    my( $batch_id, $cref, $chd ) = @_;
+    my $desc = undef;
+    my $desc_episode = $sc->findvalue( './shortdescription' );
+	$desc = norm($desc_episode);
+	
+	my $genre = $sc->findvalue( './category' );
+	my $production_year = $sc->findvalue( './productionyear' );
+	my $episode =  $sc->findvalue( './episode' );
+	my $numepisodes =  $sc->findvalue( './numepisodes' );
+
+	# TVNorge seems to have the season in the originaltitle, weird.
+	# år 2
+  my ( $dummy, $season ) = ($title_original =~ /\b(år)\s+(\d+)/ );
+
+
+	progress("TVNorge: $chd->{xmltvid}: $start - $title");
+
+    my $ce = {
+      title 	  => norm($title),
+      channel_id  => $chd->{id},
+      description => norm($desc),
+      start_time  => $self->create_dt( $start ),
+    };
     
-    #my $ds = $self->{datastore};
-    my $dsh = $self->{datastorehelper};
     
-    $dsh->{SILENCE_END_START_OVERLAP}=1;
-    
-    my( $date ) = ($batch_id =~ /_(.*)$/);
-    
-    my $xml = XML::LibXML->new;
-    my $doc;
-    
-    eval { $doc = $xml->parse_string($$cref); };
-    if( $@ ne "" )
+    if( defined( $production_year ) and ($production_year =~ /(\d\d\d\d)/) )
     {
-        error( "$batch_id: Failed to parse $@" );
-        return 0;
+      $ce->{production_date} = "$1-01-01";
     }
     
-    # Find all "sending" entries
-    my $ns = $doc->find( "//item" );
     
-    # Start date
-    
-    #$dsh->StartDate( $date, "00:00" );
-    my $curdate="";
-    my $olddate="";
-    foreach my $sc ($ns->get_nodelist)
-    {
-    
-        my $datetimestring = $sc->findvalue( './programDate' );
-        #print "\n>>>> $datetimestring <<<<\n";
-        my $curdate = getDate( $datetimestring );
-        
-        if ($curdate ne $olddate) {
-            $dsh->StartDate( $curdate, "00:00" );
-        }               
+    if( $genre ){
+			my($program_type, $category ) = $ds->LookupCat( 'TVNorge', $genre );
+			AddCategory( $ce, $program_type, $category );
+	}
 
-        # my $stop = $sc->findvalue( './SLUTTID' );
-        my $start = getStart( $datetimestring );
-        # $stop =~ s/\./:/;
-        
-        my $title = $sc->findvalue( './programTitle' );
-        my $subtitle = $sc->findvalue( './episodeTitle' );
-#        if ($title eq "") {
-#            $title = $subtitle;
-#        }
-        #my $bigtitle = "T$title - S$subtitle";
-        #my $bigtitle = "$title: $subtitle" unless ($title eq $subtitle);
-        #$bigtitle =~ s/^:.//;
-#        if ($title eq $subtitle) {
-#            $subtitle = "";
-#        } else {
-#            $title = "$title: $subtitle";
-#            
-#        }
-        #if ($title eq "") {
-        #    $title = $subtitle;
-        #    $subtitle = "";
-        #}
-        
-        my $desc = $sc->findvalue( './episodeText' );
-        if ($desc eq "") {
-            $desc = $sc->findvalue( './programListText' );
-        }
-        
-        # my $text = $sc->findvalue( './TEKSTEKODE' );
-        
-        my $ce = {
-            start_time  => $start,
-            #end_time   => $stop,
-            description => norm($desc),
-            title       => norm($title),
-            subtitle    => $subtitle,
-            
-        
-        };
-        
-        $dsh->AddProgramme( $ce );
-    
-    
-    }
-    
-    return 1;
+		# Episodes
+		if(($season) and ($episode) and ($numepisodes)) {
+			$ce->{episode} = sprintf( "%d . %d/%d . ", $season-1, $episode-1, $numepisodes );
+		} elsif(($season) and ($episode) and (!$numepisodes)) {
+			$ce->{episode} = sprintf( "%d . %d . ", $season-1, $episode-1 );
+		} elsif((!$season) and ($episode) and ($numepisodes)) {
+			$ce->{episode} = sprintf( " . %d/%d . ", $episode-1, $numepisodes );
+		} elsif((!$season) and ($episode) and (!$numepisodes)) {
+			 $ce->{episode} = sprintf( " . %d . ", $episode-1 );
+		}
+
+
+    $dsh->AddProgramme( $ce );
+  }
+  
+  # Success
+  return 1;
 }
 
-sub FetchDataFromSite
+sub create_dt
 {
+  my $self = shift;
+  my( $str ) = @_;
+  
+  my( $year, $month, $day, $hour, $minute ) = 
+      ($str =~ /^(\d+)-(\d+)-(\d+) (\d+):(\d+)$/ );
 
-    my $self = shift;
-    my( $batch_id, $data ) = @_;
-    #print $batch_id;
 
-#    my $u = $self->{UrlRoot};
-    my $u = $data->{grabber_info};
-    my ( $content, $code ) = MyGet ( $u );
-    
-    return( $content, $code );
+  
+  return sprintf( "%02d:%02d", $hour, $minute );
 }
-
-
-sub getStart
-{
-    my( $str ) = @_;
-    #print "\n>>> $str <<<\n";
-    my $date = substr( $str, 0, 2 );
-    my $month = substr( $str, 3, 2 );
-    my $year = substr( $str, 6, 4 );
     
-    my $hour = substr( $str, 11, 2 );
-    my $min = substr( $str, 14, 2 );
-    
-    return "$hour:$min";
-
-}
-
-sub getDate
-{
-    my ($str) = @_;
-    
-    my $date = substr( $str, 0, 2 );
-    my $month = substr( $str, 3, 2 );
-    my $year = substr( $str, 6, 4 );
-    
-    return "$year-$month-$date"; 
-}
 1;
-

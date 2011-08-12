@@ -42,7 +42,7 @@ our @EXPORT_OK;
 my $wvhtml = 'wvHtml --charset=utf-8';
 # my $wvhtml = '/usr/bin/wvHtml';
 
-my $ua = LWP::UserAgent->new( agent => "Grabber from http://tv.swedb.se", 
+my $ua = LWP::UserAgent->new( agent => "nonametv (http://nonametv.org)", 
                               cookie_jar => {},
                               env_proxy => 1 );
 
@@ -374,9 +374,9 @@ my $sm = NonameTV::StringMatcher->new();
 $sm->AddRegexp( qr/kriminalserie/i,      [ 'series', 'Crime/Mystery' ] );
 $sm->AddRegexp( qr/deckarserie/i,        [ 'series', 'Crime/Mystery' ] );
 $sm->AddRegexp( qr/polisserie/i,         [ 'series', 'Crime/Mystery' ] );
-$sm->AddRegexp( qr/familjeserie/i,       [ 'series', undef ] );
-$sm->AddRegexp( qr/tecknad serie/i,      [ 'series', undef ] );
-$sm->AddRegexp( qr/animerad serie/i,     [ 'series', undef ] );
+$sm->AddRegexp( qr/familjeserie/i,       [ 'series', 'Family' ] );
+$sm->AddRegexp( qr/tecknad serie/i,      [ 'series', 'Animated' ] );
+$sm->AddRegexp( qr/animerad serie/i,     [ 'series', 'Animated' ] );
 $sm->AddRegexp( qr/dramakomediserie/i,   [ 'series', 'Comedy' ] );
 $sm->AddRegexp( qr/dramaserie/i,         [ 'series', 'Drama' ] );
 $sm->AddRegexp( qr/resedokumentärserie/i,[ 'series', 'Food/Travel' ] );
@@ -389,16 +389,35 @@ $sm->AddRegexp( qr/actionserie/i,        [ 'series', 'Action' ] );
 $sm->AddRegexp( qr/underhållningsserie/i,[ 'series', undef ] );
 $sm->AddRegexp( qr/äventyrsserie/i,      [ 'series', 'Action/Adv' ] );
 $sm->AddRegexp( qr/äventyrskomediserie/i,[ 'series', 'Comedy' ] );
-$sm->AddRegexp( qr/dokumentärserie/i,    [ 'series', 'Documentary' ] );
+$sm->AddRegexp( qr/dokumentär(serie|program)/i,    [ 'series', 'Documentary' ] );
 $sm->AddRegexp( qr/dramadokumentär/i,    [ undef,    'Documentary' ] );
 
 $sm->AddRegexp( qr/barnserie/i,          [ 'series', "Children's" ] );
 $sm->AddRegexp( qr/matlagningsserie/i,   [ 'series', 'Cooking' ] );
-$sm->AddRegexp( qr/motorserie/i,         [ 'series', undef ] );
+$sm->AddRegexp( qr/motorserie/i,         [ 'series', 'sports' ] );
 $sm->AddRegexp( qr/fixarserie/i,         [ 'series', "Home/How-to" ] );
 $sm->AddRegexp( qr/science[-\s]*fiction[-\s]*serie/i, 
                 [ 'series', 'SciFi' ] );
 $sm->AddRegexp( qr/barnprogram/i,          [ undef, "Children's" ] );
+
+
+# Kanal 5 new
+$sm->AddRegexp( qr/livsstilsserie/i,          [ 'series', 'Lifestyle' ] );
+$sm->AddRegexp( qr/dramathrillerserie/i,      [ 'series', 'Drama/Thriller' ] );
+$sm->AddRegexp( qr/fantasydramaserie/i,       [ 'series', 'Fantasy/Drama' ] );
+$sm->AddRegexp( qr/tävlingsserie/i,           [ 'series', 'Contest' ] );
+$sm->AddRegexp( qr/inredningsserie/i,         [ 'series', 'Home/How-to' ] );
+$sm->AddRegexp( qr/frågesport/i,        			[ 'series', 'Quiz' ] );
+$sm->AddRegexp( qr/sci[-\s]*fiserie/i, 				[ 'series', 'SciFi' ] );
+$sm->AddRegexp( qr/nöjesprogram/i, 						[ 'series', 'Entertainment' ] );
+$sm->AddRegexp( qr/talkshow/i,         				[ 'series', 'Talk' ] );
+$sm->AddRegexp( qr/relationsserie/i,         	[ 'series', 'Relationship' ] );
+$sm->AddRegexp( qr/actionthrillerserie/i,     [ 'series', 'Action/Thriller' ] );
+$sm->AddRegexp( qr/kriminalkomediserie/i,     [ 'series', 'Crime/Comedy' ] );
+$sm->AddRegexp( qr/intervjuserie/i,     			[ 'series', 'Talk' ] );
+
+# If has *film in name set it as movie.
+#$sm->AddRegexp( qr/\b\s*film\b/i,        					[ 'movie', "Movies" ] );
 
 # Movies
 $sm->AddRegexp( qr/\b(familje|drama|action)*komedi\b/i,  [ 'movie', "Comedy" ] );
@@ -416,6 +435,16 @@ $sm->AddRegexp( qr/\b(drama)*thriller\b/i,        [ 'movie', "Crime" ] );
 $sm->AddRegexp( qr/\bscience\s*fiction(rysare)*\b/i, [ 'movie', "SciFi" ] );
 
 $sm->AddRegexp( qr/\b(l.ng)*film\b/i,             [ 'movie', undef ] );
+
+# Kanal 5
+$sm->AddRegexp( qr/\bkomedifilm\b/i,             [ 'movie', "Comedy" ] );
+$sm->AddRegexp( qr/\banimerad komedifilm\b/i,    [ 'movie', "Animated/Comedy" ] );
+$sm->AddRegexp( qr/\bthrillerfilm\b/i,    			 [ 'movie', "Thriller" ] );
+$sm->AddRegexp( qr/\bdramafilm\b/i,        			 [ 'movie', "Drama" ] );
+$sm->AddRegexp( qr/\bactionthrillerfilm\b/i,     [ 'movie', "Action/Thriller" ] );
+$sm->AddRegexp( qr/\bkriminaldramafilm\b/i,      [ 'movie', "Crime/Drama" ] );
+$sm->AddRegexp( qr/\bdramathrillerfilm\b/i,        [ 'movie', "Crime" ] );
+
 
 
 sub ParseDescCatSwe
@@ -792,6 +821,15 @@ sub MonthNumber {
     @months_1 = qw/jan fav mar aprelja maja jui jul aou sep oct nov dec/;
     @months_2 = qw/JANVIER FÉVRIER mars avril mai juin juillet aout septembre octobre novembre DÉCEMBRE/;
     @months_3 = qw/janvier favrier mars avril mai juin juillet aout septembre octobre novembre DÉCEMBRE/;
+    @months_4 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
+    @months_5 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
+    @months_6 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
+    @months_7 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
+    @months_8 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
+  } elsif( $lang =~ /^sv$/ ){
+    @months_1 = qw/jan feb mar apr maj jun jul aug sep okt nov dec/;
+    @months_2 = qw/januari februari mars april maj juni juli augusti september oktober november december/;
+    @months_3 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
     @months_4 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
     @months_5 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
     @months_6 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
