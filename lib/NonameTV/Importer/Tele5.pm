@@ -298,6 +298,26 @@ sub ImportRTF {
         # strip first line / title
         $text =~ s|^[^\n]*\n|\n|s;
 
+        # let's see if there is a subtitle if we don't have one already
+        if( !$ce->{subtitle} ){
+          # try second line of text for normal episode titles
+          my( $subtitle )=( $text =~ m/^\n\s*([^\n]*)\n\s*(?:Folge\s+|Sendedauer:\s+)/s );
+          if( $subtitle ){
+            # filter out false positives
+            if( !( $subtitle =~ m/^\s*(?:VPS:|Folge\s|\d{2}:\d{2}\s)/ ) ) {
+              $ce->{subtitle} = $subtitle;
+              $text =~ s/^\n\s*([^\n]*)\n\s*(Folge\s+|Sendedauer:\s+)/\n\n$2/s;
+            }
+          } else {
+            # try third line next, if second line is "Thema"
+            my( $subtitle )=( $text =~ m/^\n\s*Thema\n\s*([^\n]*)\n\s*(?:Folge\s+|Sendedauer:\s+)/s );
+            if( $subtitle ){
+              $ce->{subtitle} = $subtitle;
+              $text =~ s/^\n\s*Thema\n\s*([^\n]*)\n\s*(Folge\s+|Sendedauer:\s+)/\n\n\n$2/s;
+            }
+          }
+        }
+
         # year of production and genre/program type
         my ($genre, $production_year) = ($text =~ m |\n\s*(.*)\n\s*Produziert:\s+.*\s(\d+)|);
         if ($production_year) {
