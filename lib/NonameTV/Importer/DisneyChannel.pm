@@ -72,7 +72,7 @@ sub ImportContent {
     my @members = $zip->members();
     foreach my $member (@members) {
       push( @swedish_files, $member->{fileName} ) 
-	  if $member->{fileName} =~ /swe.*xml$/i;
+	  if $member->{fileName} =~ /swe*.*xml$/i;
     }
     
     my $numfiles = scalar( @swedish_files );
