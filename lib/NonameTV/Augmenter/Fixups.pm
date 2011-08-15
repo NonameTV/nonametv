@@ -151,7 +151,7 @@ sub AugmentProgram( $$$ ){
         $matchdone=1;
       }
     }
-    if( !$matchdone && $ceref->{'title'} ){
+    if( !$matchdone && $ceref->{'title'} && !$ceref->{subtitle} && !$ceref->{description} ){
       # try matching just by title number last
       d( 'matching by title' );
       my( $res, $sth ) = $self->{datastore}->sa->Sql( "
