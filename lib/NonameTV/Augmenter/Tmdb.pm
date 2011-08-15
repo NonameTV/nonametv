@@ -77,7 +77,10 @@ sub FillHash( $$$ ) {
   
   # No description when adding? Add the description from themoviedb
   if((!defined $ceref->{description}) or ($ceref->{description} eq "")) {
-  	$resultref->{description} = norm( $doc->findvalue( '/OpenSearchDescription/movies/movie/overview' ) );
+    my $desc = norm( $doc->findvalue( '/OpenSearchDescription/movies/movie/overview' ) );
+    if( $desc ne 'No overview found.' ) {
+      $resultref->{description} = $desc;
+    }
   }
   
   
