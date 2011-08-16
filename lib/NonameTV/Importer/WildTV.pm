@@ -158,10 +158,8 @@ sub create_dt
                           day    => $day,
                           hour   => $hour,
                           minute => $minute,
-                          time_zone => 'Europe/Stockholm',
+                          time_zone => 'Europe/Zagreb',
                           );
-  
-  $dt->set_time_zone( "UTC" );
   
   return $dt;
 }
