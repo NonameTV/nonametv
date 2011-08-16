@@ -2,7 +2,6 @@ package NonameTV::Importer::Tele5;
 
 use strict;
 use warnings;
-use Encode qw/from_to/;
 
 =pod
 
@@ -23,7 +22,9 @@ Grabber Info: name, variant
 =cut
 
 use DateTime;
+use Encode qw/from_to/;
 use RTF::Tokenizer;
+use utf8;
 
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/d p w error f/;
@@ -99,6 +100,7 @@ sub ImportRTF {
   }
 
   my $enoughtext = 0;
+  my $desc = '';
   my $text = '';
   my $textfull = 0;
   my $date;
@@ -118,10 +120,13 @@ sub ImportRTF {
   } else {
     $copyrightstring = '';
   }
-  from_to ($copyrightstring, "windows-1252", "utf8");
+  from_to ($copyrightstring, "windows-1252", "utf8"); # it's utf-8 already
   
 
   while( my ( $type, $arg, $param ) = $tokenizer->get_token( ) ){
+    if( $type eq 'text' ){
+      from_to ($arg, 'windows-1252', 'utf8');
+    }
 
 #    last if( $type eq 'eof' );
 
@@ -138,6 +143,7 @@ sub ImportRTF {
         if( $grouplevel == $infooter ) {
           d( 'footerend' );
           $infooter = 0;
+          $desc = '';
           $text = '';
         }
         $grouplevel -= 1;
@@ -153,8 +159,12 @@ sub ImportRTF {
         # ignore text from here on
         $enoughtext = 1;
       } else {
-        $text .= ' ' . $arg;
-        d( 'text:' . $arg );
+        if( $grouplevel == 3 ) {
+          $desc .= ' ' . $arg;
+        }elsif(($arg ne 'Planet Schule') && ($arg ne 'TAGESTIPP')){
+          $text .= ' ' . $arg;
+        }
+        d( 'text(' . $grouplevel .'):' . $arg );
       }
     } else {
       d( 'unknown type: ' . $type . ':' . $arg );
@@ -188,8 +198,8 @@ sub ImportRTF {
         p( "new day: $daystring == " . $currdate->ymd( '-' ));
         $laststart = undef;
       } else { 
+#        $text =~ s|^\s+||mg;
         d "TEXT: $text";
-        from_to ($text, "windows-1252", "utf8");
 
         my $ce = {};
         $ce->{channel_id} = $chd->{id};
@@ -246,6 +256,7 @@ sub ImportRTF {
         if( $channel_name eq 'SWR' ) {
           if( $text =~ m/^\s*(?:BW|RP|SR)$/m ) {
             my( $programregion )=( $text =~ m/^\s*(BW|RP|SR)$/m );
+            $text =~ s/^\s*(?:BW|RP|SR)$//m;
             if( $region_name ne $programregion ) {
               d( 'skipping for region ' . $programregion . ' we want ' . $region_name );
               $text = '';
@@ -255,7 +266,7 @@ sub ImportRTF {
         }
 
         # episode number
-        my ($episodenum) = ($text =~ m |^\s*Folge\s+(\d+)$|m);
+        my ($episodenum) = ($text =~ m/^\s*Folge\s+(\d+)(?:\/\d+$|\s+von\s+\d+$|$)/m);
         if ($episodenum) {
           $ce->{episode} = ' . ' . ($episodenum - 1) . ' . ';
 
@@ -284,6 +295,29 @@ sub ImportRTF {
           }
         }
 
+        # strip first line / title
+        $text =~ s|^[^\n]*\n|\n|s;
+
+        # let's see if there is a subtitle if we don't have one already
+        if( !$ce->{subtitle} ){
+          # try second line of text for normal episode titles
+          my( $subtitle )=( $text =~ m/^\n\s*([^\n]*)\n\s*(?:Folge\s+|Sendedauer:\s+)/s );
+          if( $subtitle ){
+            # filter out false positives
+            if( !( $subtitle =~ m/^\s*(?:VPS:|Folge\s|\d{2}:\d{2}\s)/ ) ) {
+              $ce->{subtitle} = $subtitle;
+              $text =~ s/^\n\s*([^\n]*)\n\s*(Folge\s+|Sendedauer:\s+)/\n\n$2/s;
+            }
+          } else {
+            # try third line next, if second line is "Thema"
+            my( $subtitle )=( $text =~ m/^\n\s*Thema\n\s*([^\n]*)\n\s*(?:Folge\s+|Sendedauer:\s+)/s );
+            if( $subtitle ){
+              $ce->{subtitle} = $subtitle;
+              $text =~ s/^\n\s*Thema\n\s*([^\n]*)\n\s*(Folge\s+|Sendedauer:\s+)/\n\n\n$2/s;
+            }
+          }
+        }
+
         # year of production and genre/program type
         my ($genre, $production_year) = ($text =~ m |\n\s*(.*)\n\s*Produziert:\s+.*\s(\d+)|);
         if ($production_year) {
@@ -298,7 +332,6 @@ sub ImportRTF {
 
         # synopsis
         if ($self->{KeepDesc}) {
-          my ($desc) = ($text =~ m|^.*\n\n(.*?)$|s);
           if ($desc) {
             $ce->{description} = $desc . $copyrightstring;
           }
@@ -312,8 +345,12 @@ sub ImportRTF {
         # stereo
         if ($text =~ m|^\s*Stereo$|m) {
           $ce->{stereo} = 'stereo';
-        } elsif ($text =~ m|^\s*Dolby Surround$|m) {
+        }
+        if ($text =~ m|^\s*Dolby Surround$|m) {
           $ce->{stereo} = 'surround';
+        }
+        if ($text =~ m|^Zweikanal$|m) {
+          $ce->{stereo} = 'bilingual';
         }
 
         # category override for kids (as we don't have a good category for anime anyway)
@@ -353,8 +390,10 @@ sub ImportRTF {
 
         $ce->{title} = $title;
         $self->{datastore}->AddProgramme ($ce);
+        d( 'left over text: ' . $text );
       }
       $enoughtext = 0;
+      $desc = '';
       $text = '';
     }
 
