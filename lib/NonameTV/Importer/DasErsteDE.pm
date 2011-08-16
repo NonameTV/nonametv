@@ -40,7 +40,7 @@ sub new {
     defined( $self->{Password} ) or die "You must specify Password";
 
     # how many days are available every days of the week?
-    my $DaysOnSite = 5*7 + 5;
+    my $DaysOnSite = 5*7 + 4;
 
     if ($self->{MaxDays} == 32) {
       # default to all data
