@@ -13,6 +13,7 @@ Episode-info parsed from description.
 
 use strict;
 use warnings;
+use utf8;
 
 use DateTime;
 use XML::LibXML;
@@ -122,7 +123,7 @@ sub FilterContent {
   }
 
   # The data contains a header with text that is changed each day.
-  # E.g. "Tablå för i går Torsdag 27 mars 2008".
+  # E.g. "Tablï¿½ fï¿½r i gï¿½r Torsdag 27 mars 2008".
   # Replace it with "Torsdag 27 mars 2008".
   $ns = $doc->find( '//font[@class="header"]' );
   if( $ns->size() != 1 ) {
@@ -221,7 +222,7 @@ sub ImportContent {
     
     
     # If schedule not yet published, do a next;
-    if($desc eq "Tablån ännu ej publicerad") {
+    if($desc eq "Tablï¿½n ï¿½nnu ej publicerad") {
     	next;
     }
 
@@ -233,8 +234,8 @@ sub ImportContent {
     my( $starttime ) = ( $time =~ /^\s*(\d+\.\d+)/ );
     my( $endtime ) = ( $time =~ /-\s*(\d+.\d+)/ );
     
-    $starttime =~ tr/\./:/;
-    if( $starttime !~ /\d+:\d+/ )
+    $starttime =~ tr/\./:/ if $starttime;
+    if((not defined $starttime) or ( $starttime !~ /\d+:\d+/ ))
     {
       next;
     }
@@ -329,13 +330,13 @@ sub extract_extra_info
       $ce->{actors} = parse_person_list( $actors );
       $sentences[$i] = "";
     }
-    elsif( $sentences[$i] =~ /^(Även|Från)
+    elsif( $sentences[$i] =~ /^(ï¿½ven|Frï¿½n)
      ((
       \s+|
       [A-Z]\S+|
       i\s+[A-Z]\S+|
       tidigare\s+i\s*dag|senare\s+i\s*dag|
-      tidigare\s+i\s*kväll|senare\s+i\s*kväll|
+      tidigare\s+i\s*kvï¿½ll|senare\s+i\s*kvï¿½ll|
       \d+\/\d+|
       ,|och|samt
      ))+
@@ -428,9 +429,9 @@ sub parse_other_showings
 
  PARSER: 
   {
-    if( $l =~ /\G(Även|Från)\s*/gcx ) 
+    if( $l =~ /\G(ï¿½ven|Frï¿½n)\s*/gcx ) 
     {
-      $type = ($1 eq "Även") ? "also" : "previously";
+      $type = ($1 eq "ï¿½ven") ? "also" : "previously";
       
       redo PARSER;
     }
@@ -441,8 +442,8 @@ sub parse_other_showings
     }
     if( $l=~ /\G(tidigare\s+i\s*dag
                  |senare\s+i\s*dag
-                 |tidigare\s+i\s*kväll
-                 |senare\s+i\s*kväll)\s*/gcx )  
+                 |tidigare\s+i\s*kvï¿½ll
+                 |senare\s+i\s*kvï¿½ll)\s*/gcx )  
     {
       $date = "today";
       redo PARSER;
@@ -556,8 +557,8 @@ sub split_text
 # newlines have already been removed by norm() 
   # Replace newlines followed by a capital with space and make sure that there 
   # is a dot to mark the end of the sentence. 
-#  $t =~ s/([\!\?])\s*\n+\s*([A-ZÅÄÖ])/$1 $2/g;
-#  $t =~ s/\.*\s*\n+\s*([A-ZÅÄÖ])/. $1/g;
+#  $t =~ s/([\!\?])\s*\n+\s*([A-Zï¿½ï¿½ï¿½])/$1 $2/g;
+#  $t =~ s/\.*\s*\n+\s*([A-Zï¿½ï¿½ï¿½])/. $1/g;
 
   # Turn all whitespace into pure spaces and compress multiple whitespace 
   # to a single.
@@ -565,7 +566,7 @@ sub split_text
 
   # Mark sentences ending with '.', '!', or '?' for split, but preserve the 
   # ".!?".
-  $t =~ s/([\.\!\?])\s+([A-ZÅÄÖ])/$1;;$2/g;
+  $t =~ s/([\.\!\?])\s+([A-Zï¿½ï¿½ï¿½])/$1;;$2/g;
   
   my @sent = grep( /\S\S/, split( ";;", $t ) );
 
