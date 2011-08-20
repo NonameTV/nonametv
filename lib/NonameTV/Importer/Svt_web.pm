@@ -234,8 +234,8 @@ sub ImportContent {
     my( $starttime ) = ( $time =~ /^\s*(\d+\.\d+)/ );
     my( $endtime ) = ( $time =~ /-\s*(\d+.\d+)/ );
     
-    $starttime =~ tr/\./:/;
-    if( $starttime !~ /\d+:\d+/ )
+    $starttime =~ tr/\./:/ if $starttime;
+    if((not defined $starttime) or ( $starttime !~ /\d+:\d+/ ))
     {
       next;
     }
