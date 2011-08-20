@@ -29,7 +29,11 @@ sub new {
   my $self  = $class->SUPER::new( @_ );
   bless ($self, $class);
 
-  defined( $self->{UrlRoot} ) or die "You must specify UrlRoot";
+  if( defined( $self->{UrlRoot} ) ){
+    w( 'UrlRoot is deprecated' );
+  } else {
+    $self->{UrlRoot} = 'http://www.dr.dk/Tjenester/epglive/epg.';
+  }
 
   return $self;
 }
@@ -44,6 +48,15 @@ sub ApproveContent {
   else {
     return undef;
   }
+}
+
+sub FilterContent {
+  my( $self, $cref, $chd ) = @_;
+
+  $$cref =~ s|<message_id>.*</message_id>||;
+  $$cref =~ s|<message_timestamp>.*</message_timestamp>||;
+
+  return( $cref, undef );
 }
 
 sub ContentExtension {
