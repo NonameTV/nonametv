@@ -58,7 +58,7 @@ sub ImportContent {
   my $self = shift;
   my( $batch_id, $cref, $chd ) = @_;
   
-  $$cref = Unicode::String::latin1 ($$cref)->utf8 ();
+  #$$cref = Unicode::String::latin1 ($$cref)->utf8 ();
   
   $self->{batch_id} = $batch_id;
 
