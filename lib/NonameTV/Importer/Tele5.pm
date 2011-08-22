@@ -131,7 +131,11 @@ sub ImportRTF {
 #    last if( $type eq 'eof' );
 
     if( ( $type eq 'control' ) and ( $arg eq 'par' ) ){
-      $text .= "\n";
+        if( $grouplevel == 3 ) {
+          $desc .= "\n";
+        }else{
+          $text .= "\n";
+        }
     } elsif( ( $type eq 'control' ) and ( ( $arg eq '*' ) or ( $arg eq 'fonttbl' ) or ( $arg eq 'footer' ) or ( $arg eq 'header' ) ) ){
       d( 'footerstart' );
       $text .= "\n";
@@ -259,6 +263,7 @@ sub ImportRTF {
             $text =~ s/^\s*(?:BW|RP|SR)$//m;
             if( $region_name ne $programregion ) {
               d( 'skipping for region ' . $programregion . ' we want ' . $region_name );
+              $desc = '';
               $text = '';
               next;
             }
@@ -392,8 +397,8 @@ sub ImportRTF {
         $self->{datastore}->AddProgramme ($ce);
         d( 'left over text: ' . $text );
       }
-      $enoughtext = 0;
       $desc = '';
+      $enoughtext = 0;
       $text = '';
     }
 
