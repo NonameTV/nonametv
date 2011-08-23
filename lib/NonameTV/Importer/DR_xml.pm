@@ -17,7 +17,7 @@ use XML::LibXML;
 
 use NonameTV qw/ParseXml AddCategory norm/;
 use NonameTV::DataStore::Helper;
-use NonameTV::Log qw/f/;
+use NonameTV::Log qw/w f/;
 
 use NonameTV::Importer::BaseDaily;
 
@@ -130,6 +130,13 @@ sub ImportContent {
       {
         $ce->{episode} = sprintf( ". %d .", $episode-1 );
       }
+    
+    $ce->{aspect} = '4:3';
+    
+    my $widescreen =  $b->findvalue( 'pro_publish[1]/ppu_video' );
+	if( $widescreen eq '16:9' ){
+   	 	$ce->{aspect} = '16:9';
+	}
     
     $ce->{production_date} = "$year-01-01" if $year ne "";
     
