@@ -32,6 +32,8 @@ sub ImportContentFile {
 
   my( $filename, $chd ) = @_;
 
+  $self->{datastore}->{augment} = 1;
+
   progress ("ZDFinfo: reading $filename");
 
   open(XMLFILE, $filename);
