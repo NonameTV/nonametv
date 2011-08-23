@@ -5,7 +5,7 @@ use warnings;
 
 use Data::Dumper;
 use Encode;
-
+use utf8;
 use WWW::TheMovieDB::Search;
 
 use NonameTV qw/norm ParseXml/;
@@ -113,6 +113,10 @@ sub AugmentProgram( $$$ ){
     $searchTerm =~ s|[-#]||g;
 
     my $apiresult = $self->{themoviedb}->Movie_search( $searchTerm );
+
+    if( !$apiresult ) {
+      return( undef, $self->{Type} . ' empty result xml, bug upstream site to fix it.' );
+    }
 
     my $doc = ParseXml( \$apiresult );
 
