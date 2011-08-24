@@ -1,5 +1,5 @@
 \N,Tmdb,\N,program_type,movie,\N,title
-\N,Fixups,Tagesschau,\N,\N,\N,setcategorynews
+\N,Fixups,Tagesschau,\N,\N,news,setcategory
 58,Tvdb,^.*$,program_type,series,\N,episodetitle
 84,Fixups,"^(Video Killed The Radio Star):\s+(.*)$",\N,\N,\N,splittitle
 84,Fixups,"^(Kopf der Woche):\s+(.*)$",\N,\N,\N,splittitle
@@ -32,7 +32,7 @@
 39,Tvdb,^.*$,program_type,series,\N,episodetitle
 39,Fixups,Stargate,program_type,series,"Stargate SG-1",replacetitle
 39,Fixups,"Stargate SG-1",subtitle,Exodus,"Exodus (1)",replacesubtitle
-39,Fixups,"Earth: Final Conflict",program_type,series,"Mission Erde",replacetitle
+39,Tvdb,"Earth: Final Conflict",subtitle,^.*$,71784,episodetitle
 39,Fixups,"Stargate SG-1",subtitle,Todfeinde,"Todfeinde (2)",replacesubtitle
 58,Fixups,"Spooks – Im Visier des MI5",program_type,series,Spooks,replacetitle
 57,Fixups,"Spooks – Im Visier des MI5",program_type,series,Spooks,replacetitle
@@ -67,3 +67,42 @@
 58,Tvdb,"Unter anderen Umständen",\N,\N,\N,episodetitle
 39,Fixups,"^(Michael Dudikoff):\s+(.*)$",program_type,movie,\N,splitstartitle
 39,Fixups,"^(Chuck Norris):\s+(.*)$",program_type,movie,\N,splitstartitle
+98,Tvdb,"Steven Spielberg präsentiert TAKEN",\N,\N,78224,episodetitle
+\N,Fixups,"^(Commissario Laurenti)\s+-\s+(.*)$",\N,\N,\N,splittitle
+48,Tvdb,^.*$,program_type,series,\N,episodetitle
+58,Fixups,"^(neoMusic open air):\s+(.*)$",\N,\N,\N,splittitle
+\N,Tvdb,"Inspector Barnaby",program_type,series,76846,episodetitle
+39,Fixups,"^(Shocking Shorts) \d{4}: '(.*)'$",\N,\N,\N,splittitle
+38,Fixups,"360° Geo Reportage",\N,\N,"360° - Geo Reportage",replacetitle
+84,Fixups,^(360.\s+Sessions):\s+(.*)$,\N,\N,\N,splittitle
+84,Fixups,"360º Sessions",\N,\N,"360° Sessions",replacetitle
+74,Fixups,"Nightwash Kurzwäsche",\N,\N,"NightWash Kurzwäsche",replacetitle
+74,Fixups,Nightwash,\N,\N,NightWash,replacetitle
+74,Fixups,"Happy Birthday 'Zimmer frei!'",subtitle,\N,"Happy Birthday Zimmer frei!",replacesubtitle
+74,Fixups,"Happy Birthday 'Zimmer frei!'",subtitle,^.*$,"Zimmer frei!",replacetitle
+\N,Fixups,"^(Mord in bester Gesellschaft)\s+-\s+(.*)$",\N,\N,\N,splittitle
+74,Fixups,"Happy Birthday 'Zimmer frei!'",subtitle,"Die allerersten Jahre: 1996 bis 1999","Happy Birthday Zimmer frei!",replacesubtitle
+74,Fixups,"Zimmer frei!",subtitle,"Die allerersten Jahre: 1996 bis 1999","Happy Birthday Zimmer frei!",replacesubtitle
+73,Fixups,Eisenbahn-Romantik,episode," . 499 . ","Rückblick und Vorschau, auch im Radio",replacesubtitle
+\N,Tvdb,Eisenbahn-Romantik,subtitle,^.*$,188331,episodetitle
+48,Tvdb,"Unter Verdacht",subtitle,^.*$,155531,episodetitle
+48,Fixups,\N,description,\N,\N,copylastdetails
+48,Fixups,"^(nano spezial):\s+(.*)$",\N,\N,\N,splittitle
+84,Fixups,^(nano-extra):\s+(.*)$,\N,\N,\N,splittitle
+84,Fixups,nano-extra,\N,\N,"nano extra",replacetitle
+48,Fixups,"^(Adventure X):\s+(.*)$",\N,\N,\N,splittitle
+48,Fixups,"^(Mission X)\s+-\s+(.*)$",\N,\N,\N,splittitle
+48,Fixups,"^(Berg und Geist):\s+(.*)$",\N,\N,\N,splittitle
+48,Fixups,"^(mare TV) - Reportage:\s+(.*)$",\N,\N,\N,splittitle
+48,Fixups,"mare TV",\N,\N,mareTV,replacetitle
+48,Fixups,"^(Stars extra):\s+(.*)$",\N,\N,\N,splittitle
+48,Fixups,^(unterwegs)\s+-\s+(.*)$,\N,\N,\N,splittitle
+48,Fixups,"In Treatment - Der Therapeut II",\N,\N,"In Treatment - Der Therapeut",replacetitle
+48,Fixups,^(selbstbestimmt!)\s+-\s+Die\s+Reportage\s+(.*)$,\N,\N,\N,splittitle
+48,Fixups,"^(Kreuz & Quer):\s+(.*)$",\N,\N,\N,splittitle
+48,Fixups,"^(JazzBaltica 2010):\s+(.*)$",\N,\N,\N,splittitle
+48,Fixups,^(Mädchengeschichten):\s+(.*)$,\N,\N,\N,splittitle
+65,Fixups,^(hitec):\s+(.*)$,\N,\N,\N,splittitle
+65,Fixups,\N,description,\N,\N,copylastdetails
+48,Fixups,"^(Wilder Planet):\s+(.*)$",\N,\N,\N,splittitle
+84,Fixups,"Ein Leben daneben",subtitle,^(\d+)\.\s+(.*)$,\N,splitepisodenumtitle
