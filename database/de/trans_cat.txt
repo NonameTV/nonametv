@@ -108,66 +108,89 @@ ORF,telenovela,,series
 ORF,unterhaltungsserie,,series
 ORF,zeichentrickfilm,,movie
 ORF,zeichentrickserie,,series
+SRF,"kinder / jugend",kids,
+SRF,nachrichten,news,
+SRF,"spielfilm (action / adventure)",,movie
+SRF,"spielfilm (dokumentarfilm)",documentary,movie
+SRF,"spielfilm (drama)",,movie
+SRF,"spielfilm (experimentalfilm)",,movie
+SRF,"spielfilm (horrorfilm)",,movie
+SRF,"spielfilm (komödie)",,movie
+SRF,"spielfilm (kurzfilm)",,movie
+SRF,"spielfilm (romanze)",,movie
+SRF,"spielfilm (sciencefiction / fantasy)",,movie
 Tele5,abenteuer,Action/Adv,
-Tele5,abenteuer-mini-serie,Action/Adv,
-Tele5,abenteuer-serie,Action/Adv,
+Tele5,abenteuer-mini-serie,Action/Adv,series
+Tele5,abenteuer-serie,Action/Adv,series
 Tele5,abenteuerfilm,,movie
+Tele5,abenteuerserie,,series
 Tele5,action,Action,
-Tele5,action-serie,Action,
+Tele5,action-serie,Action,series
 Tele5,actionabenteuer,Action/Adv,
 Tele5,actiondrama,Action,
 Tele5,actionfilm,Action,movie
 Tele5,actionthriller,Action,
+Tele5,anime-serie,,series
 Tele5,antikriegsfilm,Drama,movie
 Tele5,biopic,Documentary,
+Tele5,comedy-serie,,series
 Tele5,doku-reihe,Documentary,series
 Tele5,doku-serie,Documentary,series
 Tele5,dokumentarfilm,Documentary,movie
 Tele5,dokumentation,Documentary,
+Tele5,dokumentationsserie,,series
 Tele5,drama,Drama,
 Tele5,eastern,Action/Adv,
 Tele5,erotikthriller,Adult,
 Tele5,familienfilm,,movie
 Tele5,fantasy,Sci-fi/Fantasy,
-Tele5,fantasy-serie,Sci-fi/Fantasy,
+Tele5,fantasy-serie,Sci-fi/Fantasy,series
 Tele5,fantasyfilm,Sci-fi/Fantasy,movie
 Tele5,fernsehfilm,,movie
+Tele5,fernsehserie,,series
 Tele5,historienfilm,,movie
 Tele5,horror,Horror,
 Tele5,horrorfilm,Horror,movie
 Tele5,horrorthriller,Horror,
+Tele5,jugendkrimi-serie,,series
+Tele5,jugendserie,,series
 Tele5,katastrophenfilm,,movie
 Tele5,kinderfilm,,movie
 Tele5,kriegsdrama,Drama,
 Tele5,kriegsfilm,,movie
 Tele5,krimi,Crime/Mystery,
-Tele5,krimi-reihe,Crime/Mystery,
-Tele5,krimi-serie,Crime/Mystery,
-Tele5,krimiserie,Crime/Mystery,
+Tele5,krimi-reihe,Crime/Mystery,series
+Tele5,krimi-serie,Crime/Mystery,series
+Tele5,krimiserie,Crime/Mystery,series
 Tele5,kurzfilm,,movie
 Tele5,monumentalfilm,,movie
 Tele5,mystery,Mystery,
-Tele5,mystery-serie,Mystery,
+Tele5,mystery-serie,Mystery,series
 Tele5,psychothriller,Crime/Mystery,
+Tele5,realserie,,series
 Tele5,sci-fi,SciFi,
 Tele5,"sci-fi action",SciFi,
-Tele5,"sci-fi serie",SciFi,
+Tele5,"sci-fi serie",SciFi,series
 Tele5,sci-fi-action,SciFi,
 Tele5,sci-fi-horror,SciFi,
-Tele5,sci-fi-miniserie,SciFi,
+Tele5,sci-fi-mini-serie,,series
+Tele5,sci-fi-miniserie,SciFi,series
 Tele5,sci-fi-parodie,SciFi,
-Tele5,sci-fi-serie,SciFi,
+Tele5,sci-fi-serie,SciFi,series
 Tele5,science-fiction,SciFi,
-Tele5,science-fiction-serie,SciFi,
+Tele5,science-fiction-serie,SciFi,series
 Tele5,science-fiction-thriller,SciFi,
-Tele5,scifi-serie,SciFi,
+Tele5,scifi-serie,SciFi,series
+Tele5,serie,,series
 Tele5,spielfilm,,movie
 Tele5,tanzfilm,,movie
 Tele5,thriller,Crime/Mystery,
-Tele5,thriller-serie,Crime/Mystery,
+Tele5,thriller-serie,Crime/Mystery,series
+Tele5,trickfilmserie,,series
 Tele5,vampirfilm,,movie
 Tele5,western,Action/Adv,
 Tele5,westernparodie,Action/Adv,
+Tele5,zeichentrickserie,,series
 Tvdb,children,Kids,
 Tvdb,comedy,Comedy,
 Tvdb,documentary,Documentary,

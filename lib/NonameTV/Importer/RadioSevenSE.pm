@@ -19,21 +19,15 @@ use NonameTV qw/ParseXml norm AddCategory/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/w progress error f/;
 
-use NonameTV::Importer::BaseWeekly;
+use NonameTV::Importer::BaseOne;
 
-use base 'NonameTV::Importer::BaseWeekly';
+use base 'NonameTV::Importer::BaseOne';
 
 sub new {
     my $proto = shift;
     my $class = ref($proto) || $proto;
     my $self  = $class->SUPER::new( @_ );
     bless ($self, $class);
-
-    my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
-  	$self->{datastorehelper} = $dsh;
-  	
-  	$self->{MinWeeks} = 0;
-    $self->{MaxWeeks} = 0;
 
     return $self;
 }
@@ -54,12 +48,7 @@ sub ImportContent
   my( $batch_id, $cref, $chd ) = @_;
 
   my $ds = $self->{datastore};
-  #my $dsh = $self->{datastorehelper};
-  #my $currdate = "x";
   
-  $ds->{SILENCE_END_START_OVERLAP}=1;
-  $ds->{SILENCE_DUPLICATE_SKIP}=1;
- 
   my $xml = XML::LibXML->new;
   my $doc;
   eval { $doc = $xml->parse_string($$cref); };

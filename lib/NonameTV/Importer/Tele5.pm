@@ -338,6 +338,7 @@ sub ImportRTF {
         # synopsis
         if ($self->{KeepDesc}) {
           if ($desc) {
+            $desc =~ s|\s+$||s;
             $ce->{description} = $desc . $copyrightstring;
           }
         }

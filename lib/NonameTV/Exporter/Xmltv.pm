@@ -523,10 +523,19 @@ sub CloseWriter
   delete $self->{writer_filename};
 
   $w->end();
+  close( $w->getOutput( ) );
+
+  if( $self->{writer_entries} > 0 )
+  {
+    my @errors = ValidateFile( "$path$filename.new" );
+    if( scalar( @errors ) > 0 )
+    {
+      w "Validation failed: " . join( ", ", @errors );
+    }
+  }
 
   if( $self->{KeepXml} ){
     system("gzip -c -f -n $path$filename.new > $path$filename.new.gz");
-    move( "$path$filename.new" , "$path$filename" );
   } else {
     system("gzip -f -n $path$filename.new");
   }
@@ -537,21 +546,13 @@ sub CloseWriter
     if( $? )
     {
       move( "$path$filename.new.gz", "$path$filename.gz" );
-      p "Generated";
       if( $self->{KeepXml} ){
         move( "$path$filename.new" , "$path$filename" );
       }
+      p "Generated";
       if( not $self->{writer_entries} )
       {
         w "Created empty file";
-      }
-      elsif( $self->{writer_entries} > 0 )
-      {
-        my @errors = ValidateFile( "$path$filename.gz" );
-        if( scalar( @errors ) > 0 )
-        {
-          w "Validation failed: " . join( ", ", @errors );
-        }
       }
     }
     else
@@ -565,18 +566,13 @@ sub CloseWriter
   else
   {
     move( "$path$filename.new.gz", "$path$filename.gz" );
+    if( $self->{KeepXml} ){
+      move( "$path$filename.new" , "$path$filename" );
+    }
     p "Generated";
     if( not $self->{writer_entries} )
     {
       w "Empty file";
-    }
-    elsif( $self->{writer_entries} > 0 )
-    {
-      my @errors = ValidateFile( "$path$filename.gz" );
-      if( scalar( @errors ) > 0 )
-      {
-        w "Validation failed: " . join( ", ", @errors );
-      }
     }
   }
 }
