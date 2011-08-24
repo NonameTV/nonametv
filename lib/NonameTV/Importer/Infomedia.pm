@@ -13,7 +13,7 @@ use warnings;
 use DateTime;
 use XML::LibXML;
 
-use NonameTV qw/MyGet norm Html2Xml ParseXml/;
+use NonameTV qw/MyGet normLatin1 Html2Xml ParseXml/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/progress error/;
 
@@ -117,7 +117,7 @@ sub ImportContent
   foreach my $pgm ($ns->get_nodelist)
   {
     # The data consists of alternating rows with time+title or description.
-    my $time = norm( $pgm->findvalue( './/p[@class="hour"]//text()' ) );
+    my $time = normLatin1( $pgm->findvalue( './/p[@class="hour"]//text()' ) );
     next if $time eq "";
 
     my $title = $pgm->findvalue( './/p[@class="prog"]//text()' );
@@ -129,8 +129,8 @@ sub ImportContent
     
     my $ce =  {
       start_time  => $starttime,
-      title       => norm($title),
-      description => norm($desc),
+      title       => normLatin1($title),
+      description => normLatin1($desc),
     };
     
     extract_extra_info( $ce );

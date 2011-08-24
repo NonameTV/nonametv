@@ -110,6 +110,9 @@ sub ImportContent {
 
     my $title = norm( $inrow->{'name'} );
     
+    # Remove # in title, or it will kill lib/TVDB/Api.pm
+    $title =~ s/#//g;
+    
     # Maybe we should put original title in a column sometime?
     #my $title_org = norm( $inrow->{'org name'} );
 

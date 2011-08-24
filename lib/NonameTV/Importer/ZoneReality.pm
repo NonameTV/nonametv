@@ -426,7 +426,7 @@ sub UpdateFiles {
 
       my $dt = $today->clone->add( months => $month );
 
-      for( my $v=1; $v<=3; $v++ ){
+      for( my $v=1; $v<=4; $v++ ){
         my $filename = sprintf( "REA1%02d%02dL%02d.xls", $dt->month, $dt->strftime( '%y' ), $v );
         my $url = $self->{UrlRoot} . "/" . $filename;
         progress("ZoneReality: $xmltvid: Fetching xls file from $url");

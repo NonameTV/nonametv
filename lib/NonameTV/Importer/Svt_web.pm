@@ -19,7 +19,7 @@ use DateTime;
 use XML::LibXML;
 use DateTime;
 
-use NonameTV qw/MyGet norm Html2Xml ParseXml ParseDescCatSwe AddCategory/;
+use NonameTV qw/MyGet normLatin1 Html2Xml ParseXml ParseDescCatSwe AddCategory/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/progress error/;
 
@@ -599,7 +599,7 @@ sub norm_desc
   $str =~ s/([\.!?])\s*\x{95}\s*/$1 /g;
   $str =~ s/\s*\x{95}\s*/. /g;
 
-  return norm( $str );
+  return normLatin1( $str );
 }
 
 sub norm_title
@@ -609,7 +609,7 @@ sub norm_title
   # Remove strange bullets.
   $str =~ s/\x{95}/ /g;
 
-  return norm( $str );
+  return normLatin1( $str );
 }
 
 

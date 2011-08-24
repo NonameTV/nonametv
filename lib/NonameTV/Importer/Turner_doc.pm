@@ -89,17 +89,20 @@ sub ImportContentFile
 
     my( $text ) = norm( $div->findvalue( '.' ) );
 
-    if( isDate( $text ) ) { # the line with the date in format 'Måndag 11 Juli'
+    if( isDate( $text ) ) { # the line with the date in format 'Mï¿½ndag 11 Juli'
 
       $date = ParseDate( $text );
 
       if( $date ) {
 
-        progress("Turner_doc: $xmltvid: Date is $date");
+        progress("Turner: $xmltvid: Date is $date");
 
         if( $date ne $currdate ) {
 
           if( $currdate ne "x" ){
+          	# save day if we have it in memory
+          	# This is done before the last day
+  			FlushDayData( $xmltvid, $dsh , @ces );
             $dsh->EndBatch( 1 );
           }
 
@@ -120,31 +123,51 @@ sub ImportContentFile
       next if( ! $time );
       next if( ! $title );
 
-      progress("Turner_doc: $xmltvid: $time - $title");
-
       my $ce = {
         channel_id => $chd->{id},
         start_time => $time,
         title => $title,
       };
-
-      $dsh->AddProgramme( $ce );
+      
+      # add the programme to the array
+      # as we have to add description later
+      push( @ces , $ce );
 
     } else {
-        # skip
+        # the last element is the one to which
+        # this description belongs to
+        my $element = $ces[$#ces];
+
+        $element->{description} .= $text;
     }
   }
+  
+  # save last day if we have it in memory
+  FlushDayData( $xmltvid, $dsh , @ces );
 
   $dsh->EndBatch( 1 );
     
   return;
 }
 
+sub FlushDayData {
+  my ( $xmltvid, $dsh , @data ) = @_;
+
+    if( @data ){
+      foreach my $element (@data) {
+
+        progress("Turner: $xmltvid: $element->{start_time} - $element->{title}");
+
+        $dsh->AddProgramme( $element );
+      }
+    }
+}
+
 sub isDate {
   my ( $text ) = @_;
 
 
-  if( $text =~ /^(M.ndag|Tisdag|Onsdag|Torsdag|Fredag|L.rdag|S.ndag)\s+\d+(st|nd|rd|th)\s+(Januari|Februari|Mars|April|Maj|Juni|Juli|Augusti|September|November|December)\s+(\d+)$/i ){ # format 'Måndag 11st Juli'
+  if( $text =~ /^(M.ndag|Tisdag|Onsdag|Torsdag|Fredag|L.rdag|S.ndag)\s+\d+(st|nd|rd|th)\s+(Januari|Februari|Mars|April|Maj|Juni|Juli|Augusti|September|November|December)\s+(\d+)$/i ){ # format 'Mï¿½ndag 11st Juli'
     return 1;
   }
 
@@ -156,7 +179,7 @@ sub ParseDate {
 
   my( $dayname, $day, $monthname, $month, $year, $dummy );
 
-  if( $text =~ /^(M.ndag|Tisdag|Onsdag|Torsdag|Fredag|L.rdag|S.ndag)\s+\d+(st|nd|rd|th)\s+(Januari|Februari|Mars|April|Maj|Juni|Juli|Augusti|September|November|December)\s+(\d+)$/i ){ # format 'Måndag 11 Juli'
+  if( $text =~ /^(M.ndag|Tisdag|Onsdag|Torsdag|Fredag|L.rdag|S.ndag)\s+\d+(st|nd|rd|th)\s+(Januari|Februari|Mars|April|Maj|Juni|Juli|Augusti|September|November|December)\s+(\d+)$/i ){ # format 'Mï¿½ndag 11 Juli'
     ( $dayname, $day, $dummy, $monthname, $year ) = ( $text =~ /^(\S+)\s+(\d+)(st|nd|rd|th)\s+(\S+)\s+(\d+)$/i );
 
     $month = MonthNumber( $monthname, 'sv' );

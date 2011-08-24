@@ -11,6 +11,7 @@ The downloaded file is in xml-format.
 
 =cut
 
+use utf8;
 use DateTime;
 use XML::LibXML;
 use HTTP::Date;
@@ -159,7 +160,7 @@ sub ImportContent
     
     $ce->{subtitle} = $subtitle if $subtitle;
     
-    my ( $season, $episode ) = ($desc =~ /\(Säsong\s*(\d+)\s*avsnitt\s*(\d+)\)/ );
+    my ( $season, $episode ) = ($desc =~ /\(Sï¿½song\s*(\d+)\s*avsnitt\s*(\d+)\)/ );
     
     if((defined $season) and ($episode > 0) and ($season > 0) )
     {

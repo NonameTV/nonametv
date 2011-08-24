@@ -122,29 +122,46 @@ sub ImportContentFile
 
       #$title = decode( "iso-8859-2" , $title );
 
-      progress("Kanal10: $xmltvid: $time - $title");
 
       my $ce = {
         channel_id => $chd->{id},
         start_time => $time,
-        title => $title,
       };
 
-      if( $desc ){
-      	my ($ep, $eps);
       	
-      	
-        	$ce->{description} = norm($desc);
-        	my $d = norm($desc);
-          # Del 2
-  				( $ep ) = ($d =~ /\bdel\s+(\d+)/ );
-  				$ce->{episode} = sprintf( " . %d .", $ep-1 ) if defined $ep;
+        
+        my $d = norm($desc);
+        if((not defined $d) or ($d eq "")) {
+        	$d = norm($title);
+        }
+       
+      # Episode
+      if($d) {
+      		my ($ep, $eps);
+      		
+          	# Del 2
+  			( $ep ) = ($d =~ /\bdel\s+(\d+)/ );
+  			$ce->{episode} = sprintf( " . %d .", $ep-1 ) if defined $ep;
 
   			# Del 2 av 3
   			( $ep, $eps ) = ($d =~ /\bdel\s+(\d+)\((\d+)\)/ );
   			$ce->{episode} = sprintf( " . %d/%d . ", $ep-1, $eps ) 
     		if defined $eps;
+    		
+    		
       }
+
+	  # Just in case
+	  $ce->{title} = norm($title);
+
+	  # Remove repris (use this in the future?)
+      $title =~ s/\(Repris(.*)\)$//;
+      
+      progress("Kanal10: $xmltvid: $time - $title");
+      
+      # Set title
+      $ce->{title} = norm($title);
+      $ce->{description} = norm($desc) if $desc;
 
       $dsh->AddProgramme( $ce );
 
