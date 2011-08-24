@@ -165,6 +165,11 @@ sub AugmentProgram( $$$ ){
         CopyProgramWithoutTransmission( $resultref, $ce );
       }
     }
+  }elsif( $ruleref->{matchby} eq 'splitepisodenumtitle' ) {
+    my( $episodenum, $episodetitle )=( $ceref->{$ruleref->{otherfield}} =~ m|$ruleref->{othervalue}| );
+    $resultref->{'subtitle'} = $episodetitle;
+    $resultref->{'episode'} = ' . ' . ($episodenum - 1) . ' . ';
+    $resultref->{program_type} = 'series';
   }else{
     $result = "don't know how to match by '" . $ruleref->{matchby} . "'";
     w( $result );
