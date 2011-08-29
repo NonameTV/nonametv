@@ -12,7 +12,6 @@ use warnings;
 
 use DateTime;
 use XML::LibXML;
-use Lingua::EN::Titlecase;
 
 use NonameTV qw/MyGet norm/;
 use NonameTV::Log qw/progress error/;
@@ -61,8 +60,6 @@ sub ImportContent
 
   my( $countryid, $siteid, $fixcase ) = split( /:/, $chd->{grabber_info} );
   
-  my $tc = Lingua::EN::Titlecase->new();
-
   $self->{batch_id} = $batch_id;
 
   my $ds = $self->{datastore};
@@ -96,7 +93,7 @@ sub ImportContent
     my $start_dt = $self->create_dt( $starttime );
     
     my $title =$pgm->findvalue( 'StoryTypeName' );
-    $title = $tc->title( $title ) if $fixcase;
+    $title =~ s/(\w+)/\u\L$1/g if $fixcase;
 
     my $desc = $pgm->findvalue( 'ShowSynopsis' );
     
