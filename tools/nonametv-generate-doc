@@ -43,6 +43,6 @@ $batchconv->contents_page_start( << 'EOHEAD' );
 EOHEAD
 
 $batchconv->css_flurry( 0 );
-$batchconv->add_css( 'http://dev.perl.org/css/perl.css' );
+#$batchconv->add_css( 'http://dev.perl.org/css/perl.css' );
 
 $batchconv->batch_convert( [ "$root/lib" ], $output_dir );

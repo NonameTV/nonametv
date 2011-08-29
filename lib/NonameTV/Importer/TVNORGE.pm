@@ -32,6 +32,8 @@ sub new {
     defined( $self->{UrlRoot} ) or die "You must specify UrlRoot";
     my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore}, "Europe/Vienna" );
   	$self->{datastorehelper} = $dsh;
+  	
+  	$self->{datastore}->{augment} = 1;
 
     return $self;
 }
@@ -139,8 +141,8 @@ sub ImportContent
 	my $numepisodes =  $sc->findvalue( './numepisodes' );
 
 	# TVNorge seems to have the season in the originaltitle, weird.
-	# år 2
-  my ( $dummy, $season ) = ($title_original =~ /\b(år)\s+(\d+)/ );
+	# ï¿½r 2
+  my ( $dummy, $season ) = ($title_original =~ /(.r)\s*(\d+)$/ );
 
 
 	progress("TVNorge: $chd->{xmltvid}: $start - $title");

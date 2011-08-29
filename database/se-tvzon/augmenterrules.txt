@@ -101,3 +101,30 @@
 115,Fixups,\N,description,\N,\N,copylastdetails
 116,Fixups,\N,description,\N,\N,copylastdetails
 28,Tvdb,V,program_type,series,94971,episodeseason
+96,Tvdb,"Law and Order LA",program_type,series,168161,episodeseason
+96,Tvdb,"Dr. Phil",program_type,series,71424,episodeseason
+96,Tvdb,Webster,program_type,series,77783,episodeseason
+96,Fixups,"Tvins 2011",program_type,series,Tvins,replacetitle
+96,Tvdb,Nanny,program_type,series,75675,episodeseason
+96,Tvdb,"The Loop",program_type,series,75275,episodeseason
+96,Tvdb,Oprah,program_type,series,75010,episodeseason
+96,Tvdb,"Alle elsker Raymond",program_type,series,73663,episodeseason
+96,Tvdb,"Designerspirene USA",program_type,series,74285,episodeseason
+96,Tvdb,"Hell's Kitchen USA",program_type,series,74897,episodeseason
+96,Tvdb,"Kongen av Queens",program_type,series,73641,episodeseason
+96,Tvdb,"Two and a Half Men",program_type,series,72227,episodeseason
+96,Tvdb,NCIS,program_type,series,72108,episodeseason
+96,Tvdb,^.*$,program_type,series,\N,episodeseason
+96,Tvdb,"Gordon Ramsays favorittrestauranter",program_type,series,189941,episodeseason
+96,Fixups,"I gode og onde dager",program_type,series,"Days of our Lives",replacetitle
+96,Tvdb,Akutten,program_type,series,70761,episodeseason
+96,Fixups,"Gordon Ramsay: Cookalong Live US",program_type,series,"Gordon Ramsay: Cookalong Live",replacetitle
+96,Tvdb,"Er du smartere enn en tiåring?",program_type,series,79851,episodeseason
+96,Tvdb,"Sex og singelliv",program_type,series,76648,episodeseason
+101,Tvdb,^.*$,program_type,series,\N,episodeseason
+101,Tvdb,Cops,program_type,series,74709,episodeseason
+101,Fixups,"Tvins 2011",program_type,series,Tvins,replacetitle
+167,Tvdb,^.*$,program_type,series,\N,episodeseason
+165,Tvdb,^.*$,program_type,series,\N,episodeseason
+164,Tvdb,^.*$,program_type,series,\N,episodeseason
+167,Tvdb,CSI,program_type,series,72546,episodeseason
