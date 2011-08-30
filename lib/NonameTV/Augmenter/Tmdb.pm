@@ -32,6 +32,11 @@ sub new {
       $self->{MinRatingCount} = 10;
     }
 
+    # only copy the synopsis if you trust their rights clearance enough!
+    if( !defined( $self->{OnlyAugmentFacts} ) ){
+      $self->{OnlyAugmentFacts} = 0;
+    }
+
     # need config for main content cache path
     my $conf = ReadConfig( );
 
@@ -76,7 +81,7 @@ sub FillHash( $$$ ) {
   }
   
   # No description when adding? Add the description from themoviedb
-  if((!defined $ceref->{description}) or ($ceref->{description} eq "")) {
+  if((!defined $ceref->{description}) or ($ceref->{description} eq "") and !$self->{OnlyAugmentFacts}) {
     my $desc = norm( $doc->findvalue( '/OpenSearchDescription/movies/movie/overview' ) );
     if( $desc ne 'No overview found.' ) {
       $resultref->{description} = $desc;
