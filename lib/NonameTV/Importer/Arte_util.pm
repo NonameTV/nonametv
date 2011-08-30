@@ -341,6 +341,7 @@ sub ParseExtraInfo
       }
 
       # strip dub, premiere
+      $line =~ s|,\s*,|,|g; # reduce two commas with nothing but whitespace between them to one comma
       $line =~ s|, Zweikanalton$||;
       $line =~ s|, Synchronfassung$||;
       $line =~ s|, Erstausstrahlung$||;
@@ -473,6 +474,7 @@ sub ParseExtraInfo
     }
 
     # strip dub, premiere
+    $line =~ s|,\s*,|,|g; # reduce two commas with nothing but whitespace between them to one comma
     $line =~ s|, Zweikanalton$||;
     $line =~ s|, Synchronfassung$||;
     $line =~ s|, Erstausstrahlung$||;
