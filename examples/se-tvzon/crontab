@@ -1,0 +1,6 @@
+# Example of crontab for XMLTV-TVZON
+# m h  dom mon dow   command
+0    3  *   *   *    /home/<username>/github/nonametv/tools/se-tvzon/nonametv-cronjob --daily
+@weekly  /home/<username>/github/nonametv/tools/se-tvzon/nonametv-cronjob --weekly
+0 6,8,10,12,14,18,20,22 * * * /home/<username>/github/nonametv/tools/se-tvzon/nonametv-cronjob --hourly
+@hourly /home/<username>/github/nonametv/tools/se-tvzon/nonametv-process-mail
