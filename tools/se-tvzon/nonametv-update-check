@@ -1,0 +1,37 @@
+#!/usr/bin/perl -w
+
+use strict;
+
+use LWP::Simple;
+use Net::Domain qw/hostname/;
+
+my $latest_time = 0;
+my $latest_host = undef;
+
+foreach my $url (@ARGV) {
+  my $data = get( $url );
+  next if not defined $data;
+
+  my( $hostname, $time ) = split( /\s*\n\s*/, $data );
+  
+  next unless defined $time;
+  if( $time > $latest_time ) {
+    $latest_host = $hostname;
+    $latest_time = $time;
+  }
+}
+
+if( time() > $latest_time + 2*60*60 ) {
+  # The latest update was started more than two hours ago.
+  # We should do an update.
+  exit 0;
+}
+elsif( $latest_host eq hostname()  ) {
+  # We did the last update. We should update now as well.
+  exit 0;
+}
+else {
+#  print "Update cancelled.\n";
+  exit 1;
+}
+

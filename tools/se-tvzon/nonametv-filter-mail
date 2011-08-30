@@ -1,0 +1,112 @@
+#!/usr/bin/perl -w
+
+use strict;
+
+use FindBin;
+use lib "$FindBin::Bin/../../lib";
+
+use Mail::Box;
+use Mail::Box::Manager;
+
+my $maildir = "/home/beatx/maildir/";
+my $infoldername = ".Projects/xmltv-data-in";
+my $targetprefix = ".Projects/.NonameTV-Data.";
+
+my $folders;
+
+my $mgr = Mail::Box::Manager->new();
+
+my $rootfolder = $mgr->open( type => 'maildir', folder => $maildir );
+#my @subs = $rootfolder->listSubFolders();
+#print join "\n", @subs;
+
+my $infolder = $rootfolder->openSubFolder( $infoldername, access => 'rw' );
+
+foreach my $msg ($infolder->messages) {
+  next if $msg->isDeleted();
+  my @from = $msg->from;
+  my $fromaddr = $from[0]->format;
+  if( $fromaddr =~ /\@dr.dk/ ) {
+    MoveMessage( $msg, "DR" );
+  }
+  elsif( $fromaddr =~ /millenniumgroup.se/i ) {
+    # Matches both @millenniumgroup.se and 
+    # millenniumgroup.se@bounce.maildirect.se
+    MoveMessage( $msg, "Nonstop" );
+  }
+  elsif( $fromaddr =~ /\@mtvne.com/i ) {
+    MoveMessage( $msg, "MTV" );
+  }
+  elsif( $fromaddr =~ /\@tv7games.se/ ) {
+    MoveMessage( $msg, "TV7" );
+  }
+  elsif( $fromaddr =~ /\@tv3.se/i ) {
+    MoveMessage( $msg, "Viasat" );
+  }
+  elsif( $fromaddr =~ /\@viasat.se/i ) {
+    MoveMessage( $msg, "Viasat" );
+  }
+  elsif( $fromaddr =~ /\@viasat.co.uk/i ) {
+    MoveMessage( $msg, "Viasat" );
+  }
+  elsif( $fromaddr =~ /\@mtg.se/i ) {
+    MoveMessage( $msg, "Viasat" );
+  }
+  elsif( $fromaddr =~ /\@mtgtv.se/i ) {
+    MoveMessage( $msg, "Viasat" );
+  }
+  elsif( $fromaddr =~ /\@disney.com/i ) {
+    MoveMessage( $msg, "Disney" );
+  }
+  elsif( $fromaddr =~ /\@globallistings.info/i ) {
+    MoveMessage( $msg, "GlobalListings" );
+  }
+  elsif( $fromaddr =~ /\@kanal10.se/i ) {
+    MoveMessage( $msg, "Kanal10" );
+  }
+  elsif( $fromaddr =~ /\@rcs.it/i ) {
+    MoveMessage( $msg, "YaS" );
+  }
+  elsif( $fromaddr =~ /\@motorstv.com/i ) {
+    MoveMessage( $msg, "Motors" );
+  }
+  elsif( $fromaddr =~ /\@fox.com/i ) {
+    MoveMessage( $msg, "FOX" );
+  }
+  elsif( $fromaddr =~ /\@cnbc.com/i ) {
+    MoveMessage( $msg, "CNBC" );
+  }
+  elsif( $fromaddr =~ /\@out.tv/i ) {
+    MoveMessage( $msg, "OUTTV" );
+  }
+  elsif( $fromaddr =~ /\@tv5monde.org/i ) {
+    MoveMessage( $msg, "TV5Monde" );
+  }
+  elsif( $fromaddr =~ /\@travelchannel.co.uk/i ) {
+    MoveMessage( $msg, "TravelChannel" );
+  }
+  elsif( $fromaddr =~ /\@turner.com/i ) {
+    MoveMessage( $msg, "Turner" );
+  }
+  elsif( $fromaddr =~ /\@tvzon.se/i ) {
+    MoveMessage( $msg, "Turner" );
+  }
+  elsif( $fromaddr =~ /\@espnamerica.com/i ) {
+    MoveMessage( $msg, "ESPN" );
+  }
+  elsif( $fromaddr =~ /\@pokerchanneleurope.com/i ) {
+    MoveMessage( $msg, "PokerChannel" );
+  }
+}
+
+sub MoveMessage {
+  my( $msg, $foldername ) = @_;
+
+  if( not exists $folders->{$foldername} ) {
+    $folders->{$foldername} = 
+	$rootfolder->openSubFolder( $targetprefix . $foldername, 
+				    access => 'rw' );
+  }
+
+  $msg->moveTo( $folders->{$foldername} );
+}

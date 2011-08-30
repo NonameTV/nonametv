@@ -1,0 +1,68 @@
+#!/bin/bash
+
+if [ "x$1" == "x" ]; then
+echo "nonametv-import-svt <xmlfile>"
+echo
+echo "Import a datafile from Svt into the nonametv database."
+echo 
+exit
+fi
+
+awk 'BEGIN { p=0 } /^</ {p=1} p==1 {print}' $0 | xsltproc - $1
+exit
+<?xml version="1.0"?>
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+               xmlns:exsl="http://exslt.org/common"
+               extension-element-prefixes="exsl"
+               version="1.0">
+
+<!--
+
+Transform an input file as delivered from Svt into one
+file per day with the program elements sorted by the 
+start-time of the program. All files are written to 
+the current directory. The program-element is copied
+unchanged.
+
+-->
+
+<xsl:output method="xml" indent="yes"/>
+
+<xsl:key name="dates" match="program" use="date_utc"/>
+<xsl:key name="channels" match="program" use="channel"/>
+
+<xsl:template match="/">
+
+  <xsl:if test="count(//program[generate-id() = generate-id(key('channels', channel)[1])]) != 1">
+    <xsl:message terminate="yes">Wrong number of channels</xsl:message>
+  </xsl:if>
+
+  <xsl:variable name="channel" select="//program[1]/channel/text()"/>
+
+  <xsl:for-each select="//program[generate-id() = generate-id(key('dates', date_utc)[1])]">
+    <xsl:call-template name="export-date">
+      <xsl:with-param name="date" select="date_utc/text()"/>
+      <xsl:with-param name="channel" select="$channel"/>
+    </xsl:call-template>
+  </xsl:for-each>
+</xsl:template>
+
+<xsl:template name="export-date">
+  <xsl:param name="date"/>
+  <xsl:param name="channel"/>
+
+  <exsl:document href="{translate($channel, ' ', '-')}_{$date}.xml" 
+                 method="xml" 
+                 encoding="iso-8859-1" 
+                 indent="yes"
+                 omit-xml-declaration="no">
+    <programs>
+      <xsl:for-each select="//program[date_utc/text()=$date]">
+        <xsl:sort select="start_time_utc/text()"/>
+        <xsl:copy-of select="."/>
+      </xsl:for-each>
+    </programs>
+  </exsl:document>
+</xsl:template>
+
+</xsl:stylesheet>
