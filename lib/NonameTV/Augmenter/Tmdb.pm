@@ -50,6 +50,25 @@ sub new {
     return $self;
 }
 
+
+sub FillCredits( $$$$$ ) {
+  my( $self, $resultref, $credit, $doc, $job )=@_;
+
+  my @nodes = $doc->findnodes( '/OpenSearchDescription/movies/movie/cast/person[@job=\'' . $job . '\']' );
+  my @credits = ( );
+  foreach my $node ( @nodes ) {
+    if( $job eq 'Actor' ) {
+      push( @credits, $node->findvalue( './@name' ) . ' (' . $node->findvalue( './@character' ) . ')' );
+    } else {
+      push( @credits, $node->findvalue( './@name' ) );
+    }
+  }
+  if( @credits ) {
+    $resultref->{$credit} = join( ', ', @credits );
+  }
+}
+
+
 sub FillHash( $$$ ) {
   my( $self, $resultref, $movieId, $ceref )=@_;
 
@@ -69,6 +88,12 @@ sub FillHash( $$$ ) {
   # TODO shall we add the tagline as subtitle?
   $resultref->{subtitle} = undef;
 
+  # is it a movie? (makes sense once we match by other attributes then program_type=movie :)
+  my $type = $doc->findvalue( '/OpenSearchDescription/movies/movie/type' );
+  if( $type eq 'movie' ) {
+    $resultref->{program_type} = 'movie';
+  }
+
   my $votes = $doc->findvalue( '/OpenSearchDescription/movies/movie/votes' );
   if( $votes >= $self->{MinRatingCount} ){
     # ratings range from 0 to 10
@@ -87,13 +112,25 @@ sub FillHash( $$$ ) {
       $resultref->{description} = $desc;
     }
   }
-  
-  
-  $resultref->{production_date} = $doc->findvalue( '/OpenSearchDescription/movies/movie/released' );
+
+  # TODO themoviedb does not store a year of production only the first screening, that should go to previosly-shown instead
+  # $resultref->{production_date} = $doc->findvalue( '/OpenSearchDescription/movies/movie/released' );
+
   $resultref->{url} = $doc->findvalue( '/OpenSearchDescription/movies/movie/url' );
+
+  $self->FillCredits( $resultref, 'actors', $doc, 'Actor');
+
+#  $self->FillCredits( $resultref, 'adapters', $doc, 'Actors');
+#  $self->FillCredits( $resultref, 'commentators', $doc, 'Actors');
+  $self->FillCredits( $resultref, 'directors', $doc, 'Director');
+#  $self->FillCredits( $resultref, 'guests', $doc, 'Actors');
+#  $self->FillCredits( $resultref, 'presenters', $doc, 'Actors');
+  $self->FillCredits( $resultref, 'producers', $doc, 'Producer');
+  $self->FillCredits( $resultref, 'writers', $doc, 'Screenplay');
 
 #  print STDERR Dumper( $apiresult );
 }
+
 
 sub AugmentProgram( $$$ ){
   my( $self, $ceref, $ruleref ) = @_;
