@@ -360,7 +360,9 @@ sub ParseExtraInfo
       } elsif( ($productiondate) = ( $line =~ m|^[^,]+\s+(\d{4}),[^,]+$| ) ) {
         # country year, network
         $seengenre = 1;
-      } else {
+      } elsif( $line =~ m|^\(.*\)$| ) {
+        # it's the original title
+      }else {
         # then it must be the subtitle
         $$ce->{subtitle} = $line;
         next;
