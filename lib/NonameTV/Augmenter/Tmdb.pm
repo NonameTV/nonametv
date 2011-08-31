@@ -11,7 +11,7 @@ use WWW::TheMovieDB::Search;
 use NonameTV qw/norm ParseXml/;
 use NonameTV::Augmenter::Base;
 use NonameTV::Config qw/ReadConfig/;
-use NonameTV::Log qw/w/;
+use NonameTV::Log qw/w d/;
 
 use base 'NonameTV::Augmenter::Base';
 
@@ -145,14 +145,14 @@ sub AugmentProgram( $$$ ){
 
     my $searchTerm = $ceref->{title};
     if( $ceref->{production_date} ){
-      my( $year )=( $ceref->{production_date} =~ m|^(\d{4})\-\d+\-\d+$| );
-      $searchTerm .= ' ' . $year;
+#      my( $year )=( $ceref->{production_date} =~ m|^(\d{4})\-\d+\-\d+$| );
+#      $searchTerm .= ' ' . $year;
     }else{
       return( undef,  "Year unknown, not searching at themoviedb.org!" );
     }
 
     # filter characters that confuse the search api
-    $searchTerm =~ s|[-#]||g;
+    $searchTerm =~ s|[-#\?]||g;
 
     my $apiresult = $self->{themoviedb}->Movie_search( $searchTerm );
 
@@ -175,16 +175,34 @@ sub AugmentProgram( $$$ ){
     my $numResult = $doc->findvalue( '/OpenSearchDescription/opensearch:totalResults' );
     if( $numResult < 1 ){
       return( undef,  "No matching movie found when searching for: " . $searchTerm );
-    }elsif( $numResult > 1 ){
-      return( undef,  "More then one matching movie found when searching for: " . $searchTerm );
+#    }elsif( $numResult > 1 ){
+#      return( undef,  "More then one matching movie found when searching for: " . $searchTerm );
     }else{
 #      print STDERR Dumper( $apiresult );
 
-      my $movieId = $doc->findvalue( '/OpenSearchDescription/movies/movie/id' );
-      my $movieLanguage = $doc->findvalue( '/OpenSearchDescription/movies/movie/language' );
-      my $movieTranslated = $doc->findvalue( '/OpenSearchDescription/movies/movie/translated' );
+      my( $produced )=( $ceref->{production_date} =~ m|^(\d{4})\-\d+\-\d+$| );
+      my @candidates = $doc->findnodes( '/OpenSearchDescription/movies/movie' );
+      foreach my $candidate ( @candidates ) {
+        # verify that production and release year are close
+        my $released = $candidate->findvalue( './released' );
+        $released =~ s|^(\d{4})\-\d+\-\d+$|$1|;
+        if( !$released ){
+          $candidate->unbindNode();
+        } elsif( abs( $released - $produced ) > 2 ){
+          $candidate->unbindNode();
+        }
+      }
 
-      $self->FillHash( $resultref, $movieId, $ceref );
+      @candidates = $doc->findnodes( '/OpenSearchDescription/movies/movie' );
+      if( @candidates != 1 ){
+        d( 'search did not return a single best hit, ignoring' );
+      } else {
+        my $movieId = $doc->findvalue( '/OpenSearchDescription/movies/movie/id' );
+        my $movieLanguage = $doc->findvalue( '/OpenSearchDescription/movies/movie/language' );
+        my $movieTranslated = $doc->findvalue( '/OpenSearchDescription/movies/movie/translated' );
+
+        $self->FillHash( $resultref, $movieId, $ceref );
+      }
     }
   }else{
     $result = "don't know how to match by '" . $ruleref->{matchby} . "'";
