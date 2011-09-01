@@ -27,7 +27,7 @@ sub new {
 
 
     $self->{MinDays} = 0 unless defined $self->{MinDays};
-    $self->{MaxDays} = 4 unless defined $self->{MaxDays};
+    $self->{MaxDays} = 25 unless defined $self->{MaxDays};
 
     defined( $self->{UrlRoot} ) or die "You must specify UrlRoot";
     my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore}, "Europe/Vienna" );
