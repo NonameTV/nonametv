@@ -11,7 +11,7 @@ use WWW::TheMovieDB::Search;
 use NonameTV qw/norm ParseXml/;
 use NonameTV::Augmenter::Base;
 use NonameTV::Config qw/ReadConfig/;
-use NonameTV::Log qw/w/;
+use NonameTV::Log qw/w d/;
 
 use base 'NonameTV::Augmenter::Base';
 
@@ -32,6 +32,11 @@ sub new {
       $self->{MinRatingCount} = 10;
     }
 
+    # only copy the synopsis if you trust their rights clearance enough!
+    if( !defined( $self->{OnlyAugmentFacts} ) ){
+      $self->{OnlyAugmentFacts} = 0;
+    }
+
     # need config for main content cache path
     my $conf = ReadConfig( );
 
@@ -44,6 +49,25 @@ sub new {
 
     return $self;
 }
+
+
+sub FillCredits( $$$$$ ) {
+  my( $self, $resultref, $credit, $doc, $job )=@_;
+
+  my @nodes = $doc->findnodes( '/OpenSearchDescription/movies/movie/cast/person[@job=\'' . $job . '\']' );
+  my @credits = ( );
+  foreach my $node ( @nodes ) {
+    if( $job eq 'Actor' ) {
+      push( @credits, $node->findvalue( './@name' ) . ' (' . $node->findvalue( './@character' ) . ')' );
+    } else {
+      push( @credits, $node->findvalue( './@name' ) );
+    }
+  }
+  if( @credits ) {
+    $resultref->{$credit} = join( ', ', @credits );
+  }
+}
+
 
 sub FillHash( $$$ ) {
   my( $self, $resultref, $movieId, $ceref )=@_;
@@ -64,6 +88,12 @@ sub FillHash( $$$ ) {
   # TODO shall we add the tagline as subtitle?
   $resultref->{subtitle} = undef;
 
+  # is it a movie? (makes sense once we match by other attributes then program_type=movie :)
+  my $type = $doc->findvalue( '/OpenSearchDescription/movies/movie/type' );
+  if( $type eq 'movie' ) {
+    $resultref->{program_type} = 'movie';
+  }
+
   my $votes = $doc->findvalue( '/OpenSearchDescription/movies/movie/votes' );
   if( $votes >= $self->{MinRatingCount} ){
     # ratings range from 0 to 10
@@ -76,19 +106,31 @@ sub FillHash( $$$ ) {
   }
   
   # No description when adding? Add the description from themoviedb
-  if((!defined $ceref->{description}) or ($ceref->{description} eq "")) {
+  if((!defined $ceref->{description}) or ($ceref->{description} eq "") and !$self->{OnlyAugmentFacts}) {
     my $desc = norm( $doc->findvalue( '/OpenSearchDescription/movies/movie/overview' ) );
     if( $desc ne 'No overview found.' ) {
       $resultref->{description} = $desc;
     }
   }
-  
-  
-  $resultref->{production_date} = $doc->findvalue( '/OpenSearchDescription/movies/movie/released' );
+
+  # TODO themoviedb does not store a year of production only the first screening, that should go to previosly-shown instead
+  # $resultref->{production_date} = $doc->findvalue( '/OpenSearchDescription/movies/movie/released' );
+
   $resultref->{url} = $doc->findvalue( '/OpenSearchDescription/movies/movie/url' );
+
+  $self->FillCredits( $resultref, 'actors', $doc, 'Actor');
+
+#  $self->FillCredits( $resultref, 'adapters', $doc, 'Actors');
+#  $self->FillCredits( $resultref, 'commentators', $doc, 'Actors');
+  $self->FillCredits( $resultref, 'directors', $doc, 'Director');
+#  $self->FillCredits( $resultref, 'guests', $doc, 'Actors');
+#  $self->FillCredits( $resultref, 'presenters', $doc, 'Actors');
+  $self->FillCredits( $resultref, 'producers', $doc, 'Producer');
+  $self->FillCredits( $resultref, 'writers', $doc, 'Screenplay');
 
 #  print STDERR Dumper( $apiresult );
 }
+
 
 sub AugmentProgram( $$$ ){
   my( $self, $ceref, $ruleref ) = @_;
@@ -103,14 +145,14 @@ sub AugmentProgram( $$$ ){
 
     my $searchTerm = $ceref->{title};
     if( $ceref->{production_date} ){
-      my( $year )=( $ceref->{production_date} =~ m|^(\d{4})\-\d+\-\d+$| );
-      $searchTerm .= ' ' . $year;
+#      my( $year )=( $ceref->{production_date} =~ m|^(\d{4})\-\d+\-\d+$| );
+#      $searchTerm .= ' ' . $year;
     }else{
       return( undef,  "Year unknown, not searching at themoviedb.org!" );
     }
 
     # filter characters that confuse the search api
-    $searchTerm =~ s|[-#]||g;
+    $searchTerm =~ s|[-#\?]||g;
 
     my $apiresult = $self->{themoviedb}->Movie_search( $searchTerm );
 
@@ -133,16 +175,34 @@ sub AugmentProgram( $$$ ){
     my $numResult = $doc->findvalue( '/OpenSearchDescription/opensearch:totalResults' );
     if( $numResult < 1 ){
       return( undef,  "No matching movie found when searching for: " . $searchTerm );
-    }elsif( $numResult > 1 ){
-      return( undef,  "More then one matching movie found when searching for: " . $searchTerm );
+#    }elsif( $numResult > 1 ){
+#      return( undef,  "More then one matching movie found when searching for: " . $searchTerm );
     }else{
 #      print STDERR Dumper( $apiresult );
 
-      my $movieId = $doc->findvalue( '/OpenSearchDescription/movies/movie/id' );
-      my $movieLanguage = $doc->findvalue( '/OpenSearchDescription/movies/movie/language' );
-      my $movieTranslated = $doc->findvalue( '/OpenSearchDescription/movies/movie/translated' );
+      my( $produced )=( $ceref->{production_date} =~ m|^(\d{4})\-\d+\-\d+$| );
+      my @candidates = $doc->findnodes( '/OpenSearchDescription/movies/movie' );
+      foreach my $candidate ( @candidates ) {
+        # verify that production and release year are close
+        my $released = $candidate->findvalue( './released' );
+        $released =~ s|^(\d{4})\-\d+\-\d+$|$1|;
+        if( !$released ){
+          $candidate->unbindNode();
+        } elsif( abs( $released - $produced ) > 2 ){
+          $candidate->unbindNode();
+        }
+      }
 
-      $self->FillHash( $resultref, $movieId, $ceref );
+      @candidates = $doc->findnodes( '/OpenSearchDescription/movies/movie' );
+      if( @candidates != 1 ){
+        d( 'search did not return a single best hit, ignoring' );
+      } else {
+        my $movieId = $doc->findvalue( '/OpenSearchDescription/movies/movie/id' );
+        my $movieLanguage = $doc->findvalue( '/OpenSearchDescription/movies/movie/language' );
+        my $movieTranslated = $doc->findvalue( '/OpenSearchDescription/movies/movie/translated' );
+
+        $self->FillHash( $resultref, $movieId, $ceref );
+      }
     }
   }else{
     $result = "don't know how to match by '" . $ruleref->{matchby} . "'";

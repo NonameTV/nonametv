@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use TVDB::API;
+use utf8;
 
 use NonameTV qw/norm AddCategory/;
 use NonameTV::Augmenter::Base;
@@ -58,6 +59,34 @@ sub new {
 }
 
 
+sub ParseCast( $$ ) {
+  my( $self, $cast )=@_;
+
+  my $result;
+
+  my @people = ();
+  if( $cast ) {
+    push( @people, split( '\|', $cast ) );
+  }
+  foreach( @people ){
+    $_ = norm( $_ );
+    if( $_ eq '' ){
+      $_ = undef;
+    }
+  }
+  @people = grep{ defined } @people;
+  if( @people ) {
+    # replace
+    $result = join( ', ', @people );
+  } else {
+    # remove
+    $result = undef;
+  }
+
+  return( $result );
+}
+
+
 sub FillHash( $$$$ ) {
   my( $self, $resultref, $series, $episode )=@_;
 
@@ -81,8 +110,13 @@ sub FillHash( $$$$ ) {
 #    $resultref->{description} = $episode->{Overview} . "\nQuelle: Tvdb";
 #  }
 
-  if( $episode->{FirstAired} ) {
-    $resultref->{production_date} = $episode->{FirstAired};
+# TODO add proviously-shown to carry the first showing instead of slapping it over the starting year of the series
+#  if( $episode->{FirstAired} ) {
+#    $resultref->{production_date} = $episode->{FirstAired};
+#  }
+
+  if( $series->{FirstAired} ) {
+    $resultref->{production_date} = $series->{FirstAired};
   }
   
   # episodepic
@@ -96,10 +130,13 @@ sub FillHash( $$$$ ) {
   );
 
   my @actors = ();
-  # TODO only add series actors if its not a special
-  if( $series->{Actors} ) {
-    push( @actors, split( '\|', $series->{Actors} ) );
+  # only add series actors if its not a special
+  if( $episode->{SeasonNumber} > 0 ){
+    if( $series->{Actors} ) {
+      push( @actors, split( '\|', $series->{Actors} ) );
+    }
   }
+  # always add the episode cast
   if( $episode->{GuestStars} ) {
     push( @actors, split( '\|', $episode->{GuestStars} ) );
   }
@@ -118,7 +155,8 @@ sub FillHash( $$$$ ) {
     $resultref->{actors} = undef;
   }
 
-  #more fields on episodes are, Director, Writer
+  $resultref->{directors} = $self->ParseCast( $episode->{Director} );
+  $resultref->{writers} = $self->ParseCast( $episode->{Writer} );
 
   $resultref->{program_type} = 'series';  
 

@@ -341,6 +341,7 @@ sub ParseExtraInfo
       }
 
       # strip dub, premiere
+      $line =~ s|,\s*,|,|g; # reduce two commas with nothing but whitespace between them to one comma
       $line =~ s|, Zweikanalton$||;
       $line =~ s|, Synchronfassung$||;
       $line =~ s|, Erstausstrahlung$||;
@@ -359,7 +360,9 @@ sub ParseExtraInfo
       } elsif( ($productiondate) = ( $line =~ m|^[^,]+\s+(\d{4}),[^,]+$| ) ) {
         # country year, network
         $seengenre = 1;
-      } else {
+      } elsif( $line =~ m|^\(.*\)$| ) {
+        # it's the original title
+      }else {
         # then it must be the subtitle
         $$ce->{subtitle} = $line;
         next;
@@ -473,6 +476,7 @@ sub ParseExtraInfo
     }
 
     # strip dub, premiere
+    $line =~ s|,\s*,|,|g; # reduce two commas with nothing but whitespace between them to one comma
     $line =~ s|, Zweikanalton$||;
     $line =~ s|, Synchronfassung$||;
     $line =~ s|, Erstausstrahlung$||;
