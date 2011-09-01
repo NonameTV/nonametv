@@ -67,6 +67,7 @@ my @folders = qw(NonameTV-Data.Disney
 		 NonameTV-Data.Kanal10
 		 NonameTV-Data.TV5Monde
 		 NonameTV-Data.Motors
+		 NonameTV-Data.Svt
                  );
 
 # Flag messages AFTER they have been processed. Then I normally
@@ -244,6 +245,10 @@ sub guess_channel
 
  if( $dir =~ /Motors/ and $filename =~ /\.xls$/i ) {
      return "motorstv.com" if $filename =~ /^Cont\s*pgms\s*\b/i;
+ }
+
+ if( $dir =~ /Svt/ and $filename =~ /\.xml$/i ) {
+     return "dev.svt1.se" if $filename =~ /\s*SVT1\s*\b/i;
  }
 
    if( $dir =~ /FOX/ and $filename =~ /\.xls$/i ) {

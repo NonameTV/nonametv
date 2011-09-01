@@ -20,6 +20,10 @@ then
 
   # Move away old files  after 6 weeks
   tools/nonametv-filestore-moveold --all --leavedays 42
+
+  # remove Tvdb cache, updates seem to be broken at the moment
+  rm $NROOT/contentcache/Tvdb/tvdb.db
+
   exit
 fi
 
