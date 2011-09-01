@@ -1,9 +1,0 @@
-#!/usr/bin/perl -w
-
-use strict;
-
-use Net::Domain qw/hostname/;
-
-print hostname() . "\n";
-print time() . "\n";
-print scalar( localtime( time ) ) . "\n";
