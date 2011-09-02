@@ -3,6 +3,8 @@ package NonameTV::Augmenter;
 use strict;
 use warnings;
 
+use utf8;
+
 use NonameTV::Factory qw/CreateAugmenter/;
 use NonameTV::Log qw/d/;
 
@@ -279,7 +281,13 @@ sub AugmentBatch( @@ ) {
           # regexp?
           if( $_->{title} =~ m|^\^| ) {
             if( $ce->{title} =~ m|$_->{title}| ){
-              $score += 4;
+              if( $_->{title} eq '^.*$' ){
+                # TODO no points for wildcard! Maybe "NULL" title should
+                # be used instead (after all there are no programs without
+                # a title, so we can define that as wildcard)
+              } else {
+                $score += 4;
+              }
             } else {
               next;
             }
