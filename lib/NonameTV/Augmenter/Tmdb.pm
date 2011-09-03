@@ -152,9 +152,11 @@ sub AugmentProgram( $$$ ){
     }
 
     # filter characters that confuse the search api
+    # FIXME check again now that we encode umlauts & co.
     $searchTerm =~ s|[-#\?]||g;
 
-    my $apiresult = $self->{themoviedb}->Movie_search( $searchTerm );
+    # TODO fix upstream instead of working around here
+    my $apiresult = $self->{themoviedb}->Movie_search( encode( 'utf-8', $searchTerm ) );
 
     if( !$apiresult ) {
       return( undef, $self->{Type} . ' empty result xml, bug upstream site to fix it.' );
