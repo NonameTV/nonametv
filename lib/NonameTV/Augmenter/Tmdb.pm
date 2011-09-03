@@ -57,11 +57,14 @@ sub FillCredits( $$$$$ ) {
   my @nodes = $doc->findnodes( '/OpenSearchDescription/movies/movie/cast/person[@job=\'' . $job . '\']' );
   my @credits = ( );
   foreach my $node ( @nodes ) {
+    my $name = $node->findvalue( './@name' );
     if( $job eq 'Actor' ) {
-      push( @credits, $node->findvalue( './@name' ) . ' (' . $node->findvalue( './@character' ) . ')' );
-    } else {
-      push( @credits, $node->findvalue( './@name' ) );
+      my $role = $node->findvalue( './@character' );
+      if( $role ) {
+        $name .= ' (' . $role . ')';
+      }
     }
+    push( @credits, $name );
   }
   if( @credits ) {
     $resultref->{$credit} = join( ', ', @credits );
