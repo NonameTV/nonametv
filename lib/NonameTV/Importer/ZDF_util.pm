@@ -78,7 +78,7 @@ sub ParseData
       # use for automated processing
       if ($episodetitle) {
         $episodetitle = clean_untertitel ($ds, \%sce, $episodetitle);
-        if ($episodetitle) {
+        if ($episodetitle and ($title ne "nachtstudio")) {
           $sce{subtitle} = norm($episodetitle);
         }
       }
