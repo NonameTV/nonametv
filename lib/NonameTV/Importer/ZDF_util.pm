@@ -97,6 +97,7 @@ sub ParseData
 
     # episode number
     my $episodenr = $sc->findvalue( './programm//folgenr' );
+    #my $episodecount = $sc->findvalue( './programm//stafonr' );
 
     # genre
     my $genre = $sc->findvalue( './programm//progart' );
@@ -138,7 +139,11 @@ sub ParseData
 
     # episode number
     if( $episodenr ){
-      $sce{episode} = ". " . ($episodenr-1) . " .";
+      if( !$sce{episode} ){
+        $sce{episode} = ". " . ($episodenr-1) . " .";
+      } else {
+        d( 'episode number from element is .' . ($episodenr-1) . '. but we already got ' . $sce{episode} );
+      }
     }
 
 
@@ -575,6 +580,7 @@ sub clean_untertitel
   d( 'no match (or fall-through) for subtitle: ' . $subtitle );
 
   # possible false positives / more data
+  # Fünfteilige Doku-Reihe von Michaela Hummel und Meike Materne
   # Film von und mit Axel Bulthaupt
   # Film Otmar Penker und Klaus Feichtenberger
   # Kriminalserie von Herbert Reinecker
