@@ -5,8 +5,8 @@ getmail -q --rcfile=/home/beatx/.getmail/xmltv.rc --getmaildir=/home/beatx/maild
 getmail -q --rcfile=/home/beatx/.getmail/natgeo.rc --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
 getmail -q --rcfile=/home/beatx/.getmail/travel.rc --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
 getmail -q --rcfile=/home/beatx/.getmail/disney.rc --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
-getmail -q --rcfile=/home/beatx/.getmail/poker.rc --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
-getmail -q --rcfile=/home/beatx/.getmail/ngcwild.rc --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
+#getmail -q --rcfile=/home/beatx/.getmail/poker.rc --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
+#getmail -q --rcfile=/home/beatx/.getmail/ngcwild.rc --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
 
 # Parse it
 /home/beatx/github/nonametv/tools/se-tvzon/nonametv-filter-mail

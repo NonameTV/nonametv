@@ -1,6 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
+use warnings;
 
 use FindBin;
 use lib "$FindBin::Bin/../../lib";
@@ -216,8 +217,7 @@ sub guess_channel
 
    if( $dir =~ /Turner/ ) {
 	return "cartoonnetwork.se" if $filename =~ /^cn\s+nordic\s+\(swe\)\s*\b/i;
-	return "boomerangtv.se" if $filename =~ /^boomerang\s+nordic\s'\(swe\)\s*\b/i;
-#	return "tcmeurope.com" if $filename =~ /^tcm\s*nordic\s*.xls\b/i;
+	return "boomerangtv.se" if $filename =~ /^boomerang\s+nordic\s+\(swe\)\s*\b/i;
 	return "tcmeurope.com" if $type =~ /application\/vnd.ms-excel/ and $filename =~ /tcm\s*nordic\s*/i;
 	return "cnn.com" if $filename =~ /^cnn\s*\b/i;
   }
@@ -247,20 +247,17 @@ sub guess_channel
      return "motorstv.com" if $filename =~ /^Cont\s*pgms\s*\b/i;
  }
 
- if( $dir =~ /Svt/ and $filename =~ /\.xml$/i ) {
-     return "dev.svt1.se" if $filename =~ /\s*SVT1\s*\b/i;
+ if( $dir =~ /Svt/ ) {
+ 		 if( $filename =~ /svt1/i ) {
+	   #  return "dev.svt1.se";
+		 }
  }
-
-   if( $dir =~ /FOX/ and $filename =~ /\.xls$/i ) {
-     return "wildhd.natgeo.se" if $filename =~ /^schedule\s*\b/i;
- }
-
    if( $dir =~ /TravelChannel/ and $filename =~ /\.xls$/i ) {
      return "travelchanneltv.se" if $filename =~ /^epg\s*\b/i;
  }
 
    if( $dir =~ /PokerChannel/ and $filename =~ /\.xls$/i ) {
-     return "pokerchanneleurope.com" if $filename =~ /^g\s*\b/i;
+     return "pokerchanneleurope.com" if $filename =~ /^\s*\b/i;
  }
 
   return undef;

@@ -1,6 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
+use warnings;
 
 use FindBin;
 use lib "$FindBin::Bin/../../lib";
@@ -92,7 +93,7 @@ foreach my $msg ($infolder->messages) {
     MoveMessage( $msg, "Turner" );
   }
   elsif( $fromaddr =~ /\@tvzon.se/i ) {
-    MoveMessage( $msg, "Turner" );
+    MoveMessage( $msg, "Svt" );
   }
   elsif( $fromaddr =~ /\@espnamerica.com/i ) {
     MoveMessage( $msg, "ESPN" );

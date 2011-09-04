@@ -29,5 +29,6 @@ $NONAMETV TVNorge $1 $2 $3
 $NONAMETV ZDF $1 $2 $3
 $NONAMETV ZoneReality $1 $2 $3
 
-
+# This isnt really working, it airs
+# programmes at the same time sometimes.
 $NONAMETV Unibet $1 $2 $3
