@@ -93,6 +93,9 @@ sub ParseCast( $$ ) {
     $result = undef;
   }
 
+	# Maybe a other way to do this?
+	$result = $self->CheckUTF8Twice( $result );
+
   return( $result );
 }
 
@@ -104,7 +107,7 @@ sub FillHash( $$$$ ) {
 
   my $episodeid = $series->{Seasons}[$episode->{SeasonNumber}][$episode->{EpisodeNumber}];
 
-  $resultref->{title} = norm( $series->{SeriesName} ) if !$self->{NoTitle};
+  $resultref->{title} = norm( $self->CheckUTF8Twice( $series->{SeriesName} ) ) if !$self->{NoTitle};
 
   if( $episode->{SeasonNumber} == 0 ){
     # it's a special
@@ -113,7 +116,7 @@ sub FillHash( $$$$ ) {
     $resultref->{episode} = ($episode->{SeasonNumber} - 1) . ' . ' . ($episode->{EpisodeNumber} - 1) . ' .';
   }
 
-  $resultref->{subtitle} = norm( $episode->{EpisodeName} );
+  $resultref->{subtitle} = norm( $self->CheckUTF8Twice( $episode->{EpisodeName} ) );
 
 # TODO skip the Overview for now, it falls back to english in a way we can not detect
 #  if( defined( $episode->{Overview} ) ) {
@@ -185,6 +188,9 @@ sub FillHash( $$$$ ) {
     }
     @genres = grep{ defined } @genres;
     foreach my $genre ( @genres ){
+    	# Check if its double utf8 encoded.
+    	$genre = $self->CheckUTF8Twice( $genre );
+    	
       my ( $program_type, $categ ) = $self->{datastore}->LookupCat( "Tvdb", $genre );
       # set category, unless category is already set!
       AddCategory( $resultref, undef, $categ );
@@ -329,5 +335,22 @@ sub AugmentProgram( $$$ ){
   return( $resultref, $result );
 }
 
+# Sometimes tvdb UTF8 encodes texts twice. Lets fix that.
+sub CheckUTF8Twice {
+	my( $text ) = @_;
+	
+	# Decode it
+	my $text2 = utf8::decode($text);
+	
+	# Is the decoded still utf-8?
+	if(utf8::is_utf8($text2)) {
+		w( "text was double utf-8 encoded, it is fixed." );
+		# return the decoded text
+		return $text2;
+	}
+	
+	# If not still utf-8 return the original.
+	return $text;
+}
 
 1;
