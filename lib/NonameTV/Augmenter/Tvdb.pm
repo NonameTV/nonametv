@@ -51,6 +51,16 @@ sub new {
     if( !defined( $self->{MinRatingCount} ) ){
       $self->{MinRatingCount} = 10;
     }
+    
+    # don't add any credits.
+    if( !defined( $self->{NoCredits} ) ){
+      $self->{NoCredits} = 0;
+    }
+    
+    # don't change title
+    if( !defined( $self->{NoTitle} ) ){
+      $self->{NoTitle} = 0;
+    }
 
     my $opt = { quiet => 1 };
     Debug::Simple::debuglevels($opt);
@@ -94,7 +104,7 @@ sub FillHash( $$$$ ) {
 
   my $episodeid = $series->{Seasons}[$episode->{SeasonNumber}][$episode->{EpisodeNumber}];
 
-  $resultref->{title} = norm( $series->{SeriesName} );
+  $resultref->{title} = norm( $series->{SeriesName} ) if !$self->{NoTitle};
 
   if( $episode->{SeasonNumber} == 0 ){
     # it's a special
@@ -147,19 +157,22 @@ sub FillHash( $$$$ ) {
     }
   }
   @actors = grep{ defined } @actors;
-  if( @actors ) {
-    # replace programme's actors
-    $resultref->{actors} = join( ', ', @actors );
-  } else {
-    # remove existing actors from programme
-    $resultref->{actors} = undef;
-  }
+  
+  # don't add actors if NoCredits is true
+	if(!$self->{NoCredits}) {
+  	if( @actors ) {
+  	  # replace programme's actors
+	    $resultref->{actors} = join( ', ', @actors );
+	  } else {
+	    # remove existing actors from programme
+	    $resultref->{actors} = undef;
+	  }
 
-  $resultref->{directors} = $self->ParseCast( $episode->{Director} );
-  $resultref->{writers} = $self->ParseCast( $episode->{Writer} );
+	  $resultref->{directors} = $self->ParseCast( $episode->{Director} );
+	  $resultref->{writers} = $self->ParseCast( $episode->{Writer} );
+	}
 
   $resultref->{program_type} = 'series';  
-
   # Genre
   if( $series->{Genre} ){
     # notice, Genre is ordered by some internal order, not by importance!

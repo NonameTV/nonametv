@@ -37,6 +37,16 @@ sub new {
       $self->{OnlyAugmentFacts} = 0;
     }
 
+    # don't add any credits.
+    if( !defined( $self->{NoCredits} ) ){
+      $self->{NoCredits} = 0;
+    }
+    
+    # don't change title
+    if( !defined( $self->{NoTitle} ) ){
+      $self->{NoTitle} = 0;
+    }
+
     # need config for main content cache path
     my $conf = ReadConfig( );
 
@@ -83,7 +93,7 @@ sub FillHash( $$$ ) {
   # FIXME shall we use the alternative name if that's what was in the guide???
   # on one hand the augmenters are here to unify various styles on the other
   # hand matching the other guides means less surprise for the users
-  $resultref->{title} = norm( $doc->findvalue( '/OpenSearchDescription/movies/movie/name' ) );
+  $resultref->{title} = norm( $doc->findvalue( '/OpenSearchDescription/movies/movie/name' ) ) if !$self->{NoTitle};
 
   # TODO shall we add the tagline as subtitle?
   $resultref->{subtitle} = undef;
@@ -117,16 +127,19 @@ sub FillHash( $$$ ) {
   # $resultref->{production_date} = $doc->findvalue( '/OpenSearchDescription/movies/movie/released' );
 
   $resultref->{url} = $doc->findvalue( '/OpenSearchDescription/movies/movie/url' );
+	
+	# don't add actors if NoCredits is true
+	if(!$self->{NoCredits}) {
+  	$self->FillCredits( $resultref, 'actors', $doc, 'Actor');
 
-  $self->FillCredits( $resultref, 'actors', $doc, 'Actor');
-
-#  $self->FillCredits( $resultref, 'adapters', $doc, 'Actors');
-#  $self->FillCredits( $resultref, 'commentators', $doc, 'Actors');
-  $self->FillCredits( $resultref, 'directors', $doc, 'Director');
-#  $self->FillCredits( $resultref, 'guests', $doc, 'Actors');
-#  $self->FillCredits( $resultref, 'presenters', $doc, 'Actors');
-  $self->FillCredits( $resultref, 'producers', $doc, 'Producer');
-  $self->FillCredits( $resultref, 'writers', $doc, 'Screenplay');
+#	  $self->FillCredits( $resultref, 'adapters', $doc, 'Actors');
+#  	$self->FillCredits( $resultref, 'commentators', $doc, 'Actors');
+  	$self->FillCredits( $resultref, 'directors', $doc, 'Director');
+#  	$self->FillCredits( $resultref, 'guests', $doc, 'Actors');
+#  	$self->FillCredits( $resultref, 'presenters', $doc, 'Actors');
+  	$self->FillCredits( $resultref, 'producers', $doc, 'Producer');
+  	$self->FillCredits( $resultref, 'writers', $doc, 'Screenplay');
+  }
 
 #  print STDERR Dumper( $apiresult );
 }
