@@ -84,9 +84,9 @@ sub ParseData
       }
 
     # the subtitle, parse known good information and ignore the rest
-    my $subtitle = $sc->findnodes( './programm//untertitel' );
-    foreach my $st ($subtitle->get_nodelist) {
-      clean_untertitel( $ds, \%sce, $st->string_value() );
+    my $subtitles = $sc->findnodes( './programm//untertitel' );
+    foreach my $subtitle ($subtitles->get_nodelist) {
+      clean_untertitel( $ds, \%sce, $subtitle->string_value() );
     }
 
     # additional information, parse known good information and ignore the rest
@@ -514,7 +514,11 @@ sub clean_untertitel
 
     AddCredits( $sce, 'producers', @producers );
 
-    return $subtitle;
+#    fall-through to capture episode number from subtitle, too.
+#    return $subtitle;
+    if( !defined( $subtitle) ) {
+      return $subtitle;
+    }
   }
 
   # ZDF Infokanal appends presenters to the episode title
@@ -534,11 +538,16 @@ sub clean_untertitel
 
     AddCredits( $sce, 'presenters', @presenters);
 
-    return $subtitle;
+#    fall-through to capture episode number from subtitle, too.
+#    return $subtitle;
+    if( !defined( $subtitle) ) {
+      return $subtitle;
+    }
   }
 
   # ZDF.kultur puts the episode number in front of the episode title
-  if( $ds->{currbatch} =~ m|^kultur\.| ){
+  # ZDFinfokanal, too
+  if( $ds->{currbatchname} =~ m/^(?:infokanal|kultur)\./ ){
     if( $subtitle =~ m|^\d+\.\s+.*$| ){
       d( 'parsing episode number from subtitle: ' . $subtitle );
       my( $episodenr, $title )=( $subtitle =~ m|^(\d+)\.\s+(.*)$| );
@@ -548,6 +557,22 @@ sub clean_untertitel
       return $title;
     }
   }
+
+  # ZDFinfokanal puts the presenter at the end of the subtitle (if it's Guido Knopp's ZDF-History)
+  if( $ds->{currbatchname} =~ m/^(?:infokanal)\./ ){
+    if ($subtitle =~ m|\s+mit (?:Guido Knopp)$|) {
+      d( 'parsing presenters from subtitle: ' . $subtitle );
+      my ($presenter) = ($subtitle =~ m|\s+mit (Guido Knopp)$|);
+      my @presenters = split( ',\s*', $presenter );
+      AddCredits( $sce, 'presenters', @presenters);
+      $subtitle =~ s|\s+mit (?:Guido Knopp)$||;
+      if( $subtitle eq '' ) {
+        return undef;
+      }
+    }
+  }
+
+  d( 'no match (or fall-through) for subtitle: ' . $subtitle );
 
   # possible false positives / more data
   # Film von und mit Axel Bulthaupt
