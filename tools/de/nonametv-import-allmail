@@ -1,5 +1,5 @@
 #!/bin/sh
 
 tools/nonametv-import Tele5 $1 $2 $3
-tools/nonametv-import ZDFinfo $1 $2 $3
+#tools/nonametv-import ZDFinfo $1 $2 $3
 
