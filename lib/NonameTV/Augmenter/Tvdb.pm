@@ -131,7 +131,7 @@ sub FillHash( $$$$ ) {
 
   my @actors = ();
   # only add series actors if its not a special
-  if( $episode->{SeasonNumber} > 0 ){
+  if( $episode->{SeasonNumber} != 0 ){
     if( $series->{Actors} ) {
       push( @actors, split( '\|', $series->{Actors} ) );
     }
@@ -162,19 +162,23 @@ sub FillHash( $$$$ ) {
 
   # Genre
   if( $series->{Genre} ){
-    # notice, Genre is ordered by some internal order, not by importance!
-    my @genres = split( '\|', $series->{Genre} );
-    foreach( @genres ){
-      $_ = norm( $_ );
-      if( $_ eq '' ){
-        $_ = undef;
+    if( $episode->{SeasonNumber} != 0 ){
+      # notice, Genre is ordered by some internal order, not by importance!
+      my @genres = split( '\|', $series->{Genre} );
+      foreach( @genres ){
+        $_ = norm( $_ );
+        if( $_ eq '' ){
+          $_ = undef;
+        }
       }
-    }
-    @genres = grep{ defined } @genres;
-    foreach my $genre ( @genres ){
-      my ( $program_type, $categ ) = $self->{datastore}->LookupCat( "Tvdb", $genre );
-      # set category, unless category is already set!
-      AddCategory( $resultref, undef, $categ );
+      @genres = grep{ defined } @genres;
+      foreach my $genre ( @genres ){
+        my ( $program_type, $categ ) = $self->{datastore}->LookupCat( "Tvdb", $genre );
+        # set category, unless category is already set!
+        AddCategory( $resultref, undef, $categ );
+      }
+    } else {
+      $resultref->{category} = 'Special';
     }
   }
 
