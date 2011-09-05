@@ -61,7 +61,12 @@ sub FillCredits( $$$$$ ) {
     if( $job eq 'Actor' ) {
       my $role = $node->findvalue( './@character' );
       if( $role ) {
-        $name .= ' (' . $role . ')';
+        # skip roles like '-'
+        if( length( $role ) > 1 ){
+          $name .= ' (' . $role . ')';
+        } else {
+          w( 'Unlikely role \'' . $role . '\' for actor. Fix it at ' . $resultref->{url} . '/cast/edit_cast' );
+        }
       }
     }
     push( @credits, $name );
