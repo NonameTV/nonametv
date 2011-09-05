@@ -111,6 +111,9 @@ BEGIN {
   # Flush the logfile to disk for each write.
   $logfile->autoflush( 1 );
 
+  # write the log in a specific encoding
+  $logfile->binmode( ":utf8" );
+
   # Turn all "warn" statements into w():s.
   $SIG{'__WARN__'} = \&mywarn;
 }
