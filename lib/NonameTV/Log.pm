@@ -100,6 +100,7 @@ BEGIN {
   # Set STDOUT to use utf8 encoding. This avoids "Wide character in print"
   # warnings.
   binmode STDOUT, ":encoding(UTF8)";
+  binmode STDERR, ":encoding(UTF8)";
   
   my $conf = ReadConfig();
 
@@ -112,7 +113,7 @@ BEGIN {
   $logfile->autoflush( 1 );
 
   # write the log in a specific encoding
-  $logfile->binmode( ":utf8" );
+  $logfile->binmode( ":encoding(UTF-8)" );
 
   # Turn all "warn" statements into w():s.
   $SIG{'__WARN__'} = \&mywarn;
