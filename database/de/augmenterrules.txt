@@ -102,7 +102,21 @@
 48,Fixups,"^(Kreuz & Quer):\s+(.*)$",\N,\N,\N,splittitle
 48,Fixups,"^(JazzBaltica 2010):\s+(.*)$",\N,\N,\N,splittitle
 48,Fixups,^(Mädchengeschichten):\s+(.*)$,\N,\N,\N,splittitle
-65,Fixups,^(hitec):\s+(.*)$,\N,\N,\N,splittitle
-65,Fixups,\N,description,\N,\N,copylastdetails
+102,Fixups,^(hitec):\s+(.*)$,\N,\N,\N,splittitle
 48,Fixups,"^(Wilder Planet):\s+(.*)$",\N,\N,\N,splittitle
-84,Fixups,"Ein Leben daneben",subtitle,^(\d+)\.\s+(.*)$,\N,splitepisodenumtitle
+73,Fixups,Eisenbahn-Romantik,subtitle,"Bahnmuseum Darmstadt-Kranichstein","Eisenbahnmuseum Darmstadt-Kranichstein",replacesubtitle
+73,Fixups,Eisenbahn-Romantik,subtitle,"Usedomer Bäderbahn","Usedomer Bäderbahn - die Geschichte einer Inselbahn",replacesubtitle
+73,Fixups,Eisenbahn-Romantik,subtitle,"El Tren al la Tica - Zugabenteuer in Costa Rica","El Tren a la Tica - Bahnabenteuer in Costa Rica",replacesubtitle
+73,Fixups,Eisenbahn-Romantik,subtitle,"Harzdampf auf neuer Spur","Harzdampf auf neuer Strecke",replacesubtitle
+58,Fixups,"amazing planet",subtitle,^(\d+)\.\s+(.*)$,\N,splitepisodenumtitle
+39,Fixups,"^(Heißer Verdacht)\s+-\s+(.*)$",\N,\N,\N,splittitle
+38,Fixups,"Die kulinarischen Abenteuer der Sarah Wiener in Österreich",\N,\N,"Die kulinarischen Abenteuer der Sarah Wiener",replacetitle
+38,Tvdb,^.*$,program_type,series,\N,episodetitle
+38,Fixups,"^(Mein Leben)\s+-\s+(.*)$",\N,\N,\N,splittitle
+48,Fixups,"^(Mein Leben):\s+(.*)$",\N,\N,\N,splittitle
+84,Fixups,^(Mädchengeschichten):\s+(.*)$,\N,\N,\N,splittitle
+39,Tmdb,^.*$,episode,\N,\N,title
+102,Fixups,\N,description,\N,\N,copylastdetails
+84,Fixups,"Volker Pispers und Gäste LIVE",\N,\N,"Volker Pispers und Gäste",replacetitle
+\N,Fixups,"^((Pan Tau)\s+.*)$",\N,\N,\N,splittitlereverse
+\N,Fixups,"^(Inga Lindström):\s+(.*)$",\N,\N,\N,splittitle

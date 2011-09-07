@@ -3,6 +3,7 @@ Arte_genre,dokumentarfilmreihe,Documentary,series
 Arte_genre,dokumentation,Documentary,
 Arte_genre,dokumentationsreihe,Documentary,series
 Arte_genre,fernsehfilm,,movie
+Arte_genre,fernsehserie,,series
 Arte_genre,musik,Music,
 Arte_genre,nachrichten,,news
 Arte_genre,reportage,Documentary,
