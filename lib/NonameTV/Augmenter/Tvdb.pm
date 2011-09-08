@@ -51,16 +51,6 @@ sub new {
     if( !defined( $self->{MinRatingCount} ) ){
       $self->{MinRatingCount} = 10;
     }
-    
-    # don't add any credits.
-    if( !defined( $self->{NoCredits} ) ){
-      $self->{NoCredits} = 0;
-    }
-    
-    # don't change title
-    if( !defined( $self->{NoTitle} ) ){
-      $self->{NoTitle} = 0;
-    }
 
     my $opt = { quiet => 1 };
     Debug::Simple::debuglevels($opt);
@@ -93,9 +83,6 @@ sub ParseCast( $$ ) {
     $result = undef;
   }
 
-	# Maybe a other way to do this?
-	$result = $self->CheckUTF8Twice( $result );
-
   return( $result );
 }
 
@@ -107,7 +94,7 @@ sub FillHash( $$$$ ) {
 
   my $episodeid = $series->{Seasons}[$episode->{SeasonNumber}][$episode->{EpisodeNumber}];
 
-  $resultref->{title} = norm( $self->CheckUTF8Twice( $series->{SeriesName} ) ) if !$self->{NoTitle};
+  $resultref->{title} = norm( $series->{SeriesName} );
 
   if( $episode->{SeasonNumber} == 0 ){
     # it's a special
@@ -116,7 +103,7 @@ sub FillHash( $$$$ ) {
     $resultref->{episode} = ($episode->{SeasonNumber} - 1) . ' . ' . ($episode->{EpisodeNumber} - 1) . ' .';
   }
 
-  $resultref->{subtitle} = norm( $self->CheckUTF8Twice( $episode->{EpisodeName} ) );
+  $resultref->{subtitle} = norm( $episode->{EpisodeName} );
 
 # TODO skip the Overview for now, it falls back to english in a way we can not detect
 #  if( defined( $episode->{Overview} ) ) {
@@ -161,19 +148,16 @@ sub FillHash( $$$$ ) {
   }
   @actors = grep{ defined } @actors;
   
-  # don't add actors if NoCredits is true
-	if(!$self->{NoCredits}) {
-  	if( @actors ) {
+  if( @actors ) {
   	  # replace programme's actors
-	    $resultref->{actors} = join( ', ', @actors );
-	  } else {
-	    # remove existing actors from programme
-	    $resultref->{actors} = undef;
-	  }
+	  $resultref->{actors} = join( ', ', @actors );
+	} else {
+	  # remove existing actors from programme
+	  $resultref->{actors} = undef;
+  }
 
-	  $resultref->{directors} = $self->ParseCast( $episode->{Director} );
-	  $resultref->{writers} = $self->ParseCast( $episode->{Writer} );
-	}
+	$resultref->{directors} = $self->ParseCast( $episode->{Director} );
+	$resultref->{writers} = $self->ParseCast( $episode->{Writer} );
 
   $resultref->{program_type} = 'series';  
   # Genre
@@ -188,9 +172,6 @@ sub FillHash( $$$$ ) {
     }
     @genres = grep{ defined } @genres;
     foreach my $genre ( @genres ){
-    	# Check if its double utf8 encoded.
-    	$genre = $self->CheckUTF8Twice( $genre );
-    	
       my ( $program_type, $categ ) = $self->{datastore}->LookupCat( "Tvdb", $genre );
       # set category, unless category is already set!
       AddCategory( $resultref, undef, $categ );
@@ -333,24 +314,6 @@ sub AugmentProgram( $$$ ){
   }
 
   return( $resultref, $result );
-}
-
-# Sometimes tvdb UTF8 encodes texts twice. Lets fix that.
-sub CheckUTF8Twice {
-	my( $text ) = @_;
-	
-	# Decode it
-	my $text2 = utf8::decode($text);
-	
-	# Is the decoded still utf-8?
-	if(utf8::is_utf8($text2)) {
-		w( "text was double utf-8 encoded, it is fixed." );
-		# return the decoded text
-		return $text2;
-	}
-	
-	# If not still utf-8 return the original.
-	return $text;
 }
 
 1;
