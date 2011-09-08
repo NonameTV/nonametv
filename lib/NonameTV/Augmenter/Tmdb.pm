@@ -57,11 +57,19 @@ sub FillCredits( $$$$$ ) {
   my @nodes = $doc->findnodes( '/OpenSearchDescription/movies/movie/cast/person[@job=\'' . $job . '\']' );
   my @credits = ( );
   foreach my $node ( @nodes ) {
+    my $name = $node->findvalue( './@name' );
     if( $job eq 'Actor' ) {
-      push( @credits, $node->findvalue( './@name' ) . ' (' . $node->findvalue( './@character' ) . ')' );
-    } else {
-      push( @credits, $node->findvalue( './@name' ) );
+      my $role = $node->findvalue( './@character' );
+      if( $role ) {
+        # skip roles like '-'
+        if( length( $role ) > 1 ){
+          $name .= ' (' . $role . ')';
+        } else {
+          w( 'Unlikely role \'' . $role . '\' for actor. Fix it at ' . $resultref->{url} . '/cast/edit_cast' );
+        }
+      }
     }
+    push( @credits, $name );
   }
   if( @credits ) {
     $resultref->{$credit} = join( ', ', @credits );
@@ -152,9 +160,11 @@ sub AugmentProgram( $$$ ){
     }
 
     # filter characters that confuse the search api
+    # FIXME check again now that we encode umlauts & co.
     $searchTerm =~ s|[-#\?]||g;
 
-    my $apiresult = $self->{themoviedb}->Movie_search( $searchTerm );
+    # TODO fix upstream instead of working around here
+    my $apiresult = $self->{themoviedb}->Movie_search( encode( 'utf-8', $searchTerm ) );
 
     if( !$apiresult ) {
       return( undef, $self->{Type} . ' empty result xml, bug upstream site to fix it.' );

@@ -32,7 +32,7 @@ $NONAMETV RadioXDE $1 $2 $3
 $NONAMETV TechnoBaseFM $1 $2 $3
 #$NONAMETV Tele5 $1 $2 $3
 $NONAMETV ZDF $1 $2 $3
-#$NONAMETV ZDFinfo $1 $2 $3
+$NONAMETV ZDFinfo_http $1 $2 $3
 $NONAMETV ZDFkultur $1 $2 $3
 $NONAMETV ZDFneo $1 $2 $3
 
