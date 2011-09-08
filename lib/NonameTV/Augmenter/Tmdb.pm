@@ -151,7 +151,10 @@ sub AugmentProgram( $$$ ){
   # result string, empty/false for success, message/true for failure
   my $result = '';
 
-  if( $ruleref->{matchby} eq 'title' ) {
+  if( $ceref->{url} && $ceref->{url} =~ m|^http://www\.themoviedb\.org/movie/\d+$| ) {
+    $result = "programme is already linked to themoviedb.org, ignoring";
+    $resultref = undef;
+  } elsif( $ruleref->{matchby} eq 'title' ) {
     # search by title and year (if present)
 
     my $searchTerm = $ceref->{title};
