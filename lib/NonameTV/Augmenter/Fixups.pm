@@ -75,6 +75,17 @@ sub AugmentProgram( $$$ ){
       }
     }
     $resultref->{program_type} = 'series';
+  }elsif( $ruleref->{matchby} eq 'splittitlereverse' ) {
+    my( $episodetitle, $title )=( $ceref->{title} =~ m|$ruleref->{title}| );
+    $resultref->{'title'} = $title;
+    $resultref->{'subtitle'} = $episodetitle;
+    if( $ceref->{'subtitle'} ) {
+      $resultref->{'description'} = $ceref->{'subtitle'};
+      if( $ceref->{'description'} ){
+        $resultref->{'description'} .= "\n" . $ceref->{'description'};
+      }
+    }
+    $resultref->{program_type} = 'series';
   }elsif( $ruleref->{matchby} eq 'setseason' ) {
   	# Used like:
   	# title: Jersey Shoe 2

@@ -61,8 +61,8 @@ sub FillCredits( $$$$$ ) {
     if( $job eq 'Actor' ) {
       my $role = $node->findvalue( './@character' );
       if( $role ) {
-        # skip roles like '-'
-        if( length( $role ) > 1 ){
+        # skip roles like '-', but allow roles like G, M, Q (The Guru, James Bond)
+        if( ( length( $role ) > 1 )||( $role =~ m|^[A-Z]$| ) ){
           $name .= ' (' . $role . ')';
         } else {
           w( 'Unlikely role \'' . $role . '\' for actor. Fix it at ' . $resultref->{url} . '/cast/edit_cast' );
@@ -110,7 +110,10 @@ sub FillHash( $$$ ) {
   
   # MPAA - G, PG, PG-13, R, NC-17 - No rating is: NR or Unrated
   if(defined($doc->findvalue( '/OpenSearchDescription/movies/movie/certification' ) )) {
-  	$resultref->{rating} = norm( $doc->findvalue( '/OpenSearchDescription/movies/movie/certification' ) );
+    my $rating = norm( $doc->findvalue( '/OpenSearchDescription/movies/movie/certification' ) );
+    if( $rating ne '0' ) {
+      $resultref->{rating} = $rating;
+    }
   }
   
   # No description when adding? Add the description from themoviedb
@@ -148,7 +151,10 @@ sub AugmentProgram( $$$ ){
   # result string, empty/false for success, message/true for failure
   my $result = '';
 
-  if( $ruleref->{matchby} eq 'title' ) {
+  if( $ceref->{url} && $ceref->{url} =~ m|^http://www\.themoviedb\.org/movie/\d+$| ) {
+    $result = "programme is already linked to themoviedb.org, ignoring";
+    $resultref = undef;
+  } elsif( $ruleref->{matchby} eq 'title' ) {
     # search by title and year (if present)
 
     my $searchTerm = $ceref->{title};
