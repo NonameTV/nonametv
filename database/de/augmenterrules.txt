@@ -52,21 +52,21 @@
 57,Fixups,"^ZDF WM extra\s+(.*)$",category,documentary,\N,splittitle
 57,Fixups,"^(ZDF WM extra)\s+(.*)$",\N,\N,\N,splittitle
 39,Fixups,\N,description,\N,\N,copylastdetails
-39,Fixups,"^(Jackie Chan):\s+(.*)$",program_type,movie,\N,splitstartitle
+39,Fixups,"^(Jackie Chan):\s+(.*)$",\N,\N,\N,splitstartitle
 48,Fixups,neues,subtitle,^Them(?:a|en):\s+(.*)$,\N,splitsubtitle
 38,Fixups,"^(Zu Tisch (?:auf|in|im) \.\.\.)\s+(.*)$",\N,\N,\N,splittitle
 38,Fixups,"Zu Tisch auf ...",\N,\N,"Zu Tisch in ...",replacetitle
 38,Fixups,"Zu Tisch im ...",\N,\N,"Zu Tisch in ...",replacetitle
 39,Fixups,"Star Trek - Das nächste Jahrhundert",program_type,series,"Raumschiff Enterprise - Das nächste Jahrhundert",replacetitle
 39,Fixups,Smallville,subtitle,"Small)willenlos (Spirit",(Small)willenlos,replacesubtitle
-39,Fixups,"^(Charles Bronson):\s+(.*)$",program_type,movie,\N,splitstartitle
+39,Fixups,"^(Charles Bronson):\s+(.*)$",\N,\N,\N,splitstartitle
 39,Fixups,Smallville,subtitle,"Der Anfang","Der Anfang...",replacesubtitle
 39,Fixups,Highlander,subtitle,"Der König vom Amazonas (Saving Grace","Der König vom Amazonas",replacesubtitle
 48,Fixups,"^(Deutschland, deine Künstler):\s+(.*)$",\N,\N,\N,splittitle
 57,Fixups,"^(An einem Tag in Duisburg) (Todesfalle Loveparade)$",\N,\N,\N,splittitle
 58,Tvdb,"Unter anderen Umständen",\N,\N,\N,episodetitle
-39,Fixups,"^(Michael Dudikoff):\s+(.*)$",program_type,movie,\N,splitstartitle
-39,Fixups,"^(Chuck Norris):\s+(.*)$",program_type,movie,\N,splitstartitle
+39,Fixups,"^(Michael Dudikoff):\s+(.*)$",\N,\N,\N,splitstartitle
+39,Fixups,"^(Chuck Norris):\s+(.*)$",\N,\N,\N,splitstartitle
 98,Tvdb,"Steven Spielberg präsentiert TAKEN",\N,\N,78224,episodetitle
 \N,Fixups,"^(Commissario Laurenti)\s+-\s+(.*)$",\N,\N,\N,splittitle
 48,Tvdb,^.*$,program_type,series,\N,episodetitle
@@ -120,3 +120,4 @@
 84,Fixups,"Volker Pispers und Gäste LIVE",\N,\N,"Volker Pispers und Gäste",replacetitle
 \N,Fixups,"^((Pan Tau)\s+.*)$",\N,\N,\N,splittitlereverse
 \N,Fixups,"^(Inga Lindström):\s+(.*)$",\N,\N,\N,splittitle
+39,Tmdb,Powerman,\N,\N,11205,movieid
