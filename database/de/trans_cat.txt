@@ -88,38 +88,60 @@ ORF,dokumentation,Documentary,
 ORF,"dokumentation in fünf teilen",Documentary,
 ORF,drama,Drama,
 ORF,familienserie,,series
+ORF,fantasyfilm,,movie
 ORF,fernsehfilm,,movie
 ORF,fernsehkomödie,Comedy,
 ORF,fernsehkrimi,Crime,
 ORF,fernsehserie,,series
 ORF,heimatfilm,,movie
 ORF,jugendserie,,series
+ORF,katastrophenfilm,,movie
+ORF,kinderfilm,,movie
 ORF,komödie,Comedy,
 ORF,krimikomödie,Crime,
 ORF,kriminalfilm,Crime,movie
 ORF,kriminalserie,Crime,series
 ORF,krimiserie,Crime,series
+ORF,kurzfilm,,movie
+ORF,märchenfilm,,movie
 ORF,"medical daily",,series
 ORF,mysteryserie,Mystery,series
 ORF,porträt,Documentary,
 ORF,science-fiction-film,SciFi,movie
 ORF,serie,,series
+ORF,"serie (krimi / thriller)",Crime,
 ORF,spielfilm,,movie
+ORF,"spielfilm (jugendfilm)",,movie
+ORF,"spielfilm (komödie)",,movie
+ORF,"spielfilm (musikfilm)",,movie
+ORF,"spielfilm (romanze)",,movie
 ORF,telenovela,,series
 ORF,unterhaltungsserie,,series
 ORF,zeichentrickfilm,,movie
 ORF,zeichentrickserie,,series
 SRF,"kinder / jugend",kids,
 SRF,nachrichten,news,
+SRF,"serie (krimi / thriller)",Crime,
+SRF,spielfilm,,movie
 SRF,"spielfilm (action / adventure)",,movie
+SRF,"spielfilm (alter schweizerfilm)",,movie
+SRF,"spielfilm (animationsfilm)",,movie
 SRF,"spielfilm (dokumentarfilm)",documentary,movie
 SRF,"spielfilm (drama)",,movie
 SRF,"spielfilm (experimentalfilm)",,movie
+SRF,"spielfilm (heimatfilm)",,movie
 SRF,"spielfilm (horrorfilm)",,movie
+SRF,"spielfilm (jugendfilm)",,movie
+SRF,"spielfilm (klamauk)",,movie
+SRF,"spielfilm (komã¶die)",,movie
 SRF,"spielfilm (komödie)",,movie
+SRF,"spielfilm (krimi / thriller)",Crime,movie
+SRF,"spielfilm (krimi)",Crime,movie
 SRF,"spielfilm (kurzfilm)",,movie
+SRF,"spielfilm (musikfilm)",,movie
 SRF,"spielfilm (romanze)",,movie
 SRF,"spielfilm (sciencefiction / fantasy)",,movie
+SRF,"spielfilm (western)",,movie
 Tele5,abenteuer,Action/Adv,
 Tele5,abenteuer-mini-serie,Action/Adv,series
 Tele5,abenteuer-serie,Action/Adv,series
@@ -131,6 +153,7 @@ Tele5,actionabenteuer,Action/Adv,
 Tele5,actiondrama,Action,
 Tele5,actionfilm,Action,movie
 Tele5,actionthriller,Action,
+Tele5,animationsfilm,,movie
 Tele5,anime-serie,,series
 Tele5,antikriegsfilm,Drama,movie
 Tele5,biopic,Documentary,
@@ -153,20 +176,26 @@ Tele5,historienfilm,,movie
 Tele5,horror,Horror,
 Tele5,horrorfilm,Horror,movie
 Tele5,horrorthriller,Horror,
-Tele5,jugendkrimi-serie,,series
+Tele5,jugendfilm,,movie
+Tele5,jugendkrimi-serie,Crime,series
 Tele5,jugendserie,,series
 Tele5,katastrophenfilm,,movie
 Tele5,kinderfilm,,movie
 Tele5,kriegsdrama,Drama,
 Tele5,kriegsfilm,,movie
-Tele5,krimi,Crime/Mystery,
-Tele5,krimi-reihe,Crime/Mystery,series
-Tele5,krimi-serie,Crime/Mystery,series
-Tele5,krimiserie,Crime/Mystery,series
+Tele5,krimi,Crime,
+Tele5,"krimi / thriller",Crime,
+Tele5,krimi-reihe,Crime,series
+Tele5,krimi-serie,Crime,series
+Tele5,"krimikomÃ¶die",Crime,
+Tele5,kriminalfilm,Crime,movie
+Tele5,krimiserie,Crime,series
 Tele5,kurzfilm,,movie
 Tele5,monumentalfilm,,movie
+Tele5,musikfilm,,movie
 Tele5,mystery,Mystery,
 Tele5,mystery-serie,Mystery,series
+Tele5,pilotfilm,,movie
 Tele5,psychothriller,Crime/Mystery,
 Tele5,realserie,,series
 Tele5,sci-fi,SciFi,
@@ -191,6 +220,7 @@ Tele5,trickfilmserie,,series
 Tele5,vampirfilm,,movie
 Tele5,western,Action/Adv,
 Tele5,westernparodie,Action/Adv,
+Tele5,zeichentrickfilm,,movie
 Tele5,zeichentrickserie,,series
 Tvdb,children,Kids,
 Tvdb,comedy,Comedy,
