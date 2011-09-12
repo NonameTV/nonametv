@@ -9,8 +9,11 @@ then
   SC_OPT=
   V=true
 fi
+
+# local rsync to keep last-modified timestamp unchanged if the file content is unchanged
 $V && echo "Local rsync"
 rsync -c --delete -r $NROOT/xmltv_staging/ $NROOT/xmltv/
+tools/de/nonametv-xmltv-gendatalist
 #rsync -c --delete -r $NROOT/json_staging/ $NROOT/json/
 
 #$V && echo "tv.swedb.se"

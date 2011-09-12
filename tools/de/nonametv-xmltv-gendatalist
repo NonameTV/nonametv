@@ -1,0 +1,56 @@
+#! /usr/bin/perl
+
+use strict;
+use warnings;
+
+use FindBin;
+use lib "$FindBin::Bin/../../lib";
+
+use DateTime;
+use IO::Compress::Gzip qw(gzip $GzipError);
+use IO::Uncompress::Gunzip qw(gunzip $GunzipError);
+use XML::LibXML;
+
+use NonameTV qw(ParseXml);
+
+# sources
+my $channelsxml = '/home/nonametv/var/xmltv/channels.xml.gz';
+my $xmltvdir    = '/home/nonametv/var/xmltv';
+
+# target
+my $datalistxml = '/home/nonametv/var/xmltv/datalist.xml.gz';
+
+my $xml;
+gunzip $channelsxml => \$xml
+        or die "gunzip failed: $GunzipError\n";
+
+my $doc = ParseXml( \$xml );
+
+my @channels = $doc->findnodes( '/tv/channel' );
+foreach my $channel (@channels) {
+  my $xmltvid = $channel->findvalue( '@id' );
+
+  opendir(DIR, $xmltvdir)
+        or die "could not read from $xmltvdir\n";
+  my @files = grep(/^$xmltvid.*gz/, readdir(DIR));
+  closedir(DIR);
+
+  @files = sort @files;
+
+  foreach my $filename (@files) {
+    my $modified = ( stat( "$xmltvdir/$filename" ) )[9];
+    my( $date )=( $filename =~ m|^.*_(\d{4}-\d{2}-\d{2})\.xml.gz$| );
+    my $dt = DateTime->from_epoch( epoch => $modified );
+
+    my $element = XML::LibXML::Element->new( 'datafor' );
+    $element->setAttribute( 'lastmodified', $dt->ymd( '' ) . $dt->hms( '' ) . ' +0000' );
+    $element->appendText( $date );
+    $channel->appendText( '  ' );
+    $channel->appendChild( $element );
+    $channel->appendText( "\n  " );
+  }
+}
+
+$xml = $doc->toString( 1 );
+gzip \$xml => $datalistxml, Level => 9
+        or die "gzip failed: $GzipError\n";
