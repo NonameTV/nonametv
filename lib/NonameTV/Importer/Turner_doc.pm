@@ -167,7 +167,7 @@ sub isDate {
   my ( $text ) = @_;
 
 
-  if( $text =~ /^(M.ndag|Tisdag|Onsdag|Torsdag|Fredag|L.rdag|S.ndag)\s+\d+(st|nd|rd|th)\s+(Januari|Februari|Mars|April|Maj|Juni|Juli|Augusti|September|November|December)\s+(\d+)$/i ){ # format 'M�ndag 11st Juli'
+  if( $text =~ /^(M.ndag|Tisdag|Onsdag|Torsdag|Fredag|L.rdag|S.ndag)\s+\d+(st|nd|rd|th)\s+(Januari|Februari|Mars|April|Maj|Juni|Juli|Augusti|September|Oktober|November|December)\s+(\d+)$/i ){ # format 'M�ndag 11st Juli'
     return 1;
   }
 
@@ -179,7 +179,7 @@ sub ParseDate {
 
   my( $dayname, $day, $monthname, $month, $year, $dummy );
 
-  if( $text =~ /^(M.ndag|Tisdag|Onsdag|Torsdag|Fredag|L.rdag|S.ndag)\s+\d+(st|nd|rd|th)\s+(Januari|Februari|Mars|April|Maj|Juni|Juli|Augusti|September|November|December)\s+(\d+)$/i ){ # format 'M�ndag 11 Juli'
+  if( $text =~ /^(M.ndag|Tisdag|Onsdag|Torsdag|Fredag|L.rdag|S.ndag)\s+\d+(st|nd|rd|th)\s+(Januari|Februari|Mars|April|Maj|Juni|Juli|Augusti|September|Oktober|November|December)\s+(\d+)$/i ){ # format 'M�ndag 11 Juli'
     ( $dayname, $day, $dummy, $monthname, $year ) = ( $text =~ /^(\S+)\s+(\d+)(st|nd|rd|th)\s+(\S+)\s+(\d+)$/i );
 
     $month = MonthNumber( $monthname, 'sv' );
