@@ -254,6 +254,9 @@ sub ParseDate {
   } elsif( $text =~ /^(\d+)-Oct-(\d+)$/ ){
     ( $day, $year ) = ( $text =~ /^(\d+)-Oct-(\d+)$/ );
     $month = "10";
+  } elsif( $text =~ /^(\d+)-Nov-(\d+)$/ ){
+    ( $day, $year ) = ( $text =~ /^(\d+)-Nov-(\d+)$/ );
+    $month = "11";
   } else {
     return undef;
   }
