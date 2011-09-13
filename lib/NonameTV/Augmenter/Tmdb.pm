@@ -117,7 +117,7 @@ sub FillHash( $$$ ) {
   }
   
   # No description when adding? Add the description from themoviedb
-  if((!defined $ceref->{description}) or ($ceref->{description} eq "") and !$self->{OnlyAugmentFacts}) {
+  if((!defined ($ceref->{description}) or ($ceref->{description} eq "")) and !$self->{OnlyAugmentFacts}) {
     my $desc = norm( $doc->findvalue( '/OpenSearchDescription/movies/movie/overview' ) );
     if( $desc ne 'No overview found.' ) {
       $resultref->{description} = $desc;
@@ -154,6 +154,8 @@ sub AugmentProgram( $$$ ){
   if( $ceref->{url} && $ceref->{url} =~ m|^http://www\.themoviedb\.org/movie/\d+$| ) {
     $result = "programme is already linked to themoviedb.org, ignoring";
     $resultref = undef;
+  } elsif( $ruleref->{matchby} eq 'movieid' ) {
+    $self->FillHash( $resultref, $ruleref->{remoteref}, $ceref );
   } elsif( $ruleref->{matchby} eq 'title' ) {
     # search by title and year (if present)
 
