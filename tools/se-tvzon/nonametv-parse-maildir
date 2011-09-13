@@ -204,7 +204,7 @@ sub guess_channel
   }
 
    if( $dir =~ /GlobalListings/ ) {
-     return "natgeo.se" if $filename =~ /^ng\s*swe\s*hd\b/i;
+     return "hd.natgeo.se" if $filename =~ /^ng\s*swe\s*hd\b/i;
      return "natgeo.se" if $filename =~ /^ng\s*swe\b/i;
 	# Nat geo wild sends in XLS format
      return "wild.natgeo.se" if $filename =~ /^ngwscan\s*\b/i;
