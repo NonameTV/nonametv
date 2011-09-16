@@ -334,7 +334,7 @@ sub ParseDate
     return undef;
   }
 
-  $year += 2000 if $year lt 100;
+  $year+= 2000 if $year< 100;
   
   return sprintf( '%d-%02d-%02d', $year, $month, $day );
 }
