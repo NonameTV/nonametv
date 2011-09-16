@@ -204,13 +204,13 @@ sub FindUpdated {
   my $ds = $self->{datastore};
  
   my ( $res, $update_batches ) = $ds->sa->Sql( << 'EOSQL'
-    select channel_id, batch_id, 
-           min(start_time)as min_start, max(start_time) as max_start
-    from programs 
-    where batch_id in (
-      select id from batches where last_update > ?
-    )
-    group by channel_id, batch_id
+    select programs.channel_id, programs.batch_id, 
+           min(programs.start_time)as min_start, max(programs.start_time) as max_start
+    from programs, channels
+    where programs.batch_id in (
+      select id from batches where batches.last_update > ?
+    ) and programs.channel_id = channels.id and channels.export=1
+    group by programs.channel_id, programs.batch_id
 
 EOSQL
     , [$last_update] );
