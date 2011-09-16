@@ -76,8 +76,8 @@ tools/se-tvzon/nonametv-updatesite $Q
 # Compare
 $d tools/se-tvzon/nonametv-xmltv-compare-run
 
-# Upload to www
-tools/se-tvzon/nonametv-upload $Q
+# Upload to www (daily)
+$d tools/se-tvzon/nonametv-upload $Q
 
 # Run after, everything
 $d rsync -rsh=ssh --delete /var/local/nonametv/html/00status.html tvzon:/var/www/xmltv/

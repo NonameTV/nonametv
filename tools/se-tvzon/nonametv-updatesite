@@ -4,8 +4,8 @@ NROOT=/var/local/nonametv
 
 tools/nonametv-export Xmltv --export-channels $1 $2 $3
 tools/nonametv-export Xmltv $1 $2 $3
-tools/nonametv-export Xmltv2 --export-channels $1 $2 $3
-tools/nonametv-export Xmltv2 $1 $2 $3
+#tools/nonametv-export Xmltv2 --export-channels $1 $2 $3
+#tools/nonametv-export Xmltv2 $1 $2 $3
 tools/nonametv-export Json --export-channels $1 $2 $3
 tools/nonametv-export Json $1 $2 $3
 
@@ -13,9 +13,9 @@ tools/nonametv-export Json $1 $2 $3
 tools/nonametv-export Xmltv --export-channels --channel-group TV
 tools/nonametv-export Xmltv --export-channels --channel-group RADIO
 tools/nonametv-export Xmltv --export-channels --channel-group DEV
-tools/nonametv-export Xmltv2 --export-channels --channel-group TV
-tools/nonametv-export Xmltv2 --export-channels --channel-group RADIO
-tools/nonametv-export Xmltv2 --export-channels --channel-group DEV
+#tools/nonametv-export Xmltv2 --export-channels --channel-group TV
+#tools/nonametv-export Xmltv2 --export-channels --channel-group RADIO
+#tools/nonametv-export Xmltv2 --export-channels --channel-group DEV
 
 # XMLTV UTF8
 tools/se-tvzon/nonametv-xmltv-genhtml $NROOT/xmltv_staging
@@ -23,6 +23,6 @@ rsync examples/displayfile.html $NROOT/xmltv_staging
 rsync examples/listing.xsl $NROOT/xmltv_staging
 
 #XMLTV ISO
-tools/se-tvzon/nonametv-xmltv-genhtml $NROOT/xmltv_staging_iso/
-rsync examples/displayfile.html $NROOT/xmltv_staging_iso/
-rsync examples/listing.xsl $NROOT/xmltv_staging_iso/
+#tools/se-tvzon/nonametv-xmltv-genhtml $NROOT/xmltv_staging_iso/
+#rsync examples/displayfile.html $NROOT/xmltv_staging_iso/
+#rsync examples/listing.xsl $NROOT/xmltv_staging_iso/
