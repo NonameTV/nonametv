@@ -5,7 +5,7 @@ NONAMETV="tools/nonametv-import"
 
 #$NONAMETV Kanal5 $1 $2 $3
 #$NONAMETV Kanal9 $1 $2 $3
-$NONAMETV Viasat $1 $2 $3
+#$NONAMETV Viasat $1 $2 $3
 #$NONAMETV Viasat_dev $1 $2 $3
 #$NONAMETV TV4 $1 $2 $3
 #$NONAMETV Svt $1 $2 $3
