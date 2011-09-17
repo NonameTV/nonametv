@@ -30,8 +30,8 @@ sub new {
     bless ($self, $class);
 
 
-    $self->{MinMonths} = 0 unless defined $self->{MinMonths};
-    $self->{MaxMonths} = 4 unless defined $self->{MaxMonths};
+    $self->{MinMonths} = 0;
+    $self->{MaxMonths} = 1;
 
     defined( $self->{UrlRoot} ) or die "You must specify UrlRoot";
     
