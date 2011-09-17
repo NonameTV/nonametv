@@ -66,6 +66,7 @@ sub ParseCast( $$ ) {
 
   my @people = ();
   if( $cast ) {
+  	push( @people, split( '\;', $cast ) );
     push( @people, split( '\|', $cast ) );
   }
   foreach( @people ){
@@ -277,6 +278,45 @@ sub AugmentProgram( $$$ ){
         }
       }
     }
+  }elsif( $ruleref->{matchby} eq 'episodeseasontitle' ) {
+    # Same as episodeseason except it also paste season from title
+    # Used like:
+  	# title: Jersey Shoe 2
+  	# remoteref: Jersey Shoe|2
+  	# ( much like Fixups setseason )
+    
+    # Check is remoteref is actually in there, or the whole shit will crash.
+    if( defined( $ruleref->{remoteref} ) ) {
+    
+    	# Split it and set title
+    	my( $title, $season ) = split( /|/, $ruleref->{remoteref} );
+   		$resultref->{title} = norm( $title );
+		
+			if( defined $ceref->{episode} ){
+      	my( $season_episode, $episode )=( $ceref->{episode} =~ m|^\s*(\d+)\s*\.\s*(\d+)\s*/?\s*\d*\s*\.\s*$| );
+      	if( (defined $episode) and (defined $season_episode) ){
+        		$episode += 1;
+        		$season_episode += 1;
+        
+        		# Should we somehow select season_episode if season is too weird?
+
+        		my $series = $self->{tvdb}->getSeries( $title );
+        
+        		if( (defined $series)){
+        			# Find season and episode
+        			if(($season ne "") and ($episode ne "")) {
+        				my $episode2 = $self->{tvdb}->getEpisode($series->{SeriesName}, $season, $episode);
+
+       	   			if( defined( $episode2 ) ) {
+     	       			$self->FillHash( $resultref, $series, $episode2 );
+          			} else {
+            			w( "no episode " . $episode . " of season " . $season . " found for '" . $title . "'" );
+          			}
+         	 	  }
+        	  }
+      	}
+    	}
+   	}
   }elsif( $ruleref->{matchby} eq 'episodetitle' ) {
     # match by episode title from program hash
 
