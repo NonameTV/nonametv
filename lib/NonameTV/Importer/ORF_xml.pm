@@ -14,12 +14,13 @@ Channels: ORF1, ORF2, DreiSat, (a lot of radio stations)
 =cut
 
 use DateTime;
-use XML::LibXML;
 use HTTP::Date;
+use XML::LibXML;
+use utf8;
 
 use NonameTV qw/ParseXml norm AddCategory/;
 use NonameTV::DataStore::Helper;
-use NonameTV::Log qw/w progress error f/;
+use NonameTV::Log qw/w progress error f d/;
 
 use NonameTV::Importer::BaseDaily;
 
@@ -154,7 +155,7 @@ sub ImportContent
    	 my $time = ParseTime( $sc->findvalue( './zeit' ) );
 
 
-		progress("ORF_xml: $chd->{xmltvid}: $time - $title");
+		d( "ORF_xml: $chd->{xmltvid}: $time - $title" );
 
   		my $ce = {
   	      title 	  => norm($title),
