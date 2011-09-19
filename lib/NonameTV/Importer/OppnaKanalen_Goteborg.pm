@@ -120,10 +120,11 @@ sub ImportContentFile
     	my($time, $endtime) = ParseTime($text);
     
     	my $ce = {
-        channel_id => $chd->{id},
-        start_time => $time,
-        end_time	 => $endtime,
-        title			 => "",
+        channel_id  => $chd->{id},
+        start_time  => $time,
+        end_time	  => $endtime,
+        title			  => "",
+        description => "",
       };
       
       # add the programme to the array
@@ -143,6 +144,11 @@ sub ImportContentFile
   				# Set the title if title is empty (aka not set:ed)
   				if(defined($element) and $element->{title} eq "") {
   					$element->{title} .= $sentences[0];
+  				}
+  				
+  				# Set the description if it's not the title
+  				if(defined($element) and ($element->{description} eq "") and ($sentences[0] ne $element->{title})) {
+  					$element->{description} .= $sentences[0];
   				}
   			}
   			
@@ -178,7 +184,8 @@ sub isDate {
 sub ParseDate {
   my( $text ) = @_;
   
-my ( $weekday, $day, $month, $year  ) = 
+
+my ( $weekday, $day, $month, $year  ) = 
       ( $text =~ /(\S+?)\s*(\d+)\/(\d+)\s*(\d+)$/ );
       
   my $dt = DateTime->new(
