@@ -66,8 +66,7 @@ sub ParseCast( $$ ) {
 
   my @people = ();
   if( $cast ) {
-  	push( @people, split( '\;', $cast ) );
-    push( @people, split( '\|', $cast ) );
+    push( @people, split( '\[|;]', $cast ) );
   }
   foreach( @people ){
     $_ = norm( $_ );
