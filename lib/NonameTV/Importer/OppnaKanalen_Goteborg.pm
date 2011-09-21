@@ -143,12 +143,24 @@ sub ImportContentFile
   			{
   				# Set the title if title is empty (aka not set:ed)
   				if(defined($element) and $element->{title} eq "") {
-  					$element->{title} .= $sentences[0];
+  					$element->{title} .= $sentences[$i];
   				}
   				
   				# Set the description if it's not the title
-  				if(defined($element) and ($element->{description} eq "") and ($sentences[0] ne $element->{title})) {
-  					$element->{description} .= $sentences[0];
+  				if(defined($element) and ($element->{description} eq "") and ($sentences[$i] ne $element->{title})) {
+  					$element->{description} .= $sentences[$i];
+  				}
+  				
+  				# Only Ethio-TV seems to fail, I know this is ugly. But whattaheck.
+  				if(defined($element) and $element->{title} ne "") {
+  					if( $element->{title} =~ /^Ethio-TV\s*/i ) {
+  						my ( $description ) = ( $element->{title} =~ /^Ethio-TV\s*(.*)$/ );
+  						$element->{title} = "Ethio-TV";
+  						if($description) {
+  							$description =~ s/^Ethio-TV//; 
+	  						$element->{description} .= $description;
+							}
+  					}
   				}
   			}
   			
@@ -159,6 +171,16 @@ sub ImportContentFile
   					$element->{episode} = sprintf( " . %d/%d . ", $episode-1, $of_epi ) if defined $episode;
   					# Remove it from title
   					$element->{title} =~ s/,\s+del\s+(\d+)\s+av\s+(\d+)$//; 
+  				}
+  			}
+  			
+  			# If desc is set:ed check if it has episode info in text
+  			if(defined($element) and $element->{description} ne "") {
+  				if( $element->{description} =~ /del\s*\d+$/i ) {
+  					my ( $episode2 ) = ( $text =~ /del\s*(\d+)$/ );
+  					$element->{episode} = sprintf( " . %d . ", $episode2-1 ) if defined $episode2;
+  					# Remove it from title
+  					$element->{description} =~ s/,\s+del\s+(\d+)$//; 
   				}
   			}
     }
@@ -218,6 +240,14 @@ sub ParseTime {
 
   my ( $hour , $min ) = ( $time =~ /^(\d+).(\d+)$/ );
   my ( $endhour , $endmin ) = ( $endtime =~ /^(\d+).(\d+)$/ );
+  
+  # Sometimes hour is 24, when the right one is actually 00
+  if($hour eq "24") {
+  	$hour = "00";
+  }
+  if($endhour eq "24") {
+  	$endhour = "00";
+  }
   
   $time = sprintf( "%02d:%02d", $hour, $min );
   $endtime = sprintf( "%02d:%02d", $endhour, $endmin );
