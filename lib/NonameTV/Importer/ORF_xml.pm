@@ -32,13 +32,20 @@ sub new {
     my $self  = $class->SUPER::new( @_ );
     bless ($self, $class);
 
-
     $self->{MinDays} = 0 unless defined $self->{MinDays};
     $self->{MaxDays} = 15 unless defined $self->{MaxDays};
 
-    defined( $self->{UrlRoot} ) or die "You must specify UrlRoot";
+    if( defined(  $self->{UrlRoot} ) ) {
+      w( "UrlRoot is deprecated. No point in keeping it secret as it\'s login protected now. Set Username and Password instead." );
+    } else {
+      $self->{UrlRoot} = 'http://presse.orf.at/download.php?sender=';
+    }
+
+    defined( $self->{Username} ) or die "You must specify Username";
+    defined( $self->{Password} ) or die "You must specify Password";
+
     my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore}, "Europe/Vienna" );
-  	$self->{datastorehelper} = $dsh;
+    $self->{datastorehelper} = $dsh;
 
     return $self;
 }
