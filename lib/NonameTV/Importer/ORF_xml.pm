@@ -43,6 +43,20 @@ sub new {
     return $self;
 }
 
+sub InitiateDownload {
+  my $self = shift;
+
+  my $mech = $self->{cc}->UserAgent();
+
+  my $response = $mech->get('http://presse.orf.at/?login[action]=login&login[redirect]=&login[username]=' . $self->{Username} . '&login[password]=' . $self->{Password});
+
+  if ($response->is_success) {
+    return undef;
+  } else {
+    return $response->status_line;
+  }
+}
+
 sub Object2Url {
   my $self = shift;
   my( $objectname, $chd ) = @_;
