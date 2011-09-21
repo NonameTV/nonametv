@@ -100,6 +100,8 @@ sub ImportContentFile
         if( $date ne $currdate ) {
 
           if( $currdate ne "x" ){
+          	# save last day if we have it in memory
+  					FlushDayData( $xmltvid, $dsh , @ces );
             $dsh->EndBatch( 1 );
           }
 
@@ -157,18 +159,19 @@ sub ImportContentFile
 	  # Remove repris (use this in the future?)
       $title =~ s/\(Repris(.*)\)$//;
       
-      progress("Kanal10: $xmltvid: $time - $title");
-      
       # Set title
       $ce->{title} = norm($title);
       $ce->{description} = norm($desc) if $desc;
 
-      $dsh->AddProgramme( $ce );
+			push( @ces , $ce );
 
     } else {
         # skip
     }
   }
+
+	# save last day if we have it in memory
+  FlushDayData( $xmltvid, $dsh , @ces );
 
   $dsh->EndBatch( 1 );
     
@@ -181,7 +184,7 @@ sub isDate {
   # format 'Måndag 11 06'
   if( $text =~ /^(M.ndag|Tisdag|Onsdag|Torsdag|Fredag|L.rdag|S.ndag)\s+\d+\s+\d+\$/i ){
     return 1;
-  } elsif( $text =~ /^(M.ndag|Tisdag|Onsdag|Torsdag|Fredag|L.rdag|S.ndag)\s+\d+\s+(januari|februari|mars|april|maj|juni|juli|augusti|september|november|december)$/i ){ # format 'Måndag 11 juli'
+  } elsif( $text =~ /^(M.ndag|Tisdag|Onsdag|Torsdag|Fredag|L.rdag|S.ndag)\s+\d+\s+(januari|februari|mars|april|maj|juni|juli|augusti|september|oktober|november|december)$/i ){ # format 'Måndag 11 juli'
     return 1;
   }
 
@@ -196,7 +199,7 @@ sub ParseDate {
   # format 'Måndag 11 06'
   if( $text =~ /^(Måndag|Tisdag|Onsdag|Torsdag|Fredag|Lördag|Söndag)\s+\d+\.\d+\.\d+\.$/i ){
     ( $dayname, $day, $month, $year ) = ( $text =~ /^(\S+)\s+(\d+)\.(\d+)\.(\d+)\.$/ );
-  } elsif( $text =~ /^(M.ndag|Tisdag|Onsdag|Torsdag|Fredag|L.rdag|S.ndag)\s+\d+\s+(januari|februari|mars|april|maj|juni|juli|augusti|september|november|december)$/i ){ # format 'Måndag 11 Juli'
+  } elsif( $text =~ /^(M.ndag|Tisdag|Onsdag|Torsdag|Fredag|L.rdag|S.ndag)\s+\d+\s+(januari|februari|mars|april|maj|juni|juli|augusti|september|oktober|november|december)$/i ){ # format 'Måndag 11 Juli'
     ( $dayname, $day, $monthname ) = ( $text =~ /^(\S+)\s+(\d+)\s+(\S+)$/i );
 
     $month = MonthNumber( $monthname, 'sv' );
@@ -250,6 +253,19 @@ sub ParseShow {
   $time = sprintf( "%02d:%02d", $hour, $min );
 
   return( $time, $title, $desc );
+}
+
+sub FlushDayData {
+  my ( $xmltvid, $dsh , @data ) = @_;
+
+    if( @data ){
+      foreach my $element (@data) {
+
+        progress("Kanal10: $element->{start_time} - $element->{title}");
+
+        $dsh->AddProgramme( $element );
+      }
+    }
 }
 
 1;
