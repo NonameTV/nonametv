@@ -9,6 +9,7 @@ F="--force-update"
 
 h=true
 d=true
+one=true
 
 cd $PROOT
 
@@ -33,6 +34,12 @@ then
   d=
 fi
 
+if [ $1x = --onex ]
+then
+  # Run 13.00 commands
+  one=
+fi
+
 if [ $1x = --hourlyx ]
 then
   # Run hourly commands
@@ -50,6 +57,7 @@ tools/se-tvzon/nonametv-import-allmail $Q
 
 # Remove old
 $d perl -I lib/ tools/nonametv-export Xmltv --remove-old
+$d perl -I lib/ tools/nonametv-export Xmltv2 --remove-old
 $d perl -I lib/ tools/nonametv-export Json --remove-old
 $d tools/nonametv-icon-update --quiet --unattended
 
@@ -78,6 +86,9 @@ $d tools/se-tvzon/nonametv-xmltv-compare-run
 
 # Upload to www (daily)
 $d tools/se-tvzon/nonametv-upload $Q
+
+# Upload to www (at 13.00)
+$one tools/se-tvzon/nonametv-upload $Q
 
 # Run after, everything
 $d rsync -rsh=ssh --delete /var/local/nonametv/html/00status.html tvzon:/var/www/xmltv/

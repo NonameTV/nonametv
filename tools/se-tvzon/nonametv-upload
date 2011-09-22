@@ -12,7 +12,7 @@ fi
 $V && echo "Local rsync"
 rsync -c --delete -r $NROOT/xmltv_staging/ $NROOT/xmltv/
 tools/se-tvzon/nonametv-xmltv-gendatalist
-#rsync -c --delete -r $NROOT/xmltv_staging_iso/ $NROOT/xmltv_iso/
+rsync -c --delete -r $NROOT/xmltv_staging_iso/ $NROOT/xmltv_iso/
 rsync -c --delete -r $NROOT/json_staging/ $NROOT/json/
 
 #$V && echo "tvzon"
