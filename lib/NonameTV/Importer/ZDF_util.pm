@@ -139,10 +139,13 @@ sub ParseData
 
     # episode number
     if( $episodenr ){
+      my $ep = '. ' . ($episodenr-1) . ' .';
       if( !$sce{episode} ){
-        $sce{episode} = ". " . ($episodenr-1) . " .";
+        $sce{episode} = '. ' . ($episodenr-1) . ' .';
+      } elsif( $sce{episode} eq $ep ) {
+        d( 'episode number from element is \'' . $ep . '\' but we knew that already' );
       } else {
-        d( 'episode number from element is .' . ($episodenr-1) . '. but we already got ' . $sce{episode} );
+        p( 'episode number from element is \'' . $ep . '\' but we already got \'' . $sce{episode} . '\'' );
       }
     }
 
@@ -330,11 +333,11 @@ sub clean_sendetitel
     # if it's more than six episodes it's a series, otherwise it's likely a serial
     if ($episodecnt>6) {
       # we guess its a "normal" tv series, will get type series automatically
-      $sce->{episode} = ". " . ($episodenr-1) . "/" . $episodecnt . " .";
+      $sce->{episode} = '. ' . ($episodenr-1) . '/' . $episodecnt . ' .';
     } else {
       # we guess its one programme thats broken in multiple parts or a serial
       # this will not get type series automatically
-      $sce->{episode} = ". . " . ($episodenr-1) . "/" . $episodecnt;
+      $sce->{episode} = '. . ' . ($episodenr-1) . '/' . $episodecnt;
     }
     $title =~ s| \(\d+/\d+\)$||;
   } elsif ($title =~ m| \(\d+\) - \(\d+\)$|) {
@@ -344,7 +347,7 @@ sub clean_sendetitel
   } elsif ($title =~ m| \(\d+\)$|) {
     my ($episodenr) = ($title =~ m| \((\d+)\)$|);
     d ("parsing episode number $episodenr from title \"$title\"");
-    $sce->{episode} = ". " . ($episodenr-1) . " .";
+    $sce->{episode} = '. ' . ($episodenr-1) . ' .';
     $title =~ s| \(\d+\)$||;
   }
 
@@ -557,7 +560,7 @@ sub clean_untertitel
       d( 'parsing episode number from subtitle: ' . $subtitle );
       my( $episodenr, $title )=( $subtitle =~ m|^(\d+)\.\s+(.*)$| );
 
-      $sce->{episode} = ". " . ($episodenr-1) . " .";
+      $sce->{episode} = '. ' . ($episodenr-1) . ' .';
 
       return $title;
     }
@@ -576,6 +579,40 @@ sub clean_untertitel
       }
     }
   }
+
+  # strip repeats
+  # (von 18.35 Uhr)
+  if ($subtitle =~ m|^\(von \d+\.\d{2} Uhr\)$|) {
+    return undef;
+  }
+  # (Erstsendung 6.9.2009)
+  if ($subtitle =~ m|^\(Erstsendung \d+\.\d+\.\d{4}\)$|) {
+    return undef;
+  }
+  # (vom Vortag)
+  if ($subtitle =~ m|^\(vom Vortag\)$|) {
+    return undef;
+  }
+
+  # Folge 102
+  if (my ($ep) = ($subtitle =~ m|^Folge (\d+)$|)) {
+    if( !$sce->{episode} ){
+      $sce->{episode} = '. ' . ($ep - 1) . ' .';
+    }
+    return undef;
+  }
+
+  # Zeichentrickserie
+  # CGI-Animationsserie
+  # Fantasy-Serie
+  # Auswandererdoku
+  # Das Entdeckermagazin mit Eric Mayer
+  # mit Normen Odenthal
+  # mit Barbara Hahlweg
+  # Hongkong-Spielfilm von 2003
+  # Nach Motiven der Romane von Maj Sjöwall und Per Wahlöö
+  # Film von Claus U. Eckert und Petra Thurn
+  # 
 
   d( 'no match (or fall-through) for subtitle: ' . $subtitle );
 

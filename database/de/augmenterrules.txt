@@ -121,3 +121,6 @@
 \N,Fixups,"^((Pan Tau)\s+.*)$",\N,\N,\N,splittitlereverse
 \N,Fixups,"^(Inga Lindström):\s+(.*)$",\N,\N,\N,splittitle
 39,Tmdb,Powerman,\N,\N,11205,movieid
+39,Tvdb,"Stephen King's Dead Zone",\N,\N,77955,episodetitle
+49,Fixups,SimsalaGrimm,subtitle,Schneewittchen,"Schneewittchen und die Sieben Zwerge",replacesubtitle
+57,Fixups,"Löwenzahn Classics",\N,\N,Löwenzahn,replacetitle
