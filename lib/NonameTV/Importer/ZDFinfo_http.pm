@@ -93,9 +93,13 @@ sub Object2Url {
   # http://pressetreff.zdf.de/Public/ZDFinfo-PD/40-KW-1.-7.10.2011-ZDFinfo.xml # notice #-KW instead of #.KW
   my $url7 = sprintf( "http://pressetreff.zdf.de/Public/ZDFinfo-PD/%d-KW-%s-%s-ZDFinfo.xml", $week, $firstday4, $lastdaythird );
 
+  # like 4th but with PW instead of KW
+  # http://pressetreff.zdf.de/Public/ZDFinfo-PD/38.PW-17.-23.09.2011-ZDFinfo.xml
+  my $url8 = sprintf( "http://pressetreff.zdf.de/Public/ZDFinfo-PD/%d.PW-%s-%s-ZDFinfo.xml", $week, $firstday4, $lastdaythird );
+
   d( "ZDFinfo: fetching data from $url\nor $urlother\nor $urlthird\nor$url4" );
 
-  return( [$url4, $url7, $url6, $url5, $urlthird, $url, $urlother], undef );
+  return( [$url8, $url4, $url7, $url6, $url5, $urlthird, $url, $urlother], undef );
 }
 
 #
