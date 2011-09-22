@@ -160,7 +160,7 @@ sub ImportContent
     
     $ce->{subtitle} = $subtitle if $subtitle;
     
-    my ( $season, $episode ) = ($desc =~ /\(S�song\s*(\d+)\s*avsnitt\s*(\d+)\)/ );
+    my ( $dummy, $season, $episode ) = ($desc =~ /\(S(.*)song\s*(\d+)\s*avsnitt\s*(\d+)\)/ );
     
     if((defined $season) and ($episode > 0) and ($season > 0) )
     {
