@@ -91,7 +91,9 @@ sub Object2Url {
   my $url6 = sprintf( "http://pressetreff.zdf.de/Public/ZDFkultur-PD/%d.KW-%s-%s.ZDFkultur.xml", $week, $firstday4, $lastdaythird );
 
   # like 5 but with PW instead of KW
-  my $url7 = sprintf( "http://pressetreff.zdf.de/Public/ZDFkultur-PD/%d.PW-%s-%s-ZDFkultur.xml", $week, $firstday, $lastdayfifth );
+  # http://pressetreff.zdf.de/Public/ZDFkultur-PD/40.PW-1.-7.10.2011-ZDFkultur.xml
+  my $url7 = sprintf( "http://pressetreff.zdf.de/Public/ZDFkultur-PD/%d.PW-%s-%s-ZDFkultur.xml", $week, $firstday4, $lastdaythird );
+
 
   d( "ZDFkultur: fetching data from $url\nor $urlother\nor $urlthird\nor$url4" );
 
