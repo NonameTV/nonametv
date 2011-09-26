@@ -170,7 +170,7 @@ sub ImportFlatXLS
       }
 
       # date - column 'TX Time'
-      $oWkC = $oWkS->{Cells}[$iR][$columns{'TX Time'}];
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'TX Time CET'}];
       next if( ! $oWkC );
       next if( ! $oWkC->Value );
       my $time = $oWkC->Value;
