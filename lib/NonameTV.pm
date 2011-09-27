@@ -436,6 +436,8 @@ $sm->AddRegexp( qr/\bscience\s*fiction(rysare)*\b/i, [ 'movie', "SciFi" ] );
 
 $sm->AddRegexp( qr/\b(l.ng)*film\b/i,             [ 'movie', undef ] );
 
+$sm->AddRegexp( qr/\bbollywoodfilm\b/i,             [ 'movie', undef ] );
+
 # Kanal 5
 $sm->AddRegexp( qr/\bkomedifilm\b/i,             [ 'movie', "Comedy" ] );
 $sm->AddRegexp( qr/\banimerad komedifilm\b/i,    [ 'movie', "Animated/Comedy" ] );
