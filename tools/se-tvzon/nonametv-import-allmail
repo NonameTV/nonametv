@@ -24,6 +24,8 @@ tools/nonametv-import Playboy $1 $2 $3
 # Boomerang and Cartoon network
 tools/nonametv-import Turner_doc $1 $2 $3
 
+tools/nonametv-import VH1Classic $1 $2 $3
+
 tools/nonametv-import Turner $1 $2 $3
 tools/nonametv-import TV5Monde $1 $2 $3
 tools/nonametv-import YaS $1 $2 $3

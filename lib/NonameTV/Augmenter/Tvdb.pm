@@ -281,25 +281,29 @@ sub AugmentProgram( $$$ ){
     # Same as episodeseason except it also paste season from title
     # Used like:
   	# title: Jersey Shoe 2
-  	# remoteref: Jersey Shoe|2
+  	# remoteref: 2
   	# ( much like Fixups setseason )
     
     # Check is remoteref is actually in there, or the whole shit will crash.
     if( defined( $ruleref->{remoteref} ) ) {
-    
-    	# Split it and set title
-    	my( $title, $season ) = split( /|/, $ruleref->{remoteref} );
-   		$resultref->{title} = norm( $title );
-		
+
+    	my( $season ) = $ruleref->{remoteref};
+    	
 			if( defined $ceref->{episode} ){
       	my( $season_episode, $episode )=( $ceref->{episode} =~ m|^\s*(\d+)\s*\.\s*(\d+)\s*/?\s*\d*\s*\.\s*$| );
       	if( (defined $episode) and (defined $season_episode) ){
         		$episode += 1;
         		$season_episode += 1;
         
-        		# Should we somehow select season_episode if season is too weird?
-
-        		my $series = $self->{tvdb}->getSeries( $title );
+        		my $seriesname = $ceref->{title};
+        		
+        		# Remove the season from title
+        		$seriesname =~ s/$season//;
+        		
+        		# Norm it.
+        		$seriesname = norm($seriesname);
+        
+            my $series = $self->{tvdb}->getSeries( $seriesname );
         
         		if( (defined $series)){
         			# Find season and episode
@@ -309,7 +313,7 @@ sub AugmentProgram( $$$ ){
        	   			if( defined( $episode2 ) ) {
      	       			$self->FillHash( $resultref, $series, $episode2 );
           			} else {
-            			w( "no episode " . $episode . " of season " . $season . " found for '" . $title . "'" );
+            			w( "no episode " . $episode . " of season " . $season . " found for '" . $seriesname . "'" );
           			}
          	 	  }
         	  }
