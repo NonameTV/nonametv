@@ -6,7 +6,7 @@
 \N,Fixups,"Våra bästa år",program_type,series,"Days of our Lives",replacetitle
 \N,Tvdb,"Jims värld",program_type,series,75926,episodeseason
 \N,Tvdb,"Våra värsta år",program_type,series,76385,episodeseason
-\N,Tvdb,"$#*! My Dad Says",program_type,series,164951,episodeseason
+97,Tvdb,"^.*My Dad Says$",program_type,series,164951,episodeseason
 \N,Tvdb,Skål!,program_type,series,77623,episodeseason
 \N,Tvdb,"Fear Factor USA",program_type,series,76707,episodeseason
 \N,Tvdb,Simpsons,program_type,series,71663,episodeseason
@@ -128,3 +128,12 @@
 165,Tvdb,^.*$,program_type,series,\N,episodeseason
 164,Tvdb,^.*$,program_type,series,\N,episodeseason
 167,Tvdb,CSI,program_type,series,72546,episodeseason
+97,Tvdb,AdamLive,program_type,series,251664,episodeseason
+97,Tvdb,"The Superstars",program_type,series,192071,episodeseason
+97,Tvdb,"I nöd och lust",program_type,series,79384,episodeseason
+97,Tvdb,"Top model 7",program_type,series,71721,episodeseason
+97,Tvdb,"Top model 8",program_type,series,71721,episodeseason
+\N,Tvdb,Portlandia,program_type,series,213221,episodeseason
+97,Tvdb,"Top Model 16",program_type,series,71721,episodeseason
+97,Tvdb,Efterlyst,program_type,series,83113,episodeseason
+97,Tvdb,^T$,program_type,series,71721,episodeseason

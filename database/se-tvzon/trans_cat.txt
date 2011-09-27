@@ -22,6 +22,7 @@ CanalPlus,"action drama",Action/Drama,
 CanalPlus,actionäventyr,Action/Adventure,
 CanalPlus,actiondrama,Action/Drama,
 CanalPlus,actionkomedi,Action,
+CanalPlus,actionserie,Action,series
 CanalPlus,actionthriller,Action,
 CanalPlus,allsvenskan,Football,sports
 CanalPlus,anal,Adult,
@@ -47,10 +48,13 @@ CanalPlus,dramaserie,Drama,
 CanalPlus,dramathriller,Drama,
 CanalPlus,"endast tjejer",Adult,
 CanalPlus,"engelsk ligafotboll",Sports,
+CanalPlus,eroti/soft,Adult,
 CanalPlus,"erotic feature",Adult,
 CanalPlus,erotik,Adult,
+CanalPlus,"erotik hård",Adult,
 CanalPlus,"erotik soft",Adult,
 CanalPlus,erotik.,Adult,
+CanalPlus,erotik/artcore,Adult,
 CanalPlus,erotik/hard,Adult,
 CanalPlus,erotik/soft,Adult,
 CanalPlus,"erotiskt drama",Adult,
@@ -64,6 +68,7 @@ CanalPlus,familjekomedi,Family/Comedyy,
 CanalPlus,filmintervju,Talk,
 CanalPlus,"filmmagasin med hans wiklund",Magazine,
 CanalPlus,fotboll,Football,sports
+CanalPlus,fotbollsmagasin,Magazine,sports
 CanalPlus,gonzo,Adult,
 CanalPlus,"hard erotik",Adult,
 CanalPlus,"hard feature",Adult,
@@ -87,23 +92,30 @@ CanalPlus,motor,Motors,Sports
 CanalPlus,musikal,Music,
 CanalPlus,musikalkomedi,Musical/Comedy,
 CanalPlus,musikdrama,Music/Drama,
+CanalPlus,musikkomedi,Music/Comedy,
 CanalPlus,nöjesnyheter,News,
+CanalPlus,nordiskt,Nordic,
 CanalPlus,program,\N,tvshow
 CanalPlus,"romantisk dramakomedi",Romance/Drama/Comedy,
 CanalPlus,"romantisk komedi",Romance/Comedy,
 CanalPlus,"romantiskt drama",Romance/Drama,
 CanalPlus,rysare,Thriller,
+CanalPlus,"sci-fi drama",Sci-Fi/Drama,
 CanalPlus,sci-fi-thriller,Sci-fi/Thriller,
 CanalPlus,"science fiction",Sci-fi,
+CanalPlus,"science fiction-thriller",Sci-Fi/Thriller,
 CanalPlus,sckräk,Horror,
+CanalPlus,"serie a",\N,sports
 CanalPlus,serier,series,Series
 CanalPlus,skräck,Horror,
 CanalPlus,speedway,Motors,Sports
 CanalPlus,sport,sports,Sports
 CanalPlus,"stora bröst",Adult,movie
+CanalPlus,studio,\N,sports
 CanalPlus,"tecknad familjefilm",Family,
 CanalPlus,"tecknad saga",Children's,
 CanalPlus,"tecknat äventyr",Children's/Adventure,
+CanalPlus,"tecknat barnäventyr",Animated/Children's,
 CanalPlus,"tecknat familjeäventyr",Children's/Family/Ad,
 CanalPlus,tennis,Tennis,sports
 CanalPlus,tennisturnering,Tennis,sports
@@ -339,6 +351,8 @@ OUTTV,Drama,Drama,
 OUTTV,Drama/Romantik,Drama/Romance,
 OUTTV,drama/thriller,Drama/Thriller,
 OUTTV,film,,movie
+OUTTV,komedi,Comedy,
+OUTTV,"komedi drama",Comedy/Drama,
 OUTTV,Komedi/Drama,Comedy/Drama,
 OUTTV,kortfilm,Short,movie
 OUTTV,musik,Music,tvshow
@@ -347,6 +361,7 @@ OUTTV,musik/konsert,Concert/Music,
 OUTTV,quiz,Quiz,
 OUTTV,reality,Reality,series
 OUTTV,resa,Food/Travel,series
+OUTTV,romantik/drama,Romance/Drama,
 OUTTV,serie,,series
 OUTTV,thriller,Thriller,
 OUTTV,thriller/skräck,Thriller/Horror,
@@ -606,6 +621,7 @@ Viasat_genre,"action/komedi/science fiction",Action/Comedy/Sci-Fi,
 Viasat_genre,action/komedi/thriller,Action/Comedy/Thrill,
 Viasat_genre,action/komedie,Action/Comedy,
 Viasat_genre,action/komedie/drama,Action/Comedy/Drama,
+Viasat_genre,action/komedie/krim/fantasi,Action/Crime,
 Viasat_genre,action/komedie/krim/thriller,Action/Comedy/Crime,
 Viasat_genre,"action/komedie/science fiction",Action/Comedy/Sci-Fi,
 Viasat_genre,action/krig,Action/War,
@@ -631,6 +647,7 @@ Viasat_genre,äventyr,Adventure,
 Viasat_genre,äventyr/barn,Adventure/Children's,
 Viasat_genre,äventyr/deckare/drama,Adventure/Crime/Drama,
 Viasat_genre,äventyr/deckare/drama/thriller,Adventure/Crime/Drama,
+Viasat_genre,äventyr/deckare/thriller,Adventure/Thriller,
 Viasat_genre,äventyr/dokumentär,Adventure/Documentary,
 Viasat_genre,äventyr/drama,Adventure/Drama,
 Viasat_genre,äventyr/drama/fantasy,Adventure/Drama/Thriller,
