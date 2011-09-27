@@ -318,7 +318,7 @@ sub extract_episode
   my $d = $ce->{description};
 
   # Try to extract episode-information from the description.
-  my( $ep, $eps );
+  my( $ep, $eps, $ep2, $eps2 );
   my $episode;
 
   # Del 2
@@ -326,8 +326,8 @@ sub extract_episode
   $episode = sprintf( " . %d .", $ep-1 ) if defined $ep;
   
   # Avsnitt 2
-  ( $ep ) = ($d =~ /\bAvsnitt\s+(\d+)/ );
-  $episode = sprintf( " . %d .", $ep-1 ) if defined $ep;
+  ( $ep2 ) = ($d =~ /\bAvsnitt\s+(\d+)/ );
+  $episode = sprintf( " . %d .", $ep2-1 ) if defined $ep2;
 
   # Del 2 av 3
   ( $ep, $eps ) = ($d =~ /\bDel\s+(\d+)\s*av\s*(\d+)/ );
@@ -335,9 +335,9 @@ sub extract_episode
     if defined $eps;
     
   # Avsnitt 2 av 3
-  ( $ep, $eps ) = ($d =~ /\bAvsnitt\s+(\d+)\s*av\s*(\d+)/ );
-  $episode = sprintf( " . %d/%d . ", $ep-1, $eps ) 
-    if defined $eps;
+  ( $ep2, $eps2 ) = ($d =~ /\bAvsnitt\s+(\d+)\s*av\s*(\d+)/ );
+  $episode = sprintf( " . %d/%d . ", $ep2-1, $eps2 ) 
+    if defined $eps2;
   
   if( defined( $episode ) )
   {
