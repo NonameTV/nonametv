@@ -321,23 +321,47 @@ sub extract_episode
   my( $ep, $eps, $ep2, $eps2 );
   my $episode;
 
-  # Del 2
-  ( $ep ) = ($d =~ /\bDel\s+(\d+)/ );
-  $episode = sprintf( " . %d .", $ep-1 ) if defined $ep;
-  
-  # Avsnitt 2
-  ( $ep2 ) = ($d =~ /\bAvsnitt\s+(\d+)/ );
-  $episode = sprintf( " . %d .", $ep2-1 ) if defined $ep2;
-
   # Del 2 av 3
   ( $ep, $eps ) = ($d =~ /\bDel\s+(\d+)\s*av\s*(\d+)/ );
   $episode = sprintf( " . %d/%d . ", $ep-1, $eps ) 
     if defined $eps;
-    
+
+	if(defined $episode and defined $eps) { 
+		$ce->{description} =~ s/Del\s+(\d+)\s+av\s+(\d+).//; 
+	}
+
+  # Del 2
+  ( $ep ) = ($d =~ /\bDel\s+(\d+)/ );
+  $episode = sprintf( " . %d .", $ep-1 ) if defined $ep;
+
+	if(defined $episode and defined $ep) { 
+		$ce->{description} =~ s/Del\s+(\d+).//; 
+	}
+
   # Avsnitt 2 av 3
-  ( $ep2, $eps2 ) = ($d =~ /\bAvsnitt\s+(\d+)\s*av\s*(\d+)/ );
+  ( $ep2, $eps2 ) = ($d =~ /Avsnitt\s*(\d+)\s*av\s*(\d+)/ );
   $episode = sprintf( " . %d/%d . ", $ep2-1, $eps2 ) 
     if defined $eps2;
+    
+  if(defined $episode and defined $eps2) { 
+		$ce->{description} =~ s/Avsnitt\s+(\d+)\s+av\s+(\d+).//; 
+	}
+  
+  # Avsnitt 2
+  ( $ep2 ) = ($d =~ /Avsnitt\s*(\d+)/ );
+  $episode = sprintf( " . %d .", $ep2-1 ) if defined $ep2;
+
+	if(defined $episode and defined $ep2) { 
+		$ce->{description} =~ s/Avsnitt\s+(\d+).//; 
+	}
+	
+	# Avsnit 2
+  ( $ep2 ) = ($d =~ /Avsnit\s+(\d+)/ );
+  $episode = sprintf( " . %d .", $ep2-1 ) if defined $ep2;
+
+	if(defined $episode and defined $ep2) { 
+		$ce->{description} =~ s/Avsnit\s+(\d+).//; 
+	}
   
   if( defined( $episode ) )
   {
@@ -349,6 +373,11 @@ sub extract_episode
     $ce->{episode} = $episode;
     $ce->{program_type} = 'series';
   }
+  
+  if((defined $ce->{description}) and ($ce->{description} eq "")) {
+  	$ce->{description} = $ce->{pr_desc};
+  }
+  
 }
 
 1;
