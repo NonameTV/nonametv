@@ -1,0 +1,79 @@
+#!/usr/bin/perl -w
+
+use strict;
+use warnings;
+
+use FindBin;
+use lib "$FindBin::Bin/../../lib";
+=pod
+
+Converts datalist in xml format to json.
+
+=cut
+
+use XML::XML2JSON;
+use DateTime;
+use IO::Compress::Gzip qw(gzip $GzipError);
+use IO::Uncompress::Gunzip qw(gunzip $GunzipError);
+use XML::LibXML;
+use JSON::XS;
+
+use NonameTV qw(ParseXml);
+
+# sources
+my $channelsxml = '/var/local/nonametv/xmltv/channels.xml.gz';
+my $xmltvdir    = '/var/local/nonametv/xmltv';
+my $datalistxml = '/var/local/nonametv/xmltv/datalist.xml.gz';
+
+# target
+my $datalistjson = '/home/beatx/datalist.js.gz';
+
+my $xml;
+gunzip $channelsxml => \$xml
+        or die "gunzip failed: $GunzipError\n";
+
+my $doc = ParseXml( \$xml );
+
+my @channels = $doc->findnodes( '/tv/channel' );
+foreach my $channel (@channels) {
+  my $xmltvid = $channel->findvalue( '@id' );
+
+  opendir(DIR, $xmltvdir)
+        or die "could not read from $xmltvdir\n";
+  my @files = grep(/^$xmltvid.*gz/, readdir(DIR));
+  closedir(DIR);
+
+  @files = sort @files;
+
+  foreach my $filename (@files) {
+    my $modified = ( stat( "$xmltvdir/$filename" ) )[9];
+    my( $date )=( $filename =~ m|^.*_(\d{4}-\d{2}-\d{2})\.xml.gz$| );
+    my $dt = DateTime->from_epoch( epoch => $modified );
+
+    my $element = XML::LibXML::Element->new( 'datafor' );
+    $element->setAttribute( 'lastmodified', $dt->ymd( '' ) . $dt->hms( '' ) . ' +0000' );
+    $element->appendText( $date );
+    $channel->appendText( '  ' );
+    $channel->appendChild( $element );
+    $channel->appendText( "\n  " );
+  }
+}
+
+$xml = $doc->toString( 1 );
+
+my $XML2JSON = XML::XML2JSON->new();
+my $JSONXS = JSON::XS->new()->pretty;
+$XML2JSON->{module} = $JSONXS;
+$XML2JSON->{attribute_prefix} = "";
+$XML2JSON->{content_key} = "date";
+$XML2JSON->{pretty} = 1;
+$XML2JSON->{private_attributes} = {"version", "generator-info-name"};
+gunzip $datalistxml => \$xml
+        or die "gunzip failed: $GunzipError\n";
+
+my $Obj = $XML2JSON->xml2obj($xml);
+$XML2JSON->sanitize($Obj);
+my $json = $XML2JSON->obj2json($Obj);
+
+gzip \$json => $datalistjson, Level => 9
+        or die "gzip failed: $GzipError\n";
