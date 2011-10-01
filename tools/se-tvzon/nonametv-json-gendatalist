@@ -23,10 +23,9 @@ use NonameTV qw(ParseXml);
 # sources
 my $channelsxml = '/var/local/nonametv/xmltv/channels.xml.gz';
 my $xmltvdir    = '/var/local/nonametv/xmltv';
-my $datalistxml = '/var/local/nonametv/xmltv/datalist.xml.gz';
 
 # target
-my $datalistjson = '/home/beatx/datalist.js.gz';
+my $datalistjson = '/var/local/nonametv/json/datalist.js.gz';
 
 my $xml;
 gunzip $channelsxml => \$xml
@@ -51,7 +50,7 @@ foreach my $channel (@channels) {
     my $dt = DateTime->from_epoch( epoch => $modified );
 
     my $element = XML::LibXML::Element->new( 'datafor' );
-    $element->setAttribute( 'lastmodified', $dt->ymd( '' ) . $dt->hms( '' ) . ' +0000' );
+    $element->setAttribute( 'lastmodified', $dt->ymd( '' ) . $dt->hms( '' ) . ' +0200' );
     $element->appendText( $date );
     $channel->appendText( '  ' );
     $channel->appendChild( $element );
@@ -68,12 +67,12 @@ $XML2JSON->{attribute_prefix} = "";
 $XML2JSON->{content_key} = "date";
 $XML2JSON->{pretty} = 1;
 $XML2JSON->{private_attributes} = {"version", "generator-info-name"};
-gunzip $datalistxml => \$xml
-        or die "gunzip failed: $GunzipError\n";
 
 my $Obj = $XML2JSON->xml2obj($xml);
 $XML2JSON->sanitize($Obj);
 my $json = $XML2JSON->obj2json($Obj);
+
+
 
 gzip \$json => $datalistjson, Level => 9
         or die "gzip failed: $GzipError\n";
