@@ -32,7 +32,7 @@ BEGIN {
 		      FindParagraphs
                       norm normLatin1 AddCategory
                       ParseDescCatSwe FixProgrammeData
-		      ParseXml ParseXmltv
+		      ParseXml ParseXmltv ParseJson
                       MonthNumber
                       CompareArrays
                      /;
@@ -436,7 +436,7 @@ $sm->AddRegexp( qr/\bscience\s*fiction(rysare)*\b/i, [ 'movie', "SciFi" ] );
 
 $sm->AddRegexp( qr/\b(l.ng)*film\b/i,             [ 'movie', undef ] );
 
-$sm->AddRegexp( qr/\bbollywoodfilm\b/i,             [ 'movie', undef ] );
+$sm->AddRegexp( qr/\bbollywoodfilm\b/i,             [ 'movie', "Bollywood" ] );
 
 # Kanal 5
 $sm->AddRegexp( qr/\bkomedifilm\b/i,             [ 'movie', "Comedy" ] );
@@ -521,6 +521,35 @@ sub ParseXml {
   };
   if( $@ )   {
     w "Failed to parse xml: $@";
+    return undef;
+  }
+
+  return $doc;
+}
+
+=pod 
+
+my $doc = ParseJson( $strref );
+
+Parse an json-string
+
+=cut
+
+my $json;
+
+sub ParseJson {
+  my( $cref ) = @_;
+
+  if( not defined $json ) {
+    $json = new JSON;
+  }
+  
+  my $doc;
+  eval { 
+    $doc = $json->allow_nonref->utf8->relaxed->escape_slash->loose->allow_singlequote->allow_barekey->decode($$cref); 
+  };
+  if( $@ )   {
+    w "Failed to parse json: $@";
     return undef;
   }
 
@@ -831,7 +860,7 @@ sub MonthNumber {
   } elsif( $lang =~ /^sv$/ ){
     @months_1 = qw/jan feb mar apr maj jun jul aug sep okt nov dec/;
     @months_2 = qw/januari februari mars april maj juni juli augusti september oktober november december/;
-    @months_3 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
+    @months_3 = qw/jan feb mar apr maj jun jul aug sept okt nov dec/;
     @months_4 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
     @months_5 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
     @months_6 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
