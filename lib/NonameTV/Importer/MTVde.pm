@@ -19,7 +19,7 @@ use Data::Dumper;
 use DateTime;
 use XML::LibXML::XPathContext;
 
-use NonameTV qw/ParseXml/;
+use NonameTV qw/AddCategory ParseXml/;
 use NonameTV::Importer::BaseWeekly;
 use NonameTV::Log qw/d progress w error f/;
 
@@ -134,13 +134,39 @@ sub ImportContent( $$$ ) {
       } elsif( ( $folge ) = ($subtitle =~ m|^Folge (\d+)$| ) ){
         $ce->{episode} = '. ' . ($folge - 1) . ' .';
       } else {
+        # unify style of two episodes in one programme
+        $subtitle =~ s|\s*/\s*| / |;
+        # unify style of story arc 
+        $subtitle =~ s|[ ,-]+Teil (\d)+$| \($1\)|;
+        $subtitle =~ s|[ ,-]+Part (\d)+$| \($1\)|;
         $ce->{subtitle} = $subtitle;
       }
     }
 
+    my $production_year = $xpc->findvalue( 's:produktion/s:produktionszeitraum/s:jahr/@von' );
+    if( $production_year =~ m|^\d{4}$| ){
+      $ce->{production_date} = $production_year . '-01-01';
+    }
+
+    my $genre = $xpc->findvalue( 's:infos/s:klassifizierung/s:genre' );
+    if( $genre ){
+      my ( $program_type, $category ) = $self->{datastore}->LookupCat( "MTVde", $genre );
+      AddCategory( $ce, $program_type, $category );
+    }
+    $genre = $xpc->findvalue( 's:infos/s:klassifizierung/@formatgruppe' );
+    if( $genre ){
+      my ( $program_type, $category ) = $self->{datastore}->LookupCat( "MTVde", $genre );
+      AddCategory( $ce, $program_type, $category );
+    }
+
+    my $url = $xpc->findvalue( 's:url/@link' );
+    if( $url ){
+      $ce->{url} = $url
+    }
+
     $self->{datastore}->AddProgramme( $ce );
 
-#    d( $xpc->getContextNode()->toString() . Dumper ( $ce ) );
+    d( $xpc->getContextNode()->toString() . Dumper ( $ce ) );
 
   }
 

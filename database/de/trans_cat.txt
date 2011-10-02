@@ -77,6 +77,11 @@ DreiSat_genre,spielshow/quiz,,tvshow
 DreiSat_genre,talkshow,Talk,tvshow
 DreiSat_genre,tanzfilm,,movie
 DreiSat_genre,zeichentrickfilm,,movie
+MTVde,comedy,Comedy,
+MTVde,film,,movie
+MTVde,kinderfilm,Kids,movie
+MTVde,kinderserie,Kids,series
+MTVde,serie,,series
 ORF,abenteuerfilm,Action/Adv,movie
 ORF,abenteuerserie,Action/Adv,series
 ORF,actionfilm,Action,movie
