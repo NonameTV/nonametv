@@ -134,8 +134,8 @@ sub ImportContent( $$$ ) {
       } elsif( ( $folge ) = ($subtitle =~ m|^Folge (\d+)$| ) ){
         $ce->{episode} = '. ' . ($folge - 1) . ' .';
       } else {
-        # unify style of two episodes in one programme
-        $subtitle =~ s|\s*/\s*| / |;
+        # unify style of two or more episodes in one programme
+        $subtitle =~ s|\s*/\s*| / |g;
         # unify style of story arc 
         $subtitle =~ s|[ ,-]+Teil (\d)+$| \($1\)|;
         $subtitle =~ s|[ ,-]+Part (\d)+$| \($1\)|;
