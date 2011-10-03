@@ -21,6 +21,8 @@ tools/nonametv-import TravelChannel $1 $2 $3
 tools/nonametv-import HustlerTV $1 $2 $3
 tools/nonametv-import Playboy $1 $2 $3
 
+tools/nonametv-import LifestyleTV $1 $2 $3
+
 # Boomerang and Cartoon network
 tools/nonametv-import Turner_doc $1 $2 $3
 
