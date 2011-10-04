@@ -178,14 +178,24 @@ sub parseTimestamp( $ ){
   my ($timestamp) = @_;
 
   if( $timestamp ){
-    my ($year, $month, $day, $hour, $minute) = ($timestamp =~ m|^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):\d{2}$|);
+    # 2011-11-12T20:15:00+01:00
+    my ($year, $month, $day, $hour, $minute, $second, $offset) = ($timestamp =~ m/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})([+-]\d{2}:\d{2}|)$/);
+    if( !defined( $year )|| !defined( $hour ) ){
+      w( "could not parse timestamp: $timestamp" );
+    }
+    if( $offset ){
+      $offset =~ s|:||;
+    } else {
+      $offset = 'Europe/Berlin';
+    }
     my $dt = DateTime->new ( 
       year      => $year,
       month     => $month,
       day       => $day,
       hour      => $hour,
-      minute    => $minute,
-      time_zone => 'Europe/Berlin'
+      minute    => $minute, 
+      second    => $second,
+      time_zone => $offset
     );
     $dt->set_time_zone( 'UTC' );
 
