@@ -318,6 +318,28 @@ $channel_data{ "arteeinsextra.ard.de" } =
       ],
   };
 
+=pod
+
+Nickelodeon Germany / Comedy Central. The share the same channel and do not overlap.
+
+=cut
+
+$channel_data{ "nickcc.mtvnetworks.de" } =
+  { 
+    "nick.de" => 
+      [ 
+        {
+          day => 'all',
+        },
+      ],
+    "comedycentral.de" =>
+      [
+        {
+          day => 'all',
+        },
+      ],
+  };
+
 use DateTime;
 use DateTime::Event::Recurrence;
 

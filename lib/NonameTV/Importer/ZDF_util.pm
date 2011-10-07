@@ -461,6 +461,18 @@ sub clean_untertitel
     return undef;
   }
 
+  #
+  # Dokumentation (D 1980)
+  #
+  if ($subtitle =~ m|^\S+\s+\(\S+\s+\d{4}\)$|) {
+    my ($format, $pcountries, $pyear) = ($subtitle =~ m|^(\S+)\s+\((\S+)\s+(\d{4})\)$|);
+
+    $sce->{production_date} = "$pyear-01-01";
+    my ( $program_type, $categ ) = $ds->LookupCat( "DreiSat_genre", $format );
+    AddCategory( $sce, $program_type, $categ );
+    return undef;
+  }
+
   # producers
   # Filmessay von Wolfgang Peschl und Christian Riehs
   # Filme von Wolfram Giese und Horst Brandenburg
@@ -580,6 +592,33 @@ sub clean_untertitel
     }
   }
 
+  # Fünfteilige Doku-Reihe von Michaela Hummel
+  if ($subtitle =~ m/^(?:\S+eilige\s+|)\S+eihe\s+von \S+ \S+$/) {
+    d( "parsing producer from subtitle: " . $subtitle );
+    my ($format, $producer) = ($subtitle =~ m/^(?:\S+eilige\s+|)(\S+eihe)\s+von (\S+ \S+)$/);
+
+    AddCredits( $sce, 'producers', ($producer) );
+
+    # programme format is mostly reported in genre, too. so just reuse that
+    my ( $program_type, $categ ) = $ds->LookupCat( "DreiSat_genre", $format );
+    AddCategory( $sce, $program_type, $categ );
+
+    return undef;
+  }
+  # Fünfteilige Doku-Reihe von Michaela Hummel und Meike Materne
+  if ($subtitle =~ m/^(?:\S+eilige |)\S+eihe\s+von \S+ \S+ und \S+ \S+$/) {
+    d( "parsing producers from subtitle: " . $subtitle );
+    my ($format, $producer1, $producer2) = ($subtitle =~ m/^(?:\S+eilige |)(\S+eihe)\s+von (\S+ \S+) und (\S+ \S+)$/);
+
+    AddCredits( $sce, 'producers', ($producer1, $producer2) );
+
+    # programme format is mostly reported in genre, too. so just reuse that
+    my ( $program_type, $categ ) = $ds->LookupCat( "DreiSat_genre", $format );
+    AddCategory( $sce, $program_type, $categ );
+
+    return undef;
+  }
+
   # strip repeats
   # (von 18.35 Uhr)
   if ($subtitle =~ m|^\(von \d+\.\d{2} Uhr\)$|) {
@@ -605,6 +644,14 @@ sub clean_untertitel
   # Zeichentrickserie
   # CGI-Animationsserie
   # Fantasy-Serie
+  if ($subtitle =~ m/^(?:\S+eilige\s+|)(?:\S+eihe|\S+erie)$/) {
+    my ($format) = ($subtitle =~ m/^(?:\S+eilige\s+|)(\S+eihe|\S+erie)$/);
+
+    my ( $program_type, $categ ) = $ds->LookupCat( "DreiSat_genre", $format );
+    AddCategory( $sce, $program_type, $categ );
+    return undef;
+  }
+
   # Auswandererdoku
   # Das Entdeckermagazin mit Eric Mayer
   # mit Normen Odenthal
@@ -617,7 +664,6 @@ sub clean_untertitel
   d( 'no match (or fall-through) for subtitle: ' . $subtitle );
 
   # possible false positives / more data
-  # Fünfteilige Doku-Reihe von Michaela Hummel und Meike Materne
   # Film von und mit Axel Bulthaupt
   # Film Otmar Penker und Klaus Feichtenberger
   # Kriminalserie von Herbert Reinecker

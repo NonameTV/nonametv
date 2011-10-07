@@ -187,8 +187,8 @@ sub _download {
 	$url = sprintf($fmt, $url, @parm);
 	&verbose(2, "TVDB::API: download: $url\n");
 	utf8::encode($url);
-	
-	$url =~ s|#|%23|g; # special case for # in parameter
+
+	$url =~ s|#|%23|g;
 
 	# Make sure we only download once even in a session
 	return $self->{dload}->{$url} if defined $self->{dload}->{$url};

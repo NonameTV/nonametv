@@ -3,6 +3,7 @@
 use strict;
 use warnings;
 
+use File::Compare;
 use FindBin;
 use lib "$FindBin::Bin/../../lib";
 
@@ -52,5 +53,11 @@ foreach my $channel (@channels) {
 }
 
 $xml = $doc->toString( 1 );
-gzip \$xml => $datalistxml, Level => 9
+gzip \$xml => $datalistxml . '.new', Level => 9, Time => 0
         or die "gzip failed: $GzipError\n";
+
+if( compare( $datalistxml, $datalistxml . '.new' )== 0 ){
+  unlink( $datalistxml . '.new' );
+} else {
+  rename( $datalistxml . '.new', $datalistxml );
+}

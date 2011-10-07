@@ -470,6 +470,16 @@ sub parse_subtitle
     $sce->{title} = $sce->{title} . " mit den Wildgänsen";
   } elsif (($subtitle =~ m|^\d+\. |) && ($sce->{title} =~ m|^Die wunderbare Reise des kleinen Nils Holgersson mit den Wildgänsen$|)) {
     $subtitle =~ s|^\d+\. ||;
+  } elsif ($subtitle =~ m|^\S+how mit [A-Z]\S+ [A-Z]\S+$|) {
+    my ($genre, $presenter) = ($subtitle =~ m|^(\S+how) mit (\S+ \S+)$|);
+    my ( $type, $categ ) = $self->{datastore}->LookupCat( "DasErste_type", $genre);
+    AddCategory( $sce, $type, $categ );
+    if ($sce->{presenters}) {
+      $sce->{presenters} = join (", ", $sce->{presenters}, $presenter);
+    } else {
+      $sce->{presenters} = $presenter;
+    }
+    $subtitle = undef;
   } else {
     d ("unhandled subtitle: $subtitle");
   }

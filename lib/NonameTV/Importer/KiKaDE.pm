@@ -247,7 +247,8 @@ sub ImportContent {
             }
   
             my $episodedesc = $episode->findvalue ('FolgeLangText');
-            if( $episodedesc ne 'Inhalt wird nachgereicht!' ){
+            if( ( $episodedesc ne 'Inhalt wird nachgereicht!' ) &&
+               !( $episodedesc =~ m|^Inhalt momentan nicht verf..?gbar!$| ) ){
               $ece{description} = $episodedesc;
             }
             $self->{datastore}->AddProgramme (\%ece);
