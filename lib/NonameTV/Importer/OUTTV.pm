@@ -159,30 +159,30 @@ sub ImportXLS
       # Remove (N) from title
       $title =~ s/ \(N\)//g; 
 
+			my ( $dummy, $episode, $season );
+
 	  	# Season
 	  	$oWkC = $oWkS->{Cells}[$iR][$columns{'Season'}] if $columns{'Season'};
-      my $season = $oWkC->Value;
+      $season = $oWkC->Value if $columns{'Season'};
       
       # Episode
 	  	$oWkC = $oWkS->{Cells}[$iR][$columns{'Episode'}] if $columns{'Episode'};
-      my $episode = $oWkC->Value;
+      $episode = $oWkC->Value if $columns{'Episode'};
       
       # genre (column 5)
-	  	$oWkC = $oWkS->{Cells}[$iR][$columns{'Genre'}];
-      my $genre = $oWkC->Value;
+	  	$oWkC = $oWkS->{Cells}[$iR][$columns{'Genre'}] if $columns{'Genre'};
+      my $genre = $oWkC->Value if $columns{'Genre'};
       
       # movie genre
-	  	$oWkC = $oWkS->{Cells}[$iR][$columns{'Movie'}];
-      my $moviegenre = $oWkC->Value;
+	  	$oWkC = $oWkS->{Cells}[$iR][$columns{'Movie'}] if $columns{'Movie'};
+      my $moviegenre = $oWkC->Value if $columns{'Movie'};
       
       # Year
-	  	$oWkC = $oWkS->{Cells}[$iR][$columns{'Year'}];
-      my $year = $oWkC->Value;
+	  	$oWkC = $oWkS->{Cells}[$iR][$columns{'Year'}] if $columns{'Year'};
+      my $year = $oWkC->Value if $columns{'Year'};
 
 	  	# descr (column 7)
 	  	my $desc = $oWkS->{Cells}[$iR][$columns{'Description'}]->Value if $oWkS->{Cells}[$iR][$columns{'Description'}];
-
-      
 
 			# empty last day array
      	undef @ces;
@@ -199,29 +199,12 @@ sub ImportXLS
       		# Get genre
 						my($program_type, $category ) = $ds->LookupCat( 'OUTTV', $genre );
 						AddCategory( $ce, $program_type, $category );
-      
-      		# Get production date and category
-					if(($genre =~ /film/)) {
-						# Find production year from description.
-  					if( $year =~ /\((\d\d\d\d)\)/ )
-  					{
-    					$ce->{production_date} = "$1-01-01";
-  					}
-						
-						# Check description after categories.
-      			my ( $program_type, $category ) = $ds->LookupCat( 'OUTTV', $moviegenre );
-  					AddCategory( $ce, $program_type, $category );
-  					
-  					$ce->{program_type} = 'movie';
-  					
-  					$film = 1;
-					}
 
 				# Try to extract episode-information from the description.
-				if(($season ne "") and ($film eq 0)) {
+				if(($season) and ($season ne "") and ($film eq 0)) {
 
   				# Episode info in xmltv-format
-  				if( ($episode ne "") and ($season ne "") )
+  				if(($episode) and ($episode ne "") and ($season ne "") )
    				{
         		$ce->{episode} = sprintf( "%d . %d .", $season-1, $episode-1 );
    				}
@@ -231,6 +214,7 @@ sub ImportXLS
 					}
 				}
 
+				extract_extra_info( $dsh, $ce );
 
 			progress("OUTTV: $chd->{xmltvid}: $time - $title");
       $dsh->AddProgramme( $ce );
@@ -288,6 +272,93 @@ sub ParseTime {
   }
 
   return sprintf( "%02d:%02d", $hour, $min );
+}
+
+# From Kanal5_Util
+# Hopefully they will add more info into desc
+
+sub extract_extra_info
+{
+  my( $dsh, $ce ) = @_;
+
+  my $ds = $dsh->{ds};
+
+  my @sentences = (split_text( $ce->{description} ), "");
+  for( my $i=0; $i<scalar(@sentences); $i++ )
+  {
+    $sentences[$i] =~ tr/\n\r\t /    /s;
+		
+		if( my( $seaso, $episod ) = ($sentences[$i] =~ /^S(\d+)E(\d+)/ ) )
+    {
+    	$ce->{episode} = sprintf( " %d . %d . ", $seaso-1, $episod-1 ) if $episod;
+    	$ce->{program_type} = 'series';
+    	
+    	# Remove from description
+      $sentences[$i] = "";
+    }
+
+  }
+
+  $ce->{description} = join_text( @sentences );
+  
+  
+}
+
+sub split_text
+{
+  my( $t ) = @_;
+
+  return () if not defined( $t );
+
+  # Remove any trailing whitespace
+  $t =~ s/\s*$//;
+
+  # Replace ... with ::.
+  $t =~ s/\.{3,}/::./;
+
+  # Replace newlines followed by a capital with space and make sure that there is a dot
+  # to mark the end of the sentence. 
+  $t =~ s/\.*\s*\n\s*([A-Z���])/. $1/g;
+
+  # Turn all whitespace into pure spaces and compress multiple whitespace to a single.
+  $t =~ tr/\n\r\t \xa0/     /s;
+
+  # Replace strange dots.
+  $t =~ tr/\x2e/./;
+
+  # Split on a dot and whitespace followed by a capital letter,
+  # but the capital letter is included in the output string and
+  # is not removed by split. (?=X) is called a look-ahead.
+#  my @sent = grep( /\S/, split( /\.\s+(?=[A-Z���])/, $t ) );
+
+  # Mark sentences ending with a dot for splitting.
+  $t =~ s/\.\s+([A-Z���])/;;$1/g;
+
+  # Mark sentences ending with ! or ? for split, but preserve the "!?".
+  $t =~ s/([\!\?])\s+([A-Z���])/$1;;$2/g;
+  
+  my @sent = grep( /\S/, split( ";;", $t ) );
+
+  if( scalar( @sent ) > 0 )
+  {
+    $sent[-1] =~ s/\.*\s*$//;
+  }
+
+  return @sent;
+}
+
+# Join a number of sentences into a single paragraph.
+# Performs the inverse of split_text
+sub join_text
+{
+  my $t = join( ". ", grep( /\S/, @_ ) );
+  $t .= "." if $t =~ /\S/;
+  $t =~ s/::/../g;
+
+  # The join above adds dots after sentences ending in ! or ?. Remove them.
+  $t =~ s/([\!\?])\./$1/g;
+
+  return $t;
 }
 
 1;
