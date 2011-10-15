@@ -1,0 +1,179 @@
+BODY {
+	FONT-SIZE: 95%;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif;
+	SCROLLBAR-FACE-COLOR: #6E6F72;
+	SCROLLBAR-HIGHLIGHT-COLOR: #959698;
+	SCROLLBAR-SHADOW-COLOR: #48484A;
+	SCROLLBAR-3DLIGHT-COLOR: #525356;
+	SCROLLBAR-ARROW-COLOR: #ffffff;
+	SCROLLBAR-TRACK-COLOR: #DADADA;
+	SCROLLBAR-DARKSHADOW-COLOR: #000000
+}
+TABLE {
+        background-color: #bbbbbb;
+        border-color: #666666
+}
+TD {
+	FONT-SIZE: 95%;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif
+}
+TH {
+	FONT-SIZE: 95%;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif
+}
+EM {
+	FONT-WEIGHT: bold;
+        FONT-STYLE: italic
+}
+.newsDate {
+	FONT-SIZE: 85%;
+        COLOR: #6666cc;
+        FONT-STYLE: italic
+}
+.sidebar {
+	FONT-SIZE: 85%
+}
+PRE {
+	FONT-SIZE: 90%;
+        FONT-FAMILY: "andale mono", "monotype.com", "courier new", monospace
+}
+CODE {
+	FONT-SIZE: 90%;
+        FONT-FAMILY: "andale mono", "monotype.com", "courier new", monospace
+}
+H1 {
+	FONT-WEIGHT: bold;
+        FONT-SIZE: 140%;
+        COLOR: #000066;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif
+}
+H2 {
+	FONT-WEIGHT: bold;
+        FONT-SIZE: 125%;
+        COLOR: #000066;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif
+}
+H3 {
+	FONT-WEIGHT: bold;
+        FONT-SIZE: 110%;
+        COLOR: #000066;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif
+}
+H4 {
+	FONT-WEIGHT: bold;
+        FONT-SIZE: 100%;
+        COLOR: #000066;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif
+}
+SMALL {
+	FONT-SIZE: 75%;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif
+}
+A.small {
+	FONT-SIZE: 75%;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif;
+        TEXT-DECORATION: none
+}
+.tableMenuTitle {
+	FONT-WEIGHT: bold;
+        FONT-SIZE: 80%;
+        COLOR: #000066;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif ;
+        background-color: #999999
+}
+.tableMenu {
+	FONT-SIZE: 75%;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif ;
+        background-color: #ffaa88
+}
+.tableTitle {
+	FONT-WEIGHT: bold;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif;
+        BACKGROUND-COLOR: #999999
+}
+.tableBody {
+	FONT-SIZE: 75%;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif;
+        BACKGROUND-COLOR: #dddddd
+}
+.running {
+		FONT-SIZE: 75%;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif;
+        BACKGROUND-COLOR: green;
+}
+.tableBodyWarning {
+	FONT-SIZE: 75%;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif;
+        BACKGROUND-COLOR: #ff8888
+}
+.tableBodyFree {
+	FONT-SIZE: 75%;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif;
+        BACKGROUND-COLOR: #ddeedd;
+}
+.tableBodyHigh {
+	FONT-SIZE: 85%;
+	COLOR: #ff0000;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif;
+        BACKGROUND-COLOR: #dddddd
+}
+.tableExtras {
+	FONT-SIZE: 85%;
+        COLOR: #ffffff;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif
+}
+INPUT {
+	FONT-SIZE: 90%;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif
+}
+TEXTAREA {
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif
+}
+INPUT.small {
+	FONT-SIZE: 75%;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif
+}
+SELECT.small {
+	FONT-SIZE: 75%;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif
+}
+TEXTAREA.small {
+	FONT-SIZE: 75%;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif
+}
+.gumb {  font-family: Verdana, Arial, Helvetica, sans-serif;
+        font-size: 12px;
+        font-weight: bold;
+        background-color: #999999;
+        color: #EEEEEE;
+        border-color: #CCCCCC #555555 #555555 #CCCCCC;
+        border-style: groove}
+
+.abeceda {
+	FONT-WEIGHT: bold;
+	COLOR: #000066;
+	FONT-FAMILY: verdana,arial,helvetica,sans-serif ;
+}
+
+.sitno {
+	COLOR: #000066;
+	FONT-FAMILY: verdana,arial,helvetica,sans-serif ;
+        font-size: 9px;
+}
+
+.warning {
+	COLOR: #FF0000;
+	FONT-FAMILY: verdana,arial,helvetica,sans-serif ;
+        font-size: 12px;
+        font-weight: bold;
+}
+.chanExported {
+	FONT-SIZE: 75%;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif;
+        BACKGROUND-COLOR: #ddffdd
+}
+.chanNotExported {
+	FONT-SIZE: 75%;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif;
+        BACKGROUND-COLOR: #ffaaaa
+}

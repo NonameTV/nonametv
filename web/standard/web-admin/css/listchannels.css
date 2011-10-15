@@ -1,0 +1,26 @@
+#
+# listchannels
+#
+
+.listchannels {
+	FONT-WEIGHT: bold;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif;
+        BACKGROUND-COLOR: #ffffff
+}
+.tabletitle {
+	FONT-WEIGHT: bold;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif;
+        BACKGROUND-COLOR: #999999
+}
+.listchannels_rowstyle0 {
+	FONT-WEIGHT: normal;
+	FONT-SIZE: 75%;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif;
+        BACKGROUND-COLOR: #ffffff;
+}
+.listchannels_rowstyle1 {
+	FONT-WEIGHT: normal;
+	FONT-SIZE: 75%;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif;
+        BACKGROUND-COLOR: #dddddd;
+}

@@ -1,0 +1,49 @@
+#
+# nowshowing
+#
+
+.nowshowing A:link { color: black }
+.nowshowing A:visited { color: black }
+.nowshowing A:active { color: black }
+.nowshowing A:hoover { color: black }
+
+.nowshowing_tabletitle A:link { color: black }
+.nowshowing_tabletitle A:visited { color: black }
+.nowshowing_tabletitle A:active { color: black }
+.nowshowing_tabletitle A:hoover { color: black }
+
+.nowshowing_tablebody A:link { color: black }
+.nowshowing_tablebody A:visited { color: black }
+.nowshowing_tablebody A:active { color: black }
+.nowshowing_tablebody A:hoover { color: black }
+
+.nowshowing {
+	FONT-WEIGHT: bold;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif;
+        BACKGROUND-COLOR: #000000
+}
+.nowshowing_tabletitle {
+	FONT-WEIGHT: bold;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif;
+        BACKGROUND-COLOR: #bbbbbb
+}
+.nowshowing_tablebody {
+	HEIGHT: 80px;
+	FONT-WEIGHT: normal;
+	FONT-SIZE: 80%;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif;
+        BACKGROUND-COLOR: #ffffff;
+	COLOR: #000000
+}
+.nowshowing_firstcell {
+	FONT-WEIGHT: normal;
+	FONT-SIZE: 75%;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif;
+	BACKGROUND-COLOR: #dddddd
+}
+.nowshowing_lastcell {
+	FONT-WEIGHT: normal;
+	FONT-SIZE: 75%;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif;
+        BACKGROUND-COLOR: #bbbbbb
+}

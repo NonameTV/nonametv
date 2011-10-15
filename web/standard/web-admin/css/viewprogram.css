@@ -1,0 +1,20 @@
+#
+# viewprogram
+#
+
+.viewprogram {
+	FONT-WEIGHT: bold;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif;
+        BACKGROUND-COLOR: #ffffff
+}
+.viewprogram_tabletitle {
+	FONT-WEIGHT: bold;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif;
+        BACKGROUND-COLOR: #999999
+}
+.viewprogram_tablebody {
+	FONT-WEIGHT: normal;
+	FONT-SIZE: 75%;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif;
+        BACKGROUND-COLOR: #ffffff
+}

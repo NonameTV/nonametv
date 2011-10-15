@@ -113,7 +113,8 @@ foreach my $channel (sort keys %channels)
 {
   print OUT << "EOD";
 <tr>
-  <th scope='row'>$channel</th>
+	<th scope='row'><img src='/chanlogos/16x16/$channel.png' /></th>
+  <th scope='row'><a href='/web-admin/nowonchannel.php?channel=$channel'>$channel</a></th>
 
 EOD
 

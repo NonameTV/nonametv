@@ -1,0 +1,39 @@
+#
+# listchannels
+#
+
+.listchannels {
+	FONT-WEIGHT: bold;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif;
+        BACKGROUND-COLOR: #ffffff
+}
+.tabletitle {
+	FONT-WEIGHT: bold;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif;
+        BACKGROUND-COLOR: #999999
+}
+.tableEPGServer {
+        FONT-SIZE: 75%;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif;
+        BACKGROUND-COLOR: #ff8888
+}
+.tableNetwork {
+        FONT-SIZE: 60%;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif;
+        BACKGROUND-COLOR: #ff6644
+}
+.tableTS {
+        FONT-SIZE: 60%;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif;
+        BACKGROUND-COLOR: #3355aa
+}
+.tableService_rowstyle0 {
+        FONT-SIZE: 60%;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif;
+        BACKGROUND-COLOR: #ffffff
+}
+.tableService_rowstyle1 {
+        FONT-SIZE: 60%;
+        FONT-FAMILY: verdana,arial,helvetica,sans-serif;
+        BACKGROUND-COLOR: #dddddd
+}
