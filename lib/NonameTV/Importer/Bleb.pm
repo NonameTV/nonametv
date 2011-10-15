@@ -159,8 +159,8 @@ sub ImportContent
       end_time     => $end->ymd("-") . " " . $end->hms(":"),
     };
 
-      #subtitle     => norm($subtitle),
-      #description  => norm($desc),
+      $ce->{subtitle}  => norm($subtitle) if $subtitle;
+      $ce->{description}  => norm($desc) if $desc;
       #url          => norm($url),
 
     my($program_type, $category ) = $ds->LookupCat( "Bleb", $type );
