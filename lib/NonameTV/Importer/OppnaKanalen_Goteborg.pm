@@ -223,7 +223,7 @@ sub isTime {
   my ( $text ) = @_;
 
   # format '14.00 Gudstjänst med LArs Larsson - detta är texten'
-  if( $text =~ /^(\d+[:\.]\d+)\s*\-\s*(\d+[:\.]\d+)$/i ){
+  if( $text =~ /^(\d+[:\.]\d+)\s*\-\s*(\d+[:\.]\d+)\s*$/i ){
     return 1;
   }
 
@@ -236,7 +236,7 @@ sub ParseTime {
   my( $time, $endtime );
 
 	# The text is in the format: 18.50 - 19.30
-  ( $time, $endtime ) = ( $text =~ /^(\d+[:\.]\d+)\s*\-\s*(\d+[:\.]\d+)$/ );
+  ( $time, $endtime ) = ( $text =~ /^(\d+[:\.]\d+)\s*\-\s*(\d+[:\.]\d+)\s*$/ );
 
   my ( $hour , $min ) = ( $time =~ /^(\d+).(\d+)$/ );
   my ( $endhour , $endmin ) = ( $endtime =~ /^(\d+).(\d+)$/ );
