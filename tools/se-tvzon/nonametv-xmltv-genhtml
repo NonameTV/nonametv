@@ -87,6 +87,7 @@ print OUT << "EOHEAD";
 <table>
 <thead>
   <tr>
+  	<th></th>
     <th>Channel</th>
 EOHEAD
 
@@ -113,8 +114,8 @@ foreach my $channel (sort keys %channels)
 {
   print OUT << "EOD";
 <tr>
-	<th scope='row'><img src='/chanlogos/16x16/$channel.png' /></th>
-  <th scope='row'><a href='/web-admin/nowonchannel.php?channel=$channel'>$channel</a></th>
+	<th scope='row'><img src='/chanlogos/44x44/$channel.png' /></th>
+  <th scope='row'><a href='/nowonchannel.php?channel=$channel'>$channel</a></th>
 
 EOD
 
