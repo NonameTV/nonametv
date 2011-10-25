@@ -71,6 +71,9 @@ my @folders = qw(NonameTV-Data.Disney
 		 NonameTV-Data.Svt
 		 NonameTV-Data.OKGoteborg
 		 NonameTV-Data.LifestyleTV
+		 NonameTV-Data.Gmail
+		 NonameTV-Data.Playboy
+		 NonameTV-Data.Hustler
                  );
 
 # Flag messages AFTER they have been processed. Then I normally
@@ -241,7 +244,21 @@ sub guess_channel
      return "tv5monde.org" if $filename =~ /^EPG\s*\b/i;
  }
    if( $dir =~ /OUTTV/ and $filename =~ /\.xls$/i ) {
-     return "outtv.se" if $filename =~ /^EPG\s*\b/i;
+     return "outtv.se" if $filename =~ /^OUTTV\s*\b/i;
+ }
+ 
+ if( $dir =~ /Gmail/ and $filename =~ /\.xls$/i ) {
+     return "privatespice.com" if $filename =~ /^private\s*\b/i;
+ }
+ 
+ if( $dir =~ /Playboy/ and $filename =~ /\.xls$/i ) {
+     return "europe.playboytv.com" if $filename =~ /^playboy\s*\b/i;
+     return "adultchannel.co.uk" if $filename =~ /^the\s*adult\s*\b/i;
+ }
+ 
+ if( $dir =~ /Hustler/ and $filename =~ /\.xls$/i ) {
+     return "europe.bluehustler.com" if $filename =~ /^blue\s*gmt\s*\b/i;
+     return "europe.hustlertv.com" if $filename =~ /^hustler\s*tv\s*gmt\s*\b/i;
  }
 
    if( $dir =~ /YaS/ and $filename =~ /\.xls$/i ) {
@@ -249,7 +266,7 @@ sub guess_channel
  }
 
  if( $dir =~ /Motors/ and $filename =~ /\.xls$/i ) {
-     return "motorstv.com" if $filename =~ /^Cont\s*pgms\s*\b/i;
+     return "motorstv.com" if $filename =~ /\s*pgms\s*\b/i;
  }
 
  if( $dir =~ /Svt/ ) {

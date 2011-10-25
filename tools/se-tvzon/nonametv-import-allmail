@@ -9,6 +9,7 @@ tools/nonametv-import FTV $1 $2 $3
 tools/nonametv-import Kanal10 $1 $2 $3
 tools/nonametv-import Motors $1 $2 $3
 tools/nonametv-import Mtve_mail $1 $2 $3
+tools/nonametv-import Mtvbundle $1 $2 $3
 tools/nonametv-import NatGeoWild $1 $2 $3
 tools/nonametv-import OppnaKanalenGoteborg $1 $2 $3
 tools/nonametv-import OutdoorChannel $1 $2 $3

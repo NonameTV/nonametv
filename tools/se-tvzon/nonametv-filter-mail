@@ -59,6 +59,18 @@ foreach my $msg ($infolder->messages) {
   elsif( $fromaddr =~ /\@disney.com/i ) {
     MoveMessage( $msg, "Disney" );
   }
+  elsif( $fromaddr =~ /\@googlemail.com/i ) {
+    MoveMessage( $msg, "Gmail" );
+  }
+  elsif( $fromaddr =~ /\@playboytv.co.uk/i ) {
+    MoveMessage( $msg, "Playboy" );
+  }
+  elsif( $fromaddr =~ /\@playboy.com/i ) {
+    MoveMessage( $msg, "Playboy" );
+  }
+  elsif( $fromaddr =~ /\@sapphiremedia.com/i ) {
+    MoveMessage( $msg, "Hustler" );
+  }
   elsif( $fromaddr =~ /\@globallistings.info/i ) {
     MoveMessage( $msg, "GlobalListings" );
   }
