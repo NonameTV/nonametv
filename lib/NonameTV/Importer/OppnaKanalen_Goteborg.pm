@@ -5,7 +5,7 @@ use warnings;
 
 =pod
 
-Channels: ÷ppnaKanalen i Gˆteborg (http://www.oppnakanalengoteborg.se/)
+Channels: √ñppnaKanalen i G√∂teborg (http://www.oppnakanalengoteborg.se/)
 
 Import data from Word-files delivered via e-mail.  Each day
 is handled as a separate batch.
@@ -38,6 +38,8 @@ sub new {
 
   my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
   $self->{datastorehelper} = $dsh;
+  
+  $self->{datastore}->{augment} = 1;
 
   return $self;
 }
@@ -89,7 +91,7 @@ sub ImportContentFile
 
     my( $text ) = norm( $div->findvalue( '.' ) );
 
-    if( isDate( $text ) ) { # the line with the date in format 'MÂndag 11 Juli'
+    if( isDate( $text ) ) { # the line with the date in format 'M√•ndag 11 Juli'
 
       $date = ParseDate( $text );
 
@@ -115,15 +117,15 @@ sub ImportContentFile
       undef @ces;
       undef $description;
 
-    } elsif( isTime( $text ) ) {
+    } elsif( isShow( $text ) ) {
     	
-    	my($time, $endtime) = ParseTime($text);
+    	my($time, $endtime, $title) = ParseShow($text);
     
     	my $ce = {
         channel_id  => $chd->{id},
         start_time  => $time,
         end_time	  => $endtime,
-        title			  => "",
+        title			  => norm($title),
         description => "",
       };
       
@@ -141,11 +143,6 @@ sub ImportContentFile
         
         for( my $i=0; $i<scalar(@sentences); $i++ )
   			{
-  				# Set the title if title is empty (aka not set:ed)
-  				if(defined($element) and $element->{title} eq "") {
-  					$element->{title} .= $sentences[$i];
-  				}
-  				
   				# Set the description if it's not the title
   				if(defined($element) and ($element->{description} eq "") and ($sentences[$i] ne $element->{title})) {
   					$element->{description} .= $sentences[$i];
@@ -162,6 +159,65 @@ sub ImportContentFile
 							}
   					}
   				}
+  				
+  				# Only Ethio-TV seems to fail, I know this is ugly. But whattaheck.
+  				if(defined($element) and $element->{title} ne "") {
+  					if( $element->{title} =~ /^Ny gl.*dje\s*/i ) {
+  						my ( $description ) = ( $element->{title} =~ /^Ny gl.*dje\s*(.*)$/ );
+  						$element->{title} = "Ny gl√§dje";
+  						if($description) {
+  							$description =~ s/^Ny gl.*dje//; 
+	  						$element->{description} .= $description;
+							}
+  					}
+  				}
+  			
+  			
+  			# Only Ethio-TV seems to fail, I know this is ugly. But whattaheck.
+  				if(defined($element) and $element->{title} ne "") {
+  					if( $element->{title} =~ /^Democracy now!\s*/i ) {
+  						my ( $description ) = ( $element->{title} =~ /^Democracy now!\s*(.*)$/ );
+  						$element->{title} = "Democracy now!";
+  						if($description) {
+  							$description =~ s/^Democracy now!//; 
+	  						$element->{description} .= $description;
+							}
+  					}
+  				}
+  				# Only Ethio-TV seems to fail, I know this is ugly. But whattaheck.
+  				if(defined($element) and $element->{title} ne "") {
+  					if( $element->{title} =~ /^Crystal Boys\s*/i ) {
+  						my ( $description ) = ( $element->{title} =~ /^Crystal Boys\s*(.*)$/ );
+  						$element->{title} = "Crystal Boys";
+  						if($description) {
+  							$description =~ s/^Crystal Boys//; 
+	  						$element->{description} .= $description;
+							}
+  					}
+  				}
+  				# Only Ethio-TV seems to fail, I know this is ugly. But whattaheck.
+  				if(defined($element) and $element->{title} ne "") {
+  					if( $element->{title} =~ /^Bibelskola\s*/i ) {
+  						my ( $description ) = ( $element->{title} =~ /^Bibelskola\s*(.*)$/ );
+  						$element->{title} = "Bibelskola";
+  						if($description) {
+  							$description =~ s/^Bibelskola//; 
+	  						$element->{description} .= $description;
+							}
+  					}
+  				}
+  				# Only Ethio-TV seems to fail, I know this is ugly. But whattaheck.
+  				if(defined($element) and $element->{title} ne "") {
+  					if( $element->{title} =~ /^Helluntaiseurakunta\s*/i ) {
+  						my ( $description ) = ( $element->{title} =~ /^Helluntaiseurakunta\s*(.*)$/ );
+  						$element->{title} = "Helluntaiseurakunta";
+  						if($description) {
+  							$description =~ s/^Helluntaiseurakunta//; 
+	  						$element->{description} .= $description;
+							}
+  					}
+  				}
+  				
   			}
   			
   			# If title is set:ed check if it has episode info in title
@@ -195,7 +251,7 @@ sub ImportContentFile
 
 sub isDate {
   my ( $text ) = @_;
-  # format 'MÂndag 11/8 2011'
+  # format 'M√•ndag 11/8 2011'
   if( $text =~ /(M.ndag|Tisdag|Onsdag|Torsdag|Fredag|L.rdag|S.ndag)\s*\d+\/\d+\s*\d+$/i ) {
     return 1;
   }
@@ -219,24 +275,24 @@ my ( $weekday, $day, $month, $year  ) =
   return $dt->ymd("-");
 }
 
-sub isTime {
+
+sub isShow {
   my ( $text ) = @_;
 
-  # format '14.00 Gudstj‰nst med LArs Larsson - detta ‰r texten'
-  if( $text =~ /^(\d+[:\.]\d+)\s*\-\s*(\d+[:\.]\d+)\s*$/i ){
+  # format '14.00 Gudstj√§nst med LArs Larsson - detta √§r texten'
+  if( $text =~ /^(\d+[:\.]\d+)\s*\-\s*(\d+[:\.]\d+)\s*/i ){
     return 1;
   }
 
   return 0;
 }
 
-sub ParseTime {
+sub ParseShow {
   my( $text ) = @_;
 
-  my( $time, $endtime );
+  my( $time, $endtime, $title );
 
-	# The text is in the format: 18.50 - 19.30
-  ( $time, $endtime ) = ( $text =~ /^(\d+[:\.]\d+)\s*\-\s*(\d+[:\.]\d+)\s*$/ );
+  ( $time, $endtime, $title ) = ( $text =~ /^(\d+[:\.]\d+)\s*\-\s*(\d+[:\.]\d+)\s+(.*)$/ );
 
   my ( $hour , $min ) = ( $time =~ /^(\d+).(\d+)$/ );
   my ( $endhour , $endmin ) = ( $endtime =~ /^(\d+).(\d+)$/ );
@@ -252,9 +308,7 @@ sub ParseTime {
   $time = sprintf( "%02d:%02d", $hour, $min );
   $endtime = sprintf( "%02d:%02d", $endhour, $endmin );
 
-	#print("time: $time\n");
-
-  return( $time, $endtime );
+  return( $time, $endtime, $title);
 }
 
 
