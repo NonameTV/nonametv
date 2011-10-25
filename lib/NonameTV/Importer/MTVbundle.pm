@@ -59,11 +59,11 @@ sub ImportContentFile {
   my $date;
   my $currdate = "x";
   my $colchannel = 0;
-  my $colweek = 1;
-  my $coldate = 2;
-  my $coltime = 3;
-  my $coltitle = 4;
-  my $coldescription = 5;
+  my $colweek = 9;
+  my $coldate = 1;
+  my $coltime = 2;
+  my $coltitle = 3;
+  my $coldescription = 4;
 
   my $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
 
