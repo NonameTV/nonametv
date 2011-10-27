@@ -1,6 +1,7 @@
 package NonameTV::Importer::ZDF_util;
 
 use strict;
+use utf8;
 use warnings;
 
 =pod
@@ -149,6 +150,22 @@ sub ParseData
       }
     }
 
+    my $label = $sc->findvalue( './programm//label' );
+    if( $label ) {
+      # use label as title and push title to subtitle for some labels
+      if( $label eq '37º' ){
+        d( "improving title '" . $sce{title} . "' with label '". $label . "'" );
+        if( $sce{subtitle} ){
+          $sce{subtitle} = $sce{title} . ' - ' . $sce{subtitle};
+        }else{
+          $sce{subtitle} = $sce{title};
+        }
+        $sce{title} = $label;
+        $sce{program_type} = 'series';
+      }else{
+        p( "found label: ". $label );
+      }
+    }
 
     my ( $program_type, $categ ) = $ds->LookupCat( "DreiSat_genre", $genre );
     AddCategory( \%sce, $program_type, $categ );
