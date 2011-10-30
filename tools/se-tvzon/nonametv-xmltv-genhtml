@@ -114,7 +114,7 @@ foreach my $channel (sort keys %channels)
 {
   print OUT << "EOD";
 <tr>
-	<th scope='row'><img src='/chanlogos/44x44/$channel.png' /></th>
+	<th scope='row'><img src='http://chanlogos.tvzon.se/44x44/$channel.png' /></th>
   <th scope='row'><a href='/nowonchannel.php?channel=$channel'>$channel</a></th>
 
 EOD
@@ -198,9 +198,9 @@ foreach my $channel (sort keys %channels)
   print OUT << "EOREC";
 <tr>
   <td>$channel</td>
-  <td><img src="http://xmltv.tvzon.se/chanlogos/$channel.png"></td>
-  <td><img src="http://xmltv.tvzon.se/chanlogos/44x44/$channel.png"></td>
-  <td><img src="http://xmltv.tvzon.se/chanlogos/16x16/$channel.png"></td>
+  <td><img src="http://chanlogos.tvzon.se/chanlogos/$channel.png"></td>
+  <td><img src="http://chanlogos.tvzon.se/chanlogos/44x44/$channel.png"></td>
+  <td><img src="http://chanlogos.tvzon.se/chanlogos/16x16/$channel.png"></td>
 </tr>
 
 EOREC

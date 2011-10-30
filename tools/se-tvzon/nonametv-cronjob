@@ -96,3 +96,6 @@ $one tools/se-tvzon/nonametv-upload $Q
 
 # Run after, everything
 $d rsync -rsh=ssh --delete /var/local/nonametv/html/00status.html tvzon:/var/www/xmltv/
+
+# Some users seems to download this file from the base url instead, this will fix it.
+$d rsync -rsh=ssh --delete /var/local/nonametv/xmltv/channels.xml.gz tvzon:/var/www/xmltv/
