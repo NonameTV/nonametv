@@ -171,8 +171,9 @@ sub ImportFlatXLS
 			$oWkC = $oWkS->{Cells}[$iR][29];
       my $episode = $oWkC->Value;
       
-      $ce->{episode} = ". " . ($episode-1) . " ." if $episode ne "";
-
+      if($episode > 0) {
+      	$ce->{episode} = ". " . ($episode-1) . " ." if $episode ne "";
+			}
 		## END
 		
         $dsh->AddProgramme( $ce );
