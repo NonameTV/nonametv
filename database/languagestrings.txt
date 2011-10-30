@@ -42,7 +42,7 @@ listchannels,datasource,Izvor,hr
 listchannels,footertext,,hr
 nowshowing,title,"Now showing",en
 nowshowing,title,"Trenutno na programu",hr
-nowshowing,headertext,"Put whatever you want here. This will be shown on the top of the NowShowing page.",en
+nowshowing,headertext,"What's now showing on the channels?",en
 nowshowing,headertext,,hr
 nowshowing,categories,categories,en
 nowshowing,categories,kategorije,hr
