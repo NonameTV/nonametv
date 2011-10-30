@@ -33,7 +33,7 @@ BEGIN {
                       norm normLatin1 AddCategory
                       ParseDescCatSwe FixProgrammeData
 		      ParseXml ParseXmltv ParseJson
-                      MonthNumber
+                      MonthNumber DayNumber
                       CompareArrays
                      /;
 }
@@ -906,6 +906,38 @@ sub MonthNumber {
   my $lcmonth = $monthnames{lc $monthname};
 
   return $month||$lcmonth;
+}
+
+=pod
+
+Convert day name to day number
+
+=cut
+
+sub DayNumber {
+  my( $dayname , $lang ) = @_;
+
+  my( @days_1, @days_2 );
+
+  if( $lang =~ /^en$/ ){
+    @days_1 = qw/Monday Tuesday Wednesday Thursday Friday Saturday Sunday/;
+    @days_2 = qw/0 1 2 3 4 5 6/;
+  }
+
+  my %daynames = ();
+
+  for( my $i = 0; $i < scalar(@days_1); $i++ ){
+    $daynames{$days_1[$i]} = $i+1;
+  }
+
+  for( my $i = 0; $i < scalar(@days_2); $i++ ){
+    $daynames{$days_2[$i]} = $i+1;
+  }
+
+  my $day = $daynames{$dayname};
+  my $lcday = $daynames{lc $dayname};
+
+  return $day||$lcday;
 }
 
 =begin nd
