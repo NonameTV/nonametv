@@ -16,7 +16,13 @@ Features:
 use utf8;
 
 use DateTime;
-use Spreadsheet::ParseExcel;
+#use Spreadsheet::ParseExcel;
+use Spreadsheet::XLSX;
+use Spreadsheet::XLSX::Utility2007 qw(ExcelFmt ExcelLocaltime LocaltimeExcel);
+
+use Text::Iconv;
+ my $converter = Text::Iconv -> new ("utf-8", "windows-1251");
+
 use Data::Dumper;
 use File::Temp qw/tempfile/;
 
@@ -53,21 +59,24 @@ sub ImportContentFile {
   my $ds = $self->{datastore};
 
   # Only process .xls files.
-  return if( $file !~ /\.xls$/i );
+  return if( $file !~ /\.xlsx$/i );
   progress( "MTVbundle: $xmltvid: Processing $file" );
 
   my $date;
   my $currdate = "x";
   my $colchannel = 0;
-  my $colweek = 1;
-  my $coldate = 2;
-  my $coltime = 3;
-  my $coltitle = 4;
-  my $coldescription = 5;
+#  my $colweek = 1;
+  my $coldate = 1;
+  my $coltime = 2;
+  my $coltitle = 3;
+  my $coldescription = 4;
 
-  my $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
+#  my $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );  staro, za .xls
+  my $oBook = Spreadsheet::XLSX -> new ($file, $converter);  
 
   # main loop
+#progress( "MTVbund Proces $oBook->{SheetCount}" );
+
   for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
 
     my $oWkS = $oBook->{Worksheet}[$iSheet];
@@ -107,7 +116,15 @@ sub ImportContentFile {
       # time
       $oWkC = $oWkS->{Cells}[$iR][$coltime];
       next if( ! $oWkC );
-      my $time = $oWkC->Value if( $oWkC->Value );
+
+
+
+      my $time = 0;  # fix for  12:00AM
+      $time=$oWkC->{Val} if( $oWkC->Value );
+
+#Convert Excel Time -> localtime
+      $time = ExcelFmt('hh:mm', $time);
+
 
       # title
       $oWkC = $oWkS->{Cells}[$iR][$coltitle];
@@ -127,8 +144,8 @@ sub ImportContentFile {
         title => $title,
       };
 
-      $ce->{description} = $description if $description;
-
+      $ce->{cx_short_description} = $description if $description;
+AddCategory( $ce, "music", "general" );
       $dsh->AddProgramme( $ce );
     }
 
@@ -143,8 +160,15 @@ sub ParseDate
 {
   my ( $dinfo ) = @_;
 
-  # format '1-23-09'
-  my( $month, $day, $year ) = ( $dinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
+  my( $month, $day, $year );
+#      progress("Mdatum $dinfo");
+  if( $dinfo =~ /^\d{4}-\d{2}-\d{2}$/ ){ # format   '2010-04-22' 
+    ( $year, $month, $day ) = ( $dinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
+  } elsif( $dinfo =~ /^\d{2}.\d{2}.\d{4}$/ ){ # format '11/18/2011'
+    ( $month, $day, $year ) = ( $dinfo =~ /^(\d+).(\d+).(\d+)$/ );
+  } elsif( $dinfo =~ /^\d{2}-\d{2}-\d{2}$/ ){ # format '10-18-11'
+    ( $month, $day, $year ) = ( $dinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
+  }
 
   return undef if( ! $year );
 
