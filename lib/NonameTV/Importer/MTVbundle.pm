@@ -166,7 +166,7 @@ sub ParseDate
     ( $year, $month, $day ) = ( $dinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
   } elsif( $dinfo =~ /^\d{2}.\d{2}.\d{4}$/ ){ # format '11/18/2011'
     ( $month, $day, $year ) = ( $dinfo =~ /^(\d+).(\d+).(\d+)$/ );
-  } elsif( $dinfo =~ /^\d{2}-\d{2}-\d{2}$/ ){ # format '10-18-11'
+ } elsif( $dinfo =~ /^\d{1,2}-\d+-\d{1,2}$/ ){ # format '10-18-11' or '1-9-11'
     ( $month, $day, $year ) = ( $dinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
   }
 
