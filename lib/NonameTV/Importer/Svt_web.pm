@@ -320,17 +320,7 @@ sub extract_extra_info
       $ce->{aspect} = "16:9";
       $sentences[$i] = "";
     }
-    elsif( my( $directors ) = ($sentences[$i] =~ /^Regi:\s*(.*)/) )
-    {
-      $ce->{directors} = parse_person_list( $directors );
-      $sentences[$i] = "";
-    }
-    elsif( my( $actors ) = ($sentences[$i] =~ /^I rollerna:\s*(.*)/ ) )
-    {
-      $ce->{actors} = parse_person_list( $actors );
-      $sentences[$i] = "";
-    }
-    elsif( $sentences[$i] =~ /^(�ven|Fr�n)
+    elsif( $sentences[$i] =~ /^(.ven|Fr.n)
      ((
       \s+|
       [A-Z]\S+|
@@ -343,12 +333,32 @@ sub extract_extra_info
      \.\s*
      $/x )
     {
+    	$sentences[$i] = "";
 #      $self->parse_other_showings( $ce, $sentences[$i] );
     }
     elsif( $sentences[$i] =~ /^Text(at|-tv)\s+sid(an)*\s+\d+\.$/ )
     {
 #      $ce->{subtitle} = 'sv,teletext';
-#      $sentences[$i] = "";
+      $sentences[$i] = "";
+    }
+    elsif( $sentences[$i] =~ /^Visas\s+i\s*\.$/ )
+    {
+      $sentences[$i] = "";
+    }
+    elsif( $sentences[$i] eq "HD." )
+    {
+      # Set somethiing?
+      $sentences[$i] = "";
+    }
+    elsif( my( $directors ) = ($sentences[$i] =~ /^Regi:\s*(.*)/) )
+    {
+      $ce->{directors} = parse_person_list( $directors );
+      $sentences[$i] = "";
+    }
+    elsif( my( $actors ) = ($sentences[$i] =~ /^I rollerna:\s*(.*)/ ) )
+    {
+      $ce->{actors} = parse_person_list( $actors );
+      $sentences[$i] = "";
     }
   }
   
