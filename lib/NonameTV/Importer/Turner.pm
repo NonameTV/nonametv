@@ -245,6 +245,9 @@ sub ImportXLS
           # in the memory already
           if( $title ne "x" ){
 
+						# Remove (UU) and so on
+						$title =~ s/\(.*\)//g;
+
             my $ce = {
               channel_id   => $channel_id,
               start_time => $time,
