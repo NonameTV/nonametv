@@ -334,6 +334,11 @@ sub extract_extra_info
     	# swedish title?
       $sentences[$i] = "";
     }
+    elsif( my( $aven ) = ($sentences[$i] =~ /.ven\s*(.*)$/ ) )
+    {
+    	# Även 17/12
+      $sentences[$i] = "";
+    }
     elsif( my( $rating ) = ($sentences[$i] =~ /.ldersgr.ns:\s*(.*)$/ ) )
     {
     	# Agerating
