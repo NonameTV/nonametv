@@ -84,10 +84,13 @@ sub ImportContent
       #print "subtitle>$subtitle<\n";
       #print "desc>$desc<\n";
 
+			# Remove (r) and so on
+			$title =~ s/\(.*\)//g;
+
       my $ce = {
-        title => $title,
-        subtitle => $subtitle,
-        description => $desc,
+        title => norm($title),
+        subtitle => norm($subtitle),
+        description => norm($desc),
         start_time => $start,
       };
     
