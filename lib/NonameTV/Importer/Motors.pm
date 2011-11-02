@@ -152,12 +152,12 @@ sub ImportXLS {
 
       my $ce = {
         channel_id => $channel_id,
-        title => $title,
+        title => norm($title),
         start_time => $time,
       };
 
-      $ce->{subtitle} = $subtitle if $subtitle;
-      $ce->{description} = $description if $description;
+      $ce->{subtitle} = norm($subtitle) if $subtitle;
+      $ce->{description} = norm($description) if $description;
 
       $dsh->AddProgramme( $ce );
     }

@@ -184,7 +184,7 @@ sub ImportFlatXLS
           start_time   => $time,
 		  subtitle     => norm($subtitle),
           episode      => $episode,
-	description	=> $epg,
+	description	=> norm($epg),
         };
 
 		## Episodes and so on ( Doesn't seem to work, fix this later. )
