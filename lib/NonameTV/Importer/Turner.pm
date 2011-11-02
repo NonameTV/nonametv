@@ -39,6 +39,9 @@ sub new {
 
   my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
   $self->{datastorehelper} = $dsh;
+  
+  # use augment
+  $self->{datastore}->{augment} = 1;
 
   return $self;
 }
