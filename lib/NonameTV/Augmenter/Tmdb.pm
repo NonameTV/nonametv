@@ -57,13 +57,13 @@ sub FillCredits( $$$$$ ) {
   my @nodes = $doc->findnodes( '/OpenSearchDescription/movies/movie/cast/person[@job=\'' . $job . '\']' );
   my @credits = ( );
   foreach my $node ( @nodes ) {
-    my $name = $node->findvalue( './@name' );
+    my $name = norm($node->findvalue( './@name' ));
     if( $job eq 'Actor' ) {
       my $role = $node->findvalue( './@character' );
       if( $role ) {
         # skip roles like '-', but allow roles like G, M, Q (The Guru, James Bond)
         if( ( length( $role ) > 1 )||( $role =~ m|^[A-Z]$| ) ){
-          $name .= ' (' . $role . ')';
+          $name .= ' (' . norm($role) . ')';
         } else {
           w( 'Unlikely role \'' . $role . '\' for actor. Fix it at ' . $resultref->{url} . '/cast/edit_cast' );
         }

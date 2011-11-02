@@ -133,12 +133,12 @@ sub FillHash( $$$$ ) {
   # only add series actors if its not a special
   if( $episode->{SeasonNumber} != 0 ){
     if( $series->{Actors} ) {
-      push( @actors, split( '\|', $series->{Actors} ) );
+      push( @actors, split( '\|', norm($series->{Actors}) ) );
     }
   }
   # always add the episode cast
   if( $episode->{GuestStars} ) {
-    push( @actors, split( '\|', $episode->{GuestStars} ) );
+    push( @actors, split( '\|', norm($episode->{GuestStars}) ) );
   }
   foreach( @actors ){
     $_ = norm( $_ );
@@ -156,8 +156,8 @@ sub FillHash( $$$$ ) {
 	  $resultref->{actors} = undef;
   }
 
-	$resultref->{directors} = $self->ParseCast( $episode->{Director} );
-	$resultref->{writers} = $self->ParseCast( $episode->{Writer} );
+	$resultref->{directors} = $self->ParseCast( norm($episode->{Director}) );
+	$resultref->{writers} = $self->ParseCast( norm($episode->{Writer}) );
 
   $resultref->{program_type} = 'series';  
   # Genre
