@@ -72,7 +72,7 @@ sub ImportContentFile {
   my $coldescription = 4;
 
 my $oBook;
-if ( $file =~ /\.xlsx$/i ){ progress( "MTVbu proso ifff" );  $oBook = Spreadsheet::XLSX -> new ($file, $converter); }
+if ( $file =~ /\.xlsx$/i ){ progress( "using .xlsx" );  $oBook = Spreadsheet::XLSX -> new ($file, $converter); }
 else { $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );  }   #  staro, za .xls
 
 
