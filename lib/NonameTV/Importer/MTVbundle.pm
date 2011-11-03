@@ -5,7 +5,7 @@ use warnings;
 
 =pod
 
-Import data from XLS files delivered via e-mail.
+Import data from XLS xor XLSX files delivered via e-mail.
 One file contains schedules for more channels,
 each channel on one sheet.
 
@@ -16,7 +16,7 @@ Features:
 use utf8;
 
 use DateTime;
-#use Spreadsheet::ParseExcel;
+use Spreadsheet::ParseExcel;
 use Spreadsheet::XLSX;
 use Spreadsheet::XLSX::Utility2007 qw(ExcelFmt ExcelLocaltime LocaltimeExcel);
 
@@ -58,8 +58,8 @@ sub ImportContentFile {
   my $dsh = $self->{datastorehelper};
   my $ds = $self->{datastore};
 
-  # Only process .xls files.
-  return if( $file !~ /\.xlsx$/i );
+  # Only process .xls or .xlsx files.
+  return if( $file !~ /\.xlsx|.xls$/i );
   progress( "MTVbundle: $xmltvid: Processing $file" );
 
   my $date;
@@ -71,8 +71,10 @@ sub ImportContentFile {
   my $coltitle = 3;
   my $coldescription = 4;
 
-#  my $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );  staro, za .xls
-  my $oBook = Spreadsheet::XLSX -> new ($file, $converter);  
+my $oBook;
+if ( $file =~ /\.xlsx$/i ){ progress( "MTVbu proso ifff" );  $oBook = Spreadsheet::XLSX -> new ($file, $converter); }
+else { $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );  }   #  staro, za .xls
+
 
   # main loop
 #progress( "MTVbund Proces $oBook->{SheetCount}" );
