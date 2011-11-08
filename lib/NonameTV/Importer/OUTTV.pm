@@ -41,6 +41,8 @@ sub new {
 
   my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore}, "Europe/London" );
   $self->{datastorehelper} = $dsh;
+  
+  $self->{datastore}->{augment} = 1;
 
   return $self;
 }
@@ -60,12 +62,12 @@ sub ImportContentFile {
   return if( $file !~ /\.xlsx|.xls$/i );
   progress( "OUTTV: $xmltvid: Processing $file" );
 
+	my %columns = ();
   my $date;
   my $currdate = "x";
   my $coldate = 0;
   my $coltime = 1;
   my $coltitle = 4;
-  my $coldescription = 11;
   my $colepisode = 9;
   my $colseason = 8;
   my $colgenre = 5;
@@ -82,6 +84,7 @@ else { $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );  }   #  staro
 
     progress( "OUTTV: $chd->{xmltvid}: Processing worksheet: $oWkS->{Name}" );
 
+		my $foundcolumns = 0;
     # browse through rows
     for(my $iR = $oWkS->{MinRow} ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
 
@@ -126,11 +129,6 @@ else { $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );  }   #  staro
       next if( ! $oWkC );
       my $title = $oWkC->Value if( $oWkC->Value );
 
-      # description
-      $oWkC = $oWkS->{Cells}[$iR][$coldescription];
-      next if( ! $oWkC );
-      my $description = $oWkC->Value if( $oWkC->Value );
-
       progress("OUTTV: $xmltvid: $time - $title");
 
       my $ce = {
@@ -166,7 +164,6 @@ else { $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );  }   #  staro
 			}
       
 
-      $ce->{description} = norm($description) if $description;
       $dsh->AddProgramme( $ce );
     }
 
