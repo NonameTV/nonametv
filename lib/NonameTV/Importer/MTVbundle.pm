@@ -5,7 +5,7 @@ use warnings;
 
 =pod
 
-Import data from XLS files delivered via e-mail.
+Import data from XLS xor XLSX files delivered via e-mail.
 One file contains schedules for more channels,
 each channel on one sheet.
 
@@ -17,6 +17,12 @@ use utf8;
 
 use DateTime;
 use Spreadsheet::ParseExcel;
+use Spreadsheet::XLSX;
+use Spreadsheet::XLSX::Utility2007 qw(ExcelFmt ExcelLocaltime LocaltimeExcel);
+
+use Text::Iconv;
+ my $converter = Text::Iconv -> new ("utf-8", "windows-1251");
+
 use Data::Dumper;
 use File::Temp qw/tempfile/;
 
@@ -52,22 +58,27 @@ sub ImportContentFile {
   my $dsh = $self->{datastorehelper};
   my $ds = $self->{datastore};
 
-  # Only process .xls files.
-  return if( $file !~ /\.xls$/i );
+  # Only process .xls or .xlsx files.
+  return if( $file !~ /\.xlsx|.xls$/i );
   progress( "MTVbundle: $xmltvid: Processing $file" );
 
   my $date;
   my $currdate = "x";
   my $colchannel = 0;
-  my $colweek = 9;
+#  my $colweek = 1;
   my $coldate = 1;
   my $coltime = 2;
   my $coltitle = 3;
   my $coldescription = 4;
 
-  my $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
+my $oBook;
+if ( $file =~ /\.xlsx$/i ){ progress( "using .xlsx" );  $oBook = Spreadsheet::XLSX -> new ($file, $converter); }
+else { $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );  }   #  staro, za .xls
+
 
   # main loop
+#progress( "MTVbund Proces $oBook->{SheetCount}" );
+
   for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
 
     my $oWkS = $oBook->{Worksheet}[$iSheet];
@@ -107,7 +118,15 @@ sub ImportContentFile {
       # time
       $oWkC = $oWkS->{Cells}[$iR][$coltime];
       next if( ! $oWkC );
-      my $time = $oWkC->Value if( $oWkC->Value );
+
+
+
+      my $time = 0;  # fix for  12:00AM
+      $time=$oWkC->{Val} if( $oWkC->Value );
+
+#Convert Excel Time -> localtime
+      $time = ExcelFmt('hh:mm', $time);
+
 
       # title
       $oWkC = $oWkS->{Cells}[$iR][$coltitle];
@@ -127,8 +146,8 @@ sub ImportContentFile {
         title => $title,
       };
 
-      $ce->{description} = $description if $description;
-
+      $ce->{cx_short_description} = $description if $description;
+AddCategory( $ce, "music", "general" );
       $dsh->AddProgramme( $ce );
     }
 
@@ -144,10 +163,12 @@ sub ParseDate
   my ( $dinfo ) = @_;
 
   my( $month, $day, $year );
-
-  if( $dinfo =~ /^\d{4}-\d{2}-\d{2}$/ ){ # format '2010-04-22'
+#      progress("Mdatum $dinfo");
+  if( $dinfo =~ /^\d{4}-\d{2}-\d{2}$/ ){ # format   '2010-04-22' 
     ( $year, $month, $day ) = ( $dinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
-  } elsif( $dinfo =~ /^\d+-\d+-\d+$/ ){ # format '1-23-09'
+  } elsif( $dinfo =~ /^\d{2}.\d{2}.\d{4}$/ ){ # format '11/18/2011'
+    ( $month, $day, $year ) = ( $dinfo =~ /^(\d+).(\d+).(\d+)$/ );
+  } elsif( $dinfo =~ /^\d{1,2}-\d{1,2}-\d{2}$/ ){ # format '10-18-11' or '1-9-11'
     ( $month, $day, $year ) = ( $dinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
   }
 
