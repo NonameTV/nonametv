@@ -75,6 +75,7 @@ sub FilterContent {
   $$cref =~ s|&#x92;|'|g;
   $$cref =~ s|&#x93;|"|g;
   $$cref =~ s|&#x94;|"|g;
+  $$cref =~ s|&#x95;|&#x2022;|g; # *
   $$cref =~ s|&#x96;|-|g;
   $$cref =~ s|&#x97;|-|g;
   $$cref =~ s|&#x99;|&#x2122;|g; # TM

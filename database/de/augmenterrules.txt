@@ -124,3 +124,7 @@
 39,Tvdb,"Stephen King's Dead Zone",\N,\N,77955,episodetitle
 49,Fixups,SimsalaGrimm,subtitle,Schneewittchen,"Schneewittchen und die Sieben Zwerge",replacesubtitle
 57,Fixups,"Löwenzahn Classics",\N,\N,Löwenzahn,replacetitle
+\N,Fixups,"^(Donna Leon)\s+-\s+(.*)$",\N,\N,\N,splittitle
+73,Fixups,"Patente &Talente",\N,\N,"Patente & Talente",replacetitle
+\N,Fixups,37º,\N,\N,"37 Grad",replacetitle
+84,Fixups,^(37º):\s+(.*)$,\N,\N,\N,splittitle
