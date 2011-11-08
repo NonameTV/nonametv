@@ -19,6 +19,7 @@ NONAMETV="tools/nonametv-import"
 #$NONAMETV SverigesRadio $1 $2 $3
 #$NONAMETV Eurosport $1 $2 $3
 
+$NONAMETV AFN $1 $2 $3
 $NONAMETV Arte_http $1 $2 $3
 $NONAMETV DasErsteDE $1 $2 $3
 $NONAMETV DRadioDE $1 $2 $3
