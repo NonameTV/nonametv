@@ -18,6 +18,11 @@ use POSIX;
 use DateTime;
 use XML::LibXML;
 use Spreadsheet::ParseExcel;
+use Spreadsheet::XLSX;
+use Spreadsheet::XLSX::Utility2007 qw(ExcelFmt ExcelLocaltime LocaltimeExcel);
+
+use Text::Iconv;
+ my $converter = Text::Iconv -> new ("utf-8", "windows-1251");
 
 use NonameTV qw/norm/;
 use NonameTV::DataStore::Helper;
@@ -50,7 +55,7 @@ sub ImportContentFile {
 
   $self->{fileerror} = 0;
 
-  if( $file =~ /\.xls$/i ){
+  if( $file =~ /\.xlsx|.xls$/i ){
     $self->ImportXLS( $file, $chd );
   } else {
     error( "Mtve_mail: Unknown file format: $file" );
@@ -72,9 +77,11 @@ sub ImportXLS
   my $currdate = "x";
   my @ces;
   
-  progress( "Mtve_mail: $chd->{xmltvid}: Processing flat XLS $file" );
+  progress( "Mtve_mail: $chd->{xmltvid}: Processing $file" );
 
-  my $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
+	my $oBook;
+	if ( $file =~ /\.xlsx$/i ){ progress( "using .xlsx" );  $oBook = Spreadsheet::XLSX -> new ($file, $converter); }
+	else { $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );  }   #  staro, za .xls
 
   # main loop
   foreach my $oWkS (@{$oBook->{Worksheet}}) {
@@ -115,16 +122,27 @@ sub ImportXLS
         next;
       }
 
-
+			my $oWkDate = $oWkS->{Cells}[$iR][$columns{'StartDate'}];
+      next if( ! $oWkDate );
 
       # date & Time - column 1 ('Date')
-      my $date = ParseDate( $oWkS->{Cells}[$iR][$columns{'StartDate'}]->Value );
+      my $date = ParseDate( $oWkDate->Value );
       next if( ! $date );
       
-      my $time = $oWkS->{Cells}[$iR][$columns{'StartTime'}]->Value;
+      my $oWkTime = $oWkS->{Cells}[$iR][$columns{'StartTime'}];
+      my $time = 0;  # fix for  12:00AM	->Value
+      $time = $oWkTime->{Val} if( $oWkTime->Value );
+
+			#Convert Excel Time -> localtime
+ 	 		$time = ExcelFmt('hh:mm', $time);
       
-      my $enddate = $oWkS->{Cells}[$iR][$columns{'EndDate'}]->Value;
-      my $endtime = $oWkS->{Cells}[$iR][$columns{'EndTime'}]->Value;
+      my $enddate = ParseDate($oWkS->{Cells}[$iR][$columns{'EndDate'}]->Value);
+      my $oWkendTime = $oWkS->{Cells}[$iR][$columns{'EndTime'}];
+      my $endtime = 0;  # fix for  12:00AM	->Value
+      $endtime = $oWkendTime->{Val} if( $oWkendTime->Value );
+
+			#Convert Excel Time -> localtime
+ 	 		$endtime = ExcelFmt('hh:mm', $endtime);
 
 	  	# Startdate
       if( $date ne $currdate ) {
@@ -195,6 +213,7 @@ sub ParseDate {
   my ( $text ) = @_;
 
   my( $year, $day, $month );
+  #print("text: $text");
 
   # format '2011-04-13'
   if( $text =~ /^\d{4}\-\d{2}\-\d{2}$/i ){
@@ -203,7 +222,9 @@ sub ParseDate {
   # format '2011/05/16'
   } elsif( $text =~ /^\d{4}\/\d{2}\/\d{2}$/i ){
     ( $year, $month, $day ) = ( $text =~ /^(\d{4})\/(\d{2})\/(\d{2})$/i );
-  }
+  } elsif( $text =~ /^\d{1,2}-\d{1,2}-\d{2}$/ ){ # format '10-18-11' or '1-9-11'
+     ( $month, $day, $year ) = ( $text =~ /^(\d+)-(\d+)-(\d+)$/ );
+   }
 
   $year += 2000 if $year < 100;
 
