@@ -5,7 +5,7 @@ use warnings;
 
 =pod
 
-Import data from XLS xor XLSX files delivered via e-mail.
+Import data from XLS or XLSX files delivered via e-mail.
 One file contains schedules for more channels,
 each channel on one sheet.
 
@@ -146,8 +146,8 @@ else { $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );  }   #  staro
         title => $title,
       };
 
-      $ce->{cx_short_description} = $description if $description;
-AddCategory( $ce, "music", "general" );
+      $ce->{description} = $description if $description;
+			#AddCategory( $ce, "music", "general" );
       $dsh->AddProgramme( $ce );
     }
 
