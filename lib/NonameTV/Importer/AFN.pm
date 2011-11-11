@@ -132,7 +132,7 @@ sub ImportContent {
 
     my $title = norm( $row[2] );
     $title =~ s|:$||;
-    my ($rating) = ( $row[3] =~ m|\((.*?)\s*| );
+    my ($rating) = ( $row[3] =~ m|\((.*?)\s*\)| );
     $rating = norm( $rating );
     my ($duration) = ( $row[4] =~ m|\((.*?)\s*mins| );
     $duration = norm( $duration );
