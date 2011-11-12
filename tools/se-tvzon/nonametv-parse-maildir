@@ -248,7 +248,7 @@ sub guess_channel
    if( $dir =~ /TV5Monde/ and $filename =~ /\.xls$/i ) {
      return "tv5monde.org" if $filename =~ /^EPG\s*\b/i;
  }
-   if( $dir =~ /OUTTV/ and $filename =~ /\.xls$/i ) {
+   if( $dir =~ /OUTTV/ and $filename =~ /\.xlsx$/i ) {
      return "outtv.se" if $filename =~ /^OUTTV\s*\b/i;
  }
  
