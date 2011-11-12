@@ -15,11 +15,12 @@ use utf8;
 
 use DateTime;
 use Spreadsheet::ParseExcel;
-use Spreadsheet::XLSX;
-use Spreadsheet::XLSX::Utility2007 qw(ExcelFmt ExcelLocaltime LocaltimeExcel);
+
 
 use Text::Iconv;
  my $converter = Text::Iconv -> new ("utf-8", "windows-1251");
+use Spreadsheet::XLSX;
+use Spreadsheet::XLSX::Utility2007 qw(ExcelFmt ExcelLocaltime LocaltimeExcel);
 
 use Data::Dumper;
 use File::Temp qw/tempfile/;
