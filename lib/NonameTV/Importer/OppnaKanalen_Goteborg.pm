@@ -5,10 +5,7 @@ use warnings;
 
 =pod
 
-Channels: ÖppnaKanalen i Göteborg (http://www.oppnakanalengoteborg.se/)
-
-Import data from Word-files delivered via e-mail.  Each day
-is handled as a separate batch.
+Import data from Y&S
 
 Features:
 
@@ -16,14 +13,13 @@ Features:
 
 use utf8;
 
-use POSIX;
 use DateTime;
-use XML::LibXML;
-use Encode qw/decode/;
+use Spreadsheet::ParseExcel;
 
-use NonameTV qw/MyGet Wordfile2Xml Htmlfile2Xml norm MonthNumber/;
+use NonameTV qw/norm AddCategory MonthNumber/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/progress error/;
+use NonameTV::Config qw/ReadConfig/;
 
 use NonameTV::Importer::BaseFile;
 
@@ -35,352 +31,172 @@ sub new {
   my $self  = $class->SUPER::new( @_ );
   bless ($self, $class);
 
-
   my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
   $self->{datastorehelper} = $dsh;
-  
-  $self->{datastore}->{augment} = 1;
 
   return $self;
 }
 
-sub ImportContentFile
-{
+sub ImportContentFile {
   my $self = shift;
   my( $file, $chd ) = @_;
 
   $self->{fileerror} = 0;
 
-  my $xmltvid = $chd->{xmltvid};
-  my $channel_id = $chd->{id};
+  if( $file =~ /\.xls$/i ){
+    $self->ImportFlatXLS( $file, $chd );
+  } else {
+    error( "OKGoteborg: Unknown file format: $file" );
+  }
+
+  return;
+}
+
+sub ImportFlatXLS
+{
+  my $self = shift;
+  my( $file, $chd ) = @_;
+
   my $dsh = $self->{datastorehelper};
   my $ds = $self->{datastore};
-  
-  return if( $file !~ /\.doc$/i );
 
-  progress( "OKGoteborg: $xmltvid: Processing $file" );
-  
-  my $doc;
-  $doc = Wordfile2Xml( $file );
-
-  if( not defined( $doc ) ) {
-    error( "OKGoteborg: $file: Failed to parse" );
-    return;
-  }
-
-  my @nodes = $doc->findnodes( '//div[@style="  padding: 0.00mm 0.00mm 0.00mm 0.00mm; "]/text()' );
-  foreach my $node (@nodes) {
-    my $str = $node->getData();
-    $node->setData( uc( $str ) );
-  }
-  
-  # Find all paragraphs.
-  my $ns = $doc->find( "//p" );
-  
-  if( $ns->size() == 0 ) {
-    error( "OKGoteborg: $file: No ps found." ) ;
-    return;
-  }
-
+  my %columns = ();
+  my $date;
   my $currdate = "x";
-  my $date = undef;
-  my @ces;
-  my $description;
 
-  foreach my $div ($ns->get_nodelist) {
+  progress( "OKGoteborg: $chd->{xmltvid}: Processing $file" );
 
-    my( $text ) = norm( $div->findvalue( '.' ) );
+  my $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
 
-    if( isDate( $text ) ) { # the line with the date in format 'Måndag 11 Juli'
+    my($iR, $oWkS, $oWkC);
+	
+	  my( $time, $episode );
+  my( $program_title , $program_description );
+    my @ces;
+  
+  # main loop
+  foreach my $oWkS (@{$oBook->{Worksheet}}) {
 
-      $date = ParseDate( $text );
+    for(my $iR = 1 ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
 
-      if( $date ) {
+      # date (column 1)
+      $oWkC = $oWkS->{Cells}[$iR][0];
+      if($oWkC->Value ne "") {
+	  		if(isDate( $oWkC->Value ) ){
+					$date = ParseDate( $oWkC->Value );
+	  		}
+	  	}
+	  
+	  	if($date ne $currdate ) {
+    		if( $currdate ne "x" ) {
+					$dsh->EndBatch( 1 );
+    		}
 
-        progress("OKGoteborg: Date is $date");
+        my $batchid = $chd->{xmltvid} . "_" . $date;
+        $dsh->StartBatch( $batchid , $chd->{id} );
+        $dsh->StartDate( $date , "06:00" );
+        $currdate = $date;
 
-        if( $date ne $currdate ) {
-
-          if( $currdate ne "x" ){
-          	FlushDayData( $xmltvid, $dsh , @ces );
-            $dsh->EndBatch( 1 );
-          }
-
-          my $batch_id = "${xmltvid}_" . $date;
-          $dsh->StartBatch( $batch_id, $channel_id );
-          $dsh->StartDate( $date , "00:00" ); 
-          $currdate = $date;
-        }
+        progress("OKGoteborg: Date is: $date");
       }
 
-      # empty last day array
-      undef @ces;
-      undef $description;
 
-    } elsif( isShow( $text ) ) {
-    	
-    	my($time, $endtime, $title) = ParseShow($text);
-    
-    	my $ce = {
-        channel_id  => $chd->{id},
-        start_time  => $time,
-        end_time	  => $endtime,
-        title			  => norm($title),
-        description => "",
-      };
+      $oWkC = $oWkS->{Cells}[$iR][1];
+      next if( ! $oWkC );
+      my $time = ParseTime( $oWkC->Value );
+      next if( ! $time );
       
-      # add the programme to the array
-      # as we have to add description later
-      push( @ces , $ce );
-    
-    } else {
-        # the last element is the one to which
-        # this description belongs to
-        my $element = $ces[$#ces];
+      $oWkC = $oWkS->{Cells}[$iR][2];
+      my $endtime = "";
+      if($oWkC->Value ne "") {
+      	$endtime = ParseTime( $oWkC->Value );
+      }
 
-        my @sentences = (split_text( $text ), "");
-        
-        
-        for( my $i=0; $i<scalar(@sentences); $i++ )
-  			{
-  				# Set the description if it's not the title
-  				if(defined($element) and ($element->{description} eq "") and ($sentences[$i] ne $element->{title})) {
-  					$element->{description} .= $sentences[$i];
-  				}
-  				
-  				# Only Ethio-TV seems to fail, I know this is ugly. But whattaheck.
-  				if(defined($element) and $element->{title} ne "") {
-  					if( $element->{title} =~ /^Ethio-TV\s*/i ) {
-  						my ( $description ) = ( $element->{title} =~ /^Ethio-TV\s*(.*)$/ );
-  						$element->{title} = "Ethio-TV";
-  						if($description) {
-  							$description =~ s/^Ethio-TV//; 
-	  						$element->{description} .= $description;
-							}
-  					}
-  				}
-  				
-  				# Only Ethio-TV seems to fail, I know this is ugly. But whattaheck.
-  				if(defined($element) and $element->{title} ne "") {
-  					if( $element->{title} =~ /^Ny gl.*dje\s*/i ) {
-  						my ( $description ) = ( $element->{title} =~ /^Ny gl.*dje\s*(.*)$/ );
-  						$element->{title} = "Ny glädje";
-  						if($description) {
-  							$description =~ s/^Ny gl.*dje//; 
-	  						$element->{description} .= $description;
-							}
-  					}
-  				}
-  			
-  			
-  			# Only Ethio-TV seems to fail, I know this is ugly. But whattaheck.
-  				if(defined($element) and $element->{title} ne "") {
-  					if( $element->{title} =~ /^Democracy now!\s*/i ) {
-  						my ( $description ) = ( $element->{title} =~ /^Democracy now!\s*(.*)$/ );
-  						$element->{title} = "Democracy now!";
-  						if($description) {
-  							$description =~ s/^Democracy now!//; 
-	  						$element->{description} .= $description;
-							}
-  					}
-  				}
-  				# Only Ethio-TV seems to fail, I know this is ugly. But whattaheck.
-  				if(defined($element) and $element->{title} ne "") {
-  					if( $element->{title} =~ /^Crystal Boys\s*/i ) {
-  						my ( $description ) = ( $element->{title} =~ /^Crystal Boys\s*(.*)$/ );
-  						$element->{title} = "Crystal Boys";
-  						if($description) {
-  							$description =~ s/^Crystal Boys//; 
-	  						$element->{description} .= $description;
-							}
-  					}
-  				}
-  				# Only Ethio-TV seems to fail, I know this is ugly. But whattaheck.
-  				if(defined($element) and $element->{title} ne "") {
-  					if( $element->{title} =~ /^Bibelskola\s*/i ) {
-  						my ( $description ) = ( $element->{title} =~ /^Bibelskola\s*(.*)$/ );
-  						$element->{title} = "Bibelskola";
-  						if($description) {
-  							$description =~ s/^Bibelskola//; 
-	  						$element->{description} .= $description;
-							}
-  					}
-  				}
-  				# Only Ethio-TV seems to fail, I know this is ugly. But whattaheck.
-  				if(defined($element) and $element->{title} ne "") {
-  					if( $element->{title} =~ /^Helluntaiseurakunta\s*/i ) {
-  						my ( $description ) = ( $element->{title} =~ /^Helluntaiseurakunta\s*(.*)$/ );
-  						$element->{title} = "Helluntaiseurakunta";
-  						if($description) {
-  							$description =~ s/^Helluntaiseurakunta//; 
-	  						$element->{description} .= $description;
-							}
-  					}
-  				}
-  				
-  			}
-  			
-  			# If title is set:ed check if it has episode info in title
-  			if(defined($element) and $element->{title} ne "") {
-  				if( $element->{title} =~ /del\s*\d+\s+av\s+\d+$/i ) {
-  					my ( $episode, $of_epi ) = ( $text =~ /del\s*(\d+)\s+av\s+(\d+)$/ );
-  					$element->{episode} = sprintf( " . %d/%d . ", $episode-1, $of_epi ) if defined $episode;
-  					# Remove it from title
-  					$element->{title} =~ s/,\s+del\s+(\d+)\s+av\s+(\d+)$//; 
-  				}
-  			}
-  			
-  			# If desc is set:ed check if it has episode info in text
-  			if(defined($element) and $element->{description} ne "") {
-  				if( $element->{description} =~ /del\s*\d+$/i ) {
-  					my ( $episode2 ) = ( $text =~ /del\s*(\d+)$/ );
-  					$element->{episode} = sprintf( " . %d . ", $episode2-1 ) if defined $episode2;
-  					# Remove it from title
-  					$element->{description} =~ s/,\s+del\s+(\d+)$//; 
-  				}
-  			}
-    }
-  }
-	# save last day if we have it in memory
-  FlushDayData( $xmltvid, $dsh , @ces );
+      $oWkC = $oWkS->{Cells}[$iR][4];
+      my $title =  norm( $oWkC->Value );
+      
+      if( $time and $title ){
+	  
+	  # empty last day array
+      undef @ces;
+	  
+        progress("$time - $title");
+
+        my $ce = {
+          channel_id   => $chd->{id},
+          title        => $title,
+          start_time   => $time,
+        };
+		
+				$ce->{end_time} = $endtime if $endtime;
+		
+        $dsh->AddProgramme( $ce );
+		
+				push( @ces , $ce );
+      }
+
+    } # next row
+	
+  } # next worksheet
 
   $dsh->EndBatch( 1 );
-    
+  
   return;
 }
 
 sub isDate {
   my ( $text ) = @_;
-  # format 'Måndag 11/8 2011'
-  if( $text =~ /(M.ndag|Tisdag|Onsdag|Torsdag|Fredag|L.rdag|S.ndag)\s*\d+\/\d+\s*\d+$/i ) {
+
+  # format '2011-04-13'
+  if( $text =~ /^\d{4}\-\d{2}\-\d{2}$/i ){
+    return 1;
+
+  # format '2011/05/12'
+  } elsif( $text =~ /^\d{4}\/\d{2}\/\d{2}$/i ){
     return 1;
   }
-
-  return 0;
+	return 0;
 }
 
 sub ParseDate {
-  my( $text ) = @_;
-  
-
-my ( $weekday, $day, $month, $year  ) = 
-      ( $text =~ /(\S+?)\s*(\d+)\/(\d+)\s*(\d+)$/ );
-      
-  my $dt = DateTime->new(
-  				year => $year,
-    			month => $month,
-    			day => $day,
-      		);
-  #return sprintf( '%d-%02d-%02d', $year, $month, $day );
-  return $dt->ymd("-");
-}
-
-
-sub isShow {
   my ( $text ) = @_;
 
-  # format '14.00 Gudstjänst med LArs Larsson - detta är texten'
-  if( $text =~ /^(\d+[:\.]\d+)\s*\-\s*(\d+[:\.]\d+)\s*/i ){
-    return 1;
-  }
+  my( $year, $day, $month );
 
-  return 0;
+  # format '2011-04-13'
+  if( $text =~ /^\d{4}\-\d{2}\-\d{2}$/i ){
+    ( $year, $month, $day ) = ( $text =~ /^(\d{4})\-(\d{2})\-(\d{2})$/i );
+
+  # format '201'
+  } elsif( $text =~ /^\d{4}\/\d{2}\/\d{2}$/i ){
+    ( $year, $month, $day  ) = ( $text =~ /^(\d{4})\/(\d{2})\/(\d{2})$/i );
+  }
+  
+  my $dt2 = DateTime->now;
+  $year   = $dt2->year;
+
+  my $dt = DateTime->new(
+    year => $year,
+    month => $month,
+    day => $day
+      );
+	return $dt->ymd("-");
 }
 
-sub ParseShow {
+sub ParseTime {
   my( $text ) = @_;
-
-  my( $time, $endtime, $title );
-
-  ( $time, $endtime, $title ) = ( $text =~ /^(\d+[:\.]\d+)\s*\-\s*(\d+[:\.]\d+)\s+(.*)$/ );
-
-  my ( $hour , $min ) = ( $time =~ /^(\d+).(\d+)$/ );
-  my ( $endhour , $endmin ) = ( $endtime =~ /^(\d+).(\d+)$/ );
   
-  # Sometimes hour is 24, when the right one is actually 00
-  if($hour eq "24") {
-  	$hour = "00";
+	if($text ne "") {
+  	my( $hour , $min );
+
+  	if( $text =~ /^\d+:\d+$/ ){
+  	  ( $hour , $min ) = ( $text =~ /^(\d+):(\d+)$/ );
+  	}
+
+  	return sprintf( "%02d:%02d", $hour, $min );
+  } else {
+  	return 0;
   }
-  if($endhour eq "24") {
-  	$endhour = "00";
-  }
-  
-  $time = sprintf( "%02d:%02d", $hour, $min );
-  $endtime = sprintf( "%02d:%02d", $endhour, $endmin );
-
-  return( $time, $endtime, $title);
-}
-
-
-# From Kanal5_Util
-sub split_text
-{
-  my( $t ) = @_;
-
-  return () if not defined( $t );
-
-  # Remove any trailing whitespace
-  $t =~ s/\s*$//;
-
-  # Replace ... with ::.
-  $t =~ s/\.{3,}/::./;
-
-  # Replace newlines followed by a capital with space and make sure that there is a dot
-  # to mark the end of the sentence. 
-  $t =~ s/\.*\s*\n\s*([A-Z???])/. $1/g;
-
-  # Turn all whitespace into pure spaces and compress multiple whitespace to a single.
-  $t =~ tr/\n\r\t \xa0/     /s;
-
-  # Replace strange dots.
-  $t =~ tr/\x2e/./;
-
-  # Split on a dot and whitespace followed by a capital letter,
-  # but the capital letter is included in the output string and
-  # is not removed by split. (?=X) is called a look-ahead.
-#  my @sent = grep( /\S/, split( /\.\s+(?=[A-Z???])/, $t ) );
-
-  # Mark sentences ending with a dot for splitting.
-  $t =~ s/\.\s+([A-Z???])/;;$1/g;
-
-  # Mark sentences ending with ! or ? for split, but preserve the "!?".
-  $t =~ s/([\!\?])\s+([A-Z???])/$1;;$2/g;
-  
-  my @sent = grep( /\S/, split( ";;", $t ) );
-
-  if( scalar( @sent ) > 0 )
-  {
-    $sent[-1] =~ s/\.*\s*$//;
-  }
-
-  return @sent;
-}
-
-# Join a number of sentences into a single paragraph.
-# Performs the inverse of split_text
-sub join_text
-{
-  my $t = join( ". ", grep( /\S/, @_ ) );
-  $t .= "." if $t =~ /\S/;
-  $t =~ s/::/../g;
-
-  # The join above adds dots after sentences ending in ! or ?. Remove them.
-  $t =~ s/([\!\?])\./$1/g;
-
-  return $t;
-}
-
-sub FlushDayData {
-  my ( $xmltvid, $dsh , @data ) = @_;
-
-    if( @data ){
-      foreach my $element (@data) {
-
-        progress("OKGoteborg: $xmltvid: $element->{start_time} - $element->{title}");
-
-        $dsh->AddProgramme( $element );
-      }
-    }
 }
 
 1;
