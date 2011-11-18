@@ -3,6 +3,8 @@ package NonameTV::Augmenter::Base;
 use strict;
 use warnings;
 
+use utf8; # just in case, not needed here
+
 =pod
 
 Abstract base class for an Augmenter that enhances programs.
@@ -28,6 +30,8 @@ sub new {
   }
 
   $self->{datastore} = $_[2];
+
+  $self->{Language} = $_[3];
 
 #    $self->{OptionSpec} = [ qw/force-update verbose+ quiet+ 
 #			    short-grab remove-old clear/ ];

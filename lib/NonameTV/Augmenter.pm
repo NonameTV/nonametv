@@ -196,7 +196,7 @@ sub AugmentBatch( @@ ) {
   (my $channel_xmltvid )=($batchid =~ m|^(\S+)_|);
 
   my( $res, $sth ) = $self->{datastore}->sa->Sql( "
-      SELECT ar.*
+      SELECT ar.*, c.sched_lang
         FROM channels c, augmenterrules ar
        WHERE c.xmltvid LIKE ?
          AND (ar.channel_id = c.id
@@ -211,7 +211,7 @@ sub AugmentBatch( @@ ) {
     # set up augmenters
     if( !defined( $augmenter->{ $iter->{'augmenter'} } ) ){
       d( "creating augmenter '" . $iter->{'augmenter'} . "' augmenter\n" );
-      $augmenter->{ $iter->{'augmenter'} }= CreateAugmenter( $iter->{'augmenter'}, $self->{datastore} );
+      $augmenter->{ $iter->{'augmenter'} }= CreateAugmenter( $iter->{'augmenter'}, $self->{datastore}, $iter->{sched_lang} );
     }
 
     # append rule to array

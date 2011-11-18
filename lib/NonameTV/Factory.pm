@@ -34,7 +34,7 @@ our @EXPORT_OK;
 
 use NonameTV::Config qw/ReadConfig/;
 
-=item CreateAugmenter( $name, $ds )
+=item CreateAugmenter( $name, $ds, $sched_lang )
 
 Create an augmenter from the configuration in $conf->{Augmenter}->{$name}
 and associate it with the NonameTV::DataStore in $ds.
@@ -43,8 +43,8 @@ Returns the newly created augmenter or dies if creation fails.
 
 =cut
 
-sub CreateAugmenter {
-  my( $name, $ds ) = @_;
+sub CreateAugmenter( @@@ ){
+  my( $name, $ds, $lang ) = @_;
 
   my $conf = ReadConfig();
   
@@ -64,7 +64,7 @@ sub CreateAugmenter {
   }
 
   my $aug = eval "use NonameTV::Augmenter::$aug_type; 
-                  NonameTV::Augmenter::${aug_type}->new( \$aug_data, \$ds );"
+                  NonameTV::Augmenter::${aug_type}->new( \$aug_data, \$ds, \$lang );"
                       or die $@;
   return $aug;
 }
