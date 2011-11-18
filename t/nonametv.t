@@ -1,19 +1,20 @@
-#!/usr/bin/perl -w
-
-use utf8;
+#!/usr/bin/perl
 
 use strict;
+use utf8;
+use warnings;
 
 use FindBin;
 use lib "$FindBin::Bin/../lib";
+use Encode;
 use File::Temp qw/tempfile/;
 
-use Test::More tests => 15;
+use Test::More tests => 19;
 
 BEGIN { 
     use_ok( 'NonameTV', 
 	    qw/expand_entities Html2Xml Htmlfile2Xml norm
-	    AddCategory/ ); 
+	    AddCategory normUtf8/ ); 
 }
 
 is( expand_entities( 'ab' ), 'ab' );
@@ -62,4 +63,9 @@ AddCategory( $ce, "error", "error" );
 is( $ce->{program_type}, "test" );
 is( $ce->{category}, "testcat" );
 
+
+is( normUtf8( 'säsong ' . encode( 'utf-8', 'säsong' ) . ' säsong' ), "s\N{U+00e4}song säsong säsong", 'fixup double encoded utf-8' );
+is( normUtf8( 'säsong' ), 'säsong', 'fixup double encoded utf-8' );
+is( utf8::is_utf8( normUtf8( 'säsong' ) ), 1, 'fixup double encoded utf-8' );
+is( utf8::is_utf8( normUtf8( encode( 'utf-8', 'säsong' ) ) ), 1, 'fixup double encoded utf-8' );
 
