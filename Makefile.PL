@@ -7,8 +7,8 @@ WriteMakefile(
    NAME          => 'NonameTV',
    VERSION_FROM  => 'lib/NonameTV.pm',
    EXE_FILES     => [ qw{
-       tools/nonametv-importer
-       tools/nonametv-exporter
+       tools/nonametv-import
+       tools/nonametv-export
        } ],
    'dist'        => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     ($] >= 5.005 ?    ## Add these new keywords supported since 5.005
