@@ -54,6 +54,13 @@ sub ParseData
     return 0;
   }
   p( "Found " . $ns->size() . " shows" );
+
+  my $FixupDSTStarttime;
+  if( ( $chd->{xmltvid} eq 'hd.zdf.de' ) ) {
+    $FixupDSTStarttime = 1;
+  }
+  # keep last endtime as a hint for DST switch issues
+  my $lastendtime;
   
   foreach my $sc ($ns->get_nodelist)
   {
@@ -208,6 +215,22 @@ sub ParseData
         w( "$batch_id: Garbled start date (one day early) for programme id $id - Adjusting." );
       }
 
+      # check if starttime if off by about 60 minutes wrt the last endtime, it's a good hint
+      # that we need to move it an hour earlier / later (fix DST disambiguities)
+      if( $FixupDSTStarttime && $lastendtime ){
+        my $deltaendstart = $starttime->subtract_datetime( $lastendtime );
+        my $delta = $deltaendstart->in_units( 'minutes' );
+        if( ( $delta > 50 )&&( $delta < 70 ) ){
+          # there is a gap of 60+-10 minutes between the programs, move start time to an hour earlier
+          w( 'gap of about an hour detected, moving start time (can happen around DST switch)' );
+          $starttime->add( hours => -1 );
+        }elsif( ( $delta > -70 )&&( $delta < -50 ) ){
+          # there is an overlap of 60+-10 minutes between the programs, move start time to an hour later
+          w( 'overlap of about an hour detected, moving start time (can happen around DST switch)' );
+          $starttime->add( hours => 1 );
+        }
+      }
+
       # duration
       my $dauermin = $as->findvalue( 'dauermin' );
       if ($dauermin eq '0') {
@@ -219,6 +242,9 @@ sub ParseData
         # replace endtime with starttime+duration (now that we fixed up the starttime)
         $endtime = $starttime->clone()->add( minutes => $dauermin );
       }
+
+      # store corrected end time for fudging the next start time around start/end of DST
+      $lastendtime = $endtime->clone();
 
       # attributes
       my $attribute = $as->getElementsByTagName( 'attribute' );
@@ -661,8 +687,8 @@ sub clean_untertitel
   # Zeichentrickserie
   # CGI-Animationsserie
   # Fantasy-Serie
-  if ($subtitle =~ m/^(?:\S+eilige\s+|)(?:\S+eihe|\S+erie)$/) {
-    my ($format) = ($subtitle =~ m/^(?:\S+eilige\s+|)(\S+eihe|\S+erie)$/);
+  if ($subtitle =~ m/^(?:\S+eilige\s+|)(?:\S+eihe|\S+erie|Dokusoap|Die ZDFneo-Reportage)$/) {
+    my ($format) = ($subtitle =~ m/^(?:\S+eilige\s+|)(\S+eihe|\S+erie|Dokusoap|Die ZDFneo-Reportage)$/);
 
     my ( $program_type, $categ ) = $ds->LookupCat( "DreiSat_genre", $format );
     AddCategory( $sce, $program_type, $categ );
@@ -678,7 +704,11 @@ sub clean_untertitel
   # Film von Claus U. Eckert und Petra Thurn
   # 
 
-  d( 'no match (or fall-through) for subtitle: ' . $subtitle );
+  if( $subtitle ){
+    d( 'no match (or fall-through) for subtitle: ' . $subtitle );
+  }else{
+    $subtitle = undef;
+  }
 
   # possible false positives / more data
   # Film von und mit Axel Bulthaupt
