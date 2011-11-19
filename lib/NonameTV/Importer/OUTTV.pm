@@ -40,7 +40,7 @@ sub new {
   bless ($self, $class);
 
 
-  my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore}, "Europe/London" );
+  my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
   $self->{datastorehelper} = $dsh;
   
   $self->{datastore}->{augment} = 1;
@@ -82,8 +82,12 @@ else { $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );  }   #  staro
   for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
 
     my $oWkS = $oBook->{Worksheet}[$iSheet];
+    if( $oWkS->{Name} !~ /1/ ){
+      progress( "OUTTV: Skipping other sheet: $oWkS->{Name}" );
+      next;
+    }
 
-    progress( "OUTTV: $chd->{xmltvid}: Processing worksheet: $oWkS->{Name}" );
+    progress( "OUTTV: Processing worksheet: $oWkS->{Name}" );
 
 		my $foundcolumns = 0;
     # browse through rows
@@ -130,7 +134,7 @@ else { $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );  }   #  staro
       next if( ! $oWkC );
       my $title = $oWkC->Value if( $oWkC->Value );
 
-      progress("OUTTV: $xmltvid: $time - $title");
+      
 
       my $ce = {
         channel_id => $channel_id,
@@ -140,10 +144,12 @@ else { $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );  }   #  staro
 
 
 			# Genre
-			$oWkC = $oWkS->{Cells}[$iR][$colgenre];
-      my $genre = $oWkC->Value if( $oWkC->Value );
-			my($program_type, $category ) = $ds->LookupCat( 'OUTTV', $genre );
-			AddCategory( $ce, $program_type, $category );
+			$oWkC = $oWkS->{Cells}[$iR][5];
+			if( $oWkC and $oWkC->Value ne "" ) {
+      	my $genre = $oWkC->Value;
+				my($program_type, $category ) = $ds->LookupCat( 'OUTTV', $genre );
+				AddCategory( $ce, $program_type, $category );
+			}
 			
 			# Episode
 			$oWkC = $oWkS->{Cells}[$iR][$colepisode];
@@ -164,7 +170,7 @@ else { $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );  }   #  staro
 				}
 			}
       
-
+			progress("OUTTV: $time - $title");
       $dsh->AddProgramme( $ce );
     }
 
