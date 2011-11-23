@@ -320,7 +320,7 @@ sub extract_extra_info
       $ce->{aspect} = "16:9";
       $sentences[$i] = "";
     }
-    elsif( $sentences[$i] =~ /^(.ven|Fr.n)
+    elsif( $sentences[$i] =~ /(.ven|Fr.n)
      ((
       \s+|
       [A-Z]\S+|
@@ -336,20 +336,32 @@ sub extract_extra_info
     	$sentences[$i] = "";
 #      $self->parse_other_showings( $ce, $sentences[$i] );
     }
-    elsif( $sentences[$i] =~ /^Text(at|-tv)\s+sid(an)*\s+\d+\.$/ )
+    elsif( $sentences[$i] =~ /Text(at|-tv)\s+sid(an)*\s+\d+\./ )
     {
 #      $ce->{subtitle} = 'sv,teletext';
       $sentences[$i] = "";
     }
-    elsif( $sentences[$i] =~ /^Visas\s+i\s*\.$/ )
+    elsif( $sentences[$i] =~ /Visas\s+i\.*\.$/ )
     {
       $sentences[$i] = "";
     }
     elsif( $sentences[$i] eq "HD." )
     {
+      $ce->{quality} = "HDTV";
+    
       # Set somethiing?
       $sentences[$i] = "";
     }
+    elsif( $sentences[$i] =~ /Del\s+\d+\.*/ )
+    {
+      # Del 2 av 3: Pilot (episodename)
+ 	  ( $ce->{subtitle} ) = ($sentences[$i] =~ /:\s*(.+)\./);
+ 	  
+ 	  # norm
+ 	  $ce->{subtitle} = normLatin1($ce->{subtitle});
+ 	  
+ 	  #$sentences[$i] = "";
+ 	}
     elsif( my( $directors ) = ($sentences[$i] =~ /^Regi:\s*(.*)/) )
     {
       $ce->{directors} = parse_person_list( $directors );
@@ -402,7 +414,7 @@ sub extract_episode
   my $d = $ce->{description};
 
   # Try to extract episode-information from the description.
-  my( $ep, $eps );
+  my( $ep, $eps, $name );
   my $episode;
 
   my $dummy;
@@ -410,6 +422,8 @@ sub extract_episode
   # Del 2
   ( $dummy, $ep ) = ($d =~ /\b(Del|Avsnitt)\s+(\d+)/ );
   $episode = sprintf( " . %d .", $ep-1 ) if defined $ep;
+
+
 
   # Del 2 av 3
   ( $dummy, $ep, $eps ) = ($d =~ /\b(Del|Avsnitt)\s+(\d+)\s*av\s*(\d+)/ );
