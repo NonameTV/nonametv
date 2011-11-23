@@ -126,3 +126,20 @@
 317,Fixups,"^Democracy now.*$",program_type,series,"Democracy now!",replacetitle
 317,Fixups,"^Ny glädje.*$",program_type,series,"Ny glädje",replacetitle
 317,Fixups,"^Crystal Boys.*$",program_type,series,"Crystal Boys",replacetitle
+232,Tvdb,"The Outsiders",program_type,series,84001,episodeseason
+233,Tvdb,CSI,program_type,series,72546,episodeseason
+354,Tvdb,^.*$,program_type,series,\N,episodetitle
+353,Tvdb,^.*$,program_type,series,\N,episodetitle
+355,Tvdb,^.*$,program_type,series,\N,episodetitle
+358,Tvdb,^.*$,program_type,series,\N,episodetitle
+360,Tvdb,^.*$,program_type,series,\N,episodetitle
+362,Tvdb,^.*$,program_type,series,\N,episodetitle
+304,TvdbEN,^.*$,program_type,series,\N,episodetitle
+304,TvdbEN,^.*Homeland.*$,program_type,series,247897,episodetitle
+304,TvdbEN,"^.*How to make it in America.*$",program_type,series,134231,episodetitle
+304,TvdbEN,"^.*The Trip.*$",program_type,series,202571,episodetitle
+304,TvdbEN,"^.*Starke man.*$",program_type,series,193341,episodetitle
+304,TvdbEN,"^.*Boardwalk empire.*$",program_type,series,84947,episodetitle
+304,TvdbEN,^.*Damages.*$,program_type,series,80367,episodetitle
+305,TvdbEN,^.*Treme.*$,program_type,series,84946,episodetitle
+305,TvdbEN,"^.*The Wire.*$",program_type,series,79126,episodetitle
