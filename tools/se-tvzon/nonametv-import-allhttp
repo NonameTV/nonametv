@@ -14,7 +14,7 @@ $NONAMETV Discovery_xml $1 $2 $3
 $NONAMETV DR $1 $2 $3
 $NONAMETV DreiSat $1 $2 $3
 $NONAMETV Eurosport $1 $2 $3
-#$NONAMETV Infomedia $1 $2 $3
+$NONAMETV Infomedia $1 $2 $3
 $NONAMETV Kanal5 $1 $2 $3
 $NONAMETV Kanal9 $1 $2 $3
 $NONAMETV KanalGlobal $1 $2 $3
