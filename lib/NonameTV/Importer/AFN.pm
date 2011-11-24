@@ -35,6 +35,11 @@ sub new {
 
     $self->{datastore}->{augment} = 1;
 
+    # FIXME it would be strongly preferred if someone could hint if the start or stop time should be moved slightly
+    # we get overlaps of up to 9 minutes which seem to be intentional, so I'd guess cutting of some minutes at the
+    # start times is the way to go
+    $self->{datastore}->{SILENCE_END_START_OVERLAP} = 1;
+
     return $self;
 }
 

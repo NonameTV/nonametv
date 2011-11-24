@@ -2,8 +2,10 @@ package NonameTV::Importer::Infomedia;
 
 =pod
 
-This importer imports data from www.infomedia.lu. The data is fetched
+This importer imports data from infomedia.rovicorp.com. The data is fetched
 as one html-file per day and channel.
+
+For available channels see: http://infomedia.rovicorp.com/infomedia_demand/available_channels.asp
 
 =cut
 
@@ -28,9 +30,13 @@ sub new {
     bless ($self, $class);
 
 
-    defined( $self->{UrlRoot} ) or die "You must specify UrlRoot";
+    if( defined( $self->{UrlRoot} ) ){
+        warn( 'UrlRoot is deprecated' );
+    }else{
+        $self->{UrlRoot} = 'http://infomedia.rovicorp.com/infomedia_demand/schedules_channels.asp';
+    }
 
-    my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
+    my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore}, 'UTC' );
     $self->{datastorehelper} = $dsh;
 
     return $self;
@@ -49,6 +55,7 @@ sub Object2Url {
   $u->query_form( {
     chn => $chd->{grabber_info},
     date => $date,
+    timezone => 'GMT',
   });
 
   print "URL: " . $u->as_string() . "\n";
@@ -105,7 +112,7 @@ sub ImportContent
     return 0;
   }
   
-  my $ns = $doc->find( '//table[@class="table_schedule"]//tr' );
+  my $ns = $doc->find( '//table[@class="plain"]//tr' );
   if( $ns->size() == 0 )
   {
     error( "$batch_id: No data found" );

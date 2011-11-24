@@ -7,9 +7,10 @@ use warnings;
 use utf8;
 use Env;
 
-use LWP::UserAgent;
-use File::Temp qw/tempfile tempdir/;
+use Encode;
 use File::Slurp;
+use File::Temp qw/tempfile tempdir/;
+use LWP::UserAgent;
 
 use NonameTV::StringMatcher;
 use NonameTV::Log qw/w/;
@@ -30,7 +31,7 @@ BEGIN {
                       Word2Xml Wordfile2Xml 
 		      File2Xml Content2Xml
 		      FindParagraphs
-                      norm normLatin1 AddCategory
+                      norm normLatin1 normUtf8 AddCategory
                       ParseDescCatSwe FixProgrammeData
 		      ParseXml ParseXmltv ParseJson
                       MonthNumber DayNumber
@@ -331,6 +332,26 @@ sub normLatin1
   return undef if not defined( $str );
 
   $str =~ tr/\x{80}\x{82}\x{83}\x{84}\x{85}\x{86}\x{87}\x{88}\x{89}\x{8a}\x{8b}\x{8c}\x{8e}\x{91}\x{92}\x{93}\x{94}\x{95}\x{96}\x{97}\x{98}\x{99}\x{9a}\x{9b}\x{9c}\x{9e}\x{9f}/\x{20ac}\x{201a}\x{0192}\x{201e}\x{2026}\x{2020}\x{2021}\x{02c6}\x{2030}\x{0160}\x{2039}\x{0152}\x{017d}\x{2018}\x{2019}\x{201c}\x{201d}\x{2022}\x{2012}\x{2014}\x{02dc}\x{2122}\x{0161}\x{203a}\x{0153}\x{017e}\x{0178}/; #
+
+  return $str;
+}
+
+#
+# fixup utf8 encoded twice
+#
+sub normUtf8
+{
+  my( $str ) = @_;
+
+  return undef if not defined( $str );
+
+  # we have got a string of perl characters
+  $str = encode('utf-8', $str);
+
+  $str =~ s|([\x{C3}][\x{82}-\x{83}][\x{C2}][\x{80}-\x{BF}])|encode('iso-8859-1', decode('utf-8', $1) )|eg;
+
+  # it should still be a string of perl characters
+  $str = decode('utf-8', $str);
 
   return $str;
 }
