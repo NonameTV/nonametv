@@ -22,7 +22,7 @@ then
   perl -I lib/ tools/nonametv-import ZDFinfo --remove-missing
 
   # remove Tvdb cache, updates seem to be broken at the moment
-  rm $NROOT/contentcache/Tvdb/tvdb.db
+  rm $NROOT/contentcache/Tvdb/tvdb.*.db
 
   exit
 fi

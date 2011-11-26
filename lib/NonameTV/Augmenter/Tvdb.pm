@@ -26,7 +26,7 @@ sub new {
     # need config for main content cache path
     my $conf = ReadConfig( );
 
-    my $cachefile = $conf->{ContentCachePath} . '/' . $self->{Type} . '/tvdb.db';
+    my $cachefile = $conf->{ContentCachePath} . '/' . $self->{Type} . '/tvdb.' . $self->{Language} . '.db';
     my $bannerdir = $conf->{ContentCachePath} . '/' . $self->{Type} . '/banner';
 
     $self->{tvdb} = TVDB::API::new({ apikey    => $self->{ApiKey},
