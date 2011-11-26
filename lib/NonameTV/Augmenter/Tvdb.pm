@@ -6,7 +6,7 @@ use warnings;
 use TVDB::API;
 use utf8;
 
-use NonameTV qw/norm AddCategory/;
+use NonameTV qw/norm normUtf8 AddCategory/;
 use NonameTV::Augmenter::Base;
 use NonameTV::Config qw/ReadConfig/;
 use NonameTV::Log qw/w d/;
@@ -26,7 +26,7 @@ sub new {
     # need config for main content cache path
     my $conf = ReadConfig( );
 
-    my $cachefile = $conf->{ContentCachePath} . '/' . $self->{Type} . '/tvdb.db';
+    my $cachefile = $conf->{ContentCachePath} . '/' . $self->{Type} . '/tvdb.' . $self->{Language} . '.db';
     my $bannerdir = $conf->{ContentCachePath} . '/' . $self->{Type} . '/banner';
 
     $self->{tvdb} = TVDB::API::new({ apikey    => $self->{ApiKey},
@@ -69,7 +69,7 @@ sub ParseCast( $$ ) {
     push( @people, split( '\|', $cast ) );
   }
   foreach( @people ){
-    $_ = norm( $_ );
+    $_ = normUtf8( norm( $_ ) );
     if( $_ eq '' ){
       $_ = undef;
     }
@@ -94,7 +94,7 @@ sub FillHash( $$$$ ) {
 
   my $episodeid = $series->{Seasons}[$episode->{SeasonNumber}][$episode->{EpisodeNumber}];
 
-  $resultref->{title} = norm( $series->{SeriesName} );
+  $resultref->{title} = normUtf8( norm( $series->{SeriesName} ) );
 
   if( $episode->{SeasonNumber} == 0 ){
     # it's a special
@@ -103,7 +103,7 @@ sub FillHash( $$$$ ) {
     $resultref->{episode} = ($episode->{SeasonNumber} - 1) . ' . ' . ($episode->{EpisodeNumber} - 1) . ' .';
   }
 
-  $resultref->{subtitle} = norm( $episode->{EpisodeName} );
+  $resultref->{subtitle} = normUtf8( norm( $episode->{EpisodeName} ) );
 
 # TODO skip the Overview for now, it falls back to english in a way we can not detect
 #  if( defined( $episode->{Overview} ) ) {
@@ -141,7 +141,7 @@ sub FillHash( $$$$ ) {
     push( @actors, split( '\|', norm($episode->{GuestStars}) ) );
   }
   foreach( @actors ){
-    $_ = norm( $_ );
+    $_ = normUtf8( norm( $_ ) );
     if( $_ eq '' ){
       $_ = undef;
     }
@@ -166,7 +166,7 @@ sub FillHash( $$$$ ) {
       # notice, Genre is ordered by some internal order, not by importance!
       my @genres = split( '\|', $series->{Genre} );
       foreach( @genres ){
-        $_ = norm( $_ );
+        $_ = normUtf8( norm( $_ ) );
         if( $_ eq '' ){
           $_ = undef;
         }
@@ -262,7 +262,7 @@ sub AugmentProgram( $$$ ){
         	# a series with episode of 100+ when there's only 20 episodes of
         	# the season, like Simpsons. Simpsons becomes The Simpsons if seriesname
         	# is found.
-        	$resultref->{title} = norm( $series->{SeriesName} );
+        	$resultref->{title} = normUtf8( norm( $series->{SeriesName} ) );
         	
         	# Find season and episode
         	if(($season ne "") and ($episode ne "")) {

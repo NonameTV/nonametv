@@ -31,8 +31,6 @@ sub new {
 
   $self->{datastore} = $_[2];
 
-  $self->{Language} = $_[3];
-
 #    $self->{OptionSpec} = [ qw/force-update verbose+ quiet+ 
 #			    short-grab remove-old clear/ ];
 #    $self->{OptionDefaults} = { 

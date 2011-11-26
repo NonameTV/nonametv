@@ -63,8 +63,14 @@ sub CreateAugmenter( @@@ ){
     exit 1;
   }
 
+  # if the configuration does not specify a Language use the one from the
+  # channel configuration that gets passed here as third parameter
+  if( !defined( $aug_data->{Language} ) ){
+    $aug_data->{Language} = $lang;
+  }
+
   my $aug = eval "use NonameTV::Augmenter::$aug_type; 
-                  NonameTV::Augmenter::${aug_type}->new( \$aug_data, \$ds, \$lang );"
+                  NonameTV::Augmenter::${aug_type}->new( \$aug_data, \$ds );"
                       or die $@;
   return $aug;
 }
