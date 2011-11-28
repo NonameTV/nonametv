@@ -189,12 +189,12 @@ sub _download {
 	utf8::encode($url);
 
 	$url =~ s|#|%23|g;
-	$url =~ s|ä|%E4|g;
-	$url =~ s|å|%E5|g;
-	$url =~ s|ö|%F6|g;
-	$url =~ s|Ä|%C4|g;
-	$url =~ s|Å|%C5|g;
-	$url =~ s|Ö|%D6|g;
+	$url =~ s|ä|%C3%A4|g;
+	$url =~ s|å|%C3%A5|g;
+	$url =~ s|ö|%C3%B6|g;
+	$url =~ s|Ä|%C3%84|g;
+	$url =~ s|Å|%C3%85|g;
+	$url =~ s|Ö|%C3%96|g;
 
 	# Make sure we only download once even in a session
 	return $self->{dload}->{$url} if defined $self->{dload}->{$url};
