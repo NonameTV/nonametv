@@ -5,7 +5,7 @@ use warnings;
 
 =pod
 
-Importer for AFN guide at http://myafn.dodmedia.osd.mil/508/ScheduleList.aspx
+Importer for AFN guide at http://508.myafn.dodmedia.osd.mil/ScheduleList.aspx
 The importer field should contain the channel name as it appears on the site, e.g. "AFN|prime Pacific"
 
 =cut
@@ -49,7 +49,7 @@ sub Object2Url {
 
   my( $xmltvid, $year, $month, $day ) = ( $objectname =~ /^(.+)_(\d+)-(\d+)-(\d+)$/ );
 
-  my $url = "http://myafn.dodmedia.osd.mil/508/ScheduleList.aspx?TimeZone=(GMT)%20Greenwich%20Mean%20Time&StartDate=$month/$day/$year&";
+  my $url = "http://508.myafn.dodmedia.osd.mil/ScheduleList.aspx?TimeZone=(GMT)%20Greenwich%20Mean%20Time&StartDate=$month/$day/$year&";
 
   # Only one url to look at and no error
   return ([$url], undef);
