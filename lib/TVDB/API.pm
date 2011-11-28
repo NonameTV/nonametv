@@ -193,7 +193,7 @@ sub _download {
 	$url =~ s|å|%E5|g;
 	$url =~ s|ö|%F6|g;
 	$url =~ s|Ä|%C4|g;
-	$url =~ s|Ä|%C5|g;
+	$url =~ s|Å|%C5|g;
 	$url =~ s|Ö|%D6|g;
 
 	# Make sure we only download once even in a session
