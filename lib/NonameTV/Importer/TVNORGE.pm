@@ -2,7 +2,7 @@ package NonameTV::Importer::TVNORGE;
 
 =pod
 
-This importer works for both TVNorge and FEM.
+This importer works for both TVNorge, MAX and FEM.
 It downloads per day xml files from respective channel's
 pressweb. The files are in xml-style
 
