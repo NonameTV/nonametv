@@ -128,3 +128,14 @@
 73,Fixups,"Patente &Talente",\N,\N,"Patente & Talente",replacetitle
 \N,Fixups,37º,\N,\N,"37 Grad",replacetitle
 84,Fixups,^(37º):\s+(.*)$,\N,\N,\N,splittitle
+58,Tvdb,"Dawsons Creek",\N,\N,72584,episodetitle
+58,Tvdb,"Beverly Hills, 90210",\N,\N,74936,episodetitle
+58,Tvdb,"Next World - Das Leben von morgen",\N,\N,82754,episodetitle
+58,Tvdb,"Spooks - Im Visier des MI5",\N,\N,78890,episodetitle
+58,Tvdb,"The Big C ... und jetzt ich!",\N,\N,161501,episodetitle
+58,Tvdb,"In Plain Sight - In der Schusslinie",\N,\N,82155,episodetitle
+48,Tvdb,"Vier Frauen und ein Todesfall",\N,\N,152091,episodetitle
+\N,Tvdb,"Pfarrer Braun",\N,\N,82219,episodetitle
+120,Tvdb,^.*$,program_type,series,\N,episodetitle
+39,Tvdb,"Die verlorene Welt",\N,\N,78457,episodetitle
+39,Fixups,"^(Beast Legends - Wesen des Grauens):\s+(.*)$",\N,\N,\N,splittitle
