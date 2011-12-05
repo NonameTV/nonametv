@@ -41,6 +41,8 @@ while( my $entry = $sth->fetchrow_hashref() ) {
   print "Processing $xmltvid\n" if $opt->{verbose};
 
   my $url = "$iconroot$xmltvid.png";
+  print "Logo: $url\n" if $opt->{verbose};
+  #my $url = "http://xmltv.tvzon.se/chanlogos/$xmltvid.png";
   if( head( $url ) ) {
     if( not $logo ) {
       $ds->sa->Update( 'channels', { xmltvid => $xmltvid }, { logo => 1 } );
