@@ -51,7 +51,7 @@
 \N,Tvdb,"CSI NY",program_type,series,73696,episodeseason
 232,Tvdb,ATOM,program_type,series,85791,episodeseason
 232,Tvdb,"Gordon Ramsay's The F-Word",program_type,series,79609,episodeseason
-232,Tvdb,"Gordon's Kitchen Nightmares",program_type,series,74584,episodeseason
+232,Tvdb,"Gordon's Kitchen Nightmares",program_type,series,80552,episodeseason
 232,Tvdb,"Las Vegas",program_type,series,72229,episodeseason
 232,Tvdb,Pantertanter,program_type,series,71292,episodeseason
 232,Tvdb,"Kommissarie Lewis",program_type,series,79864,episodeseason
@@ -143,3 +143,96 @@
 304,TvdbEN,^.*Damages.*$,program_type,series,80367,episodetitle
 305,TvdbEN,^.*Treme.*$,program_type,series,84946,episodetitle
 305,TvdbEN,"^.*The Wire.*$",program_type,series,79126,episodetitle
+\N,Tvdb,"Fab 5",program_type,series,72865,episodeseason
+233,Tvdb,"Gordon's Kitchen Nightmares",program_type,series,80552,episodeseason
+\N,Tvdb,"McLeod's döttrar",program_type,series,76532,episodeseason
+\N,Tvdb,"Masterchef USA",program_type,series,167751,episodeseason
+304,Tvdb,"^.*Allt för Sverige.*$",program_type,series,253460,episodetitle
+257,Tvdb,^.*$,program_type,series,\N,episodeseason
+259,Tvdb,^.*$,program_type,series,\N,episodeseason
+260,Tvdb,^.*$,program_type,series,\N,episodeseason
+261,Tvdb,^.*$,program_type,series,\N,episodeseason
+262,Tvdb,^.*$,program_type,series,\N,episodeseason
+263,Tvdb,^.*$,program_type,series,\N,episodeseason
+264,Tvdb,^.*$,program_type,series,\N,episodeseason
+265,Tvdb,^.*$,program_type,series,\N,episodeseason
+257,Tvdb,"Urban legends",program_type,series,74810,episodeseason
+264,Tvdb,"The defenders",program_type,series,164521,episodeseason
+264,Tvdb,"Hawaii five - 0",program_type,series,164541,episodeseason
+264,Tvdb,"RuPauls dragrace",program_type,series,85002,episodeseason
+264,Tvdb,"Big brother",program_type,series,231801,episodeseason
+264,Tvdb,"Annual american music awards",program_type,series,210551,episodeseason
+265,Tvdb,"Hem till gården",program_type,series,77715,episodeseason
+265,Tvdb,"Jordan, rättsläkare",program_type,series,74922,episodeseason
+265,Tvdb,"Extreme makeover weightloss",program_type,series,249085,episodeseason
+264,Tvdb,Numbers,program_type,series,73918,episodeseason
+260,Tvdb,IT-supporten,program_type,series,79216,episodeseason
+260,Tvdb,"David Letterman",program_type,series,75088,episodeseason
+260,Tvdb,Samantha,program_type,series,80680,episodeseason
+260,Tvdb,Skål,program_type,series,77623,episodeseason
+260,Tvdb,"Inte bara morsa",program_type,series,75035,episodeseason
+260,Tvdb,"'Allå, 'allå, 'emliga armén",program_type,series,73940,episodeseason
+265,Tvdb,"Jul med Ernst",program_type,series,84238,episodeseason
+265,Tvdb,"Berg flyttar in",program_type,series,91711,episodeseason
+262,Tvdb,"Dr Phil",program_type,series,71424,episodeseason
+262,Tvdb,"Mannen som talar med hundar",program_type,series,79212,episodeseason
+262,Tvdb,"Judys domstol",program_type,series,71221,episodeseason
+262,Tvdb,"I nöd och skuld",program_type,series,186701,episodeseason
+262,Tvdb,Glamour,program_type,series,79838,episodeseason
+257,Tvdb,"Arns rike",program_type,series,81952,episodeseason
+259,Tvdb,Zorro,program_type,series,73662,episodeseason
+259,Tvdb,Masada,program_type,series,85185,episodeseason
+259,Tvdb,"Hem till gården",program_type,series,77715,episodeseason
+259,Tvdb,"Lagens änglar",program_type,series,72419,episodeseason
+259,Tvdb,"Livet runt trettio",program_type,series,72781,episodeseason
+259,Tvdb,"Mord och inga visor",program_type,series,78049,episodeseason
+259,Tvdb,"Bröderna Cartwright",program_type,series,73378,episodeseason
+259,Tvdb,"Tillbaka till Eden",program_type,series,74274,episodeseason
+260,Tvdb,"Comedy Inc.",program_type,series,85566,episodeseason
+260,Tvdb,"Pang i bygget",program_type,series,75932,episodeseason
+260,Tvdb,"Se upp för Ellie",program_type,series,77250,episodeseason
+260,Tvdb,"Svarte orm",program_type,series,76736,episodeseason
+260,Tvdb,"Kathy Griffin - D list",program_type,series,79795,episodeseason
+264,Tvdb,"Plastikdoktor 90210",program_type,series,74823,episodeseason
+264,Tvdb,"Gene Simmons familjejuveler",program_type,series,79406,episodeseason
+260,Tvdb,"The game",program_type,series,79636,episodeseason
+285,Tvdb,Conan,program_type,tvshow,194751,episodeseason
+285,Tvdb,"Terminator: Sarah Connor Chronicles",program_type,movie,80344,episodeseason
+285,Tvdb,"Walker Texas Ranger",program_type,movie,73756,episodeseason
+285,Tvdb,"Robot Chicken",program_type,movie,75734,episodeseason
+285,Tvdb,Archer,program_type,movie,110381,episodeseason
+232,Tvdb,Christine,program_type,series,75756,episodeseason
+287,Tvdb,Christine,program_type,series,75756,episodeseason
+287,Tvdb,"Salong Makeover",program_type,series,88321,episodeseason
+287,Tvdb,"The Rachael Ray Show",program_type,series,161811,episodeseason
+225,Tvdb,Boss,program_type,series,249361,episodeseason
+287,Tvdb,"Under samme tak",program_type,series,70500,episodeseason
+287,Tvdb,"Undercover Boss Australia",program_type,series,198841,episodeseason
+287,Tvdb,"Verdens strengeste foreldre",program_type,series,83115,episodeseason
+287,Tvdb,Grensevakten,program_type,series,81563,episodeseason
+287,Tvdb,"48 timer",program_type,series,138551,episodeseason
+287,Tvdb,"Special Victims Unit",program_type,series,75692,episodeseason
+287,Tvdb,"Millionær søker kjæreste",program_type,series,85425,episodeseason
+287,Tvdb,Ungkarskvinnen,program_type,series,70869,episodeseason
+284,Tvdb,"Tori & Dean i Hollywood",program_type,series,82499,episodeseason
+284,Tvdb,"Mitt hemmelige tenåringsliv",program_type,series,82422,episodeseason
+284,Fixups,"Jamies matrevolusjon",program_type,series,"Jamie Oliver's Food Revolution",replacetitle
+284,Tvdb,"Salong Makeover",program_type,series,88321,episodeseason
+284,Tvdb,"Unge mødre DK",program_type,series,251499,episodeseason
+284,Fixups,"The Rachael Ray Show",program_type,series,"Rachael Ray",replacetitle
+284,Tvdb,"En, to, tre - oppussing!",program_type,series,74785,episodeseason
+284,Tvdb,"Verdens strengeste foreldre",program_type,series,83115,episodeseason
+284,Tvdb,"Tenåringenes sexliv",program_type,series,223501,episodeseason
+284,Tvdb,"Søte fristelser",program_type,series,176261,episodeseason
+284,Tvdb,Legene,program_type,series,242951,episodeseason
+284,Tvdb,Slankekrigen,program_type,series,75166,episodeseason
+285,Tvdb,Vettskremt!,program_type,series,79263,episodeseason
+285,Tvdb,Fartsbøller,program_type,series,82427,episodeseason
+285,Tvdb,Monstergarasjen,program_type,series,73080,episodeseason
+285,Tvdb,Spesialstyrken,program_type,series,82438,episodeseason
+285,Tvdb,"Pantelånerne i Las Vegas",program_type,series,111051,episodeseason
+285,Tvdb,Skattejegerne,program_type,series,141181,episodeseason
+285,Tvdb,Dusørjegeren,program_type,series,75036,episodeseason
+285,Tvdb,"Poker: The Big Game",program_type,series,168931,episodeseason
+282,Tvdb,Portlandia,program_type,movie,213221,episodeseason
+282,Tvdb,"Todd and the Book of Pure Evil",program_type,movie,194041,episodeseason

@@ -530,7 +530,7 @@ Tvdb,sport,Sports,
 Tvdb,"talk show",Talk,tvshow
 TVNorge,"amerikansk action",Action,movie
 TVNorge,"amerikansk action-eventyr",Action/Adventure,movie
-TVNorge,"amerikansk actionserie",Action,movie
+TVNorge,"amerikansk actionserie",Action,series
 TVNorge,"amerikansk animasjon",Animation,movie
 TVNorge,"amerikansk dokumentar fra",Documentary,
 TVNorge,"amerikansk dokumentar fra 2006",Documentary,
@@ -542,6 +542,7 @@ TVNorge,"amerikansk dokumentarserie",Documentary,series
 TVNorge,"amerikansk drama",Drama,movie
 TVNorge,"amerikansk dramaserie",Drama,series
 TVNorge,"amerikansk familiefilm",Family,movie
+TVNorge,"amerikansk julefilm",Christmas,movie
 TVNorge,"amerikansk komedie",Comedy,movie
 TVNorge,"amerikansk komiserie",Comedy,series
 TVNorge,"amerikansk krimserie",Crime,series
@@ -559,6 +560,7 @@ TVNorge,"amerikansk talkshow",Talk,tvshow
 TVNorge,"amerikansk thriller",Thriller,movie
 TVNorge,"amerikansk tv-movie",TV,movie
 TVNorge,"amerikansk underholdning",Entertainment,
+TVNorge,"amerikansk underholdningsspesial",Entertainment,tvshow
 TVNorge,"australsk dokumentarserie",Documentary,series
 TVNorge,"australsk dramaserie",Drama,series
 TVNorge,"australsk livsstilserie",Lifestyle,series
@@ -573,7 +575,7 @@ TVNorge,"britisk dokumentarserie",Documentary,series
 TVNorge,"britisk dramaserie",Drama,series
 TVNorge,"britisk komiserie",Comedy,series
 TVNorge,"britisk livsstilserie",Lifestyle,series
-TVNorge,"britisk paranormal serie",Sci-Fi/Horror,
+TVNorge,"britisk paranormal serie",Sci-Fi/Horror,series
 TVNorge,"britisk program",\N,tvshow
 TVNorge,"britisk realityserie",Reality,series
 TVNorge,"britisk serie",\N,series
@@ -582,6 +584,7 @@ TVNorge,"britisk thriller",Thriller,movie
 TVNorge,"britisk underholdning",Entertainment,tvshow
 TVNorge,"dansk dokumentarserie",Documentary,series
 TVNorge,"dokumentar fra",Documentary,
+TVNorge,"dokumentar fra 2011",Documentary,series
 TVNorge,dokumentarserie,Documentary,
 TVNorge,"fransk romantisk komedie",Romance/Comedy,
 TVNorge,"kanadisk animasjon",Animation,
@@ -589,9 +592,11 @@ TVNorge,"kanadisk dokumentarserie",Documentary,series
 TVNorge,"kanadisk dramaserie",Drama,series
 TVNorge,"kanadisk livsstilserie",Lifestyle,series
 TVNorge,"kanadisk realityserie",Reality,
+TVNorge,"kanadisk romantisk komedie",Romance/Comedy,
 TVNorge,livsstilserie,Lifestyle,series
 TVNorge,miniserie,Mini,series
 TVNorge,musikk,Music,
+TVNorge,nattgrafikk,Ads,\N
 TVNorge,"new zealandsk dokumentarserie",Documentary,
 TVNorge,"new zealandsk paranormal serie",Paranormal,series
 TVNorge,"norsk dokumentarserie",Documentary,series
