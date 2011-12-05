@@ -233,23 +233,23 @@ sub guess_channel
  }
  
  if( $dir =~ /Chellozone/ and $filename =~ /\.xls$/i ) {
-     return "outdoorchannel.com" if $filename =~ /^UTEM\d*V\d*\s*\b/i;
+     return "outdoorchannel.com" if $filename =~ /^UTEM\d*V\d*\b/i;
  }
 
    if( $dir =~ /ExtremeSports/ and $filename =~ /\.xls$/i ) {
      return "extremesports.com" if $filename =~ /^\s*\b/i;
  }
    if( $dir =~ /Kanal10/ and $filename =~ /\.doc$/i ) {
-     return "kanal10.se" if $filename =~ /^Program\s*\b/i;
+     return "kanal10.se";
  }
-   if( $dir =~ /OKGoteborg/ and $filename =~ /\.doc$/i ) {
-     return "oppnakanalengoteborg.se" if $filename =~ /^tabl\s*\b/i;
+   if( $dir =~ /OKGoteborg/ and $filename =~ /\.xls$/i ) {
+     return "oppnakanalengoteborg.se";
  }
    if( $dir =~ /TV5Monde/ and $filename =~ /\.xls$/i ) {
-     return "tv5monde.org" if $filename =~ /^EPG\s*\b/i;
+     return "tv5monde.org";
  }
    if( $dir =~ /OUTTV/ and $filename =~ /\.xlsx$/i ) {
-     return "outtv.se" if $filename =~ /^OUTTV\s*\b/i;
+     return "outtv.se";
  }
  
  if( $dir =~ /Gmail/ and $filename =~ /\.xls$/i ) {
