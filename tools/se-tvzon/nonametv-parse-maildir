@@ -272,7 +272,7 @@ sub guess_channel
  }
 
  if( $dir =~ /Motors/ and $filename =~ /\.xls$/i ) {
-     return "motorstv.com" if $filename =~ /\s*pgms\s*\b/i;
+     return "motorstv.com" if $filename =~ /pgms/i;
  }
 
  if( $dir =~ /Svt/ ) {
