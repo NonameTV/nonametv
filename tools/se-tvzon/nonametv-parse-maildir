@@ -222,8 +222,8 @@ sub guess_channel
  }
 
    if( $dir =~ /Turner/ ) {
-	return "cartoonnetwork.se" if $filename =~ /^cn\s+nordic\s+\(swe\)\s*\b/i;
-	return "boomerangtv.se" if $filename =~ /^boomerang\s+nordic\s+\(swe\)\s*\b/i;
+	return "cartoonnetwork.se" if $filename =~ /^cn\s*nordic\s+\(swe\)\s*\b/i;
+	return "boomerangtv.se" if $filename =~ /^boomerang\s*nordic\s*\(swe\)\s*\b/i;
 	return "tcmeurope.com" if $type =~ /application\/vnd.ms-excel/ and $filename =~ /tcm\s*nordic\s*/i;
 	return "cnn.com" if $filename =~ /^cnn\s*\b/i;
   }
@@ -267,7 +267,8 @@ sub guess_channel
  }
 
    if( $dir =~ /YaS/ and $filename =~ /\.xls$/i ) {
-     return "yachtandsail.com" if $filename =~ /^palinsesto\s*\b/i;
+#     return "yachtandsail.com" if $filename =~ /^palinsesto\s*\b/i;
+     return "nauticalchannel.net";
  }
 
  if( $dir =~ /Motors/ and $filename =~ /\.xls$/i ) {
