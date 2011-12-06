@@ -219,9 +219,11 @@ sub ImportContent {
               $ce->{episode} = ' . ' . ($episode-1) . ' . ';
               $desc = undef;
             } elsif ($desc =~ /^\d+:/) {
-              my ($episode) = ($desc =~ /^(\d+): /);
-              $ce->{episode} = ' . ' . ($episode-1) . ' . ';
-              $desc =~ s/^\d+: //;
+              my ($episode) = ($desc =~ /^(\d+):/);
+              if( $episode < 1800 ){
+                $ce->{episode} = ' . ' . ($episode-1) . ' . ';
+                $desc =~ s/^\d+://;
+              }
             }
             $ce->{description} = $desc;
           }
