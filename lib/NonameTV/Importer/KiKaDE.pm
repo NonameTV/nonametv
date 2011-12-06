@@ -12,7 +12,7 @@ See xxx for instructions.
 =cut
 
 use NonameTV::Log qw/f/;
-use NonameTV qw/ParseXml/;
+use NonameTV qw/norm ParseXml/;
 
 use IO::Uncompress::Gunzip qw(gunzip $GunzipError) ;
 
@@ -210,7 +210,10 @@ sub ImportContent {
         my @actors_array;
         if( $actors->size( ) > 0 ){
           foreach my $actor ($actors->get_nodelist()) {
-            push( @actors_array, $actor->string_value( ) );
+            my $name = norm( $actor->string_value( ) );
+            if( $name ){
+              push( @actors_array, $name );
+            }
           }
           $ce->{actors} = join( ', ', @actors_array );
         }
