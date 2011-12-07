@@ -160,7 +160,7 @@ sub ParseData
     my $label = $sc->findvalue( './programm//label' );
     if( $label ) {
       # use label as title and push title to subtitle for some labels
-      if( $label eq '37º' ){
+      if( ( $label eq '37º' ) or ( $label eq '37°' ) ){
         d( "improving title '" . $sce{title} . "' with label '". $label . "'" );
         if( $sce{subtitle} ){
           $sce{subtitle} = $sce{title} . ' - ' . $sce{subtitle};
@@ -284,7 +284,13 @@ sub ParseData
           case /&zw;/   {$ce{stereo} = "bilingual"} 
           # ZDFinfo
           case /&mhp;/  {} # DVB-MHP
-          else          { w ("unhandled attribute: $attribut") } 
+          # ZDF new press site after fixups
+          case /16zu9/            {$ce{aspect} = "16:9"}
+          case /audiodeskription/ {} # audio description
+          case /highdefinition/   {$ce{quality} = "HDTV"}
+          case /zweikanalton/     {$ce{stereo} = "bilingual"}
+          case /&zk;/             {$ce{stereo} = "bilingual"} 
+          else                    { w ("unhandled attribute: $attribut") } 
         }
       }
 

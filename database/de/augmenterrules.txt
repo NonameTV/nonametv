@@ -139,3 +139,4 @@
 120,Tvdb,^.*$,program_type,series,\N,episodetitle
 39,Tvdb,"Die verlorene Welt",\N,\N,78457,episodetitle
 39,Fixups,"^(Beast Legends - Wesen des Grauens):\s+(.*)$",\N,\N,\N,splittitle
+\N,Fixups,37°,\N,\N,"37 Grad",replacetitle
