@@ -211,6 +211,30 @@ sub AugmentProgram( $$$ ){
         }
       }
 
+      # if we have multiple candidate movies strip out all without a matching director
+      @candidates = $doc->findnodes( '/OpenSearchDescription/movies/movie' );
+      if( ( @candidates > 1 ) and ( $ceref->{directors} ) ){
+        my @directors = split( /, /, $ceref->{directors} );
+        my $director = $directors[0];
+        foreach my $candidate ( @candidates ) {
+          # we have to fetch the remaining candidates to peek at the directors
+          my $movieId = $candidate->findvalue( 'id' );
+          my $apiresult = $self->{themoviedb}->Movie_getInfo( $movieId );
+          my $doc2 = ParseXml( \$apiresult );
+
+          if (not defined ($doc2)) {
+            w( $self->{Type} . ' failed to parse result.' );
+            last;
+          }
+
+          my @nodes = $doc2->findnodes( '/OpenSearchDescription/movies/movie/cast/person[@job=\'Director\' and @name=\'' . $director . '\']' );
+          if( @nodes != 1 ){
+            $candidate->unbindNode();
+            d( "director '$director' not found, removing candidate" );
+          }
+        }
+      }
+
       @candidates = $doc->findnodes( '/OpenSearchDescription/movies/movie' );
       if( @candidates != 1 ){
         d( 'search did not return a single best hit, ignoring' );
