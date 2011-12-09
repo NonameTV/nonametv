@@ -88,6 +88,7 @@ sub ParseData
         $episodetitle = clean_untertitel ($ds, \%sce, $episodetitle);
         if ($episodetitle) {
           $sce{subtitle} = norm($episodetitle);
+          $sce{program_type} = 'series';
         }
       }
 
