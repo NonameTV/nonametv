@@ -13,12 +13,16 @@ Same format as DreiSat.
 =cut
 
 use DateTime;
+use XML::LibXML;
+
 use NonameTV qw/ParseXml/;
-use NonameTV::Log qw/progress w error/;
+use NonameTV::Log qw/p w/;
+use NonameTV::Importer::BaseWeekly;
+use NonameTV::Importer::ZDF_util qw/ParseData/;
 
-use NonameTV::Importer::DreiSat;
 
-use base 'NonameTV::Importer::DreiSat';
+use base 'NonameTV::Importer::BaseWeekly';
+
 
 sub new {
     my $proto = shift;
@@ -26,13 +30,44 @@ sub new {
     my $self  = $class->SUPER::new( @_ );
     bless ($self, $class);
 
+    if (defined $self->{UrlRoot}) {
+      w ( $self->{Type} . ": deprecated parameter UrlRoot");
+    }
+
     defined( $self->{Username} ) or die "You must specify Username";
     defined( $self->{Password} ) or die "You must specify Password";
 
     $self->{datastore}->{augment} = 1;
 
+    $self->{ZDFProgrammdienstStation} = '01';
+
     return $self;
 }
+
+
+#
+# programme weeks run sat-fri instead of mon-sun
+#
+sub BatchPeriods { 
+  my $self = shift;
+  my( $shortgrab ) = @_;
+
+  my $start_dt = DateTime->today(time_zone => 'local' );
+
+  my $maxweeks = $shortgrab ? $self->{MaxWeeksShort} : 
+    $self->{MaxWeeks};
+
+  my @periods;
+
+  for( my $week=0; $week <= $maxweeks; $week++ ) {
+    my $dt = $start_dt->clone->add( days => $week*7+2 );
+
+    push @periods, $dt->week_year . '-' . $dt->week_number;
+  }
+
+  return @periods;
+}
+
 
 sub InitiateDownload {
   my $self = shift;
@@ -48,13 +83,21 @@ sub InitiateDownload {
   }
 }
 
+
 sub Object2Url {
   my $self = shift;
   my( $objectname, $chd ) = @_;
 
   my( $year, $week ) = ( $objectname =~ /(\d+)-(\d+)$/ );
  
-  my $station = "01"; # hd.zdf.de
+  my $station;
+  if( $chd->{grabber_info} ){
+    $station = $chd->{grabber_info};
+  }elsif( $self->{ZDFProgrammdienstStation} ){
+    $station = $self->{ZDFProgrammdienstStation};
+  }else{
+    $station = "01"; # hd.zdf.de
+  }
 
   # get first day in the given batch
   my $first = DateTime->new( year=>$year, day => 4 );
@@ -66,10 +109,21 @@ sub Object2Url {
 
   my $url = 'https://pressetreff.zdf.de/index.php?id=386&tx_zdfprogrammdienst_pi1%5Bformat%5D=xml&tx_zdfprogrammdienst_pi1%5Blongdoc%5D=1&tx_zdfprogrammdienst_pi1%5Bstation%5D=' . $station . '&tx_zdfprogrammdienst_pi1%5Bdatestart%5D=' . $date . '&tx_zdfprogrammdienst_pi1%5Bweek%5D=' . $week . '&tx_zdfprogrammdienst_pi1%5Baction%5D=showDownloads&tx_zdfprogrammdienst_pi1%5Bcontroller%5D=Broadcast';
 
-  progress("ZDF: fetching data from $url");
+  p("ZDF: fetching data from $url");
 
   return( $url, undef );
 }
+
+
+sub ContentExtension {
+  return 'xml';
+}
+
+
+sub FilteredExtension {
+  return 'xml';
+}
+
 
 sub FilterContent {
   my $self = shift;
@@ -115,6 +169,18 @@ sub FilterContent {
   my $str = $doc->toString( 1 );
 
   return( \$str, undef );
+}
+
+
+sub ImportContent
+{
+  my $self = shift;
+
+  my( $batch_id, $cref, $chd ) = @_;
+
+  my $ds = $self->{datastore};
+
+  return ParseData ($batch_id, $cref, $chd, $ds);
 }
 
 1;
