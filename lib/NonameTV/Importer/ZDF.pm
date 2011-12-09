@@ -37,6 +37,10 @@ sub new {
     defined( $self->{Username} ) or die "You must specify Username";
     defined( $self->{Password} ) or die "You must specify Password";
 
+    if ($self->{MaxWeeks} > 6) {
+      $self->{MaxWeeks} = 6;
+    }
+
     $self->{datastore}->{augment} = 1;
 
     $self->{ZDFProgrammdienstStation} = '01';
