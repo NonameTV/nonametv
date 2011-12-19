@@ -620,7 +620,7 @@ sub create_dt
 
   # The schedule date doesn't wrap at midnight. This is what
   # they seem to use.
-  if( $hour < 9 )
+  if( $hour < 7 )
   {
     $dt->add( days => 1 );
   }
