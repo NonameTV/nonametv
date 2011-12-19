@@ -29,7 +29,7 @@ sub new {
     bless ($self, $class);
 
     if (!defined( $self->{UrlRoot} )) {
-      $self->{UrlRoot} = 'http://www.radiox.de/scripts/woche/woche_show_week.php';
+      $self->{UrlRoot} = 'http://www.radiox.de/media/scripts/woche/woche_show_week.php';
     }
 
     my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
@@ -55,7 +55,7 @@ sub FilterContent {
     or die "gunzip failed: $GunzipError\n";
 
   # FIXME convert latin1/cp1252 to utf-8 to HTML
-  $cref = decode( 'windows-1252', $cref );
+  # $cref = decode( 'windows-1252', $cref );
 
   # cut away frame around tables
   $cref =~ s|^.+\"0Woche\"> *(<table.+/table>)\n +</div></body>.*$|<html><body><div>$1</div></body></html>|s;
@@ -121,12 +121,13 @@ sub ImportContent {
   $$cref = decode( 'windows-1252', $$cref );
   $te->parse($$cref);
 
-  my $table = $te->table(0,0);
+  my $table = $te->table(0,0+1);
   my @firstrow = $table->row(0);
   my $firstdate = $firstrow[1];
 
   my $year = DateTime->now()->year();
-  my ($day, $month) = ( $firstdate =~ /(\d+)\.(\d+)\./ );
+  my $month = DateTime->now()->month();
+  my ($day) = ( $firstdate =~ /[A-Z][a-z] (\d+)\./ );
 
   my $dt = DateTime->new( 
                           year  => $year,
@@ -136,38 +137,43 @@ sub ImportContent {
                           );
   # if dt is in the future we have a new year between first date and today
   if (DateTime->compare ($dt, DateTime->now()) > 0) {
-    $year--; # substract one year between now and start of guide data
-    $dt->subtract (years => 1);
+    $dt->subtract (months => 1);
+    $month = $dt->month();
+    $year = $dt->year();
   }
 
-  $dsh->StartDate ($year . "-" .$month."-".$day, "02:00");
+  $dsh->StartDate ($year . '-' . $month . '-' . $day, '02:00');
 
   # loop over 11 weeks of programme tables
-  # loop over this+4 weeks
-  for (my $woche = 0; $woche <= 4; $woche++) {
-    $table = $te->table (0, $woche);
+  # loop over this+8 weeks
+  for (my $woche = 0; $woche <= 8; $woche++) {
+    $table = $te->table (0, $woche+1);
+    if( !defined( $table ) ){
+      last;
+    }
     my $dtgestern = $dt;
 
     # look over the seven columns/days
     for (my $tagspalte = 1; $tagspalte <= 7; $tagspalte++) {
       # get date
       my $heute = $table->row(0)->[$tagspalte];
-      ($day, $month) = ($heute =~ /(\d+)\.(\d+)\./);
+      ($day) = ($heute =~ /[A-Z][a-z] (\d+)\./);
       my $dtheute = DateTime->new (year => $year, month => $month, day => $day, time_zone => 'Europe/Berlin');
 
-      # is it new years day today?
+      # is it the start of a new month?
       if (DateTime->compare ($dtheute, $dtgestern) < 0) {
-        $year++;
-        $dtheute->add (years => 1);
+        $dtheute->add (months => 1);
+        $month = $dtheute->month();
+        $year = $dtheute->year();
 
 # FIXME DataStoreHelper don't really like jumps over into the new year!
-        $dsh->StartDate ($year . "-" .$month."-".$day, "00:00");
+        $dsh->StartDate ($year . '-' . $month . '-' . $day, '00:00');
       }
 
       # process programmes
       for (my $stunderow = 2; $stunderow <= $table->row_count(); $stunderow++) {
         my @programmerow = $table->row ($stunderow);
-        my $start_time = $programmerow[0];
+        my $start_time = $programmerow[0] . ':00';
         my @sendung = split ("\n", $programmerow[$tagspalte]);
 
         my ($title, $desc);
@@ -213,9 +219,11 @@ sub ImportContent {
               $ce->{episode} = ' . ' . ($episode-1) . ' . ';
               $desc = undef;
             } elsif ($desc =~ /^\d+:/) {
-              my ($episode) = ($desc =~ /^(\d+): /);
-              $ce->{episode} = ' . ' . ($episode-1) . ' . ';
-              $desc =~ s/^\d+: //;
+              my ($episode) = ($desc =~ /^(\d+):/);
+              if( $episode < 1800 ){
+                $ce->{episode} = ' . ' . ($episode-1) . ' . ';
+                $desc =~ s/^\d+://;
+              }
             }
             $ce->{description} = $desc;
           }

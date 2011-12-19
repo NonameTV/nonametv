@@ -66,6 +66,8 @@ sub FilterContent {
   my $self = shift;
   my( $cref, $chd ) = @_;
 
+  $$cref =~ s| content="text/html;charset=ISO-8859-1"| content="text/html;charset=windows-1252"|;
+
   my $doc = Html2Xml( $$cref );
   
   if( not defined $doc ) {
