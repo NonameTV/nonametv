@@ -72,7 +72,7 @@ sub ImportXLS
   my $currdate = "x";
   my @ces;
   
-  progress( "LSTV: $chd->{xmltvid}: Processing flat XLS $file" );
+  progress( "LifestyleTV: Processing flat XLS $file" );
 
   my $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
 
@@ -82,7 +82,7 @@ sub ImportXLS
 		my $foundcolumns = 0;
 
     # browse through rows
-    for(my $iR = 0 ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
+    for(my $iR = 1 ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
       # date - column 0 ('Date')
       my $oWkC = $oWkS->{Cells}[$iR][0];
       next if( ! $oWkC );
@@ -98,7 +98,7 @@ sub ImportXLS
       
       	my $batchid = $chd->{xmltvid} . "_" . $date;
         $dsh->StartBatch( $batchid , $chd->{id} );
-        progress("LSTV: $chd->{xmltvid}: Date is $date");
+        progress("LifestyleTV: Date is $date");
         $dsh->StartDate( $date , "00:00" ); 
         $currdate = $date;
       }
@@ -131,7 +131,7 @@ sub ImportXLS
         description => norm( $desc ),
       };
 
-			progress("LSTV: $chd->{xmltvid}: $time - $title");
+			progress("LifestyleTV: $time - $title");
       $dsh->AddProgramme( $ce );
 
 			push( @ces , $ce );
@@ -156,7 +156,12 @@ sub ParseDate {
   # format '2011/05/16'
   } elsif( $text =~ /^\d{4}\/\d{2}\/\d{2}$/i ){
     ( $year, $month, $day ) = ( $text =~ /^(\d{4})\/(\d{2})\/(\d{2})$/i );
+   
+  # format '1/14/2012'
+  } elsif( $text =~ /^\d+\/\d+\/\d{4}$/i ){
+    ( $month, $day, $year ) = ( $text =~ /^(\d+)\/(\d+)\/(\d+)$/i );
   }
+  
 
   $year += 2000 if $year < 100;
 
