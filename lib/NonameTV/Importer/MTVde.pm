@@ -19,7 +19,7 @@ use Data::Dumper;
 use DateTime;
 use XML::LibXML::XPathContext;
 
-use NonameTV qw/AddCategory ParseXml/;
+use NonameTV qw/AddCategory norm ParseXml/;
 use NonameTV::Importer::BaseWeekly;
 use NonameTV::Log qw/d progress w error f/;
 
@@ -38,6 +38,8 @@ sub new {
   if ($self->{HaveVGMediaLicense} eq 'yes') {
     $self->{KeepDesc} = 1;
   }
+
+  $self->{datastore}->{augment} = 1;
 
   return $self;
 }
@@ -139,7 +141,7 @@ sub ImportContent( $$$ ) {
         # unify style of story arc 
         $subtitle =~ s|[ ,-]+Teil (\d)+$| \($1\)|;
         $subtitle =~ s|[ ,-]+Part (\d)+$| \($1\)|;
-        $ce->{subtitle} = $subtitle;
+        $ce->{subtitle} = norm( $subtitle );
       }
     }
 
@@ -159,14 +161,14 @@ sub ImportContent( $$$ ) {
       AddCategory( $ce, $program_type, $category );
     }
 
-    my $url = $xpc->findvalue( 's:url/@link' );
+    my $url = $xpc->findvalue( 's:infos/s:url/@link' );
     if( $url ){
       $ce->{url} = $url
     }
 
     $self->{datastore}->AddProgramme( $ce );
 
-    d( $xpc->getContextNode()->toString() . Dumper ( $ce ) );
+#    d( $xpc->getContextNode()->toString() . Dumper ( $ce ) );
 
   }
 

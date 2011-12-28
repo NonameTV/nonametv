@@ -19,7 +19,6 @@ then
   # move away old files after 6 weeks
   tools/nonametv-filestore-moveold --all --leavedays 42
   perl -I lib/ tools/nonametv-import Tele5 --remove-missing
-  perl -I lib/ tools/nonametv-import ZDFinfo --remove-missing
 
   # remove Tvdb cache, updates seem to be broken at the moment
   rm $NROOT/contentcache/Tvdb/tvdb.*.db

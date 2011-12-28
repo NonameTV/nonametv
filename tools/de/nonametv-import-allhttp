@@ -19,7 +19,7 @@ NONAMETV="tools/nonametv-import"
 #$NONAMETV SverigesRadio $1 $2 $3
 #$NONAMETV Eurosport $1 $2 $3
 
-$NONAMETV AFN $1 $2 $3
+#$NONAMETV AFN $1 $2 $3
 $NONAMETV Arte_http $1 $2 $3
 $NONAMETV DasErsteDE $1 $2 $3
 $NONAMETV DRadioDE $1 $2 $3
@@ -35,9 +35,6 @@ $NONAMETV RadioXDE $1 $2 $3
 $NONAMETV TechnoBaseFM $1 $2 $3
 #$NONAMETV Tele5 $1 $2 $3
 $NONAMETV ZDF $1 $2 $3
-$NONAMETV ZDFinfo_http $1 $2 $3
-$NONAMETV ZDFkultur $1 $2 $3
-$NONAMETV ZDFneo $1 $2 $3
 
 fetch -o /home/nonametv/var/channels/tv_grab/ok54.xml http://programm.ok54.de/xmltv/
 $NONAMETV TVGrabXX $1 $2 $3
