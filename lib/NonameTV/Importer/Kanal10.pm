@@ -72,7 +72,7 @@ sub ImportContentFile
     $node->setData( uc( $str ) );
   }
   
-  # Find all paragraphs.displayfile.html?kanal10.se_2011-12-25
+  # Find all paragraphs.
   my $ns = $doc->find( "//p" );
   
   if( $ns->size() == 0 ) {
