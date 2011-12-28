@@ -91,7 +91,9 @@ sub FillHash( $$$ ) {
   # FIXME shall we use the alternative name if that's what was in the guide???
   # on one hand the augmenters are here to unify various styles on the other
   # hand matching the other guides means less surprise for the users
-  $resultref->{title} = norm( $doc->findvalue( '/OpenSearchDescription/movies/movie/name' ) );
+  #
+  # Change original_name to name if you want your specific language's movie name.
+  $resultref->{title} = norm( $doc->findvalue( '/OpenSearchDescription/movies/movie/original_name' ) );
 
   # TODO shall we add the tagline as subtitle?
   $resultref->{subtitle} = undef;
@@ -137,6 +139,8 @@ sub FillHash( $$$ ) {
 #  	$self->FillCredits( $resultref, 'guests', $doc, 'Actors');
 #  	$self->FillCredits( $resultref, 'presenters', $doc, 'Actors');
   	$self->FillCredits( $resultref, 'producers', $doc, 'Producer');
+  	
+  	# Writers can be in multiple "jobs", ie: Author, Writer, Screenplay and more.
   	$self->FillCredits( $resultref, 'writers', $doc, 'Screenplay');
 
 #  print STDERR Dumper( $apiresult );
