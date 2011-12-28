@@ -72,7 +72,7 @@ sub ImportContentFile
     $node->setData( uc( $str ) );
   }
   
-  # Find all paragraphs.
+  # Find all paragraphs.displayfile.html?kanal10.se_2011-12-25
   my $ns = $doc->find( "//p" );
   
   if( $ns->size() == 0 ) {
@@ -84,18 +84,26 @@ sub ImportContentFile
   my $date = undef;
   my @ces;
   my $description;
+  my $year;
 
   foreach my $div ($ns->get_nodelist) {
 
     my( $text ) = norm( $div->findvalue( '.' ) );
+    
+    # Get year from Program.versikt :year:
+    if( isYear( $text ) ) { # the line with the date in format 'Programöversikt 2011'
+        $year = ParseYear( $text );
+        progress("Kanal10: Year is $year");
+    }
+    
 
     if( isDate( $text ) ) { # the line with the date in format 'Måndag 11 Juli'
 
-      $date = ParseDate( $text );
+      $date = ParseDate( $text, $year );
 
       if( $date ) {
 
-        progress("Kanal10: $xmltvid: Date is $date");
+        progress("Kanal10: Date is $date");
 
         if( $date ne $currdate ) {
 
@@ -181,6 +189,8 @@ sub ImportContentFile
 sub isDate {
   my ( $text ) = @_;
 
+    #print("text:  $text\n");
+
   # format 'Måndag 11 06'
   if( $text =~ /^(M.ndag|Tisdag|Onsdag|Torsdag|Fredag|L.rdag|S.ndag)\s+\d+\s+\d+\$/i ){
     return 1;
@@ -192,9 +202,9 @@ sub isDate {
 }
 
 sub ParseDate {
-  my( $text ) = @_;
-
-  my( $dayname, $day, $monthname, $month, $year );
+  my( $text, $year ) = @_;
+#print("text2:  $text\n");
+  my( $dayname, $day, $monthname, $month );
 
   # format 'Måndag 11 06'
   if( $text =~ /^(Måndag|Tisdag|Onsdag|Torsdag|Fredag|Lördag|Söndag)\s+\d+\.\d+\.\d+\.$/i ){
@@ -205,19 +215,20 @@ sub ParseDate {
     $month = MonthNumber( $monthname, 'sv' );
   }
 	
-my $dt_now = DateTime->now();
+#my $dt_now = DateTime->now();
 
+print("day: $day, month: $month, year: $year\n");
 
   my $dt = DateTime->new(
-  				year => $dt_now->year,
+  				year => $year,
     			month => $month,
     			day => $day,
       		);
   
   # Add a year if the month is January
-  if($month eq 1) {
-    	$dt->add( year => 1 );
-  }
+  #if($month eq 1) {
+  #  	$dt->add( year => 1 );
+  #}
 
   #return sprintf( '%d-%02d-%02d', $year, $month, $day );
   return $dt->ymd("-");
@@ -254,6 +265,29 @@ sub ParseShow {
 
   return( $time, $title, $desc );
 }
+
+sub isYear {
+  my ( $text ) = @_;
+
+  # format 'Programöversikt 2011 (Programtablå)'
+  if( $text =~ /Program.versikt\s+\d+\s*/i ){
+    return 1;
+  }
+
+  return 0;
+}
+
+sub ParseYear {
+  my( $text ) = @_;
+  my( $year, $dummy );
+
+  # format 'Måndag 11 06'
+  if( $text =~ /(Program.versikt)\s+\d+\s+/i ){ # format 'Måndag 11 Juli'
+    ( $dummy, $year ) = ( $text =~ /(\S+)\s+(\d+)\s+(\S+)/i );
+  }
+  return $year;
+}
+
 
 sub FlushDayData {
   my ( $xmltvid, $dsh , @data ) = @_;
