@@ -87,7 +87,8 @@ sub ImportGridXLS
 
     $oWkS = $oBook->{Worksheet}[$iSheet];
     
-    if($oWkS->{Name} eq 'New') {
+    if($oWkS->{Name} =~ /New/) {
+        progress("Skipping worksheet $oWkS->{Name}" );
      next;
     }
 
@@ -95,7 +96,7 @@ sub ImportGridXLS
 
     # Each column contains data for one day
     # starting with column 3 for monday to column 9 for sunday
-    for(my $iC = 1; $iC <= 7 ; $iC++ ) {
+    for(my $iC = 2; $iC <= 7 ; $iC++ ) {
 
       my $firstrow;
 
