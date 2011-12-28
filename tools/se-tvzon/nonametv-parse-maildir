@@ -57,7 +57,6 @@ my $ds = CreateDataStore();
 my $root = "/home/beatx/maildir/.Projects/";
 my @folders = qw(NonameTV-Data.Disney
 		 NonameTV-Data.GlobalListings
-		 NonameTV-Data.ESPN
 		 NonameTV-Data.CNBC
 		 NonameTV-Data.Nonstop
 		 NonameTV-Data.OUTTV
@@ -237,7 +236,7 @@ sub guess_channel
  }
 
    if( $dir =~ /ExtremeSports/ and $filename =~ /\.xls$/i ) {
-     return "extremesports.com" if $filename =~ /^\s*\b/i;
+#     return "extremesports.com";
  }
    if( $dir =~ /Kanal10/ and $filename =~ /\.doc$/i ) {
      return "kanal10.se";
@@ -262,8 +261,8 @@ sub guess_channel
  }
  
  if( $dir =~ /Hustler/ and $filename =~ /\.xls$/i ) {
-     return "europe.bluehustler.com" if $filename =~ /^blue\s*gmt\s*\b/i;
-     return "europe.hustlertv.com" if $filename =~ /^hustler\s*tv\s*gmt\s*\b/i;
+     return "europe.bluehustler.com" if $filename =~ /^blue.*gmt.*\b/i;
+     return "europe.hustlertv.com" if $filename =~ /^hustler.*gmt.*\b/i;
  }
 
    if( $dir =~ /YaS/ and $filename =~ /\.xls$/i ) {
@@ -285,11 +284,11 @@ sub guess_channel
  }
 
    if( $dir =~ /PokerChannel/ and $filename =~ /\.xls$/i ) {
-     return "pokerchanneleurope.com" if $filename =~ /^\s*\b/i;
+     return "pokerchanneleurope.com";
  }
  
  if( $dir =~ /LifestyleTV/ and $filename =~ /\.xls$/i ) {
-     return "lifestyletv.se" if $filename =~ /^\s*\b/i;
+     return "lifestyletv.se";
  }
 
   return undef;
