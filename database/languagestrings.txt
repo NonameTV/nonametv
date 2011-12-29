@@ -118,7 +118,7 @@ exporter-dreampark,episode_season,season,en
 exporter-dreampark,of,of,en
 exporter-dreampark,episode_part,Part,sv
 exporter-dreampark,episode_number,Del,sv
-exporter-dreampark,episode_season,säsong,sv
+exporter-dreampark,episode_season,"sÃ¤song",sv
 exporter-dreampark,of,av,sv
 exporter-dreampark,episode_part,dio,hr
 exporter-dreampark,episode_number,epizoda,hr
@@ -130,7 +130,7 @@ exporter-conax,episode_season,season,en
 exporter-conax,of,of,en
 exporter-conax,episode_part,Part,sv
 exporter-conax,episode_number,Del,sv
-exporter-conax,episode_season,säsong,sv
+exporter-conax,episode_season,"sÃ¤song",sv
 exporter-conax,of,av,sv
 exporter-conax,episode_part,dio,hr
 exporter-conax,episode_number,epizoda,hr
@@ -174,7 +174,7 @@ exporter-lysis,episode_season,season,en
 exporter-lysis,of,of,en
 exporter-lysis,episode_part,Part,sv
 exporter-lysis,episode_number,Del,sv
-exporter-lysis,episode_season,säsong,sv
+exporter-lysis,episode_season,"sÃ¤song",sv
 exporter-lysis,of,av,sv
 exporter-lysis,episode_part,dio,hr
 exporter-lysis,episode_number,epizoda,hr
@@ -186,7 +186,7 @@ exporter-xmltv2,episode_season,season,en
 exporter-xmltv2,of,of,en
 exporter-xmltv2,episode_part,Part,sv
 exporter-xmltv2,episode_number,Del,sv
-exporter-xmltv2,episode_season,säsong,sv
+exporter-xmltv2,episode_season,"sÃ¤song",sv
 exporter-xmltv2,of,av,sv
 exporter-xmltv2,episode_part,dio,hr
 exporter-xmltv2,episode_number,epizoda,hr
