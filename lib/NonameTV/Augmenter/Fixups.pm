@@ -5,6 +5,7 @@ use warnings;
 
 use Data::Dumper;
 use Encode;
+use utf8;
 
 use NonameTV qw/norm/;
 use NonameTV::Augmenter::Base;
@@ -62,6 +63,8 @@ sub AugmentProgram( $$$ ){
 
   if( $ruleref->{matchby} eq 'setcategory' ) {
     $resultref->{'category'} = $ruleref->{remoteref};
+  }elsif( $ruleref->{matchby} eq 'setprogram_type' ) {
+    $resultref->{'program_type'} = $ruleref->{remoteref};
   }elsif( $ruleref->{matchby} eq 'setsubtitle' ) {
     $resultref->{'subtitle'} = $ruleref->{remoteref};
   }elsif( $ruleref->{matchby} eq 'splittitle' ) {
@@ -69,10 +72,7 @@ sub AugmentProgram( $$$ ){
     $resultref->{'title'} = $title;
     $resultref->{'subtitle'} = $episodetitle;
     if( $ceref->{'subtitle'} ) {
-      $resultref->{'description'} = $ceref->{'subtitle'};
-      if( $ceref->{'description'} ){
-        $resultref->{'description'} .= "\n" . $ceref->{'description'};
-      }
+      $resultref->{'subtitle'} .= " - " . $ceref->{'subtitle'};
     }
     $resultref->{program_type} = 'series';
   }elsif( $ruleref->{matchby} eq 'splittitlereverse' ) {
@@ -132,15 +132,15 @@ sub AugmentProgram( $$$ ){
     # FIXME what about programmes that have been augmented in between? (rewrite of episode number / typo fixes in episode title)
     #
     my $matchdone = 0;
-    if( $ceref->{'title'} && $ceref->{subtitle} && !$ceref->{description} ){
-      # try matching by title/subtitle first
-      d( 'matching by title/subtitle' );
-      my( $res, $sth ) = $self->{datastore}->sa->Sql( "
+    if( !$matchdone && $ceref->{'title'} && $ceref->{subtitle} && $ceref->{episode} && !$ceref->{description} ){
+      # try matching by title/subtitle/episode number first
+      d( 'matching by title/subtitle/episode number' );
+      my ( $res, $sth ) = $self->{datastore}->sa->Sql( "
           SELECT * from programs
-          WHERE channel_id = ? and title = ? and subtitle = ? and description is not null
+          WHERE channel_id = ? and title = ? and subtitle = ? and episode = ? and description is not null
           ORDER BY timediff( ? , start_time ) asc, start_time asc, end_time desc
           LIMIT 1", 
-        [$ceref->{channel_id}, $ceref->{title}, $ceref->{subtitle}, $ceref->{start_time}] );
+        [$ceref->{channel_id}, $ceref->{title}, $ceref->{subtitle}, $ceref->{episode}, $ceref->{start_time}] );
       my $ce;
       while( defined( my $ce = $sth->fetchrow_hashref() ) ) {
         CopyProgramWithoutTransmission( $resultref, $ce );
@@ -162,8 +162,24 @@ sub AugmentProgram( $$$ ){
         $matchdone=1;
       }
     }
-    if( !$matchdone && $ceref->{'title'} && !$ceref->{subtitle} && !$ceref->{description} ){
-      # try matching just by title number last
+    if( $ceref->{'title'} && $ceref->{subtitle} && !$ceref->{description} ){
+      # try matching by title/subtitle next
+      d( 'matching by title/subtitle' );
+      my( $res, $sth ) = $self->{datastore}->sa->Sql( "
+          SELECT * from programs
+          WHERE channel_id = ? and title = ? and subtitle = ? and description is not null
+          ORDER BY timediff( ? , start_time ) asc, start_time asc, end_time desc
+          LIMIT 1", 
+        [$ceref->{channel_id}, $ceref->{title}, $ceref->{subtitle}, $ceref->{start_time}] );
+      my $ce;
+      while( defined( my $ce = $sth->fetchrow_hashref() ) ) {
+        d( 'copying from ' . $ce->{start_time} . ' to ' . $ceref->{start_time} );
+        CopyProgramWithoutTransmission( $resultref, $ce );
+        $matchdone=1;
+      }
+    }
+    if( !$matchdone && $ceref->{'title'} && !$ceref->{episode} && !$ceref->{subtitle} && !$ceref->{description} ){
+      # try matching just by title number last and only of episode number and subtitle are empty!
       d( 'matching by title' );
       my( $res, $sth ) = $self->{datastore}->sa->Sql( "
           SELECT * from programs
