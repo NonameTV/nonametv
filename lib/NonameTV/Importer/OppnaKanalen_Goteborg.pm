@@ -172,8 +172,8 @@ sub ParseDate {
     ( $year, $month, $day  ) = ( $text =~ /^(\d{4})\/(\d{2})\/(\d{2})$/i );
   }
   
-  my $dt2 = DateTime->now;
-  $year   = $dt2->year;
+  #my $dt2 = DateTime->now;
+  #$year   = $dt2->year;
 
   my $dt = DateTime->new(
     year => $year,
