@@ -40,7 +40,7 @@
 57,Fixups,\N,description,\N,\N,copylastdetails
 57,Fixups,"^(Rosamunde Pilcher):\s+(.*)$",\N,\N,\N,splittitle
 38,Fixups,"360º - Geo Reportage",\N,\N,"360° - Geo Reportage",replacetitle
-48,Fixups,"^(37 Grad):\s+(.*)$",\N,\N,\N,splittitle
+\N,Fixups,"^(37 Grad):\s+(.*)$",\N,\N,\N,splittitle
 58,Fixups,\N,description,\N,\N,copylastdetails
 38,Fixups,\N,description,\N,\N,copylastdetails
 44,Fixups,\N,description,\N,\N,copylastdetails
@@ -140,3 +140,14 @@
 39,Tvdb,"Die verlorene Welt",\N,\N,78457,episodetitle
 39,Fixups,"^(Beast Legends - Wesen des Grauens):\s+(.*)$",\N,\N,\N,splittitle
 \N,Fixups,37°,\N,\N,"37 Grad",replacetitle
+105,Tvdb,^.*$,program_type,series,\N,episodetitle
+105,Tvdb,"Der Prinz von Bel Air",\N,\N,76738,episodetitle
+105,Tvdb,Frasier,\N,\N,77811,episodetitle
+105,Tvdb,Stripperella,\N,\N,78852,episodetitle
+105,Tvdb,"Little BRITAIN USA",\N,\N,83232,episodetitle
+105,Tvdb,"American Dad",\N,\N,73141,episodetitle
+49,Fixups,"^(4 gegen Z)\s*-\s*(.*)$",\N,\N,\N,splittitle
+39,Fixups,"^(Jet Li):\s+(.*)$",\N,\N,\N,splitstartitle
+\N,Fixups,"^(Mordkommission Istanbul)\s+-\s+(.*)$",\N,\N,\N,splittitle
+\N,Fixups,"^(Maria Wern, Kripo Gotland)\s+-\s+(.*)$",\N,\N,\N,splittitle
+\N,Fixups,"^(In aller Freundschaft)\s+-\s+(.*)$",\N,\N,\N,splittitle

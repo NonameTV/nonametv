@@ -254,6 +254,14 @@ sub ImportRTF {
             $stoptime->set_time_zone("UTC");           # convert local to UTC
             $ce->{end_time} = $stoptime->ymd('-') . ' ' . $stoptime->hms(':');
           }
+
+          # if we have text *before* the start time then that might be the program type inside the label!
+          my ($label) = ($text =~ m|^(.+)\n\s*\d{2}:\d{2}\s+.*\n|);
+          if ($label) {
+            my ($program_type, $categ) = $ds->LookupCat ('Tele5Label', $label);
+            AddCategory ($ce, $program_type, $categ);
+            $text =~ s|^.+\n(\s*\d{2}:\d{2}\s+.*\n)|$1|;
+          }
         }
 
         # skip if SWR an wrong region
@@ -323,6 +331,10 @@ sub ImportRTF {
           }
         }
 
+        #
+        # now pull all information from the text
+        #
+
         # year of production and genre/program type
         my ($genre, $production_year) = ($text =~ m |\n\s*(.*)\n\s*Produziert:\s+.*\s(\d+)|);
         if ($production_year) {
@@ -332,8 +344,12 @@ sub ImportRTF {
           if (!($genre =~ m|^Sendedauer:|)) {
             my ($program_type, $categ) = $ds->LookupCat ('Tele5', $genre);
             AddCategory ($ce, $program_type, $categ);
+            $text =~ s|\n.*\n\s*Produziert:\s+.*\s\d+||;
+          } else {
+            $text =~ s|\n\s*Produziert:\s+.*\s\d+||;
           }
         }
+        $text =~ s|\n\s*Sendedauer:\s+\d+||;
 
         # synopsis
         if ($self->{KeepDesc}) {
@@ -346,17 +362,26 @@ sub ImportRTF {
         # aspect
         if ($text =~ m|^\s*Bildformat 16:9$|m) {
           $ce->{aspect} = '16:9';
+          $text =~ s|\n\s*Bildformat 16:9\n|\n|;
         }
 
         # stereo
         if ($text =~ m|^\s*Stereo$|m) {
           $ce->{stereo} = 'stereo';
+          $text =~ s|\n\s*Stereo\n|\n|;
         }
         if ($text =~ m|^\s*Dolby Surround$|m) {
           $ce->{stereo} = 'surround';
+          $text =~ s|\n\s*Dolby Surround\n|\n|;
         }
-        if ($text =~ m|^Zweikanal$|m) {
+        if ($text =~ m|^\s*Zweikanal$|m) {
           $ce->{stereo} = 'bilingual';
+          $text =~ s|\n\s*Zweikanal\n|\n|;
+        }
+
+        if ($text =~ m|^\s*Für Hörgeschädigte$|m) {
+          #$ce->{subtitle} = 'yes';
+          $text =~ s|\n\s*Für Hörgeschädigte\n|\n|;
         }
 
         # category override for kids (as we don't have a good category for anime anyway)
@@ -392,6 +417,14 @@ sub ImportRTF {
         my ($directors) = ($text =~ m|^\s*Regie:\s*(.*)$|m);
         if ($directors) {
           $ce->{directors} = $directors;
+          $text =~ s/\n\s*Regie:.*(?:\n|$)/\n/;
+        }
+
+        # presenters
+        my ($presenters) = ($text =~ m|^\s*Moderation:\s*(.*)$|m);
+        if ($presenters) {
+          $ce->{presenters} = $presenters;
+          $text =~ s/\n\s*Moderation:.*(?:\n|$)/\n/;
         }
 
         $ce->{title} = $title;

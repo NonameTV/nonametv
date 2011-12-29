@@ -171,10 +171,12 @@ SRF,"spielfilm (romanze)",,movie
 SRF,"spielfilm (sciencefiction / fantasy)",,movie
 SRF,"spielfilm (western)",,movie
 Tele5,abenteuer,Action/Adv,
+Tele5,"abenteuer mini-serie",Action/Adv,series
 Tele5,abenteuer-mini-serie,Action/Adv,series
+Tele5,abenteuer-reihe,Action/Adv,series
 Tele5,abenteuer-serie,Action/Adv,series
-Tele5,abenteuerfilm,,movie
-Tele5,abenteuerserie,,series
+Tele5,abenteuerfilm,Action/Adv,movie
+Tele5,abenteuerserie,Action/Adv,series
 Tele5,action,Action,
 Tele5,action-serie,Action,series
 Tele5,actionabenteuer,Action/Adv,
@@ -186,6 +188,7 @@ Tele5,anime-serie,,series
 Tele5,antikriegsfilm,Drama,movie
 Tele5,biopic,Documentary,
 Tele5,comedy-serie,,series
+Tele5,comedyserie,,series
 Tele5,doku-reihe,Documentary,series
 Tele5,doku-serie,Documentary,series
 Tele5,dokumentarfilm,Documentary,movie
@@ -195,6 +198,7 @@ Tele5,drama,Drama,
 Tele5,eastern,Action/Adv,
 Tele5,erotikthriller,Adult,
 Tele5,familienfilm,,movie
+Tele5,familienserie,,series
 Tele5,fantasy,Sci-fi/Fantasy,
 Tele5,fantasy-serie,Sci-fi/Fantasy,series
 Tele5,fantasyfilm,Sci-fi/Fantasy,movie
@@ -208,6 +212,7 @@ Tele5,jugendfilm,,movie
 Tele5,jugendkrimi-serie,Crime,series
 Tele5,jugendserie,,series
 Tele5,katastrophenfilm,,movie
+Tele5,"kinder- und familienserie",,series
 Tele5,kinderfilm,,movie
 Tele5,kriegsdrama,Drama,
 Tele5,kriegsfilm,,movie
@@ -219,12 +224,16 @@ Tele5,"krimikomÃ¶die",Crime,
 Tele5,kriminalfilm,Crime,movie
 Tele5,krimiserie,Crime,series
 Tele5,kurzfilm,,movie
+Tele5,"mÃ¤rchenfilm",,movie
 Tele5,monumentalfilm,,movie
+Tele5,"musik- und tanzfilm",,movie
 Tele5,musikfilm,,movie
 Tele5,mystery,Mystery,
+Tele5,mystery-drama-serie,,series
 Tele5,mystery-serie,Mystery,series
 Tele5,pilotfilm,,movie
 Tele5,psychothriller,Crime/Mystery,
+Tele5,puppenserie,,series
 Tele5,realserie,,series
 Tele5,sci-fi,SciFi,
 Tele5,"sci-fi action",SciFi,
@@ -250,6 +259,9 @@ Tele5,western,Action/Adv,
 Tele5,westernparodie,Action/Adv,
 Tele5,zeichentrickfilm,,movie
 Tele5,zeichentrickserie,,series
+Tele5Label,film,,movie
+Tele5Label,kino,,series
+Tele5Label,serie,,series
 Tvdb,children,Kids,
 Tvdb,comedy,Comedy,
 Tvdb,documentary,Documentary,
