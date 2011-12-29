@@ -151,3 +151,6 @@
 \N,Fixups,"^(Mordkommission Istanbul)\s+-\s+(.*)$",\N,\N,\N,splittitle
 \N,Fixups,"^(Maria Wern, Kripo Gotland)\s+-\s+(.*)$",\N,\N,\N,splittitle
 \N,Fixups,"^(In aller Freundschaft)\s+-\s+(.*)$",\N,\N,\N,splittitle
+74,Tvdb,"Aus Lust und Leidenschaft",\N,\N,81126,episodeabs
+\N,Fixups,Tatort,\N,\N,series,setprogram_type
+\N,Fixups,"Polizeiruf 110",\N,\N,series,setprogram_type

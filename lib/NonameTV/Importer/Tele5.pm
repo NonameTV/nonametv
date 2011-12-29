@@ -28,7 +28,7 @@ use utf8;
 
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/d p w error f/;
-use NonameTV qw/AddCategory MonthNumber norm/;
+use NonameTV qw/AddCategory MonthNumber norm normLatin1 normUtf8/;
 
 use NonameTV::Importer::BaseFile;
 
@@ -135,6 +135,10 @@ sub ImportRTF {
           $desc .= "\n";
         }else{
           $text .= "\n";
+        }
+    } elsif( ( $type eq 'control' ) and ( $arg eq 'tab' ) ){
+        if( $grouplevel < 3 ) {
+          $text .= "\t";
         }
     } elsif( ( $type eq 'control' ) and ( ( $arg eq '*' ) or ( $arg eq 'fonttbl' ) or ( $arg eq 'footer' ) or ( $arg eq 'header' ) ) ){
       d( 'footerstart' );
@@ -359,29 +363,52 @@ sub ImportRTF {
           }
         }
 
+        # case
+        if ($text =~ m|\n\s*Besetzung:\n.*\n\n|s){
+          (my $cast) = ($text =~ m|\n\s*Besetzung:\n(.*)\n\n|s);
+
+          $cast = normLatin1 (normUtf8 ($cast));
+
+          my @castArray = split ("\n", $cast);
+          foreach my $castElement (@castArray) {
+            my ($role, $actor) = split ("\t", $castElement);
+            if (defined ($actor)) {
+              $actor = norm ($actor);
+              $role = norm ($role);
+              if (!defined ($ce->{actors})) {
+                $ce->{actors} = $actor . ' (' . $role . ')';
+              } else {
+                $ce->{actors} = join (', ', $ce->{actors}, $actor . ' (' . $role . ')');
+              }
+            }
+          }
+
+          $text =~ s/\n\s*Besetzung:\n.*\n(?:\n|$)/\n/s;
+        }
+
         # aspect
         if ($text =~ m|^\s*Bildformat 16:9$|m) {
           $ce->{aspect} = '16:9';
-          $text =~ s|\n\s*Bildformat 16:9\n|\n|;
+          $text =~ s/\n\s*Bildformat 16:9(?:\n|$)/\n/;
         }
 
         # stereo
         if ($text =~ m|^\s*Stereo$|m) {
           $ce->{stereo} = 'stereo';
-          $text =~ s|\n\s*Stereo\n|\n|;
+          $text =~ s/\n\s*Stereo(?:\n|$)/\n/;
         }
         if ($text =~ m|^\s*Dolby Surround$|m) {
           $ce->{stereo} = 'surround';
-          $text =~ s|\n\s*Dolby Surround\n|\n|;
+          $text =~ s/\n\s*Dolby Surround(?:\n|$)/\n/;
         }
         if ($text =~ m|^\s*Zweikanal$|m) {
           $ce->{stereo} = 'bilingual';
-          $text =~ s|\n\s*Zweikanal\n|\n|;
+          $text =~ s/\n\s*Zweikanal(?:\n|$)/\n/;
         }
 
         if ($text =~ m|^\s*Für Hörgeschädigte$|m) {
           #$ce->{subtitle} = 'yes';
-          $text =~ s|\n\s*Für Hörgeschädigte\n|\n|;
+          $text =~ s/\n\s*Für Hörgeschädigte(?:\n|$)/\n/;
         }
 
         # category override for kids (as we don't have a good category for anime anyway)
@@ -427,9 +454,25 @@ sub ImportRTF {
           $text =~ s/\n\s*Moderation:.*(?:\n|$)/\n/;
         }
 
+        # writer
+        my ($authors) = ($text =~ m|^\s*Autor(?:in):\s*(.*)$|m);
+        if ($authors) {
+          $ce->{writers} = $authors;
+          $text =~ s/\n\s*Autor(?:in):.*(?:\n|$)/\n/;
+        }
+
+        # writer
+        my ($writers) = ($text =~ m|^\s*Drehbuch:\s*(.*)$|m);
+        if ($writers) {
+          $ce->{writers} = $writers;
+          $text =~ s/\n\s*Drehbuch:.*(?:\n|$)/\n/;
+        }
+
         $ce->{title} = $title;
         $self->{datastore}->AddProgramme ($ce);
-        d( 'left over text: ' . $text );
+        if( $text ){
+          d( 'left over text: ' . $text );
+        }
       }
       $desc = '';
       $enoughtext = 0;
