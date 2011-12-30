@@ -50,6 +50,8 @@ sub new {
 
   $self->{datastore}->{augment} = 1;
 
+  $self->{RTFDebug} = 0;
+
   return $self;
 }
 
@@ -141,7 +143,9 @@ sub ImportRTF {
           $text .= "\t";
         }
     } elsif( ( $type eq 'control' ) and ( ( $arg eq '*' ) or ( $arg eq 'fonttbl' ) or ( $arg eq 'footer' ) or ( $arg eq 'header' ) ) ){
-      d( 'footerstart' );
+      if( $self->{RTFDebug} ) {
+        d( 'footerstart' );
+      }
       $text .= "\n";
       if( $infooter == 0 ) {
         $infooter = $grouplevel;
@@ -149,7 +153,9 @@ sub ImportRTF {
     } elsif( ( $type eq 'group' ) ){
       if( $arg == 0 ) {
         if( $grouplevel == $infooter ) {
-          d( 'footerend' );
+          if( $self->{RTFDebug} ) {
+            d( 'footerend' );
+          }
           $infooter = 0;
           $desc = '';
           $text = '';
@@ -172,10 +178,14 @@ sub ImportRTF {
         }elsif(($arg ne 'Planet Schule') && ($arg ne 'TAGESTIPP')){
           $text .= ' ' . $arg;
         }
-        d( 'text(' . $grouplevel .'):' . $arg );
+        if( $self->{RTFDebug} ) {
+          d( 'text(' . $grouplevel .'):' . $arg );
+        }
       }
     } else {
-      d( 'unknown type: ' . $type . ':' . $arg );
+      if( $self->{RTFDebug} ) {
+        d( 'unknown type: ' . $type . ':' . $arg );
+      }
     }
 
     if( $text =~ m|\n\n\n$| ){
@@ -207,7 +217,9 @@ sub ImportRTF {
         $laststart = undef;
       } else { 
 #        $text =~ s|^\s+||mg;
-        d "TEXT: $text";
+        if( $self->{RTFDebug} ) {
+          d( 'TEXT: ' . $text );
+        }
 
         my $ce = {};
         $ce->{channel_id} = $chd->{id};
