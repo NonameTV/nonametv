@@ -260,11 +260,19 @@ sub ImportRTF {
           }
 
           # if we have text *before* the start time then that might be the program type inside the label!
-          my ($label) = ($text =~ m|^(.+)\n\s*\d{2}:\d{2}\s+.*\n|);
+          my ($label) = ($text =~ m|^\s*(.+)\n\s*\d{2}:\d{2}\s+.*\n|m);
           if ($label) {
             my ($program_type, $categ) = $ds->LookupCat ('Tele5Label', $label);
             AddCategory ($ce, $program_type, $categ);
-            $text =~ s|^.+\n(\s*\d{2}:\d{2}\s+.*\n)|$1|;
+            $text =~ s|^\s*.+\n(\s*\d{2}:\d{2}\s+.*\n)|$1|m;
+          }
+
+          # if we still have text *before* the start time then that might be the program type inside the label!
+          ($label) = ($text =~ m|^\s*(.+)\n\s*\d{2}:\d{2}\s+.*\n|m);
+          if ($label) {
+            my ($program_type, $categ) = $ds->LookupCat ('Tele5Label', $label);
+            AddCategory ($ce, $program_type, $categ);
+            $text =~ s|^\s*.+\n(\s*\d{2}:\d{2}\s+.*\n)|$1|m;
           }
         }
 
