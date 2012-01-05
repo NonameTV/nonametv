@@ -47,6 +47,9 @@ sub new {
     $self->{themoviedb}->key( $self->{ApiKey} );
     $self->{themoviedb}->lang( $self->{Language} );
 
+    # slow down to avoid rate limiting
+    $self->{Slow} = 1;
+
     return $self;
 }
 
@@ -79,7 +82,10 @@ sub FillCredits( $$$$$ ) {
 
 sub FillHash( $$$ ) {
   my( $self, $resultref, $movieId, $ceref )=@_;
-
+ 
+  if( $self->{Slow} ) {
+    sleep (1);
+  }
   my $apiresult = $self->{themoviedb}->Movie_getInfo( $movieId );
   my $doc = ParseXml( \$apiresult );
 
@@ -175,6 +181,9 @@ sub AugmentProgram( $$$ ){
     # FIXME check again now that we encode umlauts & co.
     $searchTerm =~ s|[-#\?]||g;
 
+    if( $self->{Slow} ) {
+      sleep (1);
+    }
     # TODO fix upstream instead of working around here
     my $apiresult = $self->{themoviedb}->Movie_search( encode( 'utf-8', $searchTerm ) );
 
@@ -223,6 +232,9 @@ sub AugmentProgram( $$$ ){
         foreach my $candidate ( @candidates ) {
           # we have to fetch the remaining candidates to peek at the directors
           my $movieId = $candidate->findvalue( 'id' );
+          if( $self->{Slow} ) {
+            sleep (1);
+          }
           my $apiresult = $self->{themoviedb}->Movie_getInfo( $movieId );
           my $doc2 = ParseXml( \$apiresult );
 

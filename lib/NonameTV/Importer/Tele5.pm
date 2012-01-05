@@ -28,7 +28,7 @@ use utf8;
 
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/d p w error f/;
-use NonameTV qw/AddCategory MonthNumber norm/;
+use NonameTV qw/AddCategory MonthNumber norm normLatin1 normUtf8/;
 
 use NonameTV::Importer::BaseFile;
 
@@ -49,6 +49,8 @@ sub new {
   }
 
   $self->{datastore}->{augment} = 1;
+
+  $self->{RTFDebug} = 0;
 
   return $self;
 }
@@ -136,8 +138,14 @@ sub ImportRTF {
         }else{
           $text .= "\n";
         }
+    } elsif( ( $type eq 'control' ) and ( $arg eq 'tab' ) ){
+        if( $grouplevel < 3 ) {
+          $text .= "\t";
+        }
     } elsif( ( $type eq 'control' ) and ( ( $arg eq '*' ) or ( $arg eq 'fonttbl' ) or ( $arg eq 'footer' ) or ( $arg eq 'header' ) ) ){
-      d( 'footerstart' );
+      if( $self->{RTFDebug} ) {
+        d( 'footerstart' );
+      }
       $text .= "\n";
       if( $infooter == 0 ) {
         $infooter = $grouplevel;
@@ -145,7 +153,9 @@ sub ImportRTF {
     } elsif( ( $type eq 'group' ) ){
       if( $arg == 0 ) {
         if( $grouplevel == $infooter ) {
-          d( 'footerend' );
+          if( $self->{RTFDebug} ) {
+            d( 'footerend' );
+          }
           $infooter = 0;
           $desc = '';
           $text = '';
@@ -168,10 +178,14 @@ sub ImportRTF {
         }elsif(($arg ne 'Planet Schule') && ($arg ne 'TAGESTIPP')){
           $text .= ' ' . $arg;
         }
-        d( 'text(' . $grouplevel .'):' . $arg );
+        if( $self->{RTFDebug} ) {
+          d( 'text(' . $grouplevel .'):' . $arg );
+        }
       }
     } else {
-      d( 'unknown type: ' . $type . ':' . $arg );
+      if( $self->{RTFDebug} ) {
+        d( 'unknown type: ' . $type . ':' . $arg );
+      }
     }
 
     if( $text =~ m|\n\n\n$| ){
@@ -203,7 +217,9 @@ sub ImportRTF {
         $laststart = undef;
       } else { 
 #        $text =~ s|^\s+||mg;
-        d "TEXT: $text";
+        if( $self->{RTFDebug} ) {
+          d( 'TEXT: ' . $text );
+        }
 
         my $ce = {};
         $ce->{channel_id} = $chd->{id};
@@ -253,6 +269,22 @@ sub ImportRTF {
             $stoptime->set_time_zone("Europe/Berlin"); # force local time without adjustment
             $stoptime->set_time_zone("UTC");           # convert local to UTC
             $ce->{end_time} = $stoptime->ymd('-') . ' ' . $stoptime->hms(':');
+          }
+
+          # if we have text *before* the start time then that might be the program type inside the label!
+          my ($label) = ($text =~ m|^\s*(.+)\n\s*\d{2}:\d{2}\s+.*\n|m);
+          if ($label) {
+            my ($program_type, $categ) = $ds->LookupCat ('Tele5Label', $label);
+            AddCategory ($ce, $program_type, $categ);
+            $text =~ s|^\s*.+\n(\s*\d{2}:\d{2}\s+.*\n)|$1|m;
+          }
+
+          # if we still have text *before* the start time then that might be the program type inside the label!
+          ($label) = ($text =~ m|^\s*(.+)\n\s*\d{2}:\d{2}\s+.*\n|m);
+          if ($label) {
+            my ($program_type, $categ) = $ds->LookupCat ('Tele5Label', $label);
+            AddCategory ($ce, $program_type, $categ);
+            $text =~ s|^\s*.+\n(\s*\d{2}:\d{2}\s+.*\n)|$1|m;
           }
         }
 
@@ -323,6 +355,10 @@ sub ImportRTF {
           }
         }
 
+        #
+        # now pull all information from the text
+        #
+
         # year of production and genre/program type
         my ($genre, $production_year) = ($text =~ m |\n\s*(.*)\n\s*Produziert:\s+.*\s(\d+)|);
         if ($production_year) {
@@ -332,8 +368,12 @@ sub ImportRTF {
           if (!($genre =~ m|^Sendedauer:|)) {
             my ($program_type, $categ) = $ds->LookupCat ('Tele5', $genre);
             AddCategory ($ce, $program_type, $categ);
+            $text =~ s|\n.*\n\s*Produziert:\s+.*\s\d+||;
+          } else {
+            $text =~ s|\n\s*Produziert:\s+.*\s\d+||;
           }
         }
+        $text =~ s|\n\s*Sendedauer:\s+\d+||;
 
         # synopsis
         if ($self->{KeepDesc}) {
@@ -343,20 +383,52 @@ sub ImportRTF {
           }
         }
 
+        # case
+        if ($text =~ m|\n\s*Besetzung:\n.*\n\n|s){
+          (my $cast) = ($text =~ m|\n\s*Besetzung:\n(.*)\n\n|s);
+
+          $cast = normLatin1 (normUtf8 ($cast));
+
+          my @castArray = split ("\n", $cast);
+          foreach my $castElement (@castArray) {
+            my ($role, $actor) = split ("\t", $castElement);
+            if (defined ($actor)) {
+              $actor = norm ($actor);
+              $role = norm ($role);
+              if (!defined ($ce->{actors})) {
+                $ce->{actors} = $actor . ' (' . $role . ')';
+              } else {
+                $ce->{actors} = join (', ', $ce->{actors}, $actor . ' (' . $role . ')');
+              }
+            }
+          }
+
+          $text =~ s/\n\s*Besetzung:\n.*\n(?:\n|$)/\n/s;
+        }
+
         # aspect
         if ($text =~ m|^\s*Bildformat 16:9$|m) {
           $ce->{aspect} = '16:9';
+          $text =~ s/\n\s*Bildformat 16:9(?:\n|$)/\n/;
         }
 
         # stereo
         if ($text =~ m|^\s*Stereo$|m) {
           $ce->{stereo} = 'stereo';
+          $text =~ s/\n\s*Stereo(?:\n|$)/\n/;
         }
         if ($text =~ m|^\s*Dolby Surround$|m) {
           $ce->{stereo} = 'surround';
+          $text =~ s/\n\s*Dolby Surround(?:\n|$)/\n/;
         }
-        if ($text =~ m|^Zweikanal$|m) {
+        if ($text =~ m|^\s*Zweikanal$|m) {
           $ce->{stereo} = 'bilingual';
+          $text =~ s/\n\s*Zweikanal(?:\n|$)/\n/;
+        }
+
+        if ($text =~ m|^\s*Für Hörgeschädigte$|m) {
+          #$ce->{subtitle} = 'yes';
+          $text =~ s/\n\s*Für Hörgeschädigte(?:\n|$)/\n/;
         }
 
         # category override for kids (as we don't have a good category for anime anyway)
@@ -392,11 +464,35 @@ sub ImportRTF {
         my ($directors) = ($text =~ m|^\s*Regie:\s*(.*)$|m);
         if ($directors) {
           $ce->{directors} = $directors;
+          $text =~ s/\n\s*Regie:.*(?:\n|$)/\n/;
+        }
+
+        # presenters
+        my ($presenters) = ($text =~ m|^\s*Moderation:\s*(.*)$|m);
+        if ($presenters) {
+          $ce->{presenters} = $presenters;
+          $text =~ s/\n\s*Moderation:.*(?:\n|$)/\n/;
+        }
+
+        # writer
+        my ($authors) = ($text =~ m|^\s*Autor(?:in):\s*(.*)$|m);
+        if ($authors) {
+          $ce->{writers} = $authors;
+          $text =~ s/\n\s*Autor(?:in):.*(?:\n|$)/\n/;
+        }
+
+        # writer
+        my ($writers) = ($text =~ m|^\s*Drehbuch:\s*(.*)$|m);
+        if ($writers) {
+          $ce->{writers} = $writers;
+          $text =~ s/\n\s*Drehbuch:.*(?:\n|$)/\n/;
         }
 
         $ce->{title} = $title;
         $self->{datastore}->AddProgramme ($ce);
-        d( 'left over text: ' . $text );
+        if( $text ){
+          d( 'left over text: ' . $text );
+        }
       }
       $desc = '';
       $enoughtext = 0;
