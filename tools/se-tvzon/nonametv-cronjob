@@ -22,8 +22,16 @@ then
   # Move away old files  after 6 weeks
   tools/nonametv-filestore-moveold --all --leavedays 42
 
+  # Remove old files after 70 days (safes space)
+  tools/nonametv-filestore-removeold --all --leavedays 70
+
   # remove Tvdb cache, updates seem to be broken at the moment
   rm /storage/nonametv/contentcache/Tvdb/tvdb.*.db
+
+  # Make sure we have all xmltv updated. As some seem to go missing (Somehow)
+  # (for example if the time on the server is way off)
+  tools/nonametv-export Xmltv --force-export
+  tools/nonametv-export Json --force-export
 
   exit
 fi
