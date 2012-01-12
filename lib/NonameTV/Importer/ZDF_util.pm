@@ -416,6 +416,11 @@ sub clean_untertitel
 
   $subtitle = norm ($subtitle);
 
+  # strip "(german) premiere"
+  if ($subtitle =~ m/\s*(?:Deutsche\s+|)Erstausstrahlung$/) {
+    $subtitle =~ s/\s*(?:Deutsche\s+|)Erstausstrahlung$//;
+  }
+
   # strip "repeat"
   if ($subtitle =~ m|^\(Wh\.\)$|) {
     return undef;
