@@ -14,6 +14,7 @@ fi
 $V && echo "Local rsync"
 rsync -c --delete -r $NROOT/xmltv_staging/ $NROOT/xmltv/
 tools/de/nonametv-xmltv-gendatalist
+tools/nonametv-xmltv-gendvbservicepointer $NROOT/xmltv/
 #rsync -c --delete -r $NROOT/json_staging/ $NROOT/json/
 
 #$V && echo "tv.swedb.se"
