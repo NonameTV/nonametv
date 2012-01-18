@@ -69,12 +69,14 @@ sub ImportContentFile {
 #    $self->{datastore}->{SILENCE_END_START_OVERLAP} = 1;
   }
 
-  my $regexp = $self->{channel_name} . '_Pw_[[:digit:]]+A\.rtf';
+  my $regexp = $self->{channel_name} . '(?:_[MDFS][oira]|)_Pw_[[:digit:]]+A\.rtf';
   $regexp =~ s|\s|_|g;
 
-return if ( $file !~ /$regexp/i );
-
-  $self->ImportRTF ($file, $chd);
+  if ( $file =~ /$regexp/i ){
+    $self->ImportRTF ($file, $chd);
+  } else {
+    p( 'unknown file: ' . $file );
+  }
 
   return;
 }
@@ -204,7 +206,13 @@ sub ImportRTF {
 
         if (!$gotbatch) {
           $gotbatch = 1;
-          $self->{datastore}->StartBatch ($chd->{xmltvid} . '_' . $year . '-' . sprintf("%02d", $week));
+          if( $file =~ m|_[MDFS][oira]_Pw_\d+A.rtf$| ){
+            $self->{datastore}->StartBatch ($chd->{xmltvid} . '_' . $year . '-' . sprintf("%02d", NonameTV::MonthNumber ($month, 'de')) . '-' . sprintf("%02d", $day));
+          }elsif( $file =~ m|_Pw_\d+A.rtf$| ){
+            $self->{datastore}->StartBatch ($chd->{xmltvid} . '_' . $year . '-' . sprintf("%02d", $week));
+          }else{
+            f('parsinge day or week from filename did not work');
+          }
         }
 
         $month = MonthNumber ($month, 'de');
@@ -486,6 +494,20 @@ sub ImportRTF {
         if ($writers) {
           $ce->{writers} = $writers;
           $text =~ s/\n\s*Drehbuch:.*(?:\n|$)/\n/;
+        }
+
+        # episode number
+        my $episode;
+        ($episode, $episodenum) = ($text =~ m|^\s*Folge (\d+) von (\d+)$|m);
+        if($episodenum) {
+          $ce->{episode} = '. ' . ($episode - 1) . ' .';
+          $text =~ s/\n\s*Folge \d+ von \d+(?:\n|$)/\n/;
+        }
+
+        ($episode) = ($text =~ m|^\s*Folge (\d+)$|m);
+        if($episode) {
+          $ce->{episode} = '. ' . ($episode - 1) . ' .';
+          $text =~ s/\n\s*Folge \d+(?:\n|$)/\n/;
         }
 
         $ce->{title} = $title;
