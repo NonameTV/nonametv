@@ -8,6 +8,7 @@ tools/nonametv-export Xmltv $1 $2 $3
 #tools/nonametv-export Json $1 $2 $3
 
 tools/de/nonametv-xmltv-genhtml $NROOT/xmltv_staging .
+tools/nonametv-xmltv-gendvbservicepointer
 rsync examples/displayfile.html $NROOT/xmltv_staging
 rsync examples/listing.xsl $NROOT/xmltv_staging
 rsync examples/de/index.html $NROOT/xmltv_staging

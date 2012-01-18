@@ -1,0 +1,6 @@
+48,1,1,0,28007,"3sat on Astra (and many cable operators that use the Astra feed)"
+48,1,102,0,28007,"3sat on cable operators that use the ZDF cable feed"
+48,1,222,0,12402,"3sat on cable operators that use the NDS satelite services (http://www.vdr-wiki.de/wiki/index.php/Ch"
+48,1,8232,0,11302,"3sat on austrian DVB-T"
+48,1,8468,0,515,"3sat on german DVB-T"
+48,1,8572,0,32,"3sat on italian DVB-T"
