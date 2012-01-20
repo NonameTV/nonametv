@@ -61,6 +61,7 @@ populate_table( $ds, "languagestrings", "$datadir/languagestrings.txt" );
 populate_table( $ds, "augmenterrules", "$datadir/$country/augmenterrules.txt" );
 populate_table( $ds, "channels", "$datadir/$country/channels.txt" );
 populate_table( $ds, "trans_cat", "$datadir/$country/trans_cat.txt" );
+populate_table( $ds, "dvb_service_pointer", "$datadir/$country/dvb_service_pointer.txt" );
 
 sub populate_table {
   my( $ds, $table, $file ) = @_;

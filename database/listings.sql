@@ -228,4 +228,16 @@ CREATE TABLE `jobs` (
   PRIMARY KEY (`type`,`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `dvb_service_pointer`;
+CREATE TABLE `dvb_service_pointer` (
+  `channel_id` int(11) NOT NULL,
+  `active` tinyint(1) default '1',
+  `original_network_id` int(5) NOT NULL,
+  `transport_id` int(5) default 0 NOT NULL,
+  `service_id` int(5) NOT NULL,
+  `description` varchar(100) default NULL,
+  PRIMARY KEY (`original_network_id`, `transport_id`, `service_id`, `active`),
+  FOREIGN KEY `channel_id` (`channel_id`) REFERENCES `channels`(`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 INSERT INTO `admins` (username, password) VALUES ('nonametv', '');

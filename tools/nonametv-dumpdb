@@ -40,6 +40,7 @@ services
 transportstreams
 admins
 augmenterrules
+dvb_service_pointer
 
 EOHELP
 
@@ -67,6 +68,7 @@ dump_table( $ds, "networks", "$datadir/$country/networks.txt" );
 dump_table( $ds, "services", "$datadir/$country/services.txt" );
 dump_table( $ds, "transportstreams", "$datadir/$country/transportstreams.txt" );
 dump_table( $ds, "augmenterrules", "$datadir/$country/augmenterrules.txt" );
+dump_table( $ds, "dvb_service_pointer", "$datadir/$country/dvb_service_pointer.txt" );
 
 sub dump_structure {
   my( $outfile ) = @_;
@@ -81,7 +83,7 @@ sub dump_structure {
       batches channels channelgroups files
       programs state trans_cat languagestrings
       epgservers dvb_cat networks services transportstreams
-      admins augmenterrules jobs
+      admins augmenterrules jobs dvb_service_pointer
       /;
 
   my $command = "--add-drop-table --no-data " . join( " ", @tables );
