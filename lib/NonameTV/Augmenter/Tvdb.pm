@@ -217,10 +217,10 @@ sub AugmentProgram( $$$ ){
 
         my $series;
         if( defined( $ruleref->{remoteref} ) ) {
-          my $seriesname = $self->{tvdb}->getSeriesName( $ruleref->{remoteref} );
-          $series = $self->{tvdb}->getSeries( $seriesname );
+          my $seriesname = $self->{tvdb}->getSeriesName( $ruleref->{remoteref}, 0 );
+          $series = $self->{tvdb}->getSeries( $seriesname, 0 );
         } else {
-          $series = $self->{tvdb}->getSeries( $ceref->{title} );
+          $series = $self->{tvdb}->getSeries( $ceref->{title}, 0 );
         }
         if( defined $series ){
           my $episode = $self->{tvdb}->getEpisodeAbs( $series->{SeriesName}, $episodeabs );
@@ -250,10 +250,10 @@ sub AugmentProgram( $$$ ){
 
         my $series;
         if( defined( $ruleref->{remoteref} ) ) {
-          my $seriesname = $self->{tvdb}->getSeriesName( $ruleref->{remoteref} );
-          $series = $self->{tvdb}->getSeries( $seriesname );
+          my $seriesname = $self->{tvdb}->getSeriesName( $ruleref->{remoteref}, 0 );
+          $series = $self->{tvdb}->getSeries( $seriesname, 0 );
         } else {
-          $series = $self->{tvdb}->getSeries( $ceref->{title} );
+          $series = $self->{tvdb}->getSeries( $ceref->{title}, 0 );
         }
         
         if( (defined $series)){
@@ -266,7 +266,7 @@ sub AugmentProgram( $$$ ){
         	
         	# Find season and episode
         	if(($season ne "") and ($episode ne "")) {
-        		my $episode2 = $self->{tvdb}->getEpisode($series->{SeriesName}, $season, $episode);
+        		my $episode2 = $self->{tvdb}->getEpisode($series->{SeriesName}, $season, $episode, 0);
 
           	if( defined( $episode2 ) ) {
             	$self->FillHash( $resultref, $series, $episode2 );
@@ -303,12 +303,12 @@ sub AugmentProgram( $$$ ){
         		# Norm it.
         		$seriesname = norm($seriesname);
         
-            my $series = $self->{tvdb}->getSeries( $seriesname );
+            my $series = $self->{tvdb}->getSeries( $seriesname, 0 );
         
         		if( (defined $series)){
         			# Find season and episode
         			if(($season ne "") and ($episode ne "")) {
-        				my $episode2 = $self->{tvdb}->getEpisode($series->{SeriesName}, $season, $episode);
+        				my $episode2 = $self->{tvdb}->getEpisode($series->{SeriesName}, $season, $episode, 0);
 
        	   			if( defined( $episode2 ) ) {
      	       			$self->FillHash( $resultref, $series, $episode2 );
@@ -326,10 +326,10 @@ sub AugmentProgram( $$$ ){
     if( defined( $ceref->{subtitle} ) ) {
       my $series;
       if( defined( $ruleref->{remoteref} ) ) {
-        my $seriesname = $self->{tvdb}->getSeriesName( $ruleref->{remoteref} );
-        $series = $self->{tvdb}->getSeries( $seriesname );
+        my $seriesname = $self->{tvdb}->getSeriesName( $ruleref->{remoteref}, 0 );
+        $series = $self->{tvdb}->getSeries( $seriesname, 0 );
       } else {
-        $series = $self->{tvdb}->getSeries( $ceref->{title} );
+        $series = $self->{tvdb}->getSeries( $ceref->{title}, 0 );
       }
       if( defined $series ){
         my $episodetitle = $ceref->{subtitle};
@@ -340,7 +340,7 @@ sub AugmentProgram( $$$ ){
         $episodetitle =~ s|\s+\(Teil\s+(\d+)\)$| ($1)|;   # _(Teil_#)
         $episodetitle =~ s|\s+-\s+(\d+)\.\s+Teil$| ($1)|; # _-_#._Teil
 
-        my $episode = $self->{tvdb}->getEpisodeByName( $series->{SeriesName}, $episodetitle );
+        my $episode = $self->{tvdb}->getEpisodeByName( $series->{SeriesName}, $episodetitle, 0 );
         if( defined( $episode ) ) {
           $self->FillHash( $resultref, $series, $episode );
         } else {
