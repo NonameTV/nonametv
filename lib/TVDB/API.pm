@@ -81,7 +81,7 @@ sub new {
 		SuppressEmpty => 1,
 	);
 
-	if (@{$args->{mirrors}}) {
+	if (defined $args->{mirrors} && @{$args->{mirrors}}) {
 		$self->setMirrors(@{$args->{mirrors}});
 	} else {
 		$self->chooseMirrors();
