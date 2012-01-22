@@ -4,9 +4,7 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use WebService::TVRage::EpisodeListRequest;
-use WebService::TVRage::ShowSearchRequest;
-use WebService::TVRage::ShowInfo;
+use WebService::TVRage;
 use utf8;
 
 use NonameTV qw/norm normUtf8 AddCategory/;
@@ -43,13 +41,13 @@ sub FillHash( $$$$ ) {
   #}
   
   # Standard info (episode)
-  $resultref->{subtitle} = normUtf8( norm( $episode->getTitle() ) );
-  $resultref->{production_date} = normUtf8( norm( $episode->getAirDate() ) );
-  $resultref->{url} = normUtf8( norm( $episode->getWebLink() ) );
+  $resultref->{subtitle} = normUtf8( norm( $episode->{title} ) );
+  $resultref->{production_date} = normUtf8( norm( $episode->{airdate} ) );
+  $resultref->{url} = normUtf8( norm( $episode->{link} ) );
   
   $resultref->{program_type} = 'series';
   
-  print Dumper( $resultref );
+  #print Dumper( $resultref );
 }
 
 sub AugmentProgram( $$$ ){
@@ -82,11 +80,9 @@ sub AugmentProgram( $$$ ){
         if( defined( $ruleref->{remoteref} ) and ( $ruleref->{remoteref} ne "" ) ) {
           
           # Get moar info via ShowInfo (genres and name)
-          $tvrage = WebService::TVRage::ShowInfo->new();
-          $series = $tvrage->search( $ruleref->{remoteref} );
-          $episodes = WebService::TVRage::EpisodeListRequest->new( 'episodeID' => $ruleref->{remoteref} );
-          $episodeList = $episodes->getEpisodeList();
-          print Dumper( $series, $episodeList );
+          $tvrage = WebService::TVRage->new();
+          $series = $tvrage->showInfo( $ruleref->{remoteref} );
+          #print Dumper( $series );
         } else {
           die("You need to input series id into remoteref, until this is fixed.");
         }
@@ -97,11 +93,11 @@ sub AugmentProgram( $$$ ){
             # a series with episode of 100+ when there's only 20 episodes of
             # the season, like Simpsons. Simpsons becomes The Simpsons if seriesname
             # is found.
-            $resultref->{title} = normUtf8( norm( $series->getName() ) );
+            $resultref->{title} = normUtf8( norm( $series->{showname} ) );
             
             # Find season and episode
             if(($season ne "") and ($episode ne "")) {
-                my $episode2 = $episodeList->getEpisode($season,$episode);
+                my $episode2 = $tvrage->getEpisode( $ruleref->{remoteref}, $season, $episode );
 
             if( defined( $episode2 ) ) {
                 $self->FillHash( $resultref, $series, $episode2 );
