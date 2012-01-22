@@ -371,6 +371,8 @@ sub extract_extra_info
     {
       $ce->{actors} = parse_person_list( $actors );
       $sentences[$i] = "";
+    }elsif( $sentences[$i] =~ /l.ngfilm/ ) {
+        $ce->{program_type} = "movie";
     }
   }
   
@@ -632,6 +634,11 @@ sub norm_title
 
   # Remove strange bullets.
   $str =~ s/\x{95}/ /g;
+  
+  # Remove premiere and nightmovie and stuff like that
+  $str =~ s/Premiär://g;
+  $str =~ s/Nattfilm://g;
+  $str =~ s/Filmklubben://g;
 
   return normLatin1( $str );
 }
