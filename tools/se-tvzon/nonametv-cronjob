@@ -58,6 +58,10 @@ fi
 # This runs by cronjob - seperately
 #tools/se-tvzon/nonametv-process-mail
 
+# Update tvdb
+$d perl -I lib tools/nonametv-update-tvdb sv
+$d perl -I lib tools/nonametv-update-tvdb en
+
 # Import everything
 $d tools/se-tvzon/nonametv-import-allhttp $Q
 $h tools/se-tvzon/nonametv-import-allhttp $Q --short-grab
