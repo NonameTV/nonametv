@@ -11,6 +11,12 @@ use Mouse;
 use Data::Dumper;
 has '_showHash' => ( is => 'rw' );
 
+sub getName {
+    my $self = shift;   
+    my $name = $self->_showHash()->{showname} // '';
+    return $name;
+}
+
 sub getShowID {
     my $self = shift;
     return $self->_showHash()->{showid} // '';

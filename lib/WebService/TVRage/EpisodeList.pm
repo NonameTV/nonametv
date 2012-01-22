@@ -38,6 +38,12 @@ sub getEpisode {
     return $object;
 }
 
+sub getName {
+    my $self = shift;   
+    my $name = $self->_episodeListHash()->{name} // '';
+    return $name;
+}
+
 1;
 
 =head1 NAME

@@ -20,6 +20,7 @@ has 'URL' => ( is => 'rw',
 
 sub getEpisodeList {
     my $self = shift;
+    sleep (1);
     my $uA = LWP::UserAgent->new( timeout => 20);
     my $episodeListReq = HTTP::Request->new(GET => $self->URL . $self->episodeID);
     my $episodeListResponse = $uA->request($episodeListReq);

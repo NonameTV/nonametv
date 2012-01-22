@@ -6,6 +6,7 @@ use warnings;
 use Data::Dumper;
 use WebService::TVRage::EpisodeListRequest;
 use WebService::TVRage::ShowSearchRequest;
+use WebService::TVRage::ShowInfo;
 use utf8;
 
 use NonameTV qw/norm normUtf8 AddCategory/;
@@ -31,18 +32,31 @@ sub new {
 sub FillHash( $$$$ ) {
   my( $self, $resultref, $series, $episode )=@_;
   
-  print Dumper( $series, $episode );
-  $resultref->{subtitle} = $episode->getTitle();
-  $resultref->{production_date} = $episode->getAirDate();
-  $resultref->{url} = $episode->getWebLink();
+  #print Dumper( $series, $episode );
+  
+  # Series info
+  #my @genres = ();
+  #foreach my $genre ( $series->getGenres() ){
+  #   my ( $program_type, $categ ) = $self->{datastore}->LookupCat( "Tvrage", $genre );
+  #   # set category, unless category is already set!
+  #   AddCategory( $resultref, undef, $categ );
+  #}
+  
+  # Standard info (episode)
+  $resultref->{subtitle} = normUtf8( norm( $episode->getTitle() ) );
+  $resultref->{production_date} = normUtf8( norm( $episode->getAirDate() ) );
+  $resultref->{url} = normUtf8( norm( $episode->getWebLink() ) );
+  
+  $resultref->{program_type} = 'series';
+  
   print Dumper( $resultref );
 }
 
 sub AugmentProgram( $$$ ){
   my( $self, $ceref, $ruleref ) = @_;
   
-  print Dumper( $ceref );
-  print Dumper( $ruleref );
+  #print Dumper( $ceref );
+  #print Dumper( $ruleref );
   
   # empty hash to get all attributes to change
   my $resultref = {};
@@ -58,23 +72,24 @@ sub AugmentProgram( $$$ ){
         $episode += 1;
         $season += 1;
         
-        print Dumper( $episode );
+        #print Dumper( $episode );
 
         my $series;
         my $episodes;
-        #if( defined( $ruleref->{remoteref} ) ) {
-          #my $searchResults = $self->{tvrage}->search($ceref->{title});
-          #$series = $searchResults->getShow($ceref->{title});
+        my $episodeList;
+        my $tvrage;
+        my $searchResults;
+        if( defined( $ruleref->{remoteref} ) and ( $ruleref->{remoteref} ne "" ) ) {
+          
+          # Get moar info via ShowInfo (genres and name)
+          $tvrage = WebService::TVRage::ShowInfo->new();
+          $series = $tvrage->search( $ruleref->{remoteref} );
           $episodes = WebService::TVRage::EpisodeListRequest->new( 'episodeID' => $ruleref->{remoteref} );
-          my $episodeList = $episodes->getEpisodeList();
-        #} else {
-        #  my $tvrage = WebService::TVRage::ShowSearchRequest->new();
-        #  my $searchResults = $tvrage->search( $ceref->{title} );
-        #  $series = $searchResults->getShow( $ceref->{title} );
-        #  $episodes = WebService::TVRage::EpisodeListRequest->new( 'episodeID' => $series->getShowID() );
-        #  my $episodeList = $episodes->getEpisodeList();
-        #  print Dumper( $series, $episodeList );
-        #}
+          $episodeList = $episodes->getEpisodeList();
+          print Dumper( $series, $episodeList );
+        } else {
+          die("You need to input series id into remoteref, until this is fixed.");
+        }
         
         #if( (defined $series)){
             # Set the title right, even if no season nor episode is found.
@@ -82,7 +97,7 @@ sub AugmentProgram( $$$ ){
             # a series with episode of 100+ when there's only 20 episodes of
             # the season, like Simpsons. Simpsons becomes The Simpsons if seriesname
             # is found.
-            #$resultref->{title} = normUtf8( norm( $series->{SeriesName} ) );
+            $resultref->{title} = normUtf8( norm( $series->getName() ) );
             
             # Find season and episode
             if(($season ne "") and ($episode ne "")) {
