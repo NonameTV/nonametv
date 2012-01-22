@@ -22,7 +22,7 @@ use XML::LibXML;
 use IO::Scalar;
 use Unicode::String;
 
-use NonameTV qw/norm ParseXml AddCategory MonthNumber/;
+use NonameTV qw/norm normUtf8 ParseXml AddCategory MonthNumber/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/progress error/;
 use NonameTV::Config qw/ReadConfig/;
@@ -128,10 +128,10 @@ sub ImportXML
 
       my $ce = {
         channel_id => $chd->{id},
-        title => norm($title),
+        title => normUtf8($title),
         start_time => $start->ymd("-") . " " . $start->hms(":"),
         end_time => $end->ymd("-") . " " . $end->hms(":"),
-        description => norm($desc),
+        description => normUtf8($desc),
       };
       
       progress( "WILDTV: $chd->{xmltvid}: $start - $title" );
