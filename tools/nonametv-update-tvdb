@@ -1,0 +1,56 @@
+#!/usr/bin/perl -w
+
+use FindBin;
+use lib "$FindBin::Bin/../lib";
+
+package NonameTV::Augmenter::Tvdb;
+use NonameTV::Config qw/ReadConfig/;
+use NonameTV::Log qw/w p d/;
+use NonameTV::Job qw/StartJob EndJob/;
+
+use strict;
+use warnings;
+
+use TVDB::API;
+use utf8;
+
+my %opt = (quiet => 0, debug => 4, verbose => 3);
+    Debug::Simple::debuglevels(\%opt);
+
+if( scalar( @ARGV ) == 0 )
+{
+  print << 'EOHELP';
+nonametv-update-tvdb [language]
+
+Updates data from TheTVDb.com using the TVDb package in Augmenter.
+
+Typical Importer-options include
+
+--verbose
+
+EOHELP
+
+  exit 1;
+}
+
+# need config for main content cache path
+my $self;
+my $conf = ReadConfig( );
+#my $augmentername = shift @ARGV;
+my $language = shift @ARGV;
+
+# config
+my $apikey    = 'AAE0A41F42128FFD';
+
+my $cachefile = $conf->{ContentCachePath} . '/Tvdb/tvdb.' . $language . '.db';
+my $bannerdir = $conf->{ContentCachePath} . '/Tvdb/banner';
+
+$self->{tvdb} = TVDB::API::new({ apikey    => $apikey,
+                                 lang      => $language,
+                                 cache     => $cachefile,
+                                 banner    => $bannerdir,
+                               });
+w("using $language as language");
+ StartJob( "TVDb_Update", $language, 10 );
+$self->{tvdb}->getUpdates( 'guess' );
+ EndJob();
