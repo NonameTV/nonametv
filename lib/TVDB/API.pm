@@ -345,14 +345,19 @@ sub getUpdatePeriod {
 	my $diff = $time - $self->{cache}->{Update}->{lastupdated};
 	if ($diff <= $self->{conf}->{minUpdateTime}) {
 		# We've updated recently (within 6 hours)
+		&verbose(2, "TVDB::API: guessed none\n");
 		return 'none';
 	} elsif ($diff <= 86400) {	# 1 day in seconds
+	    &verbose(2, "TVDB::API: guessed day\n");
 		return 'day';
 	} elsif ($diff <= 604800) {	# 1 week in seconds
+	    &verbose(2, "TVDB::API: guessed week\n");
 		return 'week';
 	} elsif ($diff <= 2592000) {	# 1 month in seconds
+	    &verbose(2, "TVDB::API: guessed month\n");
 		return 'month';
 	}
+	&verbose(2, "TVDB::API: guessed all\n");
 	return 'all';
 }
 
@@ -429,6 +434,8 @@ sub getBannerUpdate {
 sub getUpdates {
 	my $self = shift;
 	my $period = lc shift || 'guess';
+	
+	&verbose(2, "TVDB::API: updates...\n");
 
 	# Determine which update xml file to download
 	$period = $self->getUpdatePeriod($self->{now}) if $period =~ /^(guess|now)$/;
@@ -463,6 +470,7 @@ sub getUpdates {
 	}
 
 	# Save when we last updated, now that we've successfully done so
+	&verbose(2, "TVDB::API: lasttime $updates->{time} - now $self->{now}\n");
 	$self->{cache}->{Update}->{lastupdated} = $self->{now};
 	$self->{cache}->{Update}->{lasttime} = $updates->{time};
 }
@@ -1084,6 +1092,87 @@ sub getEpisodeId {
 }
 
 ###############################################################################
+sub getEpisodeByName {
+    my ($self, $name, $episodename, $nocache) = @_;
+    if (!defined ($episodename)) {
+        &warning("TVDB::API: No episode name defined for $name\n");
+        return undef;
+    }
+    my $sid = $self->getSeriesId($name);
+    return undef unless $sid;
+    my $series = $self->getSeriesAll($sid, $nocache?$nocache-1:0);
+    return undef unless $series;
+
+    # Look for episode in cache
+    my $cache = $self->{cache};
+    unless ($nocache) {
+                my $match = lc($episodename);
+        foreach my $season (@{$series->{Seasons}}) {
+            foreach my $eid (@$season) {
+                next unless $eid;
+                my $ep = $cache->{Episode}->{$eid};
+                next unless $ep->{EpisodeName};
+                return $ep if lc($ep->{EpisodeName}) eq $match;
+            }
+        }
+                # try without part number, only accept a single hit (we don't use story arc numbering for uniquely named episodes over here)
+        my $hitcount = 0;
+        my $hit;
+        my $regexpmatch = ($match =~ s|([\Q()\E])|\\$1|);
+        foreach my $season (@{$series->{Seasons}}) {
+            foreach my $eid (@$season) {
+                next unless $eid;
+                my $ep = $cache->{Episode}->{$eid};
+                next unless $ep->{EpisodeName};
+                                if( lc($ep->{EpisodeName}) =~ m|^$regexpmatch \(\d+\)$| ){
+                    $hitcount ++;
+                    $hit = $ep;
+                }
+            }
+        }
+        if( $hitcount == 1){
+            return( $hit );
+        }
+
+        eval "use Text::LevenshteinXS qw/distance/;";
+        if( !$@ ){
+            # try with Levenshtein distance 2
+            $hitcount = 0;
+            foreach my $season (@{$series->{Seasons}}) {
+                foreach my $eid (@$season) {
+                    next unless $eid;
+                    my $ep = $cache->{Episode}->{$eid};
+                    next unless $ep->{EpisodeName};
+                                 if( distance( lc($ep->{EpisodeName}), $match ) <= 2 ){
+                        $hitcount ++;
+                        $hit = $ep;
+                    }
+                }
+            }
+            if( $hitcount == 1){
+                return( $hit );
+            }
+        }
+    }
+
+    # Download named episode
+    &verbose(1, "TVDB::API: Would like to update episode named $episodename for $name\n");
+# TODO, the site does not provide an API to get one episode by name, yet.
+#   my $new = $self->_downloadXml($Url{getEpisodeAbs}, $sid, $abs, $self->{lang});
+#   if ($new) {
+#       # Save episode in cache
+#       my ($eid, $ep) = each %{$new->{Episode}};
+#       $series->{$sid}->{Seasons} = [] unless $series->{$sid}->{Seasons};
+#       $series->{$sid}->{Seasons}->[$ep->{SeasonNumber}]->[$ep->{EpisodeNumber}] = $eid;
+#       $cache->{Episode}->{$eid} = $ep;
+#       return $cache->{Episode}->{$eid};
+#   }
+
+    &warning("TVDB::API: No episode named $episodename found for $name\n");
+    return undef;
+}
+
+###############################################################################
 sub getEpisodeByAirDate {
 	my ($self, $name, $airdate, $nocache) = @_;
 	my $sid = $self->getSeriesId($name, $nocache?$nocache-1:0);
@@ -1209,6 +1298,7 @@ TVDB::API - API to www.thetvdb.com
   my $hashref = $tvdb->getEpisodeDVD($series, $DVDseason, $DVDepisode, [$nocache]);
   my $hashref = $tvdb->getEpisodeId($episodeid, [$nocache]);
   my $hashref = $tvdb->getEpisodeByAirDate($series, $airdate, [$nocache]);
+  my $hashref = $tvdb->getEpisodeByName($series, $episode_name, [$nocache]);
   my $string = $tvdb->getEpisodeInfo($series, $season, $episode, $info, [$nocache]);
   my $string = $tvdb->getEpisodeBanner($series, $season, $episode, [$buffer, [$nocache]]);
   my $string = $tvdb->getEpisodeName($series, $season, $episode, [$nocache]);
@@ -1545,6 +1635,12 @@ be specified as:
 
 Currently this lookup is not cached.  However, if C<NOCACHE> is non-zero, then
 the C<SERIESNAME> to seriesid lookup is downloaded again.
+
+=item getEpisodeByName(SERIESNAME, EPISODENAME, [NOCACHE])
+
+Return a hashref for the episode named (C<EPISODENAME>) for C<SERIESNAME>.
+C<NOCACHE> is of no use until the site API is extended. So this call works only
+on cached data for now.
 
 =item getEpisodeInfo(SERIESNAME, SEASON, EPISODE, KEY, [NOCACHE])
 

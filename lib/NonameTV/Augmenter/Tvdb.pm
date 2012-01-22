@@ -36,7 +36,7 @@ sub new {
                                   });
     # only update if there is some data to be updated
     if (defined ($self->{tvdb}->{cache}->{Update}->{lastupdated})) {
-      $self->{tvdb}->getUpdates( 'guess' );
+     # $self->{tvdb}->getUpdates( 'guess' );
     }else{
       # on an empty cache set last update before fetching any data to
       # avoid getting the list of all updates just to see that there is
@@ -320,7 +320,7 @@ sub AugmentProgram( $$$ ){
       	}
     	}
    	}
-  }elsif( $ruleref->{matchby} eq 'episodetitle' ) {
+ }elsif( $ruleref->{matchby} eq 'episodetitle' ) {
     # match by episode title from program hash
 
     if( defined( $ceref->{subtitle} ) ) {
