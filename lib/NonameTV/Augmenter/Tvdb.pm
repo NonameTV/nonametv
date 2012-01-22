@@ -99,16 +99,18 @@ sub FillHash( $$$$ ) {
   if( $episode->{SeasonNumber} == 0 ){
     # it's a special
     $resultref->{episode} = undef;
+    $resultref->{subtitle} = normUtf8( norm( "Special - ".$episode->{EpisodeName} ) );
   }else{
     $resultref->{episode} = ($episode->{SeasonNumber} - 1) . ' . ' . ($episode->{EpisodeNumber} - 1) . ' .';
+    
+    # use episode title
+    $resultref->{subtitle} = normUtf8( norm( $episode->{EpisodeName} ) );
   }
 
-  $resultref->{subtitle} = normUtf8( norm( $episode->{EpisodeName} ) );
-
 # TODO skip the Overview for now, it falls back to english in a way we can not detect
-#  if( defined( $episode->{Overview} ) ) {
-#    $resultref->{description} = $episode->{Overview} . "\nQuelle: Tvdb";
-#  }
+  if( defined( $episode->{Overview} ) and ($episode->{Language} eq $self->{Language}) and ($resultref->{description} eq "") ) {
+#    $resultref->{description} = $episode->{Overview} . "\nSource: Tvdb";
+  }
 
 # TODO add proviously-shown to carry the first showing instead of slapping it over the starting year of the series
 #  if( $episode->{FirstAired} ) {
@@ -121,7 +123,7 @@ sub FillHash( $$$$ ) {
   
   # episodepic
   if( $episode->{filename} ) {
-    $resultref->{url_image_main} = sprintf('http://thetvdb.com/banners/%s', $episode->{filename});
+#    $resultref->{url_image_main} = sprintf('http://thetvdb.com/banners/%s', $episode->{filename});
   }
 
   $resultref->{url} = sprintf(
@@ -350,6 +352,32 @@ sub AugmentProgram( $$$ ){
         d( "series not found by title: " . $ceref->{title} );
       }
     }
+
+  }elsif( $ruleref->{matchby} eq 'seriesname' ) {
+    # get seriesname and set it (to the right name)
+    # works for channels which don't have season or episode
+    # or doesn't have the right one.
+
+      my $series;
+      if( defined( $ruleref->{remoteref} ) ) {
+        my $seriesname = $self->{tvdb}->getSeriesName( $ruleref->{remoteref}, 0 );
+        $series = $self->{tvdb}->getSeries( $seriesname, 0 );
+      } else {
+        $series = $self->{tvdb}->getSeries( $ceref->{title}, 0 );
+      }
+      if( defined $series ){
+        # Set title
+        $ceref->{title} = normUtf8( norm( $series->{SeriesName} ) );
+      } else {
+        d( "series not found by title: " . $ceref->{title} );
+      }
+
+  }elsif( $ruleref->{matchby} eq 'guess' ) {
+    # guess the right episode and season (guess the latest season and by actors)
+    # you should probably not use this one.
+
+      my $series;
+        # do shit.
 
   }else{
     $result = "don't know how to match by '" . $ruleref->{matchby} . "'";

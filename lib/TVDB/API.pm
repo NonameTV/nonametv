@@ -271,7 +271,8 @@ sub _downloadZip {
 	# Remove empty tags
 	$xml =~ s/(<[^\/\s>]*\/>|<[^\/\s>]*><\/[^>]*>)//gs;
 
-	&debug(4, "download Zip: $url\n", XML => \$xml);
+    # Outputs XML, (fills the screen up)
+	#&debug(4, "download Zip: $url\n", XML => \$xml);
 
 	# Return process XML into hashref
 	return undef unless $xml;
