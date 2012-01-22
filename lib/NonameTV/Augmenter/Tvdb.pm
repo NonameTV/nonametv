@@ -41,7 +41,7 @@ sub new {
       # on an empty cache set last update before fetching any data to
       # avoid getting the list of all updates just to see that there is
       # nothing to update
-      $self->{tvdb}->{cache}->{Update}->{lastupdated} = time( );
+      #$self->{tvdb}->{cache}->{Update}->{lastupdated} = time( );
     }
 
     my $langhash = $self->{tvdb}->getAvailableLanguages( );
@@ -108,8 +108,8 @@ sub FillHash( $$$$ ) {
   }
 
 # TODO skip the Overview for now, it falls back to english in a way we can not detect
-  if( defined( $episode->{Overview} ) and ($episode->{Language} eq $self->{Language}) and ($resultref->{description} eq "") ) {
-#    $resultref->{description} = $episode->{Overview} . "\nSource: Tvdb";
+  if( defined( $episode->{Overview} ) and ($episode->{Language} eq $self->{Language}) and !defined($resultref->{description}) ) {
+    $resultref->{description} = normUtf8(norm($episode->{Overview})) . "\nSource: Tvdb";
   }
 
 # TODO add proviously-shown to carry the first showing instead of slapping it over the starting year of the series
