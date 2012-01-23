@@ -18,6 +18,7 @@ use Debug::Simple;
 use WebService::TVRage::Show;
 use WebService::TVRage::Cache;
 use NonameTV::Config qw/ReadConfig/;
+use NonameTV::Log qw/w d/;
 
 sub new {
     my $self = bless {};
@@ -51,8 +52,8 @@ sub new {
     $self->setCacheDB($args->{cache});
     
     
-    my %opt = (quiet => 0, debug => 4, verbose => 3);
-    Debug::Simple::debuglevels(\%opt);
+    #my %opt = (quiet => 0, debug => 4, verbose => 3);
+    #Debug::Simple::debuglevels(\%opt);
     
     return $self;
 }
@@ -289,10 +290,12 @@ sub getEpisode {
     my $series = $self->{cache};
     
     # check if it's added or add it
-    if(defined($series->{$sid})) {
-        return undef unless defined $series->{$sid}->{episodes}{Episodelist}{Season}[$season]{episode}[$episode];
-        #print Dumper($series->{$sid}->{episodes}{Episodelist}{Season}[$season]{episode}[$episode]);
+    if(defined($series->{$sid}) and defined($series->{$sid}->{episodes}{Episodelist}{Season}[$season]{episode}[$episode])) {
+        # w( "TVRage: episode " . $episode . " of season " . $season . " found for '" . $series->{$sid}->{showname} . "'" );
         return $series->{$sid}->{episodes}{Episodelist}{Season}[$season]{episode}[$episode];
+    } else {
+        w( "TVRage: no episode " . $episode . " of season " . $season . " found for '" . $series->{$sid}->{showname} . "'" );
+        return undef;
     }
 }
 
