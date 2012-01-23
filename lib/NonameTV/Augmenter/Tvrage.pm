@@ -32,13 +32,23 @@ sub FillHash( $$$$ ) {
   
   #print Dumper( $series, $episode );
   
-  # Series info
-  #my @genres = ();
-  #foreach my $genre ( $series->getGenres() ){
-  #   my ( $program_type, $categ ) = $self->{datastore}->LookupCat( "Tvrage", $genre );
-  #   # set category, unless category is already set!
-  #   AddCategory( $resultref, undef, $categ );
-  #}
+  # Genre
+  my @genres = ();
+  foreach my $genre ( $series->{genres}->{genre} ){
+      if(ref($genre) eq 'DBM::Deep::Array'){
+          foreach my $genre2 ( @$genre ){
+              # Genre add (if array)
+              my ( $program_type, $categ ) = $self->{datastore}->LookupCat( "Tvrage", $genre2 );
+              # set category, unless category is already set!
+              AddCategory( $resultref, undef, $categ );
+          }
+      } else {
+          # Genre add (if not array)
+          my ( $program_type, $categ ) = $self->{datastore}->LookupCat( "Tvrage", $genre );
+          # set category, unless category is already set!
+          AddCategory( $resultref, undef, $categ );
+      }
+  }
   
   # Standard info (episode)
   $resultref->{subtitle} = normUtf8( norm( $episode->{title} ) );
