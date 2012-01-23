@@ -25,8 +25,9 @@ then
   # Remove old files after 70 days (safes space)
   tools/nonametv-filestore-removeold --all --leavedays 70
 
-  # remove Tvdb cache, updates seem to be broken at the moment (fixed, run nonametv-update-tvdb)
-  #rm /storage/nonametv/contentcache/Tvdb/tvdb.*.db
+  # remove Tvrage cache (they can't be updated automatic..
+  # .. as tvrage doesnt provide that sort of system)
+  rm /storage/nonametv/contentcache/Tvrage/tvrage.db
 
   # Make sure we have all xmltv updated. As some seem to go missing (Somehow)
   # (for example if the time on the server is way off)
