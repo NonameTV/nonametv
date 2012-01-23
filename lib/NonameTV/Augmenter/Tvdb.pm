@@ -41,7 +41,7 @@ sub new {
       # on an empty cache set last update before fetching any data to
       # avoid getting the list of all updates just to see that there is
       # nothing to update
-      #$self->{tvdb}->{cache}->{Update}->{lastupdated} = time( );
+      $self->{tvdb}->{cache}->{Update}->{lastupdated} = time( );
     }
 
     my $langhash = $self->{tvdb}->getAvailableLanguages( );
