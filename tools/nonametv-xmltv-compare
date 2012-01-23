@@ -153,7 +153,7 @@ EOD
 
     if( $files{$file} eq 'U' )
     {
-      print OUT "<td class='$files{$file}'><a href='/xmltv_compare/$file.diff'>$files{$file}</a></td>";
+      print OUT "<td class='$files{$file}'><a href='$file.diff'>$files{$file}</a></td>";
     }
     else
     {
