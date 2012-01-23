@@ -1,13 +1,14 @@
 #===============================================================================
-#         FILE:  ShowInfo.pm
+#       MODULE:  TVRage::API
 #       AUTHOR:  Joakim Nylén, http://tvtab.la
 #      COMPANY:  dotMedia Networks
+#      SOME STUFF IS FROM TVDB::API - ALL THANKS GOES TO BEHANW.
 #===============================================================================
 
 use strict;
 use warnings;
 
-package WebService::TVRage;
+package TVRage::API;
 
 use Mouse;
 use LWP::UserAgent;
@@ -15,8 +16,6 @@ use HTTP::Request::Common;
 use XML::Simple;
 use Data::Dumper;
 use Debug::Simple;
-use WebService::TVRage::Show;
-use WebService::TVRage::Cache;
 use NonameTV::Config qw/ReadConfig/;
 use NonameTV::Log qw/w d/;
 

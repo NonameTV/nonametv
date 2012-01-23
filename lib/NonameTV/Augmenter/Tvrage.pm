@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use WebService::TVRage;
+use TVRage::API;
 use utf8;
 
 use NonameTV qw/norm normUtf8 AddCategory/;
@@ -80,7 +80,7 @@ sub AugmentProgram( $$$ ){
         if( defined( $ruleref->{remoteref} ) and ( $ruleref->{remoteref} ne "" ) ) {
           
           # Get moar info via ShowInfo (genres and name)
-          $tvrage = WebService::TVRage->new();
+          $tvrage = TVRage::API->new();
           $series = $tvrage->showInfo( $ruleref->{remoteref} );
           #print Dumper( $series );
         } else {
