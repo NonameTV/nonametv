@@ -636,7 +636,12 @@ TVP,"serial obyczajowy tvp",\N,series
 TVP,"serial przygodowy tvp",\N,series
 TVP,"serial tvp",\N,series
 TVP,talk-show,Talk,tvshow
-Tvrage,romance/dating,Romance,series
+Tvrage,comedy,Comedy,\N
+Tvrage,design/decorating,"Home improvement",\N
+Tvrage,housing/building,"Home improvement",\N
+Tvrage,"how to/do it yourself",How-to,\N
+Tvrage,lifestyle,Lifestyle,\N
+Tvrage,romance/dating,Romance,\N
 Viasat_category,film,movie,movie
 Viasat_category,filmer,Movies,movie
 Viasat_category,miniserier,,series

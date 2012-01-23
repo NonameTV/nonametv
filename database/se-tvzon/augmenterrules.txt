@@ -279,3 +279,4 @@
 234,Tvrage,"Dante's Cove",program_type,series,2229,episodeseason
 232,Tvrage,"RAW Comedy Club",program_type,series,21721,episodeseason
 232,Tvrage,"Sofias änglar",program_type,series,27497,episodeseason
+232,Tvrage,Tunnelbanan,program_type,series,30728,episodeseason
