@@ -286,6 +286,8 @@ sub getEpisodes {
 
 sub getEpisode {
     my ($self, $sid, $season, $episode) = @_;
+    my $episode2 = $episode;
+    my $season2 = $season;
     $episode--; $season--;
     my $series = $self->{cache};
     
@@ -294,7 +296,7 @@ sub getEpisode {
         # w( "TVRage: episode " . $episode . " of season " . $season . " found for '" . $series->{$sid}->{showname} . "'" );
         return $series->{$sid}->{episodes}{Episodelist}{Season}[$season]{episode}[$episode];
     } else {
-        w( "TVRage: no episode " . $episode . " of season " . $season . " found for '" . $series->{$sid}->{showname} . "'" );
+        w( "TVRage: no episode " . $episode2 . " of season " . $season2 . " found for '" . $series->{$sid}->{showname} . "'" );
         return undef;
     }
 }
