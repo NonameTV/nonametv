@@ -636,6 +636,7 @@ TVP,"serial obyczajowy tvp",\N,series
 TVP,"serial przygodowy tvp",\N,series
 TVP,"serial tvp",\N,series
 TVP,talk-show,Talk,tvshow
+Tvrage,romance/dating,Romance,series
 Viasat_category,film,movie,movie
 Viasat_category,filmer,Movies,movie
 Viasat_category,miniserier,,series

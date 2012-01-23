@@ -75,7 +75,7 @@
 \N,Fixups,"Full fräs med Stefan och Krister",program_type,series,"Full Fräs",replacetitle
 \N,Fixups,"Star trek",subtitle,"Deep space nine","Star Trek: Deep Space Nine",replacetitle
 \N,Fixups,"Star trek",subtitle,Voyager,"Star Trek: Voyager",replacetitle
-\N,Fixups,"^(En bok, en författare):\s+(.*)$",program_type,,\N,splittitle
+\N,Fixups,"^.*(En bok, en författare):\s+(.*)$",\N,\N,\N,splittitle
 \N,Fixups,"Childrens hospital",program_type,series,"Children's Hospital",replacetitle
 \N,Fixups,"^(Berulfsens pengebinge):\s+(.*)$",program_type,series,\N,splittitle
 277,Fixups,"^(Al Jazeera World):\s+(.*)$",program_type,series,\N,splittitle
@@ -86,7 +86,7 @@
 \N,Fixups,"V75 direkt",program_type,,Trav,replacetitle
 \N,Fixups,"TV4Nyheterna och Sport",program_type,,"Nyheterna och Sport",replacetitle
 \N,Fixups,"Nyhetsmorgon söndag",program_type,,Nyhetsmorgon,replacetitle
-\N,Fixups,"^(Minnenas television):\s+(.*)$",program_type,,\N,splittitle
+\N,Fixups,"^.*(Minnenas television):\s+(.*)$",\N,\N,\N,splittitle
 \N,Fixups,"Nyhetsmorgon lördag",program_type,,Nyhetsmorgon,replacetitle
 233,Tvdb,^.*$,program_type,series,\N,episodeseason
 \N,Tvdb,"Spanien runt med Gwyneth & Co",program_type,series,84181,episodeseason
@@ -236,3 +236,46 @@
 285,Tvdb,"Poker: The Big Game",program_type,series,168931,episodeseason
 282,Tvdb,Portlandia,program_type,movie,213221,episodeseason
 282,Tvdb,"Todd and the Book of Pure Evil",program_type,movie,194041,episodeseason
+2341,Tvdb,"Gimme Gimme Gimme",program_type,series,75031,episodeseason
+305,Tvdb,"^.*Frozen planet.*$",program_type,series,251418,episodetitle
+303,Tvdb,"^.*Frozen planet.*$",program_type,series,251418,episodetitle
+305,Tvdb,"^.*Katten, musen, tiotusen.*$",program_type,series,255429,episodetitle
+304,Fixups,^.*(Dox):\s+(.*)$,\N,\N,\N,splittitle
+305,Fixups,"^.*(Veckans föreställning):\s+(.*)$",\N,\N,\N,splittitle
+305,Tvdb,"^.*Världens bästa skitskola.*$",program_type,series,255268,episodetitle
+305,Fixups,"^.*(Hitlåtens historia):\s+(.*)$",\N,\N,\N,splittitle
+305,Tvdb,"^.*Hitlåtens historia.*$",program_type,series,135781,episodetitle
+305,Fixups,"^.*(Mänsklighetens sista dagar):\s+(.*)$",\N,\N,\N,splittitle
+304,Tvdb,^.*Sherlock.*$,program_type,series,176941,episodetitle
+254,Tvdb,"Top Model 11",program_type,series,71721,episodeseason
+254,Tvdb,"Top Model 1",program_type,series,71721,episodeseason
+254,Tvdb,"Top Model 2",program_type,series,71721,episodeseason
+254,Tvdb,"Top Model 3",program_type,series,71721,episodeseason
+254,Tvdb,"Top Model 4",program_type,series,71721,episodeseason
+254,Tvdb,"Top Model 5",program_type,series,71721,episodeseason
+254,Tvdb,"Top Model 6",program_type,series,71721,episodeseason
+254,Tvdb,"Top model 9",program_type,series,71721,episodeseason
+254,Tvdb,"Top model 10",program_type,series,71721,episodeseason
+254,Tvdb,"Top Model 12",program_type,series,71721,episodeseason
+254,Tvdb,"Top Model 13",program_type,series,71721,episodeseason
+254,Tvdb,"Top Model 14",program_type,series,71721,episodeseason
+254,Tvdb,"Top Model 15",program_type,series,71721,episodeseason
+254,Tvdb,"Top Model 17",program_type,series,71721,episodeseason
+254,Tvdb,"Top Model 18",program_type,series,71721,episodeseason
+254,Tvdb,"NCIS Los Angeles",program_type,series,95441,episodeseason
+255,Tvdb,"Erik & Mackan - Snygga och smärta",program_type,series,83693,episodeseason
+255,Tvdb,"Penn and Teller: Bullshit!",program_type,series,72301,episodeseason
+255,Tvdb,"Knight Rider",program_type,series,77216,episodeseason
+256,Tvdb,"Brottskod: Försvunnen",program_type,series,77963,episodeseason
+256,Tvdb,"Mördare Okänd",program_type,series,79053,episodeseason
+256,Tvdb,"Property Ladder",program_type,series,81738,episodeseason
+256,Tvdb,Masterchef,program_type,series,167751,episodeseason
+256,Tvdb,"En plats i solen",program_type,series,138401,episodeseason
+256,Tvdb,"En plats i solen - Borta eller hemma bäst?",program_type,series,143231,episodeseason
+256,Tvdb,"En plats vid havet",program_type,series,166181,episodeseason
+256,Tvdb,"Drömhem vid havet",program_type,series,206551,episodeseason
+256,Tvdb,"Nightmare in Suburbia",program_type,series,189771,episodeseason
+234,Tvrage,"Gimme Gimme Gimme",program_type,series,3685,episodeseason
+234,Tvrage,"Dante's Cove",program_type,series,2229,episodeseason
+232,Tvrage,"RAW Comedy Club",program_type,series,21721,episodeseason
+232,Tvrage,"Sofias änglar",program_type,series,27497,episodeseason
