@@ -14,6 +14,7 @@ use Mouse;
 use LWP::UserAgent;
 use HTTP::Request::Common;
 use XML::Simple;
+use Encode qw(encode decode);
 use Data::Dumper;
 use Debug::Simple;
 use NonameTV::Config qw/ReadConfig/;
