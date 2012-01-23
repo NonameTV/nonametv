@@ -108,9 +108,9 @@ sub FillHash( $$$$ ) {
   }
 
 # TODO skip the Overview for now, it falls back to english in a way we can not detect
-  if( defined( $episode->{Overview} ) and ($episode->{Language} eq $self->{Language}) and !defined($resultref->{description}) ) {
-    $resultref->{description} = normUtf8(norm($episode->{Overview})) . "\nSource: Tvdb";
-  }
+#  if( defined( $episode->{Overview} ) and ($episode->{Language} eq $self->{Language}) and !defined($resultref->{description}) ) {
+#    $resultref->{description} = normUtf8(norm($episode->{Overview})) . "\nSource: Tvdb";
+#  }
 
 # TODO add proviously-shown to carry the first showing instead of slapping it over the starting year of the series
 #  if( $episode->{FirstAired} ) {
