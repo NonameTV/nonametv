@@ -124,12 +124,11 @@ sub ImportRTF {
   } else {
     $copyrightstring = '';
   }
-  from_to ($copyrightstring, "windows-1252", "utf8"); # it's utf-8 already
   
 
   while( my ( $type, $arg, $param ) = $tokenizer->get_token( ) ){
     if( $type eq 'text' ){
-      from_to ($arg, 'windows-1252', 'utf8');
+      $arg = Encode::decode ('windows-1252', $arg);
     }
 
 #    last if( $type eq 'eof' );
@@ -203,7 +202,7 @@ sub ImportRTF {
         d( 'parsing date from: ' . $text );
         my ($week, $daystring) = ($text =~ m|$channel_name, Programmwoche (\d+)\n ([^\n]*)|);
         my ($day, $month, $year) = ($daystring =~ m|(\d+)\. (\S+) (\d+)|);
-        $month = MonthNumber (Encode::decode ('utf-8', $month), 'de');
+        $month = MonthNumber ($month, 'de');
 
         if (!$gotbatch) {
           $gotbatch = 1;
