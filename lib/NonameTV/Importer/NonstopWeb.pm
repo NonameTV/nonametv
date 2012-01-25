@@ -15,9 +15,11 @@ use utf8;
 use DateTime;
 use XML::LibXML;
 use HTTP::Date;
+use Data::Dumper;
 
-use NonameTV qw/ParseXml norm AddCategory/;
+use NonameTV qw/ParseXml normUtf8 normUtf8Utf8 AddCategory/;
 use NonameTV::Log qw/w progress error f/;
+use NonameTV::DataStore::Helper;
 
 use NonameTV::Importer::BaseMonthly;
 
@@ -35,7 +37,10 @@ sub new {
 
     defined( $self->{UrlRoot} ) or die "You must specify UrlRoot";
     
-    $self->{datastore}->{augment} = 1;
+    my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
+    $self->{datastorehelper} = $dsh;
+    
+    #$self->{datastore}->{augment} = 1;
 
     return $self;
 }
@@ -71,7 +76,7 @@ sub FilterContent {
   my( $chid ) = ($chd->{grabber_info} =~ /^(\d+)/);
 
   my $doc;
-  $doc = ParseXml( $cref );
+  $doc = ParseXml( $$cref );
 
   if( not defined $doc ) {
     return (undef, "ParseXml failed" );
@@ -103,10 +108,16 @@ sub ImportContent
 
   my( $batch_id, $cref, $chd ) = @_;
 
+  print Dumper( $chd );
+
   my $ds = $self->{datastore};
-  $ds->{SILENCE_END_START_OVERLAP}=1;
-  $ds->{SILENCE_DUPLICATE_SKIP}=1;
- 
+  #$ds->{SILENCE_END_START_OVERLAP}=1;
+  #$ds->{SILENCE_DUPLICATE_SKIP}=1;
+  my $dsh = $self->{datastorehelper};
+  
+  my $currdate = "x";
+  my $xmltvid = $chd->{xmltvid};
+  my $channel_id = $chd->{id};
   my $xml = XML::LibXML->new;
   my $doc;
   eval { $doc = $xml->parse_string($$cref); };
@@ -125,12 +136,9 @@ sub ImportContent
     return 0;
   }
   
+  #$dsh->StartBatch( $batch_id , $channel_id );
   foreach my $sc ($ns->get_nodelist)
   {
-    my $title_original = $sc->findvalue( './@SeriesOriginalTitle' );
-	my $title_programme = $sc->findvalue( './@ProgrammeSeriesTitle' );
-	my $title = norm($title_programme) || norm($title_original);
-
     my $start = $self->create_dt( $sc->findvalue( './@SlotLocalStartTime' ) );
     if( not defined $start )
     {
@@ -139,6 +147,28 @@ sub ImportContent
       next;
     }
     
+    #print Dumper($start);
+    
+    ## Batch
+    if( $start->ymd("-") ne $currdate ){
+
+        progress("Nonstop: Date is ".$start->ymd("-"));
+
+        if( $currdate ne "x" ) {
+          #$dsh->EndBatch( 1 );
+        }
+
+        #my $batch_id_day = $xmltvid . "_" . $start->ymd("-");
+        
+        $dsh->StartDate( $start->ymd("-")  );#, "00:00"
+        $currdate = $start->ymd("-");
+    }
+    
+    ## Title
+    my $title_original = $sc->findvalue( './@SeriesOriginalTitle' );
+    my $title_programme = $sc->findvalue( './@ProgrammeSeriesTitle' );
+    my $title = normUtf8($title_programme) || normUtf8($title_original);
+    
     my $desc = undef;
     my $desc_episode = $sc->findvalue( './@ProgrammeEpisodeLongSynopsis' );
 	my $desc_series  = $sc->findvalue( './@ProgrammeSeriesLongSynopsis' );
@@ -146,19 +176,18 @@ sub ImportContent
 	
 	my $genre = $sc->findvalue( './@SeriesGenreDescription' );
 	my $production_year = $sc->findvalue( './@ProgrammeSeriesYear' );
-	my $subtitle =  $sc->findvalue( './@ProgrammeEpisodeTitle' );
-	my $aspect =  $sc->findvalue( './@ProgrammeVersionTechnicalTypesAspect_Ratio' );
+	#my $subtitle =  $sc->findvalue( './@ProgrammeEpisodeTitle' );
 
 	progress("Nonstop: $chd->{xmltvid}: $start - $title");
 
     my $ce = {
-      title 	  => norm($title),
+      title 	  => normUtf8($title),
       channel_id  => $chd->{id},
-      description => norm($desc),
-      start_time  => $start->ymd("-") . " " . $start->hms(":"),
+      description => normUtf8($desc),
+      start_time  => $start->hms(":"),
     };
     
-    $ce->{subtitle} = $subtitle if $subtitle;
+    #$ce->{subtitle} = $subtitle if $subtitle;
     
     my ( $dummy, $season, $episode ) = ($desc =~ /\(S(.*)song\s*(\d+)\s*avsnitt\s*(\d+)\)/ );
     
@@ -176,21 +205,15 @@ sub ImportContent
       $ce->{production_date} = "$1-01-01";
     }
     
-    
-    
-    if( (defined $aspect) and ($aspect eq "16*9 (2)")) {
-    	$ce->{aspect} = "16:9";
-    } else {
-    	$ce->{aspect} = "4:3";
-    }
-    
     if( $genre ){
 			my($program_type, $category ) = $ds->LookupCat( 'Nonstop', $genre );
 			AddCategory( $ce, $program_type, $category );
 	}
 
-    $ds->AddProgramme( $ce );
+    $dsh->AddProgramme( $ce );
   }
+  
+  #$dsh->EndBatch( 1 );
   
   # Success
   return 1;
