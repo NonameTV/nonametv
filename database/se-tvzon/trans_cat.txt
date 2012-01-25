@@ -26,6 +26,7 @@ CanalPlus,actionserie,Action,series
 CanalPlus,actionthriller,Action,
 CanalPlus,allsvenskan,Football,sports
 CanalPlus,anal,Adult,
+CanalPlus,animation,Animation,
 CanalPlus,animeäventyr,Anime/Adventure,
 CanalPlus,"animerad komedi",Animation/Comedy,
 CanalPlus,"animerad science fiction",Animation/Sci-fi,
@@ -38,6 +39,7 @@ CanalPlus,barnfilm,Children's,movie
 CanalPlus,barnprogram,Kids,tvshow
 CanalPlus,barnserie,Children's,series
 CanalPlus,basket,Sports,
+CanalPlus,"biografiskt drama",Biography/Drama,
 CanalPlus,busty,Adult,
 CanalPlus,deckarserie,Crime,
 CanalPlus,dokumentär,Documentary,
@@ -77,6 +79,7 @@ CanalPlus,gonzo,Adult,
 CanalPlus,hard,Adult,
 CanalPlus,"hard erotik",Adult,
 CanalPlus,"hard feature",Adult,
+CanalPlus,hockeymagasin,Hockey,tvshow
 CanalPlus,intervju,Talk,
 CanalPlus,ishockey,Hockey,sports
 CanalPlus,"italiensk ligafotboll",Sports,
@@ -94,12 +97,15 @@ CanalPlus,kriminalserie,Crime,series
 CanalPlus,"la liga",Football,Sports
 CanalPlus,magasin,Magazine,
 CanalPlus,milf,Adult,movie
+CanalPlus,mockumentär,Parody/Documentary,
 CanalPlus,motor,Motors,Sports
 CanalPlus,motormagasin,Motormagazine,
+CanalPlus,motorsport,Motors,sports
 CanalPlus,musikal,Music,
 CanalPlus,musikalkomedi,Musical/Comedy,
 CanalPlus,musikdrama,Music/Drama,
 CanalPlus,musikkomedi,Music/Comedy,
+CanalPlus,nba,Basketball,sports
 CanalPlus,nöjesnyheter,News,
 CanalPlus,nordiskt,Nordic,
 CanalPlus,program,\N,tvshow
@@ -107,6 +113,7 @@ CanalPlus,"romantisk dramakomedi",Romance/Drama/Comedy,
 CanalPlus,"romantisk komedi",Romance/Comedy,
 CanalPlus,"romantiskt drama",Romance/Drama,
 CanalPlus,rysare,Thriller,
+CanalPlus,"sci-fi action",Sci-fi/Action,
 CanalPlus,"sci-fi drama",Sci-Fi/Drama,
 CanalPlus,sci-fi-thriller,Sci-fi/Thriller,
 CanalPlus,"science fiction",Sci-fi,
@@ -116,10 +123,12 @@ CanalPlus,sckräk,Horror,
 CanalPlus,"serie a",\N,sports
 CanalPlus,serier,series,Series
 CanalPlus,skräck,Horror,
+CanalPlus,"soft erotik",Adult,
 CanalPlus,speedway,Motors,Sports
 CanalPlus,sport,sports,Sports
 CanalPlus,"stora bröst",Adult,movie
 CanalPlus,studio,\N,sports
+CanalPlus,studioprogram,Studios,
 CanalPlus,studiosändning.,Sports,sports
 CanalPlus,"tecknad familjefilm",Family,
 CanalPlus,"tecknad saga",Children's,
@@ -127,12 +136,15 @@ CanalPlus,"tecknat äventyr",Children's/Adventure,
 CanalPlus,"tecknat barnäventyr",Animated/Children's,
 CanalPlus,"tecknat familjeäventyr",Children's/Family/Ad,
 CanalPlus,tennis,Tennis,sports
+CanalPlus,tennismagasin,Tennis,
 CanalPlus,tennisturnering,Tennis,sports
 CanalPlus,thriller,Thriller,
+CanalPlus,thrillerkomedi,Thriller/Comedy,
 CanalPlus,thrillerserie,Thriller,series
 CanalPlus,"unga tjejer",Adult,movie
 CanalPlus,ungdomsdrama,Drama,
 CanalPlus,ungdomsfilm,movies,movie
+CanalPlus,västern,Western,
 DasErste_type,3d-animationsfilm,,movie
 DasErste_type,animationsfilm,,movie
 DasErste_type,comedy-familienserie,Comedy,
@@ -210,6 +222,9 @@ DreiSat_category,"rock, pop",Music,
 DreiSat_category,specials,Special,
 DreiSat_category,spielfilm,,movie
 DreiSat_category,sport,,sports
+DreiSat_category,sport-berichterstattung,\N,sports
+DreiSat_category,sport-hintergrundinformation,\N,sports
+DreiSat_category,sport-übertragungen,\N,sports
 DreiSat_category,"verbrechen, kriminalität",Crime,
 DreiSat_category,"volksmusik, volkstümliche musik, folklore",Music,
 DreiSat_category,"wissenschaft technik umwelt",Science/Nature,
