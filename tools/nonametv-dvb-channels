@@ -1,0 +1,63 @@
+#! /usr/bin/perl
+
+#
+# select c.grabber,c.id,c.display_name,d.* from channels c left join dvb_service_pointer d on c.id=d.channel_id where c.display_name like '%' order by c.grabber, c.display_name;
+#
+
+
+use strict;
+use warnings;
+
+use File::Compare;
+use FindBin;
+use lib "$FindBin::Bin/../lib";
+
+use NonameTV qw/ParseXml/;
+use NonameTV::Config qw/ReadConfig/;
+use NonameTV::DataStore;
+use NonameTV::Log qw/d p w/;
+
+# Read configuration
+my $conf = ReadConfig();
+
+my $ds = NonameTV::DataStore->new( $conf->{DataStore} );
+
+my $file = shift (@ARGV);
+
+if (!defined ($file)) {
+  die;
+}
+
+open FILE, "<", $file ;
+
+my ($override, $hit, $miss, $junk) = (0, 0, 0, 0);
+
+while (my $line = <FILE>) {
+  my ($name, $sid, $onid, $tid);
+  if (($name, $sid, $onid, $tid) = ($line =~ m|^([^:]*):.*:(\d+):(\d+):(\d+):\d+$|)){
+    if ($onid == 0) {
+      p ("ignoring $name ($onid, $tid, $sid)");
+      $junk ++;
+    } else {
+      p ("handling $name ($onid, $tid, $sid)");
+      my $channel = $ds->{sa}->Lookup( 'dvb_service_pointer', { original_network_id => $onid, transport_id => $tid, service_id => $sid, active => 1 } );
+      if ($channel) {
+        p ("override match found: " . $channel->{description});
+        $override ++;
+      }
+      $channel = $ds->{sa}->Lookup( 'dvb_service_pointer', { original_network_id => $onid, transport_id => 0, service_id => $sid, active => 1 } );
+      if ($channel) {
+        p ("match found: " . $channel->{description});
+        $hit ++;
+      } else {
+        w (sprintf ("no match, consider adding it: INSERT INTO dvb_service_pointer (original_network_id, service_id, description, channel_id) VALUES (%d, %d, '%s from %s', xx);", $onid, $sid, $name, $file));
+        $miss ++;
+      }
+    }
+  }
+}
+
+close FILE;
+
+w (sprintf ("%d channels, %d found (%d with override), %d not found, %d incomplete data", $junk+$hit+$miss, $hit, $override, $miss, $junk));
+
