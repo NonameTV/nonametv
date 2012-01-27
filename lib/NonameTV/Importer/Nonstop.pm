@@ -39,7 +39,9 @@ sub new {
 
     defined( $self->{UrlRoot} ) or die "You must specify UrlRoot";
     
-    my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
+    $self->{datastore}->{SILENCE_DUPLICATE_SKIP} = 1;
+    
+    my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore}, "UTC" ); #, "UTC"
     $self->{datastorehelper} = $dsh;
     
     $self->{datastore}->{augment} = 1;
@@ -100,11 +102,11 @@ sub ImportXML {
     my $column;
 
     foreach my $sc ($ns->get_nodelist) {
-        my $start = $self->create_dt( $sc->findvalue( './@SlotLocalStartTime' ) );
+        my $start = $self->create_dt( $sc->findvalue( './@SlotUTCStartTime' ) );
         if( not defined $start )
         {
             w "Invalid starttime '" 
-            . $sc->findvalue( './@SlotLocalStartTime' ) . "'. Skipping.";
+            . $sc->findvalue( './@SlotUTCStartTime' ) . "'. Skipping.";
             next;
         }
         
@@ -207,7 +209,7 @@ sub UpdateFiles {
 
         my $dt = $today->clone->add( months => $month );
         
-        #print Dumper($dt);
+        #print Dumper($dt);  
 
         my $filename = sprintf( "%s/%d/%d", $data->{grabber_info}, $dt->year, $dt->month );
         my $filename2 = sprintf("%s %d-%d.xml", $data->{display_name}, $dt->year, $dt->month);
@@ -253,10 +255,12 @@ sub create_dt
                           hour   => $hour,
                           minute => $minute,
                           second => $second,
-                          time_zone => 'Europe/Stockholm',
                           );
   
-  $dt->set_time_zone( "UTC" );
+  # (somehow nonametv adds a day. This fixes it)
+  $dt->subtract( days => 1 );
+  
+  #$dt->set_time_zone( "UTC" ); #time_zone => 'UTC',
   
   return $dt;
 }
