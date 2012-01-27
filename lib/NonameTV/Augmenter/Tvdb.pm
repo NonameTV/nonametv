@@ -335,6 +335,8 @@ sub AugmentProgram( $$$ ){
         $series = $self->{tvdb}->getSeries( $ceref->{title}, 0 );
       }
       if( defined $series ){
+        $resultref->{title} = normUtf8( norm( $series->{SeriesName} ) );
+        
         my $episodetitle = $ceref->{subtitle};
 
         $episodetitle =~ s|\s+-\s+Teil\s+(\d+)$| ($1)|;   # _-_Teil_#
