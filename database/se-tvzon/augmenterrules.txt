@@ -281,3 +281,18 @@
 232,Tvrage,"Sofias änglar",program_type,series,27497,episodeseason
 232,Tvrage,Tunnelbanan,program_type,series,30728,episodeseason
 282,Tvdb,"Falling Skies",program_type,movie,205281,episodeseason
+297,TvdbDE,^.*$,program_type,series,\N,episodetitle
+298,TvdbDE,^.*$,program_type,series,\N,episodetitle
+232,Tvdb,Tunnelbanan,program_type,series,255533,episodeseason
+278,Tvdb,"Adult Swim: Robot Chicken",program_type,series,75734,episodetitle
+278,Tvdb,"Adult Swim: Aqua Teen Hunger Force",program_type,series,77120,episodetitle
+278,Tvdb,"Adult Swim: Metalocalypse",program_type,series,79563,episodetitle
+278,Fixups,"Hulk Hogan's MCW",program_type,series,"Hulk Hogan's Micro Championship Wrestling",replacetitle
+278,Tvdb,"Space Ghost, Coast to Coast",program_type,series,79171,episodetitle
+278,Tvdb,"Adult Swim: Venture Bros",program_type,series,72306,episodetitle
+278,Tmdb,"Blair Witch Project, The",program_type,movie,2667,movieid
+281,Tvdb,"The Role That Changed My Life",program_type,series,82511,episodetitle
+278,Tvdb,"Adult Swim: Venture Bros",program_type,movie,72306,episodetitle
+282,Tmdb,"Jeanne d'Arc del 2 av 2",program_type,movie,11944,movieid
+282,Tmdb,"Jeanne d'Arc del 1 av 2",program_type,movie,11944,movieid
+282,Tvdb,"What About Brian",program_type,series,79290,episodetitle
