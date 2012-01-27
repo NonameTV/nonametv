@@ -62,6 +62,7 @@ fi
 # Update tvdb
 $d perl -I lib tools/nonametv-update-tvdb sv
 $d perl -I lib tools/nonametv-update-tvdb en
+$d perl -I lib tools/nonametv-update-tvdb de
 
 # Import everything
 $d tools/se-tvzon/nonametv-import-allhttp $Q
