@@ -118,6 +118,7 @@ sub ImportXML {
         my $title_original = $sc->findvalue( './@SeriesOriginalTitle' );
         my $title_programme = $sc->findvalue( './@ProgrammeSeriesTitle' );
         my $title = normUtf8($title_programme) || normUtf8($title_original);
+       #my $title = normUtf8($title_original)  || normUtf8($title_programme);
         
         ## Batch
         if($date ne $currdate ) {
@@ -140,8 +141,17 @@ sub ImportXML {
         $desc = $desc_episode || $desc_series;
         
         my $genre = $sc->findvalue( './@SeriesGenreDescription' );
+       #my $subgenre = $sc->findvalue( './@SeriesSubGenreDescription' ); # Same data as the one above, somehow.
         my $production_year = $sc->findvalue( './@ProgrammeSeriesYear' );
-        my $subtitle =  $sc->findvalue( './@ProgrammeEpisodeTitle' );
+        
+        # Subtitle, DefaultEpisodeTitle contains the original episodetitle.
+        # I.e. Plastic Buffet for Robot Chicken
+        # For some series (mostly on TNT7) defaultepisodetitle contains (Part {episodenum})
+        # That should be remove later on, but for now you should use Tvdb augmenter for that.
+        my $subtitle_episode = $sc->findvalue( './@ProgrammeEpisodeTitle' );
+        my $subtitle_default = $sc->findvalue( './@DefaultEpisodeTitle' );
+        my $subtitle = normUtf8($subtitle_default) || normUtf8($subtitle_episode);
+        
         
         progress("Nonstop: $chd2: $time - $title");
 
@@ -151,29 +161,79 @@ sub ImportXML {
             description => normUtf8($desc),
             start_time  => $time,
         };
-        
-        $ce->{subtitle} = $subtitle if $subtitle;
-        
+
         my ( $dummy, $season, $episode ) = ($desc =~ /\(S(.*)song\s*(\d+)\s*avsnitt\s*(\d+)\)/ );
     
         if((defined $season) and ($episode > 0) and ($season > 0) )
         {
             $ce->{episode} = sprintf( "%d . %d .", $season-1, $episode-1 );
+            $ce->{program_type} = "series";
         }
         elsif((defined $episode) and ($episode > 0) )
         {
             $ce->{episode} = sprintf( ". %d .", $episode-1 );
+            $ce->{program_type} = "series";
         }
-    
+        
+        $ce->{description} =~ s/\(S(.*)song(.*)\)$//;
+        
+        # Year (it should actually get year from augmenter instead (as sometimes it's the wrong year))
         if( defined( $production_year ) and ($production_year =~ /(\d\d\d\d)/) )
         {
             $ce->{production_date} = "$1-01-01";
         }
-    
+        
+        
+        # Genre
         if( $genre ){
             my($program_type, $category ) = $ds->LookupCat( 'Nonstop', $genre );
             AddCategory( $ce, $program_type, $category );
         }
+        
+        # HD
+        if($sc->findvalue( './@HighDefinition' ) eq "1") {
+            $ce->{quality} = "HDTV";
+        }
+        
+        # On movies, the subtitle (defaultepisodetitle) is same as seriestitle
+        if($title ne $subtitle) {
+            #if(defined($ce->{program_type}) and ($ce->{program_type} ne "movie")) {
+                $ce->{subtitle} = $subtitle if $subtitle;
+            #}
+        }
+        
+        # Get credits
+        # Make arrays
+        my @actors;
+        my @directors;
+        my @writers;
+    
+        # Change $i if they add more actors in the future
+        for( my $v=1; $v<=5; $v++ ) {
+            my $actor_name = normUtf8($sc->findvalue( './@ProgrammeSeriesCreditsContact' . $v ));
+            my $job = $sc->findvalue( './@ProgrammeSeriesCreditsCredit' . $v );
+            # Check if it's defined (that that actor is already in the xmlfeed)
+            if(defined($actor_name)) {
+                # Check the job
+                if(defined($job) and $job =~ /Act/) {
+                    push(@actors, $actor_name);
+                }
+                if(defined($job) and $job =~ /Himself/) {
+                    push(@actors, $actor_name);
+                }
+                if(defined($job) and $job =~ /Director/) {
+                    push(@directors, $actor_name);
+                }
+                if(defined($job) and $job =~ /Creator/) {
+                    push(@writers, $actor_name);
+                }
+                
+            }
+        }
+        
+        $ce->{actors} = join( ", ", grep( /\S/, @actors ) );
+        $ce->{directors} = join( ", ", grep( /\S/, @directors ) );
+        $ce->{writers} = join( ", ", grep( /\S/, @writers ) );
         
         $dsh->AddProgramme( $ce );
     }
