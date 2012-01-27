@@ -120,9 +120,17 @@ sub setMirrors {
 }
 sub _updateUrls {
 	my ($self) = @_;
-	$self->{apiURL} = sprintf $Url{apiURL}, $self->{mirror}, $self->{apikey};
-	$self->{bannerURL} = sprintf $Url{bannerURL}, $self->{banner};
-	$self->{zipURL} = sprintf $Url{apiURL}, $self->{zip}, $self->{apikey}; 
+	if(defined($self->{mirror}) and defined($self->{apikey})) {
+	    $self->{apiURL} = sprintf $Url{apiURL}, $self->{mirror}, $self->{apikey};
+	}
+	
+	if(defined($self->{banner})) {
+        $self->{bannerURL} = sprintf $Url{bannerURL}, $self->{banner};
+    }
+	
+	if(defined($self->{zip}) and defined($self->{apikey})) {
+        $self->{zipURL} = sprintf $Url{apiURL}, $self->{zip}, $self->{apikey}; 
+    }
 }
 sub setUserAgent {
 	my ($self, $userAgent) = @_;
