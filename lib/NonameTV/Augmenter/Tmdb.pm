@@ -108,6 +108,9 @@ sub FillHash( $$$ ) {
   my $type = $doc->findvalue( '/OpenSearchDescription/movies/movie/type' );
   if( $type eq 'movie' ) {
     $resultref->{program_type} = 'movie';
+    
+    # Remove subtitle
+    $resultref->{subtitle} = undef;
   }
 
   my $votes = $doc->findvalue( '/OpenSearchDescription/movies/movie/votes' );
