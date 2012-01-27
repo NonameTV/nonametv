@@ -375,12 +375,39 @@ sub AugmentProgram( $$$ ){
         d( "series not found by title: " . $ceref->{title} );
       }
 
+  }elsif( $ruleref->{matchby} eq 'episodeid' ) {
+      # match by episode id from remote_ref (sid|eid)
+      my $series;
+      
+      my( $sid, $eid ) = split( / /, $ruleref->{remoteref} );
+      
+      # Get title
+      my $seriesname = $self->{tvdb}->getSeriesName( $sid, 0 );
+      $series = $self->{tvdb}->getSeries( $seriesname, 0 );
+      
+      $resultref->{description} = "hej";
+      
+      # Do the fabulous things.
+      if( defined $series ){
+        $resultref->{title} = normUtf8( norm( $series->{SeriesName} ) );
+
+        my $episode = $self->{tvdb}->getEpisodeId( $eid, 0 );
+        if( defined( $episode ) ) {
+          $self->FillHash( $resultref, $series, $episode );
+        } else {
+          w( "episode not found by id: " . $ceref->{title} . " - \"" . $eid . "\"" );
+        }
+      } else {
+        d( "series not found by title: " . $ceref->{title} );
+      }
+
   }elsif( $ruleref->{matchby} eq 'guess' ) {
     # guess the right episode and season (guess the latest season and by actors)
     # you should probably not use this one.
 
       my $series;
         # do shit.
+        d( "don't use guess yet. It hasn't been coded yet." );
 
   }else{
     $result = "don't know how to match by '" . $ruleref->{matchby} . "'";
