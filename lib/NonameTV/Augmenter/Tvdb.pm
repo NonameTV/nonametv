@@ -33,6 +33,7 @@ sub new {
                                      lang      => $self->{Language},
                                      cache     => $cachefile,
                                      banner    => $bannerdir,
+                                     useragent => "nonametv (http://nonametv.org)",
                                   });
     # only update if there is some data to be updated
     if (defined ($self->{tvdb}->{cache}->{Update}->{lastupdated})) {

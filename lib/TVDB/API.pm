@@ -122,7 +122,7 @@ sub _updateUrls {
 	my ($self) = @_;
 	$self->{apiURL} = sprintf $Url{apiURL}, $self->{mirror}, $self->{apikey};
 	$self->{bannerURL} = sprintf $Url{bannerURL}, $self->{banner};
-	$self->{zipURL} = sprintf $Url{apiURL}, $self->{zip}, $self->{apikey};
+	$self->{zipURL} = sprintf $Url{apiURL}, $self->{zip}, $self->{apikey}; 
 }
 sub setUserAgent {
 	my ($self, $userAgent) = @_;
