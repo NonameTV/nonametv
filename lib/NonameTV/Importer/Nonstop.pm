@@ -281,7 +281,7 @@ sub UpdateFiles {
         my $filename2 = sprintf("%s %d-%d.xml", $data->{display_name}, $dt->year, $dt->month);
         my $url = $self->{UrlRoot} . $filename;
         progress("Nonstop: $xmltvid: Fetching XML file from $url to /storage/nonametv/channels" . '/' . $xmltvid . '/' . $filename2);
-        #http_get( $url, "/storage/nonametv/channels" . '/' . $xmltvid . '/' . $filename2 );
+        http_get( $url, "/storage/nonametv/channels" . '/' . $xmltvid . '/' . $filename2 );
 
     }
   }

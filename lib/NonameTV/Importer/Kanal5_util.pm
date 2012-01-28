@@ -330,8 +330,12 @@ sub extract_extra_info
 		
 		if( my( $originaltitle ) = ($sentences[$i] =~ /Originaltitel:\s*(.*)/ ) )
     {
-    	# Remove originaltitle from description, maybe use originaltitle instead of
-    	# swedish title?
+    	# Get episodename at the end of - 
+    	#my ( $totalepi, $episodename ) = ($sentences[$i] =~ /\-\s+(\d+)\s+(\s*)/ );
+    	
+    	#if(defined($episodename)) {
+    	#    $ce->{subtitle} = norm($episodename);
+    	#}
       $sentences[$i] = "";
     }
     elsif( my( $aven ) = ($sentences[$i] =~ /.ven\s*(.*)$/ ) )
@@ -398,7 +402,7 @@ sub extract_extra_info
     }
     elsif( my( $presenters ) = ($sentences[$i] =~ /Programledare:\s*(.*)/ ) )
     {
-      $ce->{presenters} = parse_person_list( $presenters );
+      #$ce->{presenters} = parse_person_list( $presenters );
       $sentences[$i] = "";
     }
     elsif( my( $guest ) = ($sentences[$i] =~ /G.stv.rd:\s*(.*)/ ) )
