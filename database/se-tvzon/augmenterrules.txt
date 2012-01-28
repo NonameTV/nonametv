@@ -296,3 +296,37 @@
 282,Tmdb,"Jeanne d'Arc del 2 av 2",program_type,movie,11944,movieid
 282,Tmdb,"Jeanne d'Arc del 1 av 2",program_type,movie,11944,movieid
 282,Tvdb,"What About Brian",program_type,series,79290,episodetitle
+278,Fixups,"Adult Swim: Aqua Teen Hunger Force",subtitle,"Mc P Pants","MC Pee Pants",replacesubtitle
+278,Fixups,"Adult Swim: Venture Bros",subtitle,"Ice Station Impossible","Ice Station - Impossible!",replacesubtitle
+278,Fixups,"Adult Swim: Aqua Teen Hunger Force",subtitle,Ol'Drippy,"Ol' Drippy",replacesubtitle
+278,Fixups,"Adult Swim: Aqua Teen Hunger Force",subtitle,"Space Conflict From Beyond","Space Conflict From Beyond Pluto",replacesubtitle
+278,Fixups,"Adult Swim: Robot Chicken",subtitle,"*no name*",,replacesubtitle
+278,Fixups,"Adult Swim: Venture Bros",subtitle,"The Incredible Mr Brisby","The Incredible Mr. Brisby",replacesubtitle
+278,Fixups,"Adult Swim: Aqua Teen Hunger Force",subtitle,Ballonenstein,Balloonenstein,replacesubtitle
+278,Fixups,"Adult Swim: Venture Bros",subtitle,"Eeny Meeny Miney... Magic","Eeney, Meeney, Miney...Magic!",replacesubtitle
+278,Fixups,"Adult Swim: Venture Bros",subtitle,"Midlife Chrysalis","Mid-Life Chrysalis",replacesubtitle
+278,Fixups,"Adult Swim: Venture Bros",subtitle,"Dia de los Dangerous","Dia de Los Dangerous!",replacesubtitle
+278,Fixups,"Adult Swim: Robot Chicken",subtitle,"Special - Adultizzle Swizzle","Adultizzle Swizzle",replacesubtitle
+278,Fixups,"Adult Swim: Metalocalypse",subtitle,Birthdayface,"Happy Dethday (a.k.a. Birthdayface)",replacesubtitle
+278,Fixups,"Adult Swim: Metalocalypse",subtitle,"The Curse Of Deathklok","The Curse of Dethklok",replacesubtitle
+278,Tvdb,"Space Ghost, Coast to Coast",program_type,movie,79171,episodetitle
+278,Fixups,"Adult Swim: Metalocalypse",subtitle,Snake'n'Barrels,"Snakes n' Barrels",replacesubtitle
+282,Fixups,"What About Brian",subtitle,"What About Calling All Friends","What About Calling All Friends...",replacesubtitle
+278,Fixups,"Space Ghost, Coast to Coast",subtitle,"Gum Disease","Gum, Disease",replacesubtitle
+278,Fixups,"Space Ghost, Coast to Coast",subtitle,"Episode 109","Self Help",replacesubtitle
+304,Tvdb,"^.*Morden i Midsomer.*$",program_type,series,76846,episodetitle
+304,Fixups,"^.*(Mot alla odds):\s+(.*)$",\N,\N,\N,splittitle
+305,Tvdb,"^.*Big love.*$",program_type,series,74156,episodetitle
+305,Fixups,"^.*(En bok - en författare):\s+(.*)$",\N,\N,\N,splittitle
+305,Fixups,"^.*En bok - en författare.*$",program_type,series,"En bok, en författare",replacetitle
+305,Fixups,"^.*(Hitl.tens historia):\s+(.*)$",\N,\N,\N,splittitle
+305,Fixups,"^.*(Pinos dagbok)\s+-\s+(.*)$",\N,\N,\N,splittitle
+305,Tvdb,^.*Korrespondenterna.*$,program_type,series,205201,episodetitle
+305,Tvdb,"^.*V.rldens b.sta skitskola.*$",program_type,series,255268,episodetitle
+\N,Fixups,"^.*(Minnenas Television):\s+(.*)$",\N,\N,\N,splittitle
+304,Fixups,^.*(Tema):\s+(.*)$,\N,\N,\N,splittitle
+305,Fixups,"^.*(Världens språk):\s+(.*)$",\N,\N,\N,splittitle
+233,Tvrage,"Dokumentär: Mord",program_type,series,7238,episodeseason
+233,Fixups,"Inside the Actors Studio",program_type,series,\N,guestsubtitle
+233,Tvdb,"Inside the Actors Studio",program_type,series,72614,episodetitle
+281,Tvdb,"Inside the Actors Studio",program_type,series,72614,episodetitle
