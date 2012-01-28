@@ -63,6 +63,12 @@ sub AugmentProgram( $$$ ){
 
   if( $ruleref->{matchby} eq 'setcategory' ) {
     $resultref->{'category'} = $ruleref->{remoteref};
+  }elsif( $ruleref->{matchby} eq 'guestsubtitle' ) {
+    if(defined($ceref->{guests}) and ($ceref->{guests} ne "")) {
+        $resultref->{'subtitle'} = $ceref->{guests};
+    } else {
+        w("Fixups::guestsubtitle - Nothing provided in guests.")
+    }
   }elsif( $ruleref->{matchby} eq 'setprogram_type' ) {
     $resultref->{'program_type'} = $ruleref->{remoteref};
   }elsif( $ruleref->{matchby} eq 'setsubtitle' ) {
