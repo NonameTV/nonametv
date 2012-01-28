@@ -127,10 +127,13 @@ sub FillHash( $$$$ ) {
 #    $resultref->{url_image_main} = sprintf('http://thetvdb.com/banners/%s', $episode->{filename});
   }
 
-  $resultref->{url} = sprintf(
-    'http://thetvdb.com/?tab=episode&seriesid=%d&seasonid=%d&id=%d&lid=%d',
-    $episode->{seriesid}, $episode->{seasonid}, $episodeid, $self->{LanguageNo}
-  );
+  if(defined($episodeid)) {
+      $resultref->{url} = sprintf(
+        'http://thetvdb.com/?tab=episode&seriesid=%d&seasonid=%d&id=%d&lid=%d',
+        $episode->{seriesid}, $episode->{seasonid}, $episodeid, $self->{LanguageNo}
+      );
+  }
+  
 
   my @actors = ();
   # only add series actors if its not a special
