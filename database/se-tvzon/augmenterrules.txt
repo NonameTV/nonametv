@@ -330,3 +330,155 @@
 233,Fixups,"Inside the Actors Studio",program_type,series,\N,guestsubtitle
 233,Tvdb,"Inside the Actors Studio",program_type,series,72614,episodetitle
 281,Tvdb,"Inside the Actors Studio",program_type,series,72614,episodetitle
+269,TvdbEN,^.*$,program_type,series,\N,episodetitle
+270,TvdbEN,^.*$,program_type,series,\N,episodetitle
+271,TvdbEN,^.*$,program_type,series,\N,episodetitle
+272,TvdbEN,^.*$,program_type,series,\N,episodetitle
+273,TvdbEN,^.*$,program_type,series,\N,episodetitle
+274,TvdbEN,^.*$,program_type,series,\N,episodetitle
+275,TvdbEN,^.*$,program_type,series,\N,episodetitle
+276,TvdbEN,^.*$,program_type,series,\N,episodetitle
+270,TvdbEN,"Ultimate Survival",program_type,series,79545,episodetitle
+270,Fixups,"American Loggers",subtitle,"Man vs Mud","Man vs. Mud",replacesubtitle
+270,TvdbEN,"Gold Rush: Alaska",program_type,series,208111,episodetitle
+270,TvdbEN,"Gold Rush - Season 2 Specials",program_type,series,208111,episodetitle
+\N,Fixups,Mythbusters,subtitle,"101 Uses for Duct Tape","Duct Tape Hour",replacesubtitle
+\N,Fixups,Mythbusters,subtitle,"Exploding Bumpers","Exploding Bumper",replacesubtitle
+\N,Fixups,Mythbusters,subtitle,"Thermite vs Ice","Thermite vs. Ice",replacesubtitle
+\N,Fixups,Mythbusters,subtitle,"Myth Evolution","Myth Evolution 2",replacesubtitle
+\N,Fixups,Mythbusters,subtitle,"No Pain, No Gain","No Pain No Gain, Propane Tank Rocket",replacesubtitle
+\N,Fixups,Mythbusters,subtitle,"Bullet Fired vs Bullet Dropped","Knock Your Socks Off",replacesubtitle
+\N,Fixups,Mythbusters,subtitle,"Car vs Rain","Car vs. Rain",replacesubtitle
+\N,Fixups,Mythbusters,subtitle,"Hurricane Window","Hurricane Windows",replacesubtitle
+\N,TvdbEN,"How Stuff's Made",program_type,series,185791,episodetitle
+\N,Fixups,"Deadliest Catch",subtitle,"New Beginnings","New Beginning",replacesubtitle
+\N,Fixups,"Deadliest Catch",subtitle,"The Darkened Sea","The Darkened Seas",replacesubtitle
+\N,Fixups,"Deadliest Catch",subtitle,"We're Not In Kansas Anymore","We're Not in Kansas Anymore...",replacesubtitle
+\N,Fixups,"Deadliest Catch",subtitle,"Catch as Catch Can","As Catch as Catch Can",replacesubtitle
+\N,Fixups,"Deadliest Catch",subtitle,"Old Age & Treachery","Old Age and Treachery",replacesubtitle
+\N,Fixups,"Deadliest Catch",subtitle,"A Slap in the Face or a Kick in the Butt","A Slap in the Face or Kick in the Butt",replacesubtitle
+\N,Fixups,"Deadliest Catch",subtitle,"Breakin' 'Em In","Breaking 'Em In",replacesubtitle
+\N,Fixups,"Deadliest Catch",subtitle,"Numbers Game","A Numbers Game",replacesubtitle
+\N,Fixups,"Deadliest Catch",subtitle,"New Blood Part 1","New Blood",replacesubtitle
+\N,Fixups,"Deadliest Catch",subtitle,"New Blood Part 2","New Blood",replacesubtitle
+\N,Fixups,"Deadliest Catch",subtitle,"Proving Ground","Proving Grounds",replacesubtitle
+270,TvdbEN,"American Hotrod",program_type,series,80389,episodetitle
+\N,Fixups,"American Hotrod",subtitle,"'54 Corvette and '55 Chevy - Part 3","'54 Corvette & '55 Chevy (Part 3)",replacesubtitle
+\N,Fixups,"Ultimate Survival",subtitle,"Global Survivor Guide","Global Survival Guide",replacesubtitle
+\N,Fixups,"American Hotrod",subtitle,"'56 Chevy Convertible - Part 1","'56 Chevy Convertible (Part 1)",replacesubtitle
+\N,Fixups,"American Hotrod",subtitle,"'54 Corvette and '55 Chevy - Part 1","'54 Corvette & '55 Chevy (Part 1)",replacesubtitle
+\N,Fixups,"American Hotrod",subtitle,"'54 Corvette and '55 Chevy - Part 2","'54 Corvette & '55 Chevy (Part 2)",replacesubtitle
+\N,Fixups,"American Hotrod",subtitle,"'56 Chevy Convertible - Part 2","'56 Chevy Convertible (Part 2)",replacesubtitle
+\N,Fixups,"American Hotrod",subtitle,"'56 Chevy Convertible - Part 3","'56 Chevy Convertible (Part 3)",replacesubtitle
+\N,Fixups,"American Hotrod",subtitle,"'61 Bubbletop - Part 1","'61 Impala Bubbletop (Part 1)",replacesubtitle
+\N,Fixups,"American Hotrod",subtitle,"'61 Bubbletop - Part 2","'61 Impala Bubbletop (Part 2)",replacesubtitle
+\N,Fixups,"American Hotrod",subtitle,"'61 Bubbletop - Part 3","'61 Impala Bubbletop (Part 3)",replacesubtitle
+\N,Fixups,"American Hotrod",subtitle,"'61 Bubbletop - Part 4","'61 Impala Bubbletop (Part 4)",replacesubtitle
+\N,Fixups,"American Hotrod",subtitle,"'40 Ford - Part 1","'40 Ford (Part 1)",replacesubtitle
+\N,Fixups,"American Hotrod",subtitle,"'40 Ford - Part 2","'40 Ford (Part 2)",replacesubtitle
+\N,Fixups,"American Hotrod",subtitle,"'40 Ford - Part 3","'40 Ford (Part 3)",replacesubtitle
+\N,Fixups,"Gold Rush: Full Disclosure",program_type,series,"Full Disclosure",replacesubtitle
+\N,TvdbEN,"Gold Rush: Full Disclosure",program_type,series,208111,episodetitle
+\N,TvdbEN,"Navy Seals: Class 234",program_type,series,83319,episodetitle
+\N,Fixups,"Navy Seals: Class 234",subtitle,"The Only Easy Day Was Yesterday","Part 5 - The Only Easy Day Was Yesterday",replacesubtitle
+\N,Fixups,"Navy Seals: Class 234",subtitle,"The Homestretch","Part 6 - The Home Stretch",replacesubtitle
+\N,Fixups,"Navy Seals: Class 234",subtitle,"Welcome to BUDS","Part 1 - Welcome to BUDS",replacesubtitle
+\N,Fixups,"Navy Seals: Class 234",subtitle,"It Pays to Be a Winner","Part 2 - It Pays to Be a Winner",replacesubtitle
+\N,Fixups,"Navy Seals: Class 234",subtitle,"Two Weeks and a Long Day","Part 3 - Two Weeks and a Long Day",replacesubtitle
+\N,Fixups,"Navy Seals: Class 234",subtitle,"Hell Week","Part 4 - Hell Week",replacesubtitle
+\N,TvdbEN,"Industrial Revelations: The European Story",program_type,series,81880,episodetitle
+\N,TvdbEN,"Massive Speed",program_type,series,82691,episodetitle
+\N,TvdbEN,"Zero Hour",program_type,series,127411,episodetitle
+\N,Fixups,"Zero Hour",subtitle,"Falling Star: Columbia","Falling Star - Columbia",replacesubtitle
+\N,Fixups,"Zero Hour",subtitle,"Last Hour of Flight 11","The Last Hour of Flight 11",replacesubtitle
+\N,TvdbEN,"Through the Wormhole with Morgan Freeman",program_type,series,168571,episodetitle
+\N,Fixups,"Chasing Classic Cars",subtitle,"Internet Flips & Finds","Internet Flips and Finds",replacesubtitle
+\N,Fixups,"Chasing Classic Cars",subtitle,"Hunt for the Davis Series","Hunt for the Davis",replacesubtitle
+\N,Fixups,"Chasing Classic Cars",subtitle,"Amelia Island - Part 2","Auction at Amelia Island: Part 2",replacesubtitle
+\N,Fixups,"Chasing Classic Cars",subtitle,"Amelia Island - Part 1","Auction at Amelia Island: Part 1",replacesubtitle
+\N,TvdbEN,"Really Big Things with Matt Rogers",program_type,series,80597,episodetitle
+\N,TvdbEN,"Rising: Rebuilding Ground Zero",program_type,series,251422,episodetitle
+\N,TvdbEN,"Raging Planet",program_type,series,145461,episodetitle
+\N,TvdbEN,"Man on Earth with Tony Robinson",program_type,series,127541,episodetitle
+\N,Fixups,"Man on Earth with Tony Robinson",subtitle,"Triumph of Homo Sapiens","The Triumph of Homo Sapiens",replacesubtitle
+\N,Fixups,"Man on Earth with Tony Robinson",subtitle,"Birth of Civilisation","The Birth Of Civilisation",replacesubtitle
+\N,Fixups,"American Chopper",subtitle,"Klipsch Bike",Klipsch,replacesubtitle
+\N,Fixups,"American Chopper",subtitle,"Viega Corporation",Viega,replacesubtitle
+\N,TvdbEN,"I'm Alive",program_type,series,238451,episodetitle
+\N,Fixups,"I'm Alive",subtitle,"Blood Saviours","Blood Saviors",replacesubtitle
+\N,Fixups,"Extraordinary Dogs",subtitle,"The Power in Movement - Part 1","The Power in Movement",replacesubtitle
+\N,Fixups,"Extraordinary Dogs",subtitle,"The Mystery of Healing - Part 1","The Mystery of Healing 1",replacesubtitle
+\N,Fixups,"Extraordinary Dogs",subtitle,"The Power in Movement - Part 2","The Mystery of Healing 1",replacesubtitle
+\N,Fixups,"Extraordinary Dogs",subtitle,"A Study of Strength","A Study of Strenght",replacesubtitle
+\N,Fixups,"Extraordinary Dogs",subtitle,"Instinct: The Sixth Sense - Part 2","Instinct: the Sixth Sense 2",replacesubtitle
+\N,Fixups,"Extraordinary Dogs",subtitle,"Myth and Reality","Some of the most common myths",replacesubtitle
+\N,Fixups,"Extraordinary Dogs",subtitle,"Instinct: The Sixth Sense - Part 1","Instinct: The Sixth Sense 1",replacesubtitle
+\N,Fixups,"Extraordinary Dogs",subtitle,"The Mystery of Healing - Part 2","The Mystery of Healing 2",replacesubtitle
+\N,Fixups,"Extraordinary Dogs",subtitle,"The Power in Movement - Part 2","The Mystery of Healing 1",replacesubtitle
+\N,Fixups,"Dirty Jobs",subtitle,"Chicken Buster","Chicken Busters",replacesubtitle
+\N,Fixups,Mythbusters,subtitle,"Reverse Engineering / Surf or Turf","Reverse Engineering",replacesubtitle
+\N,Fixups,Mythbusters,subtitle,"Tablecloth Chaos / Brain Power","Table Cloth Chaos",replacesubtitle
+\N,Fixups,Mythbusters,subtitle,"Upside Down Underwater Car / Gas Room Board","Inverted Underwater Car",replacesubtitle
+\N,Fixups,Mythbusters,subtitle,"President Obama's Challenge","President's Challenge",replacesubtitle
+\N,Fixups,Mythbusters,subtitle,"Archimedes Death Ray","Archimedes Death Ray Revisited",replacesubtitle
+\N,Fixups,Mythbusters,subtitle,"More Myths Re-opened","Myths Reopened",replacesubtitle
+\N,Fixups,Mythbusters,subtitle,"Red Rag to a Bull","Red Flag to a Bull",replacesubtitle
+\N,Fixups,Mythbusters,subtitle,"Myth Evolution","Myth Evolution!",replacesubtitle
+\N,Fixups,Mythbusters,subtitle,"Pirates 2!","Pirates 2",replacesubtitle
+\N,Fixups,Mythbusters,subtitle,"Airplane Hour","Air Plane Hour",replacesubtitle
+\N,Fixups,Mythbusters,subtitle,"James Bond Special - Part 1","James Bond Special: Part 1",replacesubtitle
+\N,Fixups,Mythbusters,subtitle,"James Bond Special - Part 2","James Bond Special: Part 2",replacesubtitle
+\N,Fixups,Mythbusters,subtitle,"Viewers' Special 2","Viewers Special 2",replacesubtitle
+\N,Fixups,"Say Yes To The Dress",subtitle,"Seeing Eye-to-Eye","Seeing Eye to Eye",replacesubtitle
+\N,Fixups,"Say Yes To The Dress",subtitle,"Italian Dressing","Italian Dressing/Here Comes the Groom",replacesubtitle
+\N,Fixups,"Say Yes To The Dress",subtitle,"To Buy Or Not to Buy","To Buy or Not to Buy/What a Girl Wants",replacesubtitle
+\N,Fixups,"Say Yes To The Dress",subtitle,"Here Comes the Groom","Italian Dressing/Here Comes the Groom",replacesubtitle
+\N,Fixups,"Say Yes To The Dress",subtitle,"Lucky in Love","Lucky in Love/Wedding Dress Blues",replacesubtitle
+\N,Fixups,"Say Yes To The Dress",subtitle,Goals,"Season 3 Finale: Goals",replacesubtitle
+\N,Fixups,"Say Yes To The Dress",subtitle,"That's Not My Dress","That's Not My Dress/Bridal Breakdown",replacesubtitle
+\N,Fixups,"Say Yes To The Dress",subtitle,"Wedding Dress Blues","Lucky in Love/Wedding Dress Blues",replacesubtitle
+\N,Fixups,"Say Yes To The Dress",subtitle,"What a Girl Wants","To Buy or Not to Buy/What a Girl Wants",replacesubtitle
+\N,Fixups,"Say Yes To The Dress",subtitle,"Bridal Breakdown","That's Not My Dress/Bridal Breakdown",replacesubtitle
+\N,Fixups,"Cake Boss",subtitle,"Chimps, Cinema & Crumb Cake","Chimp, Cinema, and Crumb Cake",replacesubtitle
+\N,Fixups,"Cake Boss",subtitle,"Plants, Pranks & a Proposal","Plants, Pranks and a Proposal",replacesubtitle
+\N,Fixups,"Cake Boss",subtitle,"Santa, Sunrise, & Snowmen Cupcakes","Santa, Sunrise & Snowmen Cupcakes",replacesubtitle
+\N,Fixups,"Cake Boss",subtitle,"Colour, Camouflage & Cupcake Day","Color, Camouflage and Cupcake Day",replacesubtitle
+\N,Fixups,"Cake Boss",subtitle,"Colourful Characters & Christmas Costumes","Colorful Characters and Christmas Costumes",replacesubtitle
+\N,Fixups,"Cake Boss",subtitle,"Key to the City & a Key-Tar Cake","Key to the City and a Key-tar Cake",replacesubtitle
+\N,Fixups,"Cake Boss",subtitle,"Blushing Brides & Busy Bakers","Blushing Brides and Busy Bakers",replacesubtitle
+\N,Fixups,"Cake Boss",subtitle,"Apples, Arguments & Animal Prints","Apples, Arguments, and Animal Prints",replacesubtitle
+\N,Fixups,"Cake Boss",subtitle,"Barbers & Bulls","Barbers, Babies and Bulls",replacesubtitle
+\N,Fixups,"Cake Boss",subtitle,"Cars, Collapse & Couture",Cars,replacesubtitle
+\N,Fixups,"Cake Boss",subtitle,"Helmet Cake, Healthy Mauro, & Huge Trainers","Helmet Cake, Healthy Mauro, & Huge Train Cake",replacesubtitle
+\N,Fixups,"Cake Boss",subtitle,"Sizing, Sleeping Stretch & Sesame Street","Sizing, Sleeping Stretch, and Sesame Street",replacesubtitle
+\N,Fixups,"Cake Boss",subtitle,"Strawberries, Sinatra & Sick Ovens","Strawberries, Sinatra, & Sick Ovens",replacesubtitle
+\N,Fixups,"Cake Boss",subtitle,"Sandals, Sandwiches & Shelves","Sandals, Sandwiches and Shelves",replacesubtitle
+\N,Fixups,"Cake Boss",subtitle,"Pipes, a Phoenix & a Problematic Kitchen","Pipes, a Phoenix, & a Problematic Kitchen",replacesubtitle
+\N,Fixups,"Cake Boss",subtitle,"Snooki, Super Anthony & a Ship","Snookie, Super Anthony & a Ship",replacesubtitle
+\N,Fixups,"Cake Boss",subtitle,"Sweet Sixteen, Stars & a Sabre Sword","Sweet Sixteen, Stars & a Saber Sword",replacesubtitle
+\N,Fixups,"Cake Boss",subtitle,"Magazines, a Mega Screen & Maurizio","Magazines, a Mega Screen and Maurizio",replacesubtitle
+\N,Fixups,"Cake Boss",subtitle,"Crazy Chocolate Cake & Carlo's Centennial","Crazy Chocolate Cake & Carlo's Centennial Celebration",replacesubtitle
+\N,Fixups,"Cake Boss",subtitle,"Familia, Fishing & Family History","Familia, Fishing and Family History",replacesubtitle
+\N,Fixups,"Cake Boss",subtitle,"Chocolate Race Cars and Choosing a Dress","Chocolate Race Cars & Choosing a Dress",replacesubtitle
+\N,Fixups,"Cake Boss",subtitle,"Spirits and Spumoni","Spirits & Spumoni",replacesubtitle
+\N,Fixups,"Cake Boss",subtitle,"Coffins, Costumes and Cake on a Gurney","Coffins, Costumes and a Cake on a Gurney",replacesubtitle
+\N,Fixups,"Cake Boss",subtitle,"Soap, Sonograms and Surprise!","Soap, Sonograms & Surprise",replacesubtitle
+\N,Fixups,"Cake Boss",subtitle,"Props, Pies and Party Time!","Props, Pies, & Party Time!",replacesubtitle
+\N,Fixups,"Cake Boss",subtitle,"Church Cake, Carats and a Castano's Pool Party","Church Cake, Carats and Castano's Pool Party",replacesubtitle
+\N,Fixups,"Cake Boss",subtitle,"Hieroglyphics, Hearse, & Happy Parents","Hieroglyphics, Hearse and Happy Parents",replacesubtitle
+\N,Fixups,"Cake Boss",subtitle,"Tournament of Knights & a Tasty Tiramisu","Tournament of Knights and a Tasty Tiramisu",replacesubtitle
+\N,Fixups,"Cake Boss",subtitle,"Freaks, Fast Food & Frightened Frankie","Freaks, Fast Food, and Frightened Frankie",replacesubtitle
+\N,Fixups,"Cake Boss",subtitle,"Motorcycles, Manhattanites & Misbehaving","Motorcycles, Manhattanites, and Misbehaving",replacesubtitle
+\N,Fixups,"Cake Boss",subtitle,"6-Foot Sub Sandwich, Zeppoles & a Sick Mauro","6-foot Sub Sandwich, Zeppoles and a Sick Mauro",replacesubtitle
+\N,TvdbEN,"Cake Boss",program_type,series,107671,episodetitle
+\N,Fixups,"Jon & Kate Plus 8",subtitle,"Girls' Day Out","Girls Day Out",replacesubtitle
+\N,Fixups,"Jon & Kate Plus 8",subtitle,"Embarrassing & Favourite Moments","Embarrassing & Favorite Moments",replacesubtitle
+\N,Fixups,"Jon & Kate Plus 8",subtitle,"More Viewers' FAQ","Viewer FAQ",replacesubtitle
+\N,Fixups,"Mad About The House",subtitle,"Emma and Rob","Emma & Rob",replacesubtitle
+\N,Fixups,"Mad About The House",subtitle,"Del and Sheri","Del & Sheri",replacesubtitle
+\N,Fixups,"Mad About The House",subtitle,"Alex and Bex","Alex & Bex",replacesubtitle
+\N,Fixups,"Mad About The House",subtitle,"Rachel and Will","Rachel & Will",replacesubtitle
+\N,Fixups,"Mad About The House",subtitle,"Kathryn and Jit","Kathryn & Jit",replacesubtitle
+\N,Fixups,"Mad About The House",subtitle,"Tanya and Tom","Tanya & Tom",replacesubtitle
+\N,Fixups,"Mad About The House",subtitle,"Adam and Hannah","Adam & Hannah",replacesubtitle
+\N,Fixups,"Mad About The House",subtitle,"Paul and Natalie","Paul & Natalie",replacesubtitle
