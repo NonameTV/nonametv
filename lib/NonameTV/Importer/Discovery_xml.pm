@@ -28,8 +28,8 @@ sub new {
   my $self  = $class->SUPER::new( @_ );
   bless ($self, $class);
 
-    # use augment
-    $self->{datastore}->{augment} = 1;
+  # use augment
+  $self->{datastore}->{augment} = 1;
 
   return $self;
 }
@@ -74,8 +74,13 @@ sub ImportContent {
 
     my $start = $b->findvalue( "BROADCAST_START_DATETIME" );
     my $end = $b->findvalue( "BROADCAST_END_TIME" );
-    my $title = $b->findvalue( "BROADCAST_TITLE" );
-    my $subtitle = $b->findvalue( "BROADCAST_SUBTITLE" );
+    my $title_lang = $b->findvalue( "BROADCAST_TITLE" );
+    my $title_org = $b->findvalue( "PROGRAMME[1]/PROGRAMME_TITLE_ORIGINAL" );
+    my $title = $title_org || $title_lang;
+    
+    my $subtitle_lang = $b->findvalue( "BROADCAST_SUBTITLE" );
+    my $subtitle_org = $b->findvalue( "PROGRAMME[1]/PROGRAMME_SUBTITLE_ORIGINAL" );
+    my $subtitle = $subtitle_org || $subtitle_lang;
     my $episode = $b->findvalue( "PROGRAMME[1]/EPISODE_NUMBER" );
     my $desc = $b->findvalue( "PROGRAMME[1]/TEXT[1]/TEXT_TEXT" );
 

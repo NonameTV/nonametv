@@ -48,7 +48,8 @@ sub new
 
   my $dsu = NonameTV::DataStore::Updater->new( $self->{datastore} );
   $self->{datastoreupdater} = $dsu;
-
+  
+  #$self->{datastore}->{augment} = 1;
 
   return $self;
 }
