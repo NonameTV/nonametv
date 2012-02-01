@@ -247,10 +247,10 @@ sub create_dt
                           hour   => $hour,
                           minute => $minute,
                           second => $second,
-                          time_zone => 'Europe/Stockholm',
+                          time_zone => 'UTC',
                           );
   
-  $dt->set_time_zone( "UTC" );
+  $dt->set_time_zone( "Europe/Stockholm" );
   
   return $dt;
 }
