@@ -525,3 +525,5 @@
 257,Tvdb,Rekryterna,program_type,series,94631,episodeseason
 257,Tvdb,"48 avgörande timmar",program_type,series,81275,episodeseason
 257,Tvdb,"Andar, finns dom?",program_type,series,83929,episodeseason
+262,Tvdb,"Law & Order",subtitle,"Criminal intent",71489,episodeseason
+255,Tvdb,"Battlestar Galactica",program_type,series,73545,episodeseason

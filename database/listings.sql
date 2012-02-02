@@ -85,6 +85,9 @@ CREATE TABLE `programs` (
   `url_image_icon` varchar(100) DEFAULT NULL,
   `star_rating` varchar(20) DEFAULT NULL,
   `live` int(1) DEFAULT NULL,
+  `extra_id` varchar(65) DEFAULT NULL COMMENT 'imdbid(movies)/tvdbid(series)/tvrageid(series)',
+  `extra_id_type` varchar(65) DEFAULT NULL COMMENT 'type: tvrage,themoviedb,thetvdb',
+  `original_title` varchar(255) DEFAULT NULL COMMENT 'Original Title',
   PRIMARY KEY (`channel_id`,`start_time`),
   KEY `batch` (`batch_id`,`start_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -231,13 +234,14 @@ CREATE TABLE `jobs` (
 DROP TABLE IF EXISTS `dvb_service_pointer`;
 CREATE TABLE `dvb_service_pointer` (
   `channel_id` int(11) NOT NULL,
-  `active` tinyint(1) default '1',
+  `active` tinyint(1) NOT NULL DEFAULT '1',
   `original_network_id` int(5) NOT NULL,
-  `transport_id` int(5) default 0 NOT NULL,
+  `transport_id` int(5) NOT NULL DEFAULT '0',
   `service_id` int(5) NOT NULL,
-  `description` varchar(100) default NULL,
-  PRIMARY KEY (`original_network_id`, `transport_id`, `service_id`, `active`),
-  FOREIGN KEY `channel_id` (`channel_id`) REFERENCES `channels`(`id`)
+  `description` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`original_network_id`,`transport_id`,`service_id`,`active`),
+  KEY `channel_id` (`channel_id`),
+  CONSTRAINT `dvb_service_pointer_ibfk_1` FOREIGN KEY (`channel_id`) REFERENCES `channels` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `admins` (username, password) VALUES ('nonametv', '');
