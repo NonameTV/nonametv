@@ -482,3 +482,46 @@
 \N,Fixups,"Mad About The House",subtitle,"Tanya and Tom","Tanya & Tom",replacesubtitle
 \N,Fixups,"Mad About The House",subtitle,"Adam and Hannah","Adam & Hannah",replacesubtitle
 \N,Fixups,"Mad About The House",subtitle,"Paul and Natalie","Paul & Natalie",replacesubtitle
+257,Tvrage,"Ice Pilots",program_type,series,27985,episodeseason
+257,Tvrage,"Highway Patrol",program_type,series,7980,episodeseason
+257,Tvrage,Helikopterhjältarna,program_type,series,17733,episodeseason
+264,Tvdb,"Världens kanske sämsta pojkvän... ever!",program_type,series,84552,episodeseason
+264,Tvdb,"Miljonär söker fru",program_type,series,85425,episodeseason
+264,Tvdb,"Stygga flickors klubb",program_type,series,134161,episodeseason
+264,Tvdb,"Stygga flickor söker kärlek",program_type,series,222501,episodeseason
+264,Tvdb,"The X factor US",program_type,series,230121,episodeseason
+264,Tvdb,90210,program_type,series,82716,episodeseason
+264,Tvdb,"Kåkfarare i köket",program_type,series,255435,episodeseason
+264,Tvrage,Distraction,program_type,series,7045,episodeseason
+264,Tvdb,"Kan du texten?",program_type,series,80314,episodeseason
+262,Tvdb,"How clean is your house",program_type,series,74854,episodeseason
+262,Tvdb,"Nigella's kitchen",program_type,series,194201,episodeseason
+262,Tvdb,"Fyra bröllop och en smekmånad",program_type,series,103001,episodeseason
+262,Tvdb,"Jamie Olivers twist",program_type,series,72239,episodeseason
+262,Tvdb,"Hemsökta hus",program_type,series,73245,episodeseason
+262,Fixups,"Law & Order",subtitle,"Special victims unit","Law & Order: Special victims unit",replacetitle
+262,Tvdb,"Vem dömer Amy?",program_type,series,71909,episodeseason
+262,Fixups,"Law & Order",subtitle,"Criminal intent","Law & Order: Criminal intent",replacetitle
+264,Fixups,"Tori & Dean",subtitle,"Hem ljuva Hollywood","Tori And Dean: Home Sweet Hollywood",replacetitle
+260,Tvdb,Spaceballs,program_type,series,83132,episodeseason
+260,Tvrage,"Creatures comforts",program_type,series,3165,episodeseason
+259,Tvdb,"Dr Quinn",program_type,series,78095,episodeseason
+259,Tvdb,"Alias Smith & Jones",program_type,series,73399,episodeseason
+265,Tvrage,Matmissbrukarna,program_type,series,18516,episodeseason
+265,Tvdb,"Nigella's kitchen",program_type,series,194201,episodeseason
+265,Tvdb,"Poliser i paradiset",program_type,series,20560,episodeseason
+265,Tvdb,"Mc-patrullen räddar liv",program_type,series,185071,episodeseason
+265,Tvdb,90210,program_type,series,82716,episodeseason
+265,Tvdb,Numbers,program_type,series,73918,episodeseason
+265,Tvdb,"Gissa med Frasse",program_type,series,165211,episodeseason
+257,Tvdb,Stormvarning,program_type,series,79585,episodeseason
+257,Fixups,Crime,subtitle,"Rika, kända och mäktiga","Dominick Dunne's Power, Privilege And Justice",replacetitle
+257,Tvrage,Crime,subtitle,"Rika, kända och mäktiga",7889,episodeseason
+257,Tvdb,Uppdrag,subtitle,Missbruk,75896,episodeseason
+257,Tvdb,"Kvinnor som mördar",program_type,series,74921,episodeseason
+257,Tvdb,"Trafikens CSI",program_type,series,248399,episodeseason
+257,Tvdb,"Polis på plats",program_type,series,82061,episodeseason
+257,Tvrage,"Det stora matkriget",program_type,series,25453,episodeseason
+257,Tvdb,Rekryterna,program_type,series,94631,episodeseason
+257,Tvdb,"48 avgörande timmar",program_type,series,81275,episodeseason
+257,Tvdb,"Andar, finns dom?",program_type,series,83929,episodeseason
