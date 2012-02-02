@@ -100,6 +100,7 @@ sub FillHash( $$$ ) {
   #
   # Change original_name to name if you want your specific language's movie name.
   $resultref->{title} = norm( $doc->findvalue( '/OpenSearchDescription/movies/movie/original_name' ) );
+  $resultref->{original_title} = norm($ceref->{title});
 
   # TODO shall we add the tagline as subtitle?
   $resultref->{subtitle} = undef;
@@ -139,6 +140,8 @@ sub FillHash( $$$ ) {
   # $resultref->{production_date} = $doc->findvalue( '/OpenSearchDescription/movies/movie/released' );
 
   $resultref->{url} = $doc->findvalue( '/OpenSearchDescription/movies/movie/url' );
+  $resultref->{extra_id} = $doc->findvalue( '/OpenSearchDescription/movies/movie/imdb_id' );
+  $resultref->{extra_id_type} = "themoviedb";
 	
   	$self->FillCredits( $resultref, 'actors', $doc, 'Actor');
 

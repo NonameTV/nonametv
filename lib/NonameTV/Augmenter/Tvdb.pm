@@ -89,13 +89,14 @@ sub ParseCast( $$ ) {
 
 
 sub FillHash( $$$$ ) {
-  my( $self, $resultref, $series, $episode )=@_;
+  my( $self, $resultref, $series, $episode, $ceref )=@_;
 
   return if( !defined $episode );
 
   my $episodeid = $series->{Seasons}[$episode->{SeasonNumber}][$episode->{EpisodeNumber}];
 
   $resultref->{title} = normUtf8( norm( $series->{SeriesName} ) );
+  $resultref->{original_title} = norm($ceref->{title});
 
   if( $episode->{SeasonNumber} == 0 ){
     # it's a special
@@ -197,6 +198,10 @@ sub FillHash( $$$$ ) {
   } elsif( $series->{RatingCount} >= $self->{MinRatingCount} ){
     $resultref->{'star_rating'} = $series->{Rating}-1 . ' / 9';
   }
+  
+  # Extra id
+  $resultref->{extra_id} = $episode->{seriesid};
+  $resultref->{extra_id_type} = "thetvdb";
 }
 
 
@@ -232,7 +237,7 @@ sub AugmentProgram( $$$ ){
           my $episode = $self->{tvdb}->getEpisodeAbs( $series->{SeriesName}, $episodeabs );
 
           if( defined( $episode ) ) {
-            $self->FillHash( $resultref, $series, $episode );
+            $self->FillHash( $resultref, $series, $episode, $ceref );
           } else {
             w( "no absolute episode " . $episodeabs . " found for '" . $ceref->{title} . "'" );
           }
@@ -275,7 +280,7 @@ sub AugmentProgram( $$$ ){
         		my $episode2 = $self->{tvdb}->getEpisode($series->{SeriesName}, $season, $episode, 0);
 
           	if( defined( $episode2 ) ) {
-            	$self->FillHash( $resultref, $series, $episode2 );
+            	$self->FillHash( $resultref, $series, $episode2, $ceref );
           	} else {
             	w( "no episode " . $episode . " of season " . $season . " found for '" . $ceref->{title} . "'" );
           	}
@@ -317,7 +322,7 @@ sub AugmentProgram( $$$ ){
         				my $episode2 = $self->{tvdb}->getEpisode($series->{SeriesName}, $season, $episode, 0);
 
        	   			if( defined( $episode2 ) ) {
-     	       			$self->FillHash( $resultref, $series, $episode2 );
+     	       			$self->FillHash( $resultref, $series, $episode2, $ceref );
           			} else {
             			w( "no episode " . $episode . " of season " . $season . " found for '" . $seriesname . "'" );
           			}
@@ -350,7 +355,7 @@ sub AugmentProgram( $$$ ){
 
         my $episode = $self->{tvdb}->getEpisodeByName( $series->{SeriesName}, $episodetitle, 0 );
         if( defined( $episode ) ) {
-          $self->FillHash( $resultref, $series, $episode );
+          $self->FillHash( $resultref, $series, $episode, $ceref );
         } else {
           w( "episode not found by title: " . $ceref->{title} . " - \"" . $episodetitle . "\"" );
         }
@@ -396,7 +401,7 @@ sub AugmentProgram( $$$ ){
 
         my $episode = $self->{tvdb}->getEpisodeId( $eid, 0 );
         if( defined( $episode ) ) {
-          $self->FillHash( $resultref, $series, $episode );
+          $self->FillHash( $resultref, $series, $episode, $ceref );
         } else {
           w( "episode not found by id: " . $ceref->{title} . " - \"" . $eid . "\"" );
         }

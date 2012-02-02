@@ -28,7 +28,7 @@ sub new {
 }
 
 sub FillHash( $$$$ ) {
-  my( $self, $resultref, $series, $episode )=@_;
+  my( $self, $resultref, $series, $episode, $ceref )=@_;
   
   #print Dumper( $series, $episode );
   
@@ -54,6 +54,11 @@ sub FillHash( $$$$ ) {
   $resultref->{subtitle} = normUtf8( norm( $episode->{title} ) );
   $resultref->{production_date} = normUtf8( norm( $episode->{airdate} ) );
   $resultref->{url} = normUtf8( norm( $episode->{link} ) );
+  
+  # Original Title
+  $resultref->{original_title} = norm($ceref->{title});
+  $resultref->{extra_id} = $series->{showid};
+  $resultref->{extra_id_type} = "tvrage";
   
   $resultref->{program_type} = 'series';
   
@@ -110,7 +115,7 @@ sub AugmentProgram( $$$ ){
                 my $episode2 = $tvrage->getEpisode( $ruleref->{remoteref}, $season, $episode );
 
             if( defined( $episode2 ) ) {
-                $self->FillHash( $resultref, $series, $episode2 );
+                $self->FillHash( $resultref, $series, $episode2, $ceref );
             } else {
                 w( "no episode " . $episode . " of season " . $season . " found for '" . $ceref->{title} . "'" );
             }

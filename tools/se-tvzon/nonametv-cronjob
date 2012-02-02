@@ -4,7 +4,7 @@ NROOT=/var/local/nonametv
 PROOT=/home/beatx/github/nonametv/
 
 #Q="--quiet --quiet"
-Q="--verbose"
+Q="--verbose --force-update"
 F="--force-update"
 
 h=true
@@ -72,6 +72,7 @@ tools/se-tvzon/nonametv-import-allmail $Q
 # Remove old
 $d perl -I lib/ tools/nonametv-export Xmltv --remove-old
 $d perl -I lib/ tools/nonametv-export Xmltv2 --remove-old
+$d perl -I lib/ tools/nonametv-export Xmltv_extra --remove-old
 $d perl -I lib/ tools/nonametv-export Json --remove-old
 $d tools/nonametv-icon-update --quiet --unattended
 
