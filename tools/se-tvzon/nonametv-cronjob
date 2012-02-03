@@ -4,7 +4,7 @@ NROOT=/var/local/nonametv
 PROOT=/home/beatx/github/nonametv/
 
 #Q="--quiet --quiet"
-Q="--verbose --force-update"
+Q="--verbose"
 F="--force-update"
 
 h=true

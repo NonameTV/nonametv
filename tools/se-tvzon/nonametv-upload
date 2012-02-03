@@ -13,11 +13,11 @@ $V && echo "Local rsync"
 rsync -c --delete -r $NROOT/xmltv_staging/ $NROOT/xmltv/
 tools/se-tvzon/nonametv-xmltv-gendatalist
 rsync -c --delete -r $NROOT/xmltv_extra_staging/ $NROOT/xmltv_extra/
-tools/se-tvzon/nonametv-xmltv-extra-gendatalist
+#tools/se-tvzon/nonametv-xmltv-extra-gendatalist
 rsync -c --delete -r $NROOT/xmltv_staging_iso/ $NROOT/xmltv_iso/
 rsync -c --delete -r $NROOT/json_staging/ $NROOT/json/
 
-#$V && echo "tvzon"
+$V && echo "tvzon"
 #sitecopy --update $SC_OPT tvzon
 
 tools/nonametv-upload xmltv1 
