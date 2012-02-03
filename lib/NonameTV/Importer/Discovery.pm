@@ -20,6 +20,7 @@ use utf8;
 
 use DateTime;
 use XML::LibXML;
+use Data::Dumper;
 
 use NonameTV qw/Content2Xml norm/;
 use NonameTV::DataStore::Helper;
@@ -49,7 +50,7 @@ sub new
   my $dsu = NonameTV::DataStore::Updater->new( $self->{datastore} );
   $self->{datastoreupdater} = $dsu;
   
-  #$self->{datastore}->{augment} = 1;
+  $self->{datastore}->{augment} = 1;
 
   return $self;
 }
@@ -127,7 +128,7 @@ sub ImportDocument {
   
   foreach my $div ($ns->get_nodelist) {
     # Ignore English titles in National Geographic.
-    next if $div->findvalue( '@name' ) =~ /title in english/i;
+    #next if $div->findvalue( '@name' ) =~ /title in english/i;
 
     my( $text ) = norm( $div->findvalue( './/text()' ) );
     next if $text eq "";
@@ -158,9 +159,10 @@ print "$start, $title \n";
     }
 
 
-    elsif( $text =~ /^\s*\(.*\)\s*$/ )
+    elsif( $text =~ /^\*:\s+\*$/ )
     {
       $type = T_HEAD_ENG;
+      print Dumper($text);
     }
     elsif( $text =~ /^\s*END\s*$/ )
     {
@@ -209,7 +211,9 @@ print "$start, $title \n";
 	next;
       }
       elsif( $type == T_HEAD_ENG )
-      {}
+      {
+      	$title = $text;
+      }
       else
       {
 	extract_extra_info( $ce );
@@ -547,7 +551,7 @@ sub extract_extra_info
   $ce->{title} =~ s/:\s*Avsnitt\s*(\d+)$//; 
   $ce->{episode} = sprintf(" . %d . ", $episode-1)
     if defined( $episode );
-#  ( $ce->{subtitle} ) = ($ce->{title} =~ /:\s*(.+)$/);  #moje obriso subtitle
+  ( $ce->{subtitle} ) = ($ce->{title} =~ /:\s*(.+)$/);  #moje obriso subtitle
   $ce->{title} =~ s/:\s*(.+)$//;
 
   $ce->{title} =~ s/^PREMI.R\s+//;
