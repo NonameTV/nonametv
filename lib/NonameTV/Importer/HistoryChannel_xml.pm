@@ -37,6 +37,9 @@ sub new {
 
   my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
   $self->{datastorehelper} = $dsh;
+  
+  # use augment
+  $self->{datastore}->{augment} = 1;
 
   return $self;
 }
@@ -95,8 +98,9 @@ sub ImportXML
   foreach my $row ($rows->get_nodelist) {
 
       my $time = $row->findvalue( './/BROADCAST_START_DATETIME' );
-      my $title = $row->findvalue( './/BROADCAST_TITLE' );
+      my $title = $row->findvalue( './/PROGRAMME//PROGRAMME_TITLE_ORIGINAL' );
       my $start = $self->create_dt( $row->findvalue( './/BROADCAST_START_DATETIME' ) );
+      my $end = $self->create_dt( $row->findvalue( './/BROADCAST_END_TIME' ) );
       
       my $date = $start->ymd("-");
       
@@ -114,7 +118,7 @@ sub ImportXML
       }
 
 	  # extra info
-	  my $subtitle = $row->findvalue( './/BROADCAST_SUBTITLE' );
+	  my $subtitle = $row->findvalue( './/PROGRAMME//PROGRAMME_SUBTITLE_ORIGINAL' );
 	  my $season = $row->findvalue( './/PROGRAMME//SERIES_NUMBER' );
 	  my $episode = $row->findvalue( './/PROGRAMME//EPISODE_NUMBER' );
 	  my $of_episode = $row->findvalue( './/PROGRAMME//NUMBER_OF_EPISODES' );
@@ -127,6 +131,7 @@ sub ImportXML
         channel_id => $chd->{id},
         title => norm($title),
         start_time => $start->ymd("-") . " " . $start->hms(":"),
+        end_time => $end->ymd("-") . " " . $end->hms(":"),
         description => norm($desc),
       };
       
