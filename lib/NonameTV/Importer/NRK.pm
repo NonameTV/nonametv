@@ -12,6 +12,7 @@ use warnings;
 
 use DateTime;
 use XML::LibXML;
+use Data::Dumper;
 
 use NonameTV qw/MyGet norm Html2Xml/;
 use NonameTV::DataStore::Helper;
@@ -29,6 +30,8 @@ sub new {
     
     
     defined( $self->{UrlRoot} ) or die "You must specify UrlRoot";
+    
+    $self->{datastore}->{augment} = 1;
     
     my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
     $self->{datastorehelper} = $dsh;
@@ -96,17 +99,35 @@ sub ImportContent
         
         my $desc = $sc->findvalue( './RUBRIKKTEKST' );
         my( $episode, $ep, $eps, $seas, $dummy );
-        # Säsong 2
-  			( $seas ) = ($desc =~ /Sesong\s+(\d+)./ );
-
-  			
-  			# Avsnitt 2
+        # Avsnitt 2:6
   			( $ep, $eps ) = ($desc =~ /\((\d+)\:(\d+)\)/ );
+  			$desc =~ s/\((\d+)\:(\d+)\)//;
+  			$desc = norm($desc);
         
         # Avsnitt 2
   			( $ep ) = ($desc =~ /\s+\((\d+)\)/ ) if not $ep;
+  			$desc =~ s/\((\d+)\)$//;
+  			$desc = norm($desc);
+        
+        # Säsong 2
+  			( $seas ) = ($desc =~ /Sesong\s*(\d+)/ );
+				$desc =~ s/Sesong (\d+)$//;
+				$desc = norm($desc);
         # my $text = $sc->findvalue( './TEKSTEKODE' );
         
+        my ( $subtitles ) = ($desc =~ /\((.*)\)$/ );
+        if($subtitles) {
+        	my ( $realtitle, $realsubtitle ) = ($subtitles =~ /(.*)\:(.*)/ );
+        	if(defined($realtitle)) {
+        		$title = $realtitle;
+        		$subtitles = $realsubtitle;
+        	}
+        	
+        }
+        $desc =~ s/\((.*)\)$//;
+        $desc = norm($desc);
+        
+        #$subtitle = ($desc =~ /\((.*)\)$/ );
         
     # Episode info in xmltv-format
       if( (defined $ep) and (defined $seas) and (defined $eps) )
@@ -132,10 +153,17 @@ sub ImportContent
             #end_time   => $stop,
             description => norm($desc),
             title       => norm($title),
-            #subtitle    => $subtitle,
-            
-        
         };
+        
+        if(defined($subtitles) and ($subtitles ne "")) {
+        	$ce->{subtitle} = norm($subtitles);
+        }
+        
+        my ( $filmtitle ) = ($ce->{title} =~ /^Film\:(.*)$/ );
+        if(defined($filmtitle) and ($filmtitle ne "")) {
+        	 $ce->{program_type} = "movie";
+        	 $ce->{title} = norm($filmtitle);
+        }
         
         $ce->{episode} = $episode if $episode;
         
@@ -146,10 +174,12 @@ sub ImportContent
     		#}
         
         # Get actors
-        #if( my( $actors ) = ($desc =~ /^Med\s*(.*)/ ) )
-    		#{
-      	#	$ce->{actors} = parse_person_list( $actors );
-   			#}
+        if( my( $actors ) = ($desc =~ /Med\:\s*(.*)$/ ) )
+    		{
+      		$ce->{actors} = parse_person_list( $actors );
+      		#$desc =~ s/Med\:(.*)$//;
+      		#$desc = norm($desc);
+   			}
         
         $dsh->AddProgramme( $ce );
     
@@ -224,6 +254,7 @@ sub parse_person_list
     # character name might be missing a trailing ).
     s/\s*\(.*$//;
     s/.*\s+-\s+//;
+    s/.//;
   }
 
   return join( ", ", grep( /\S/, @persons ) );
