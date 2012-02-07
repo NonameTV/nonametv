@@ -543,6 +543,7 @@ Tvdb,soap,Soap,
 Tvdb,"special interest","Special Interest",
 Tvdb,sport,Sports,
 Tvdb,"talk show",Talk,tvshow
+Tvdb,western,Western,
 TVNorge,"amerikansk action",Action,movie
 TVNorge,"amerikansk action-eventyr",Action/Adventure,movie
 TVNorge,"amerikansk actionserie",Action,series
@@ -651,12 +652,21 @@ TVP,"serial obyczajowy tvp",\N,series
 TVP,"serial przygodowy tvp",\N,series
 TVP,"serial tvp",\N,series
 TVP,talk-show,Talk,tvshow
+Tvrage,action,Action,
+Tvrage,adventure,Adventure,
+Tvrage,"animation general",Animation,
 Tvrage,comedy,Comedy,\N
+Tvrage,cooking/food,Food,
+Tvrage,crime,Crime,
 Tvrage,design/decorating,"Home improvement",\N
+Tvrage,drama,Drama,
+Tvrage,family,Family,
 Tvrage,housing/building,"Home improvement",\N
 Tvrage,"how to/do it yourself",How-to,\N
 Tvrage,lifestyle,Lifestyle,\N
 Tvrage,romance/dating,Romance,\N
+Tvrage,talent,Talent,
+Tvrage,travel,Travel,
 Viasat_category,film,movie,movie
 Viasat_category,filmer,Movies,movie
 Viasat_category,miniserier,,series
@@ -719,6 +729,7 @@ Viasat_genre,action/gyser,Action,
 Viasat_genre,action/komedi,Action,
 Viasat_genre,action/komedi/deckare,Action/Comedy/Crime,
 Viasat_genre,action/komedi/deckare/familj,Action/Comedy/Crime,
+Viasat_genre,action/komedi/deckare/thriller,Action/Comedy,
 Viasat_genre,action/komedi/drama,Action/Comedy/Drama,
 Viasat_genre,action/komedi/drama/fantasy/romantik/thrille,Action/Comedy/Drama,
 Viasat_genre,action/komedi/drama/thriller,Action/Comedy/Drama,
@@ -758,9 +769,11 @@ Viasat_genre,äventyr/deckare/thriller,Adventure/Thriller,
 Viasat_genre,äventyr/dokumentär,Adventure/Documentary,
 Viasat_genre,äventyr/dokumentär/familj,Adventure/Documentary,
 Viasat_genre,äventyr/drama,Adventure/Drama,
+Viasat_genre,äventyr/drama/familj,Adventure,
 Viasat_genre,äventyr/drama/fantasy,Adventure/Drama/Thriller,
 Viasat_genre,"äventyr/drama/fantasy/science fiction",Adventure/Sci-Fi,
 Viasat_genre,äventyr/drama/krig,Adventure/Drama/War,
+Viasat_genre,äventyr/drama/romantik,Adventure/Drama,
 Viasat_genre,äventyr/drama/skräck,Action/Drama/Horror,
 Viasat_genre,äventyr/drama/thriller,Adventure/Drama/Thriller,
 Viasat_genre,äventyr/familj,Adventure/Family,
@@ -770,6 +783,7 @@ Viasat_genre,äventyr/familj/fantasy,Adventure/Family/Fantasy,
 Viasat_genre,äventyr/familj/fantasy/barn,Adventure/Family/Fantasy,
 Viasat_genre,äventyr/fantasy,Adventure/Fantasy,
 Viasat_genre,äventyr/fantasy/deckare,Adventure/Fantasy/Crime,
+Viasat_genre,"äventyr/fantasy/science fiction",Adventure,
 Viasat_genre,äventyr/kkmedi/fantasy,Adventure/Comedy,
 Viasat_genre,äventyr/komedi,Adventure/Comedy,
 Viasat_genre,äventyr/komedi/deckare,Adventure/Crime,
@@ -876,6 +890,7 @@ Viasat_genre,fantasi/thriller,Fantasy/Thriller,
 Viasat_genre,fantasy,Fantasy,
 Viasat_genre,fantasy/romantik,Fantasy/Romance,
 Viasat_genre,fantasy/romantik/thriller,Fantasy/Romance/Thriller,
+Viasat_genre,fantasy/skräck,Fantasy/Horror,
 Viasat_genre,fantasy/thriller,Fantasy/Thriller,
 Viasat_genre,"film noir",,movie
 Viasat_genre,"film noir/thriller",Thriller,movie
@@ -890,6 +905,7 @@ Viasat_genre,komedi,Comedy,
 Viasat_genre,komedi/deckare,Comedy,
 Viasat_genre,komedi/deckare/deckare,Comedy/Crime,
 Viasat_genre,komedi/deckare/drama,Comedy/Crime/Drama,
+Viasat_genre,komedi/deckare/drama/romantik,Comedy,
 Viasat_genre,komedi/deckare/drama/thriller,Comedy/Crime/Drama,
 Viasat_genre,komedi/deckare/familj,Comedy/Crime/Family,
 Viasat_genre,komedi/deckare/gangster/thriller,Comedy/Crime/Thriller,
@@ -914,6 +930,7 @@ Viasat_genre,komedi/familj/musikal,Comedy,
 Viasat_genre,komedi/familj/romantik,Comedy/Family/Romance,
 Viasat_genre,komedi/fantasy,Comedy/Family,
 Viasat_genre,komedi/fantasy/musikal,Comedy/Fantasy,
+Viasat_genre,komedi/fantasy/romantik,Comedy/Fantasy,
 Viasat_genre,komedi/fantasy/skräck,Comedy/Horror,
 Viasat_genre,komedi/krig,Comedy/War,
 Viasat_genre,komedi/musikal,Comedy,
@@ -976,12 +993,16 @@ Viasat_genre,tecknat/animerat/äventyr,Animated/Adventure,
 Viasat_genre,tecknat/animerat/äventyr/drama/fantasy,Animated/Adventure/Drama,
 Viasat_genre,tecknat/animerat/äventyr/familj,Animated/Adventure/Fantasy,
 Viasat_genre,tecknat/animerat/äventyr/familj/fantasy,Animated/Adventure/Fantasy,
+Viasat_genre,tecknat/animerat/äventyr/familj/musikal,Animation,
 Viasat_genre,tecknat/animerat/äventyr/komedi,Animated/Adventure/Comedy,
 Viasat_genre,tecknat/animerat/äventyr/komedi/familj,Animated/Adventure/Comedy,
+Viasat_genre,tecknat/animerat/äventyr/komedi/familj/scien,Animation,
 Viasat_genre,tecknat/animerat/barn,Animated/Children's,
 Viasat_genre,tecknat/animerat/deckare/thriller,Animated/Crime/Thriller,
 Viasat_genre,tecknat/animerat/drama/familj,Animated/Drama/Family,
 Viasat_genre,tecknat/animerat/familj,Animated/Family,
+Viasat_genre,tecknat/animerat/familj/barn,Animation,
+Viasat_genre,tecknat/animerat/familj/fantasy,Animation,
 Viasat_genre,tecknat/animerat/fantasy,Animated/Fantasy,
 Viasat_genre,tecknat/animerat/fantasy/musikal,Animated/Fantasy,
 Viasat_genre,tecknat/animerat/komedi,Animated/Comedy,
