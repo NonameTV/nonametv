@@ -61,7 +61,7 @@ sub Object2Url {
     . '&week=' . $yearweek
     . '&channel=' . $chd->{grabber_info};
 
-  #return( $url, undef );
+  return( $url, undef );
 }
 
 sub ContentExtension {
