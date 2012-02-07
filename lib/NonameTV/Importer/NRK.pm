@@ -167,11 +167,13 @@ sub ImportContent
         
         $ce->{episode} = $episode if $episode;
         
-        # Producers
-        #if( my( $directors ) = ($desc =~ /^Produsert\s+av\s*(.*)/) )
-    		#{
-      	#	$ce->{directors} = parse_person_list( $directors );
-    		#}
+        # Directors
+        if( my( $directors ) = ($desc =~ /Regi\:\s*(.*)$/) )
+    		{
+      		$ce->{directors} = parse_person_list( $directors );
+      		$desc =~ s/Regi\:(.*)$//;
+      		$desc = norm($desc);
+    		}
         
         # Get actors
         if( my( $actors ) = ($desc =~ /Med\:\s*(.*)$/ ) )
@@ -254,7 +256,7 @@ sub parse_person_list
     # character name might be missing a trailing ).
     s/\s*\(.*$//;
     s/.*\s+-\s+//;
-    s/.//;
+    s/\.//;
   }
 
   return join( ", ", grep( /\S/, @persons ) );
