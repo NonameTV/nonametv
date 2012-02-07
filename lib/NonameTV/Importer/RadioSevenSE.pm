@@ -41,6 +41,18 @@ sub Object2Url {
   return( $url, undef );
 }
 
+sub FilterContent {
+  my $self = shift;
+  my( $cref, $chd ) = @_;
+
+  # mixed in windows line breaks
+  $$cref =~ s|||g;
+
+  $$cref =~ s|& |&amp; |g;
+
+  return( $cref, undef);
+}
+
 sub ImportContent
 {
   my $self = shift;
