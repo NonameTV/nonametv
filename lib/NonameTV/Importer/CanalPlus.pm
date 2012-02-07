@@ -301,7 +301,7 @@ sub ImportContent
     }
     else
     {
-      $ce->{title} = norm($title) || norm($org_title);
+      $ce->{title} = norm($org_title) || norm($title);
     }
 
     if( $sport )
