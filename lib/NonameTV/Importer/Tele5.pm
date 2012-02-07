@@ -124,12 +124,11 @@ sub ImportRTF {
   } else {
     $copyrightstring = '';
   }
-  from_to ($copyrightstring, "windows-1252", "utf8"); # it's utf-8 already
   
 
   while( my ( $type, $arg, $param ) = $tokenizer->get_token( ) ){
     if( $type eq 'text' ){
-      from_to ($arg, 'windows-1252', 'utf8');
+      $arg = Encode::decode ('windows-1252', $arg);
     }
 
 #    last if( $type eq 'eof' );
@@ -203,11 +202,12 @@ sub ImportRTF {
         d( 'parsing date from: ' . $text );
         my ($week, $daystring) = ($text =~ m|$channel_name, Programmwoche (\d+)\n ([^\n]*)|);
         my ($day, $month, $year) = ($daystring =~ m|(\d+)\. (\S+) (\d+)|);
+        $month = MonthNumber ($month, 'de');
 
         if (!$gotbatch) {
           $gotbatch = 1;
           if( $file =~ m|_[MDFS][oira]_Pw_\d+A.rtf$| ){
-            $self->{datastore}->StartBatch ($chd->{xmltvid} . '_' . $year . '-' . sprintf("%02d", NonameTV::MonthNumber ($month, 'de')) . '-' . sprintf("%02d", $day));
+            $self->{datastore}->StartBatch ($chd->{xmltvid} . '_' . $year . '-' . sprintf("%02d", $month) . '-' . sprintf("%02d", $day));
           }elsif( $file =~ m|_Pw_\d+A.rtf$| ){
             $self->{datastore}->StartBatch ($chd->{xmltvid} . '_' . $year . '-' . sprintf("%02d", $week));
           }else{
@@ -215,7 +215,6 @@ sub ImportRTF {
           }
         }
 
-        $month = MonthNumber ($month, 'de');
         $currdate = DateTime->new (
           year => $year,
           month => $month,

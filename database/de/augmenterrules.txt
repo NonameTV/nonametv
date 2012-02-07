@@ -154,3 +154,12 @@
 74,Tvdb,"Aus Lust und Leidenschaft",\N,\N,81126,episodeabs
 \N,Fixups,Tatort,\N,\N,series,setprogram_type
 \N,Fixups,"Polizeiruf 110",\N,\N,series,setprogram_type
+44,Fixups,^(Tatort):\s+(.*)$,\N,\N,\N,splittitle
+58,Fixups,Lukas,subtitle,"^Comedy-Serie mit Dirk Bach\s+(.*)$",\N,splitsubtitle
+\N,Fixups,"^(Utta Danella)\s+-\s+(.*)$",\N,\N,\N,splittitle
+\N,Fixups,"^(Utta Danella):\s+(.*)$",\N,\N,\N,splittitle
+39,Fixups,"Stargate Atlantis",subtitle,Dromoys,"Der Läufer",replacesubtitle
+\N,Tvdb,"Blue Water High - Die Surf-Academy",\N,\N,76110,episodetitle
+124,Fixups,^(Witness):\s+(.*)$,\N,\N,\N,splittitle
+124,Fixups,"^(101 East):\s+(.*)$",\N,\N,\N,splittitle
+124,Fixups,"^(People and Power):\s+(.*)$",\N,\N,\N,splittitle
