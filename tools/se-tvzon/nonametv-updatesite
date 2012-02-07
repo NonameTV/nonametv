@@ -9,7 +9,7 @@ tools/nonametv-export Xmltv2 $1 --force-export $3
 tools/nonametv-export Xmltv_extra --export-channels $1 $2 $3
 tools/nonametv-export Xmltv_extra $1 $2 $3
 tools/nonametv-export Json --export-channels $1 $2 $3
-tools/nonametv-export Json $1 $2 $3
+tools/nonametv-export Json $1 --force-export $3
 
 # Channel group channels.xml.gz (Should we add it to respective channel owner?)
 tools/nonametv-export Xmltv --export-channels --channel-group TV
