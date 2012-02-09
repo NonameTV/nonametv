@@ -193,11 +193,14 @@ sub FillHash( $$$$ ) {
   # episode does not have enough ratings consider using the series rating instead (if that has enough ratings)
   # if not rating qualifies leave it away.
   # the Rating at Tvdb is 1-10, turn that into 0-9 as xmltv ratings always must start at 0
-  if( $episode->{RatingCount} >= $self->{MinRatingCount} ){
-    $resultref->{'star_rating'} = $episode->{Rating}-1 . ' / 9';
-  } elsif( $series->{RatingCount} >= $self->{MinRatingCount} ){
-    $resultref->{'star_rating'} = $series->{Rating}-1 . ' / 9';
+  if(defined($episode->{RatingCount}) and defined($self->{MinRatingCount})) {
+  	if( $episode->{RatingCount} >= $self->{MinRatingCount} ){
+    	$resultref->{'star_rating'} = $episode->{Rating}-1 . ' / 9';
+  	} elsif( $series->{RatingCount} >= $self->{MinRatingCount} ){
+    	$resultref->{'star_rating'} = $series->{Rating}-1 . ' / 9';
+  	}
   }
+  
   
   # Extra id
   $resultref->{extra_id} = $episode->{seriesid};
