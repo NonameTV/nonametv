@@ -292,7 +292,7 @@ sub getEpisode {
     my $series = $self->{cache};
     
     # check if it's added or add it
-    if(defined($series->{$sid}) and defined($series->{$sid}->{episodes}{Episodelist}{Season}[$season]{episode}[$episode])) {
+    if(defined($series->{$sid}) and ($series->{$sid}->{episodes}{Episodelist}{Season} eq "ARRAY") and defined($series->{$sid}->{episodes}{Episodelist}{Season}[$season]) and ($series->{$sid}->{episodes}{Episodelist}{Season}[$season] eq "ARRAY") and defined($series->{$sid}->{episodes}{Episodelist}{Season}[$season]{episode}[$episode])) {
         # w( "TVRage: episode " . $episode . " of season " . $season . " found for '" . $series->{$sid}->{showname} . "'" );
         return $series->{$sid}->{episodes}{Episodelist}{Season}[$season]{episode}[$episode];
     } else {
