@@ -291,13 +291,22 @@ sub getEpisode {
     $episode--; $season--;
     my $series = $self->{cache};
     
-    # check if it's added or add it
-    if(defined($series->{$sid}) and ($series->{$sid}->{episodes}{Episodelist}{Season} eq "ARRAY") and defined($series->{$sid}->{episodes}{Episodelist}{Season}[$season]) and ($series->{$sid}->{episodes}{Episodelist}{Season}[$season] eq "ARRAY") and defined($series->{$sid}->{episodes}{Episodelist}{Season}[$season]{episode}[$episode])) {
-        # w( "TVRage: episode " . $episode . " of season " . $season . " found for '" . $series->{$sid}->{showname} . "'" );
-        return $series->{$sid}->{episodes}{Episodelist}{Season}[$season]{episode}[$episode];
-    } else {
+    # check if it's in array format and return the details, or in hash (one episdoe added only) o return error
+    if($series->{$sid}->{episodes}{Episodelist}{Season} =~ /Array/) {
+    	if(defined($series->{$sid}) and defined($series->{$sid}->{episodes}{Episodelist}{Season}[$season]) and defined($series->{$sid}->{episodes}{Episodelist}{Season}[$season]{episode}[$episode])) {
+    		# w( "TVRage: episode " . $episode . " of season " . $season . " found for '" . $series->{$sid}->{showname} . "'" );
+    		return $series->{$sid}->{episodes}{Episodelist}{Season}[$season]{episode}[$episode];
+    	} else {
         w( "TVRage: no episode " . $episode2 . " of season " . $season2 . " found for '" . $series->{$sid}->{showname} . "'" );
         return undef;
+    	}
+    } elsif($series->{$sid}->{episodes}{Episodelist}{Season} =~ /Hash/) {
+    	w("TVRage: the episode list is in HASH format, do something here to get the details (hash = only one season/episode)");
+    	return undef;
+    } else {
+    	#print Dumper($series->{$sid});
+    	w("TVRage: the episode list is not in array nor hash format, weird.");
+    	return undef;
     }
 }
 
