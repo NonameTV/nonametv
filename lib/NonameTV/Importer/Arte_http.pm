@@ -54,7 +54,7 @@ sub InitiateDownload {
   $mech->form_with_fields( ( 'form1:password' ) );
   $mech->field( 'form1:user', $self->{Username}, 1 );
   $mech->field( 'form1:password', $self->{Password}, 1 );
-  $mech->click_button( name => 'form1:j_idt100' );
+  $mech->click_button( name => 'form1:j_idt106' );
 
   if ($mech->success()) {
     return undef;
@@ -154,6 +154,11 @@ sub ImportContent( $$$ ) {
         $title =~ s/\s+\(\d+(?:\/\d+|)\)$//;
       }
       $ce->{title} = $title;
+    }
+
+    if( !$title ){
+      w( 'program without title at ' . $ce->{start_time} );
+      next;
     }
 
     my $subtitle = $xpc->findvalue( 's:titel/s:alias[@titelart="untertitel"]/@aliastitel' );
