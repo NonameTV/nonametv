@@ -95,7 +95,7 @@ sub FilterContent {
   $cref =~ s| xmlns:ns='http://struppi.tv/xsd/'||;
   $cref =~ s| xmlns:xsd='http://www.w3.org/2001/XMLSchema'||;
 
-  $cref =~ s| generierungsdatum='[^']+'| generierungsdatum=''|;
+  $cref =~ s| generierungsdatum=\"[^\"]+\"| generierungsdatum=\"\"|;
 
   my $doc = ParseXml( \$cref );
 
