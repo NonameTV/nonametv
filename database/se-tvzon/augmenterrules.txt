@@ -201,8 +201,8 @@
 285,Tvdb,"Walker Texas Ranger",program_type,movie,73756,episodeseason
 285,Tvdb,"Robot Chicken",program_type,movie,75734,episodeseason
 285,Tvdb,Archer,program_type,movie,110381,episodeseason
-232,Tvdb,Christine,program_type,series,75756,episodeseason
-287,Tvdb,Christine,program_type,series,75756,episodeseason
+232,TvdbEN,Christine,program_type,series,75756,episodeseason
+287,TvdbEN,Christine,program_type,series,75756,episodeseason
 287,Tvdb,"Salong Makeover",program_type,series,88321,episodeseason
 287,Tvdb,"The Rachael Ray Show",program_type,series,161811,episodeseason
 225,Tvdb,Boss,program_type,series,249361,episodeseason
@@ -556,7 +556,7 @@
 305,Fixups,^.*(Ishockey):\s+(.*)$,\N,\N,\N,splittitle
 304,Fixups,^.*(Ishockey):\s+(.*)$,\N,\N,\N,splittitle
 392,Tvdb,^.*$,program_type,series,\N,episodeseason
-232,Tvrage,"Får vi följa med?",program_type,series,30712,episodeseason
+232,Tvdb,"Får vi följa med?",program_type,series,255901,episodeseason
 232,Tvdb,"Familjen Kardashian",program_type,series,80725,episodeseason
 305,Tvdb,^.*Historiepolisen.*$,program_type,series,255922,episodetitle
 307,Tvdb,^.*Historiepolisen.*$,program_type,series,255922,episodetitle
@@ -581,3 +581,23 @@
 394,Tvdb,"Den hemmelige millionær",program_type,series,79687,episodetitle
 394,Tvdb,"Knas i kærligheden",program_type,series,79842,episodetitle
 394,Tvdb,"2 Broke Girls",program_type,series,248741,episodetitle
+304,Tvdb,"^.*Jakten på det demokratiska klassrummet.*$",program_type,series,255998,episodetitle
+305,Tvdb,"^.*Jakten på det demokratiska klassrummet.*$",program_type,series,255998,episodetitle
+308,Tvdb,"^.*Jakten på det demokratiska klassrummet.*$",program_type,series,255998,episodetitle
+397,TvdbEN,^.*$,program_type,series,\N,episodetitle
+232,Tvdb,"The River",program_type,series,248836,episodeseason
+232,Tvdb,OC,program_type,series,72164,episodeseason
+232,Tvdb,"Wipeout Vinter",program_type,series,149051,episodeseason
+232,Tvdb,"Girls of the Playboy Mansion",program_type,series,78834,episodeseason
+232,Tvdb,"Den Hemlige Miljonären",program_type,series,234191,episodeseason
+232,Tvdb,"Cops with Cameras",program_type,series,84219,episodeseason
+255,Tvdb,"Grimm 1",program_type,series,248736,episodeseason
+255,Tvdb,"US Fear Factor",program_type,series,76707,episodeseason
+255,Tvdb,Karatefylla,program_type,series,252369,episodeseason
+255,Tvdb,"Urban Legends",program_type,series,74810,episodeseason
+232,Tvdb,"Prime Suspect",program_type,series,248905,episodeseason
+233,Tvdb,Kingdom,program_type,series,80201,episodeseason
+233,Tvdb,Husjägarna,program_type,series,82195,episodeseason
+233,Tvdb,"Husjägarna: Ett hus till",program_type,series,81272,episodeseason
+233,Tvdb,Gary,program_type,series,82916,episodeseason
+233,TvdbEN,"McLeods döttrar",program_type,series,76532,episodeseason

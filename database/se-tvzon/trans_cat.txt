@@ -315,6 +315,9 @@ Kanal5_xml,children,Children's,series
 Kanal5_xml,film,,movie
 Kanal5_xml,program,,series
 Kanal5_xml,series,,series
+MTVde,barnprogram,Children's,series
+MTVde,"children series",Children's,series
+MTVde,show/unterhaltung,Entertainment,series
 Nonstop,action,Action,movie
 Nonstop,adventure,Adventure,movie
 Nonstop,animation,Animation,movie
