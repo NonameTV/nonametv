@@ -303,12 +303,23 @@ sub getEpisode {
     } elsif($series->{$sid}->{episodes}{Episodelist}{Season} =~ /Hash/) {
 			# Check so the episode provided by augmenter is the same as the episdenum inside the hash,
 			# if so, provide it back into Augmenter, or else return UNDEF.
-    	if($series->{$sid}->{episodes}{Episodelist}{Season}{episode}{epnum} eq $episode2) {
-    		w("TVRage: Found an episode (" . $episode2 . " of season " . $season2 . ") in HASH Format, and provided it into the Augmenter."); 
-    		return $series->{$sid}->{episodes}{Episodelist}{Season}{episode};
+			if($series->{$sid}->{episodes}{Episodelist}{Season}{episode} =~ /Hash/) {
+    		if($series->{$sid}->{episodes}{Episodelist}{Season}{episode}{epnum} eq $episode2) {
+    			w("TVRage: Found an episode (" . $episode2 . " of season " . $season2 . ") in HASH Format, and provided it into the Augmenter."); 
+    			return $series->{$sid}->{episodes}{Episodelist}{Season}{episode};
+    		} else {
+    			w("TVRage: Didn't find the right episodenum for " . $episode2 . " of season " . $season2 . " in the hash, so did not pass it into Augmenter."); 
+    			return undef;
+    		}
     	} else {
-    		w("TVRage: Didn't find the right episodenum for " . $episode2 . " of season " . $season2 . " in the hash, so do not pass it into Augmenter."); 
-    		return undef;
+    		# One season, alot of episodes
+    		if($series->{$sid}->{episodes}{Episodelist}{Season}{episode}[$episode]{epnum} eq $episode2) {
+    			w("TVRage: Found an episode (" . $episode2 . " of season " . $season2 . ") in HASH (Episodes in array) Format, and provided it into the Augmenter."); 
+    			return $series->{$sid}->{episodes}{Episodelist}{Season}{episode}[$episode];
+    		} else {
+    			w("TVRage: Didn't find the right episodenum for " . $episode2 . " of season " . $season2 . " in the hash (Episodes in array), so did not pass it into Augmenter."); 
+    			return undef;
+    		}
     	}
     } else {
     	#print Dumper($series->{$sid});
