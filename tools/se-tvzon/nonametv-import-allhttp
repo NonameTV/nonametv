@@ -18,6 +18,7 @@ $NONAMETV Infomedia $1 $2 $3
 $NONAMETV Kanal5 $1 $2 $3
 $NONAMETV Kanal9 $1 $2 $3
 $NONAMETV KanalGlobal $1 $2 $3
+$NONAMETV MTVde $1 $2 $3
 $NONAMETV Mtve $1 $2 $3
 $NONAMETV Nonstop $1 $2 $3
 $NONAMETV Nonstop2 $1 $2 $3
@@ -28,6 +29,7 @@ $NONAMETV SverigesRadio $1 $2 $3
 $NONAMETV Svt $1 $2 $3
 $NONAMETV Viasat $1 $2 $3
 $NONAMETV TV2 $1 $2 $3
+$NONAMETV TV2NO $1 $2 $3
 $NONAMETV TV4 $1 $2 $3
 $NONAMETV TVP $1 $2 $3
 $NONAMETV TVNorge $1 $2 $3
