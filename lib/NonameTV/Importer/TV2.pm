@@ -119,6 +119,8 @@ sub ImportContent
     my $subtitle = fq( norm ($inrow->{'EPISODETITTEL'}));
     if ($subtitle eq "") {
       $subtitle = fq( norm( $inrow->{'OVERSKRIFT'}))
+    } elsif($subtitle eq "<p />") {
+    	$subtitle = undef;
     }
     
     #$description = norm( $description );
@@ -149,6 +151,12 @@ sub ImportContent
       subtitle => $subtitle,
       start_time => $start,
     };
+    
+    if( $ce->{title} =~ /^Film/ ) {
+        $ce->{program_type} = "movie";
+        $ce->{title} =~ s/Film://g;
+        $ce->{title} = norm($ce->{title});
+    }
     
     my $genre = norm(fq($inrow->{'GENREKOPI'}));
     if(defined($genre) and $genre ne "") {
