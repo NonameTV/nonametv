@@ -50,10 +50,12 @@ sub Object2Url {
 
   my( $year, $week ) = ( $objectname =~ /(\d+)-(\d+)$/ );
 
-  my $channel = $chd->{grabber_info};
+  #my $channel = $chd->{grabber_info};
+  my( $channel, $country, $country2 ) = split( /:/, $chd->{grabber_info} );
+  
   if( $channel =~ m|^\d+$| ){
     # weeks are numbered 1 to 52/53
-    my $url = sprintf( "http://api.mtvnn.com/v2/airings.struppi?channel_id=%d&program_week_is=%d", $channel, $week );
+    my $url = sprintf( "http://api.mtvnn.com/v2/airings.struppi?channel_id=%d&program_week_is=%d&language_code=%s&country_code=%s", $channel, $week, $country, $country2 );
 
     d( "MTVde: fetching data from $url" );
 
@@ -72,7 +74,8 @@ sub FilterContent {
   my( $cref, $chd ) = @_;
 
   # mixed in windows line breaks
-  $$cref =~ s|||g;
+  $$cref =~ s|
+||g;
 
   $$cref =~ s| xmlns:ns='http://struppi.tv/xsd/'||;
   $$cref =~ s| xmlns:xsd='http://www.w3.org/2001/XMLSchema'||;
@@ -113,9 +116,9 @@ sub ImportContent( $$$ ) {
     $ce->{start_time} = $self->parseTimestamp( $xpc->findvalue( 's:termin/@start' ) );
     $ce->{end_time} = $self->parseTimestamp( $xpc->findvalue( 's:termin/@ende' ) );
 
-    my $title = $xpc->findvalue( 's:titel/s:alias[@titelart="titel"]/@aliastitel' );
+    my $title = $xpc->findvalue( 's:titel/s:alias[@titelart="originaltitel"]/@aliastitel' );
     if( !$title ){
-      $title = $xpc->findvalue( 's:titel/s:alias[@titelart="originaltitel"]/@aliastitel' );
+      $title = $xpc->findvalue( 's:titel/s:alias[@titelart="titel"]/@aliastitel' );
     }
     if( !$title ){
       $title = $xpc->findvalue( 's:titel/@termintitel' );
@@ -124,9 +127,9 @@ sub ImportContent( $$$ ) {
       $ce->{title} = $title;
     }
 
-    my $subtitle = $xpc->findvalue( 's:titel/s:alias[@titelart="untertitel"]/@aliastitel' );
+    my $subtitle = $xpc->findvalue( 's:titel/s:alias[@titelart="originaluntertitel"]/@aliastitel' );
     if( !$subtitle ){
-      $subtitle = $xpc->findvalue( 's:titel/s:alias[@titelart="originaluntertitel"]/@aliastitel' );
+      $subtitle = $xpc->findvalue( 's:titel/s:alias[@titelart="untertitel"]/@aliastitel' );
     }
     if( $subtitle ){
       my $staffel;
@@ -163,7 +166,7 @@ sub ImportContent( $$$ ) {
 
     my $url = $xpc->findvalue( 's:infos/s:url/@link' );
     if( $url ){
-      $ce->{url} = $url
+      $ce->{url} = $url;
     }
 
     $self->{datastore}->AddProgramme( $ce );
