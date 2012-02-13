@@ -22,6 +22,7 @@ program_type
 use DateTime;
 use Date::Parse;
 use Encode;
+use Scalar::Util qw(looks_like_number);
 
 use NonameTV qw/MyGet expand_entities AddCategory norm/;
 use NonameTV::DataStore::Helper;
@@ -43,7 +44,9 @@ sub new {
     my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore}, 
     "Europe/Oslo" );
     $self->{datastorehelper} = $dsh;
-
+  
+  	$self->{datastore}->{augment} = 1;
+  	
     return $self;
 }
 
@@ -53,7 +56,7 @@ sub ImportContent
 
   my( $batch_id, $cref, $chd ) = @_;
 
-  #my $ds = $self->{datastore};
+  my $ds = $self->{datastore};
   my $dsh = $self->{datastorehelper};
 
   # Decode the string into perl's internal format.
@@ -122,18 +125,22 @@ sub ImportContent
     #$description = fq( $description );
     
     # Episode info in xmltv-format
-    #my $ep_nr = norm(fq($inrow->{'EPISODENUMMER'})) || 0;
-    #my $ep_se = norm(fq($inrow->{'SESONGNUMMER'})) || 0;
-    #my $episode = undef;
+    my $ep_nr = norm(fq($inrow->{'EPISODENUMMER'})) || 0;
+    my $ep_se = norm(fq($inrow->{'SESONGNUMMER'})) || 0;
+    my $episode = undef;
     #
-    #if( ($ep_nr > 0) and ($ep_se > 0) )
-    #{
-    #  $episode = sprintf( "%d . %d .", $ep_se-1, $ep_nr-1 );
-    #}
-    #elsif( $ep_nr > 0 )
-    #{
-    #  $episode = sprintf( ". %d .", $ep_nr-1 );
-    #}
+    if( looks_like_number($ep_nr) and looks_like_number($ep_se) and ($ep_nr > 0) and ($ep_se > 0) )
+    {
+      $episode = sprintf( "%d . %d .", $ep_se-1, $ep_nr-1 );
+    }
+    elsif( looks_like_number($ep_nr) and $ep_nr > 0 )
+    {
+      $episode = sprintf( ". %d .", $ep_nr-1 );
+    } elsif( ($ep_nr =~ /av/) and looks_like_number($ep_se)) {
+    	my ( $epinr, $of_epi ) = ( $ep_nr =~ /(\d+) av (\d+)/ );
+    	
+    	$episode = sprintf( "%d . %d .", $ep_se-1, $epinr-1 );
+    }
 
     my $ce = {
       channel_id => $chd->{id},
@@ -141,9 +148,17 @@ sub ImportContent
       description => $description,
       subtitle => $subtitle,
       start_time => $start,
-      #episode => $episode,
-
     };
+    
+    my $genre = norm(fq($inrow->{'GENREKOPI'}));
+    if(defined($genre) and $genre ne "") {
+    	my($program_type, $category ) = $ds->LookupCat( 'TV2NO', $genre );
+			AddCategory( $ce, $program_type, $category );
+    }
+    
+    if($episode) {
+    	$ce->{episode} = $episode;
+    }
 
     if( defined( $inrow->{'PRODUKSJONSAARKOPI'} ) and
         $inrow->{'PRODUKSJONSAARKOPI'} =~ /(\d\d\d\d)/ )
