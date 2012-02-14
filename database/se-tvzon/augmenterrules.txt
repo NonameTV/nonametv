@@ -42,7 +42,7 @@
 233,Tvdb,"Tummen mitt i handen",program_type,series,77537,episodeseason
 \N,Tvdb,"Kommissarie Morse",program_type,series,76582,episodeseason
 233,Tvdb,"Dr Oz",program_type,series,123401,episodeseason
-233,Tvdb,"Vita Huset",program_type,series,72521,episodeseason
+233,TvdbEN,"Vita Huset",program_type,series,72521,episodeseason
 233,Tvdb,"Gränsbevakarna UK",program_type,series,83324,episodeseason
 \N,Tvdb,"CSI Miami",program_type,series,78310,episodeseason
 232,Tvdb,"Jamies matrevolution",program_type,series,151421,episodeseason
@@ -601,3 +601,21 @@
 233,Tvdb,"Husjägarna: Ett hus till",program_type,series,81272,episodeseason
 233,Tvdb,Gary,program_type,series,82916,episodeseason
 233,TvdbEN,"McLeods döttrar",program_type,series,76532,episodeseason
+233,Tvrage,"Gränsbevakarna Australien",program_type,series,16771,episodeseason
+233,Tvrage,"Britains Best Dish",program_type,series,17354,episodeseason
+233,Tvdb,"Top Gear",program_type,series,74608,episodeseason
+233,Tvdb,"Gränsbevakarna USA",program_type,series,84450,episodeseason
+233,Tvdb,"Hairy Bikers: Morsans käk",program_type,series,133261,episodeseason
+233,Tvdb,"Maniska samlare",program_type,series,149111,episodeseason
+233,Tvdb,"Later with Jools",program_type,series,72150,episodeseason
+233,Tvdb,Riket,program_type,series,80201,episodeseason
+398,TvdbNO,^.*$,program_type,series,\N,episodeseason
+398,TvdbNO,"The Big C",program_type,series,161501,episodeseason
+398,TvdbNO,"En moderne familie",program_type,series,95011,episodeseason
+398,TvdbNO,Numbers,program_type,series,73918,episodeseason
+398,TvdbNO,"Malcolm i midten",program_type,series,73838,episodeseason
+398,TvdbNO,"Frustrerte fruer",program_type,series,73800,episodeseason
+398,TvdbNO,"^.*The Voice - Norge.*$",program_type,series,255605,episodeseason
+398,TvdbNO,"Undercover Boss Norge",program_type,series,238741,episodeseason
+398,TvdbNO,"America's Got Talent",program_type,series,79490,episodeseason
+399,Tvdb,^.*$,program_type,series,\N,episodeseason

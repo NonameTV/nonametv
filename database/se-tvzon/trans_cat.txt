@@ -519,6 +519,36 @@ Tele5,thriller-serie,Crime/Mystery,
 Tele5,vampirfilm,Vampire,movie
 Tele5,western,Action/Adv,
 Tele5,westernparodie,Action/Adv,
+TV2NO,dokumentar,Documentary,\N
+TV2NO,"dokumentar- og matprogram",Documentary/Food,\N
+TV2NO,dokumentarserie,Documentary,series
+TV2NO,dokusåpe,Reality,series
+TV2NO,drama,Drama,\N
+TV2NO,dramafilm,Drama,movie
+TV2NO,dramaserie,Drama,series
+TV2NO,forbrukermagasin,"Home improvement",\N
+TV2NO,gameshow,Game,tvshow
+TV2NO,humorprogram,Comedy,tvshow
+TV2NO,komedie,Comedy,\N
+TV2NO,komiserie,Comedy,series
+TV2NO,komiserie.,Comedy,series
+TV2NO,krim/action,Crime/Action,\N
+TV2NO,krimserie,Crime,series
+TV2NO,livsstilsprogram,Lifestyle,tvshow
+TV2NO,livssynsprogram,Lifestyle,tvshow
+TV2NO,realityprogram,Reality,tvshow
+TV2NO,realityserie,Reality,series
+TV2NO,reportasjemagasin,Magazine,
+TV2NO,reportasjeprogram,\N,tvshow
+TV2NO,"romantisk komedie",Romance/Comedy,
+TV2NO,spenningsfilm,Thriller,movie
+TV2NO,spenningsserie,Thriller,series
+TV2NO,thriller,Thriller,
+TV2NO,underholdingsprogram,Entertainment,tvshow
+TV2NO,underholdningsdrama,Entertainment/Drama,
+TV2NO,underholdningsmagasin,Entertainment,tvsho
+TV2NO,underholdningsprogram,Entertainment,tvshow
+TV2NO,ungdomsprogram,Youth,tvshow
 TV5Monde,documentary,Documentary,
 TV5Monde,drama,Drama,
 TV5Monde,entertainment,Entertainment,
@@ -529,6 +559,24 @@ TV5Monde,"short program",Short,
 TV5Monde,"special programme",Special,
 TV5Monde,sport,Sports,sports
 TV5Monde,"youth program",Youth,
+TVChile,comedia,Comedy,
+TVChile,cultural,Culture,
+TVChile,deportes,Sports,sports
+TVChile,docu-reality,Documentary/Reality,\N
+TVChile,documental,Documentary,
+TVChile,entretenimiento,Entertainment,
+TVChile,magazine,Magazine,
+TVChile,noticias,New,tvshow
+TVChile,"reportaje /turistico",Report/Turism,\N
+TVChile,reportaje/turismo,Report/Turism,
+TVChile,reportajes,Report,
+TVChile,serie,Series,series
+TVChile,"serie documental",Documentary,series
+TVChile,"serie infantil",\N,series
+TVChile,"serie/ documental",Ducumentary,series
+TVChile,series,\N,series
+TVChile,series/cine,\N,series
+TVChile,telenovela,Opera,tvshow
 Tvdb,"action and adventure",Action/Adventure,
 Tvdb,animation,Animation,
 Tvdb,children,Children's,

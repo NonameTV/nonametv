@@ -104,6 +104,9 @@ sub ImportContentFile {
       $oWkC = $oWkS->{Cells}[$iR][$coltitle];
       next if( ! $oWkC );
       my $title = $oWkC->Value if( $oWkC->Value );
+      
+      # Uppercase the first letter
+      $title = ucfirst(lcfirst($title));
 
       # desc
       $oWkC = $oWkS->{Cells}[$iR][$coldesc];
@@ -111,6 +114,7 @@ sub ImportContentFile {
       my $desc = $oWkC->Value if( $oWkC->Value );
       my $start = create_dt($date." ".$time);
       
+      # Date in time sometimes, skip it
       if($time =~ /PROGRAMACI/) {
       	next;
       }
