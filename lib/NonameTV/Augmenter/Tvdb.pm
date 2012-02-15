@@ -220,6 +220,22 @@ sub AugmentProgram( $$$ ){
     # broken dataset on Tvdb
     return( undef, 'known bad data for SOKO Leipzig, skipping' );
   }
+  
+  # Runned before every other "matchby", so it can guess the right "matchby" by what data which is supplied.
+  if( $ruleref->{matchby} eq 'guess' ) {
+    # Subtitles, no episode
+    if(defined($ceref->{subtitle}) && !defined($ceref->{episode})) {
+    	# Match it by subtitle
+    	$ruleref->{matchby} = "episodetitle";
+    }elsif(!defined($ceref->{subtitle}) && defined($ceref->{episode})) {
+    	# The opposite, match it by episode
+    	$ruleref->{matchby} = "episodeseason";
+    }else {
+    	# Match it by seriesname (only change series name) here later on maybe?
+    	return( undef, 'couldn\'t guess the right matchby, sorry.' );
+    }
+  }
+  
 
   if( $ruleref->{matchby} eq 'episodeabs' ) {
     # match by absolute episode number from program hash. USE WITH CAUTION, NOT EVERYONE AGREES ON ANY ORDER!!!
@@ -411,14 +427,6 @@ sub AugmentProgram( $$$ ){
       } else {
         d( "series not found by title: " . $ceref->{title} );
       }
-
-  }elsif( $ruleref->{matchby} eq 'guess' ) {
-    # guess the right episode and season (guess the latest season and by actors)
-    # you should probably not use this one.
-
-      my $series;
-        # do shit.
-        d( "don't use guess yet. It hasn't been coded yet." );
 
   }else{
     $result = "don't know how to match by '" . $ruleref->{matchby} . "'";
