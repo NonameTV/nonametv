@@ -16,6 +16,14 @@ use utf8;
 use DateTime;
 use Spreadsheet::ParseExcel;
 
+use Spreadsheet::XLSX;
+use Spreadsheet::XLSX::Utility2007 qw(ExcelFmt ExcelLocaltime LocaltimeExcel);
+
+use Text::Iconv;
+my $converter = Text::Iconv -> new ("utf-8", "windows-1251");
+
+use Data::Dumper;
+
 use NonameTV qw/norm AddCategory MonthNumber/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/progress error/;
@@ -43,7 +51,7 @@ sub ImportContentFile {
 
   $self->{fileerror} = 0;
 
-  if( $file =~ /\.xls$/i ){
+  if( $file =~ /\.xlsx|.xls$/i ){
     $self->ImportFlatXLS( $file, $chd );
   } else {
     error( "YaS: Unknown file format: $file" );
@@ -66,7 +74,9 @@ sub ImportFlatXLS
 
   progress( "YaS: $chd->{xmltvid}: Processing $file" );
 
-  my $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
+my $oBook;
+if ( $file =~ /\.xlsx$/i ){ progress( "using .xlsx" );  $oBook = Spreadsheet::XLSX -> new ($file, $converter); }
+else { $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );  }   #  staro, za .xls
 
     my($iR, $oWkS, $oWkC);
 	
@@ -162,7 +172,7 @@ sub isDate {
     return 1;
 
   # format '2011/05/12'
-  } elsif( $text =~ /^\d{2}\/\d{2}\/\d{3}$/i ){
+  } elsif( $text =~ /^\d{2}\/\d{2}\/\d{4}$/i ){
     return 1;
   }
 
@@ -179,8 +189,8 @@ sub ParseDate {
     ( $year, $month, $day ) = ( $text =~ /^(\d{4})\-(\d{2})\-(\d{2})$/i );
 
   # format '201'
-  } elsif( $text =~ /^\d{2}\/\d{2}\/\d{3}$/i ){
-    ( $day, $month, $year ) = ( $text =~ /^(\d{2})\/(\d{2})\/(\d{3})$/i );
+  } elsif( $text =~ /^\d{2}\/\d{2}\/\d{4}$/i ){
+    ( $day, $month, $year ) = ( $text =~ /^(\d{2})\/(\d{2})\/(\d{4})$/i );
   }
   
   my $dt2 = DateTime->now;
