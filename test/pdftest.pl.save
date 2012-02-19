@@ -1,0 +1,18 @@
+#!/perl/bin/perl -w
+use CAM::PDF;
+use CAM::PDF::PageText;
+
+$filename = "tabla.pdf";
+
+my $pdf = CAM::PDF->new($filename);
+#my $age = $pdf->getPageContentTree(1);
+my $pages = $pdf->numPages();
+foreach my $page_num (1 .. $pages) {
+    my $page = $pdf->getPageContentTree($page_num);
+#	print $page;
+	 CAM::PDF::PageText->render($page);
+
+}
+#print CAM::PDF::PageText->render($age);
+
+#Note: I had to install CAM::PDF::PageText by hand, it was not installed by CPAN when I installed CAM::PDF.
