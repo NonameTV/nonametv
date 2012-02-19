@@ -15,6 +15,7 @@ use utf8;
 
 use DateTime;
 use Spreadsheet::ParseExcel;
+use Spreadsheet::Read;
 
 use Spreadsheet::XLSX;
 use Spreadsheet::XLSX::Utility2007 qw(ExcelFmt ExcelLocaltime LocaltimeExcel);
@@ -54,13 +55,47 @@ sub ImportContentFile {
 
   $self->{fileerror} = 0;
 
+  my $channel_id = $chd->{id};
+  my $channel_xmltvid = $chd->{xmltvid};
+  my $dsh = $self->{datastorehelper};
+  my $ds = $self->{datastore};
+
+  if( $file =~ /\.xls|.xlsx$/i ){
+    $self->ImportXLS( $file, $chd );
+  }elsif( $file =~ /\.xml$/i ){
+    $self->ImportXML( $file, $chd );
+  }
+
+
+  return;
+}
+
+sub ImportXML {
+	my $self = shift;
+  my( $file, $chd ) = @_;
+  my $dsh = $self->{datastorehelper};
+  my $ds = $self->{datastore};
+  $self->{fileerror} = 1;
+  
+	# Do something beautiful here later on. 
+	
+	error("From now on you need to convert XML files to XLS files.");
+	
+	return 0;
+}
+
+sub ImportXLS {
+  my $self = shift;
+  my( $file, $chd ) = @_;
+
+  $self->{fileerror} = 0;
+
   my $xmltvid = $chd->{xmltvid};
   my $channel_id = $chd->{id};
   my $dsh = $self->{datastorehelper};
   my $ds = $self->{datastore};
 
   # Only process .xls or .xlsx files.
-  return if( $file !~ /\.xlsx|.xls$/i );
   progress( "OUTTV: $xmltvid: Processing $file" );
 
 	my %columns = ();
@@ -70,13 +105,15 @@ sub ImportContentFile {
   my $coltime = 1;
   my $coltitle = 4;
   my $colepisode = 9;
+  my $coldesc = 11;
   my $colseason = 8;
   my $colgenre = 5;
 
 my $oBook;
 if ( $file =~ /\.xlsx$/i ){ progress( "using .xlsx" );  $oBook = Spreadsheet::XLSX -> new ($file, $converter); }
 else { $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );  }   #  staro, za .xls
-
+#elsif ( $file =~ /\.xml$/i ){ $oBook = Spreadsheet::ParseExcel::Workbook->Parse($file); progress( "using .xml" );    }   #  staro, za .xls
+#print Dumper($oBook);
 
   # main loop
   for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
@@ -133,6 +170,9 @@ else { $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );  }   #  staro
       $oWkC = $oWkS->{Cells}[$iR][$coltitle];
       next if( ! $oWkC );
       my $title = $oWkC->Value if( $oWkC->Value );
+      
+      
+      
 
       
 
@@ -141,6 +181,12 @@ else { $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );  }   #  staro
         start_time => $time,
         title => norm($title),
       };
+      
+      # Desc (only works on XLS files)
+      if ( $file =~ /\.xls$/i ){
+      	$oWkC = $oWkS->{Cells}[$iR][$coldesc];
+      	$ce->{description} = norm($oWkC->Value) if( $oWkC );
+      }
 
 
 			# Genre
@@ -184,8 +230,6 @@ else { $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );  }   #  staro
 sub ParseDate
 {
   my ( $dinfo ) = @_;
-  
-
 
   my( $month, $day, $year );
 #      progress("Mdatum $dinfo");
@@ -194,9 +238,9 @@ sub ParseDate
   } elsif( $dinfo =~ /^\d{2}.\d{2}.\d{4}$/ ){ # format '11/18/2011'
     ( $month, $day, $year ) = ( $dinfo =~ /^(\d+).(\d+).(\d+)$/ );
   } elsif( $dinfo =~ /^\d{1,2}-\d{1,2}-\d{2}$/ ){ # format '10-18-11' or '1-9-11'
-    ( $month, $day, $year ) = ( $dinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
+    ( $day, $month, $year ) = ( $dinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
   } elsif( $dinfo =~ /^\d{1,2}\/\d{1,2}\/\d{2}$/ ){ # format '10-18-11' or '1-9-11'
-    ( $month, $day, $year ) = ( $dinfo =~ /^(\d+)\/(\d+)\/(\d+)$/ );
+    ( $day, $month, $year ) = ( $dinfo =~ /^(\d+)\/(\d+)\/(\d+)$/ );
   }
 
   return undef if( ! $year );
