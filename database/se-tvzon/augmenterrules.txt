@@ -609,13 +609,24 @@
 233,Tvdb,"Maniska samlare",program_type,series,149111,episodeseason
 233,Tvdb,"Later with Jools",program_type,series,72150,episodeseason
 233,Tvdb,Riket,program_type,series,80201,episodeseason
-398,TvdbNO,^.*$,program_type,series,\N,episodeseason
-398,TvdbNO,"The Big C",program_type,series,161501,episodeseason
-398,TvdbNO,"En moderne familie",program_type,series,95011,episodeseason
-398,TvdbNO,Numbers,program_type,series,73918,episodeseason
-398,TvdbNO,"Malcolm i midten",program_type,series,73838,episodeseason
-398,TvdbNO,"Frustrerte fruer",program_type,series,73800,episodeseason
-398,TvdbNO,"^.*The Voice - Norge.*$",program_type,series,255605,episodeseason
-398,TvdbNO,"Undercover Boss Norge",program_type,series,238741,episodeseason
-398,TvdbNO,"America's Got Talent",program_type,series,79490,episodeseason
+398,TvdbEN,^.*$,program_type,series,\N,episodeseason
+398,TvdbEN,"The Big C",program_type,series,161501,episodeseason
+398,TvdbEN,"En moderne familie",program_type,series,95011,episodeseason
+398,TvdbEN,Numbers,program_type,series,73918,episodeseason
+398,TvdbEN,"Malcolm i midten",program_type,series,73838,episodeseason
+398,TvdbEN,"Frustrerte fruer",program_type,series,73800,episodeseason
+398,TvdbEN,"^.*The Voice - Norge.*$",program_type,series,255605,episodeseason
+398,TvdbEN,"Undercover Boss Norge",program_type,series,238741,episodeseason
+398,TvdbEN,"America's Got Talent",program_type,series,79490,episodeseason
 399,Tvdb,^.*$,program_type,series,\N,episodeseason
+398,Tmdb,^.*Beck.*$,program_type,series,\N,title
+398,Fixups,^.*Beck.*$,program_type,series,\N,copylastdetails
+398,Tmdb,"Beck: Jenta i jordkjelleren",program_type,series,13605,movieid
+398,Tmdb,"Beck: Ekstrem tilstand",program_type,series,39160,movieid
+398,Tmdb,"Beck: Stockholm maraton",program_type,series,33121,movieid
+398,Tmdb,"Beck: Politimorderen",program_type,series,34644,movieid
+398,Tmdb,"Maria Wern: Den sovende død",program_type,series,70728,movieid
+398,Tmdb,"^.*Maria Wern.*$",program_type,series,\N,title
+398,Tmdb,"Maria Wern: Sort sommerfugl",program_type,series,72417,movieid
+398,Tmdb,"Maria Wern: Sort sommerfugl - Sesongpremiere!",program_type,series,72417,movieid
+398,Tmdb,"Maria Wern: Drømmer av snø",program_type,series,70242,movieid
