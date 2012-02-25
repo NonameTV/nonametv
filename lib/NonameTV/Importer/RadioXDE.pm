@@ -234,7 +234,9 @@ sub ImportContent {
                 $desc =~ s/^\d+://;
               }
             }
-            $ce->{description} = $desc;
+            if ($desc) {
+              $ce->{description} = $desc;
+            }
           }
 
           $dsh->AddProgramme ($ce);
