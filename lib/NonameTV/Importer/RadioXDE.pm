@@ -125,9 +125,10 @@ sub ImportContent {
   my @firstrow = $table->row(0);
   my $firstdate = $firstrow[1];
 
+  # the first day is the monday of the week that contains the 1st of this month
   my $year = DateTime->now()->year();
   my $month = DateTime->now()->month();
-  my ($day) = ( $firstdate =~ /[A-Z][a-z] (\d+)\./ );
+  my $day = 1;
 
   my $dt = DateTime->new( 
                           year  => $year,
@@ -135,14 +136,22 @@ sub ImportContent {
                           day   => $day,
                           time_zone => 'Europe/Berlin'
                           );
-  # if dt is in the future we have a new year between first date and today
-  if (DateTime->compare ($dt, DateTime->now()) > 0) {
-    $dt->subtract (months => 1);
-    $month = $dt->month();
-    $year = $dt->year();
-  }
+  # subtract days since monday to get monday
+  $dt->add (days => -($dt->day_of_week() - 1));
+
+
+  $month = $dt->month();
+  $year = $dt->year();
+  $day = $dt->day();
 
   $dsh->StartDate ($year . '-' . $month . '-' . $day, '02:00');
+
+  # check if we got the correct day now
+  my ($firstday) = ( $firstdate =~ /[A-Z][a-z] (\d+)\./ );
+  if( $day != $firstday ){
+    f( sprintf( "expected day %d but got %d", $day, $firstday ) );
+  }
+
 
   # loop over 11 weeks of programme tables
   # loop over this+8 weeks
@@ -225,7 +234,9 @@ sub ImportContent {
                 $desc =~ s/^\d+://;
               }
             }
-            $ce->{description} = $desc;
+            if ($desc) {
+              $ce->{description} = $desc;
+            }
           }
 
           $dsh->AddProgramme ($ce);
