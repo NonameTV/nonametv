@@ -92,8 +92,8 @@ sub AddProgramme
 
   if( defined( $data->{category} ) )
   {
-    my $cat = join "++", @{$data->{category}};
-    $data->{category} = $cat;
+#    my $cat = join "++", @{$data->{category}};
+#    $data->{category} = $cat;
     print "Category: $data->{category}\n";
   }
   else

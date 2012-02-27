@@ -382,6 +382,11 @@ sub ImportRTF {
         }
         $text =~ s|\n\s*Sendedauer:\s+\d+||;
 
+        # parse DD5.1 attribute for radio channels
+        if ($desc =~ m|^\s*Dolby Digital 5.1\s*$|m) {
+          $ce->{stereo} = 'dolby digital';
+          $desc =~ s/(?:^|\n)\s*Dolby Digital 5.1\s*(?:\n|$)/\n/;
+        }
         # synopsis
         if ($self->{KeepDesc}) {
           if ($desc) {
