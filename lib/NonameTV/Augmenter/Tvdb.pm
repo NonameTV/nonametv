@@ -236,6 +236,25 @@ sub AugmentProgram( $$$ ){
     }
   }
   
+  # Set season and name
+  if( $ruleref->{matchby} eq 'episodeseasonid' ) {
+    # Subtitles, no episode
+    my( $esid, $seasonnmbr ) = split( /:/, $ruleref->{remoteref} );
+    
+    # No id
+    if(!$esid) {
+    	return(undef, 'not the right style: seriesid:seasonmbr');
+    }
+    
+    # Get episode
+    
+    
+    # Set id
+    $ruleref->{remoteref} = $esid;
+    
+    # Match it later on
+    $ruleref->{matchby} = "episodeseason";
+  }
 
   if( $ruleref->{matchby} eq 'episodeabs' ) {
     # match by absolute episode number from program hash. USE WITH CAUTION, NOT EVERYONE AGREES ON ANY ORDER!!!
