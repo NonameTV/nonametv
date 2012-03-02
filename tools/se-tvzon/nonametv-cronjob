@@ -73,7 +73,7 @@ tools/se-tvzon/nonametv-import-allmail $Q
 # Remove old
 $d perl -I lib/ tools/nonametv-export Xmltv --remove-old
 $d perl -I lib/ tools/nonametv-export Xmltv2 --remove-old
-$d perl -I lib/ tools/nonametv-export Xmltv_extra --remove-old
+$d perl -I lib/ tools/nonametv-export Json_extra --remove-old
 $d perl -I lib/ tools/nonametv-export Json --remove-old
 $d tools/nonametv-icon-update --quiet --unattended
 
