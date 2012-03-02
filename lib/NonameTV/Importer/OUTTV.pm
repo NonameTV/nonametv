@@ -230,6 +230,8 @@ else { $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );  }   #  staro
 sub ParseDate
 {
   my ( $dinfo ) = @_;
+  
+  #print Dumper($dinfo);
 
   my( $month, $day, $year );
 #      progress("Mdatum $dinfo");
@@ -238,9 +240,9 @@ sub ParseDate
   } elsif( $dinfo =~ /^\d{2}.\d{2}.\d{4}$/ ){ # format '11/18/2011'
     ( $month, $day, $year ) = ( $dinfo =~ /^(\d+).(\d+).(\d+)$/ );
   } elsif( $dinfo =~ /^\d{1,2}-\d{1,2}-\d{2}$/ ){ # format '10-18-11' or '1-9-11'
-    ( $day, $month, $year ) = ( $dinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
+    ( $month, $day, $year ) = ( $dinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
   } elsif( $dinfo =~ /^\d{1,2}\/\d{1,2}\/\d{2}$/ ){ # format '10-18-11' or '1-9-11'
-    ( $day, $month, $year ) = ( $dinfo =~ /^(\d+)\/(\d+)\/(\d+)$/ );
+    ( $month, $day, $year ) = ( $dinfo =~ /^(\d+)\/(\d+)\/(\d+)$/ );
   }
 
   return undef if( ! $year );
