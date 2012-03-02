@@ -107,7 +107,7 @@ EOH
 
   SetVerbosity( $p->{verbose}, $p->{quiet} );
 
-  StartLogSection( "Json", 0 );
+  StartLogSection( "Jsonextra", 0 );
 
   if( $p->{'export-channels'} )
   {
@@ -136,7 +136,7 @@ EOH
   $self->ExportData( $todo );
 
   $self->WriteState( $update_started );
-  EndLogSection( "Json" );
+  EndLogSection( "Jsonextra" );
 }
 
 
