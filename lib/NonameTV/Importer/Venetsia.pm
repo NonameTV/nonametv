@@ -216,6 +216,9 @@ sub create_dt
                           time_zone => 'Europe/Helsinki',
                           );
   
+  # Add it so it fits to the timezone
+  $dt->add( hours => 2 );
+  
   $dt->set_time_zone( "UTC" );
   
   return $dt;
