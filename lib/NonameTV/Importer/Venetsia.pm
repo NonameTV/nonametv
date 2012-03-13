@@ -116,6 +116,10 @@ sub ImportXML
       my $description = norm($row->findvalue( './/ProgramInformation/tva:ProgramDescription/tva:ProgramInformation/tva:BasicDescription/tva:Synopsis' ));
       
       my $start = $self->create_dt( $time );
+      
+      # Add hours specificed for each channel. (TV Finland has 3 hours if you are in Sweden, etc.)
+      $start->add( hours => $chd->{grabber_info} );
+      
       my $date = $start->ymd("-");
       
       # Remove Stuff
@@ -215,9 +219,6 @@ sub create_dt
                           minute => $minute,
                           time_zone => 'Europe/Helsinki',
                           );
-  
-  # Add it so it fits to the timezone
-  $dt->add( hours => 2 );
   
   $dt->set_time_zone( "UTC" );
   
