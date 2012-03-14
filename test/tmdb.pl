@@ -12,7 +12,7 @@ use Encode;
 
 use TMDB;
 
-my $tmdb = TMDB->new( { api_key => '281fdc1b73eb2366f60f1b2b33992899' } );
+my $tmdb = TMDB->new( { api_key => APIKEY } );
 
 # Search for a movie
 my @results = $tmdb->search->movie('Snatch');
