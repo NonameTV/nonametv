@@ -14,6 +14,7 @@ The downloaded file is in xml-format.
 use DateTime;
 use XML::LibXML;
 use HTTP::Date;
+use Data::Dumper;
 
 use NonameTV qw/ParseXml norm AddCategory/;
 use NonameTV::Log qw/w progress error f/;
@@ -138,14 +139,14 @@ my $title = norm($title_programme) || norm($title_original);
       next;
     }
     
-    		my $desc = undef;
-    		my $desc_episode = $sc->findvalue( './@ProgrammeEpisodeLongSynopsis' );
-				my $desc_series = $sc->findvalue( './@ProgrammeSeriesLongSynopsis' );
-				$desc = $desc_episode || $desc_series;
+    	my $desc = undef;
+    	my $desc_episode = $sc->findvalue( './@ProgrammeEpisodeLongSynopsis' );
+		my $desc_series = $sc->findvalue( './@ProgrammeSeriesLongSynopsis' );
+		$desc = $desc_episode || $desc_series;
 
-				my $genre = $sc->findvalue( './@SeriesGenreDescription' );
-				my $production_year = $sc->findvalue( './@ProgrammeSeriesYear' );
-				# Subtitle, DefaultEpisodeTitle contains the original episodetitle.
+		my $genre = $sc->findvalue( './@SeriesGenreDescription' );
+		my $production_year = $sc->findvalue( './@ProgrammeSeriesYear' );
+		# Subtitle, DefaultEpisodeTitle contains the original episodetitle.
         # I.e. Plastic Buffet for Robot Chicken
         # For some series (mostly on TNT7) defaultepisodetitle contains (Part {episodenum})
         # That should be remove later on, but for now you should use Tvdb augmenter for that.
@@ -209,7 +210,7 @@ my $title = norm($title_programme) || norm($title_original);
         my @directors;
         my @writers;
     
-        # Change $i if they add more actors in the future
+        # Change $iv if they add more actors in the future
         for( my $v=1; $v<=5; $v++ ) {
             my $actor_name = norm($sc->findvalue( './@ProgrammeSeriesCreditsContact' . $v ));
             my $job = $sc->findvalue( './@ProgrammeSeriesCreditsCredit' . $v );
@@ -267,6 +268,11 @@ sub create_dt
   my $self = shift;
   my( $str ) = @_;
   
+  # Failsafe
+  if($str eq "2012-03-25T02:30:00") {
+  	next;
+  }
+  
   my( $date, $time ) = split( 'T', $str );
 
   if( not defined $time )
@@ -290,7 +296,7 @@ sub create_dt
                           hour => $hour,
                           minute => $minute,
                           second => $second,
-                          time_zone => 'Europe/Stockholm',
+                          time_zone => "Europe/Stockholm",
                           );
   
   $dt->set_time_zone( "UTC" );
