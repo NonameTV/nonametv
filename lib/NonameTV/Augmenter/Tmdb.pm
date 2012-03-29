@@ -235,6 +235,10 @@ sub AugmentProgram( $$$ ){
       if( ( @candidates > 1 ) and ( $ceref->{directors} ) ){
         my @directors = split( /, /, $ceref->{directors} );
         my $director = $directors[0];
+        
+        # Remover - You need so the whole importer feed doesn't crash. (remove ')
+        $director =~ s/'//g;
+        
         foreach my $candidate ( @candidates ) {
           # we have to fetch the remaining candidates to peek at the directors
           my $movieId = $candidate->findvalue( 'id' );
