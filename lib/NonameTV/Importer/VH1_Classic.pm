@@ -22,6 +22,7 @@ use XML::LibXML;
 use Spreadsheet::ParseExcel;
 use Spreadsheet::XLSX;
 use Spreadsheet::XLSX::Utility2007 qw(ExcelFmt ExcelLocaltime LocaltimeExcel);
+use Data::Dumper;
 
 use Text::Iconv;
 my $converter = Text::Iconv -> new ("utf-8", "windows-1251");
@@ -181,7 +182,7 @@ sub ImportXLS
 
 sub ParseDate {
   my ( $text ) = @_;
-
+  
   my( $year, $day, $month );
   #print("text: $text");
 
@@ -196,6 +197,8 @@ sub ParseDate {
      ( $month, $day, $year ) = ( $text =~ /^(\d+)-(\d+)-(\d+)$/ );
   }elsif( $text =~ /^\d{2}\-\d{2}\-\d{4}$/i ){
     ( $day, $month, $year ) = ( $text =~ /^(\d{2})\-(\d{2})\-(\d{4})$/i );
+  }elsif( $text =~ /^\d{2}\-\d{2}\-\d{4} /i ){
+    ( $day, $month, $year ) = ( $text =~ /^(\d{2})\-(\d{2})\-(\d{4}) /i );
   }
 
   $year += 2000 if $year < 100;
