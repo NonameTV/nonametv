@@ -52,15 +52,8 @@ sub Object2Url {
                           month => $month,
                           day   => $day 
                           );
-
-  my $today = DateTime->today( time_zone=>'local' );
-  my $day_diff = $dt->subtract_datetime( $today )->delta_days;
-
-  if ($day_diff == -1) {
-    $day_diff = "yesterday";
-  }
  
-  my $url = "http://www.$xmltvid/showplan.php?day=$day_diff";
+  my $url = "http://www.$xmltvid/showplan/" . $dt->ymd( ) . '/';
 
   # Only one url to look at and no error
   return ([$url], undef);
