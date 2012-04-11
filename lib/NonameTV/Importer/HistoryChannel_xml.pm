@@ -143,7 +143,7 @@ sub ImportXML
     	}
       
       # Episode info in xmltv-format
-      if( ($episode ne "") and ( $of_episode ne "") and ( $season ne "") )
+      if( ($episode ne "") and ( $of_episode ne "") and ( $season ne "") and ($season > 0) )
       {
         $ce->{episode} = sprintf( "%d . %d/%d .", $season-1, $episode-1, $of_episode );
       }
@@ -151,7 +151,7 @@ sub ImportXML
       {
         $ce->{episode} = sprintf( ". %d/%d .", $episode-1, $of_episode );
       }
-      elsif( ($episode ne "") and ( $season ne "") )
+      elsif( ($episode ne "") and ( $season ne "") and ($season > 0) )
       {
         $ce->{episode} = sprintf( "%d . %d .", $season-1, $episode-1 );
       }
