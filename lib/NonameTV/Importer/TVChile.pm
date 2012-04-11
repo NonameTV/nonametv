@@ -94,11 +94,16 @@ sub ImportContentFile {
 
       $date = ParseDate( $oWkC->Value );
       next if( ! $date );
+      
+      
 
       # time
       $oWkC = $oWkS->{Cells}[$iR][$coltime];
       next if( ! $oWkC->Value );
       my $time = $oWkC->Value;
+      
+      my $start = create_dt($date." ".$time);
+      next if( ! $start );
 
       # title
       $oWkC = $oWkS->{Cells}[$iR][$coltitle];
@@ -112,11 +117,11 @@ sub ImportContentFile {
       $oWkC = $oWkS->{Cells}[$iR][$coldesc];
       next if( ! $oWkC );
       my $desc = $oWkC->Value if( $oWkC->Value );
-      my $start = create_dt($date." ".$time);
+      
       
       # Date in time sometimes, skip it
       if($time =~ /PROGRAMACI/) {
-      	next;
+      	#next;
       }
 
 			if( $date ne $currdate ){
@@ -174,6 +179,8 @@ sub ParseDate
     ( $month, $day, $year ) = ( $dinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
   } elsif( $dinfo =~ /^\d{1,2}\/\d{1,2}\/\d{2}$/ ){ # format '10-18-11' or '1-9-11'
     ( $month, $day, $year ) = ( $dinfo =~ /^(\d+)\/(\d+)\/(\d+)$/ );
+  }elsif( $dinfo =~ /^\d{4}\/\d{2}\/\d{2}$/ ){ # format '10-18-11' or '1-9-11'
+    ( $year, $month, $day ) = ( $dinfo =~ /^(\d+)\/(\d+)\/(\d+)$/ );
   }
 
   return undef if( ! $year );
@@ -198,6 +205,9 @@ sub create_dt
   } elsif( $str =~ /^\d{4}-\d{2}-\d{2} \d{1,2}:\d{2} $/ ){
   	( $year, $month, $day, $hour, $minute ) = 
       ($str =~ /(\d+)-(\d+)-(\d+) (\d+):(\d+) $/ );
+  } elsif( $str =~ /^\d{4}\/\d{2}\/\d{2}$/ ){
+  	( $year, $month, $day ) = 
+      ($str =~ /(\d+)\/(\d+)\/(\d+)$/ );
   }else {
   	return undef;
   }
