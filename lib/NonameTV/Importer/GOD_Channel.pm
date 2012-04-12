@@ -224,6 +224,10 @@ sub ParseTime {
 sub isDate {
   my ( $text ) = @_;
 
+	if($text =~ /-/i){
+    	return 0;
+  	}
+
     #print("text:  $text\n");
 
   # format 'Monday 12th September'
@@ -236,7 +240,6 @@ sub isDate {
 
 sub ParseDate {
   my( $text, $year ) = @_;
-#print("date:  $text\n");
   my( $dayname, $dummy, $day, $monthname, $month );
     # format 'Måndag 11 Juli'
   if( $text =~ /(.*)\s+\d+(st|nd|rd|th)\s*(january|february|march|april|may|june|july|august|september|october|november|december)/i ){ 
