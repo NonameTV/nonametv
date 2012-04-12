@@ -64,6 +64,8 @@ sub FilterContent {
   gunzip $gzcref => $cref
     or $cref = $gzcref;
 
+  $$cref =~ s| encoding="ISO-8859-1" \?| encoding="windows-1252" \?|;
+
   # turn right single ' into '
   $$cref =~ s|&#8217;|'|g;
 
