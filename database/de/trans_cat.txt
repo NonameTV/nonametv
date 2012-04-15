@@ -1,12 +1,15 @@
 Arte_genre,dokumentarfilm,Documentary,movie
 Arte_genre,dokumentarfilmreihe,Documentary,series
 Arte_genre,dokumentation,Documentary,
+Arte_genre,dokumentation/reportage,Documentary,
 Arte_genre,dokumentationsreihe,Documentary,series
 Arte_genre,fernsehfilm,,movie
 Arte_genre,fernsehserie,,series
+Arte_genre,film,,movie
 Arte_genre,musik,Music,
 Arte_genre,nachrichten,,news
 Arte_genre,reportage,Documentary,
+Arte_genre,serie,,series
 Arte_genre,spielfilm,,movie
 Arte_genre,stummfilm,,movie
 DasErste_type,3d-animationsfilm,,movie
@@ -107,10 +110,12 @@ MTVde,kinderserie,Kids,series
 MTVde,serie,,series
 ORF,abenteuerfilm,Action/Adv,movie
 ORF,abenteuerserie,Action/Adv,series
+ORF,action-drama-serie,Action,series
 ORF,actionfilm,Action,movie
 ORF,actionserie,Action,series
 ORF,animationsfilm,,movie
 ORF,anwaltsserie,,series
+ORF,comedyserie,Comedy,series
 ORF,dokumentarfilm,Documentary,movie
 ORF,dokumentation,Documentary,
 ORF,"dokumentation in fünf teilen",Documentary,

@@ -229,11 +229,20 @@
 87,Tvdb,"Utta Danella",\N,\N,251554,episodetitle
 86,Tvdb,Victorious,\N,\N,152721,episodetitle
 86,Tvdb,"Vier Frauen und ein Todesfall",\N,\N,152091,episodetitle
-86,Tvdb,"What About Brian",\N,\N,79290,episodetitle
-86,Tvdb,"What About Brian",\N,\N,79290,episodetitle
 86,Tvdb,"What's up, Dad?",\N,\N,70329,episodetitle
 87,Fixups,"^(Der Bulle von Tölz)\s+-\s+(.*)$",\N,\N,\N,splittitle
 87,Tvdb,"Der Bulle von Tölz",\N,\N,82197,episodetitle
 87,Fixups,"^(Inspector Barnaby)\s+-\s+(.*)$",\N,\N,\N,splittitle
 87,Tvdb,"Inspector Barnaby",\N,\N,76846,episodetitle
 87,Tvdb,"Ein Fall für zwei",\N,\N,89901,episodetitle
+86,Tvdb,"Shaun, das Schaf",\N,\N,79890,episodetitle
+86,Tvdb,"What About Brian",\N,\N,79290,episodetitle
+86,Tvdb,"Rescue Me",\N,\N,73741,episodetitle
+86,Tvdb,"How I Met Your Mother",\N,\N,75760,episodetitle
+86,Tvdb,"New Girl",\N,\N,248682,episodetitle
+86,Fixups,^(Columbo)\s+-\s+(.*)$,\N,\N,\N,splittitle
+86,Tvdb,Columbo,\N,\N,70369,episodetitle
+86,Tvdb,Schlawiner,\N,\N,248605,episodetitle
+86,Tvdb,"Avatar - Herr der Elemente",\N,\N,74852,episodetitle
+86,Fixups,^(Sherlock)\s+-\s+(.*)$,\N,\N,\N,splittitle
+86,Tvdb,Sherlock,\N,\N,176941,episodetitle
