@@ -163,3 +163,77 @@
 124,Fixups,^(Witness):\s+(.*)$,\N,\N,\N,splittitle
 124,Fixups,"^(101 East):\s+(.*)$",\N,\N,\N,splittitle
 124,Fixups,"^(People and Power):\s+(.*)$",\N,\N,\N,splittitle
+38,Fixups,"^(Nächster Halt)\s+-\s+(.*)$",\N,\N,\N,splittitle
+38,Fixups,"^(Nächster Halt):\s+(.*)$",\N,\N,\N,splittitle
+44,Fixups,"^(Irene Huss, Kripo Göteborg)\s+-\s+(.*)$",\N,\N,\N,splittitle
+86,Tvdb,"Alle hassen Chris",\N,\N,75914,episodetitle
+86,Tvdb,"Arme Millionäre",\N,\N,137371,episodetitle
+86,Tvdb,Bali,\N,\N,152871,episodetitle
+86,Tvdb,"Beautiful People",\N,\N,78851,episodetitle
+86,Tvdb,"Bezaubernde Jeannie",\N,\N,77388,episodetitle
+86,Tvdb,"Bibi Blocksberg",\N,\N,84326,episodetitle
+86,Tvdb,"Brothers & Sisters",\N,\N,79506,episodetitle
+86,Tvdb,"CSI - Den Tätern auf der Spur",\N,\N,72546,episodetitle
+86,Tvdb,"Der kleine Nick",\N,\N,204021,episodetitle
+86,Tvdb,"Damages - Im Netz der Macht",\N,\N,80367,episodetitle
+86,Tvdb,"Der letzte Bulle",\N,\N,150751,episodetitle
+86,Tvdb,Dexter,\N,\N,79349,episodetitle
+86,Tvdb,"Die Pinguine aus Madagascar",\N,\N,85075,episodetitle
+87,Tvdb,"Die Rosenheim-Cops",\N,\N,101221,episodetitle
+86,Tvdb,"Die Simpsons",\N,\N,71663,episodetitle
+86,Tvdb,"Disneys Arielle, die kleine Meerjungfrau",\N,\N,77088,episodetitle
+86,Tvdb,"Disneys Gummibärenbande",\N,\N,76081,episodetitle
+86,Tvdb,"Disneys Shake It Up - Tanzen ist alles",\N,\N,205251,episodetitle
+87,Tvdb,"Donna Leon",\N,\N,101211,episodetitle
+86,Tvdb,"Dr. House",\N,\N,73255,episodetitle
+86,Tvdb,"Drake & Josh",\N,\N,79357,episodetitle
+86,Tvdb,"E.R. - Emergency Room",\N,\N,70761,episodetitle
+86,Tvdb,"FC Rückpass",\N,\N,159941,episodetitle
+86,Tvdb,"Flashpoint - Das Spezialkommando",\N,\N,82438,episodetitle
+86,Tvdb,Garfield,\N,\N,145371,episodetitle
+86,Tvdb,"Ghost Whisperer",\N,\N,78817,episodetitle
+86,Tvdb,"Gilmore Girls",\N,\N,76568,episodetitle
+86,Tvdb,Glee,\N,\N,83610,episodetitle
+86,Tvdb,"Gossip Girl",\N,\N,80547,episodetitle
+86,Tvdb,"Grey's Anatomy",\N,\N,73762,episodetitle
+87,Tvdb,"Julia - eine ungewöhnliche Frau",\N,\N,242921,episodetitle
+87,Tvdb,"Kommissar Rex",\N,\N,80840,episodetitle
+86,Tvdb,"Lipstick Jungle",\N,\N,80392,episodetitle
+86,Tvdb,"Malcolm mittendrin",\N,\N,73838,episodetitle
+87,Tvdb,"Medicopter 117 - Jedes Leben zählt",\N,\N,134041,episodetitle
+86,Tvdb,"Mein cooler Onkel Charlie",\N,\N,72227,episodetitle
+86,Tvdb,Monk,\N,\N,78490,episodetitle
+86,Tvdb,"My Name Is Earl",\N,\N,75397,episodetitle
+86,Tvdb,"Navy CIS",\N,\N,72108,episodetitle
+86,Tvdb,"Navy CIS: L.A.",\N,\N,95441,episodetitle
+86,Tvdb,"Parker Lewis - Der Coole von der Schule",\N,\N,78471,episodetitle
+86,Tvdb,"Private Practice",\N,\N,80542,episodetitle
+86,Tvdb,"Rita rockt",\N,\N,83549,episodetitle
+86,Tvdb,SamSam,\N,\N,151591,episodetitle
+87,Tvdb,"Schlosshotel Orth",\N,\N,241631,episodetitle
+86,Tvdb,"Schnell ermittelt",\N,\N,134111,episodetitle
+86,Tvdb,"Scrubs - Die Anfänger",\N,\N,76156,episodetitle
+86,Tvdb,SimsalaGrimm,\N,\N,85111,episodetitle
+86,Tvdb,"Soko Kitzbühel",\N,\N,101241,episodetitle
+87,Tvdb,"Soko Kitzbühel",\N,\N,101241,episodetitle
+86,Tvdb,"Soko Donau",\N,\N,133311,episodetitle
+87,Tvdb,"Soko Donau",\N,\N,133311,episodetitle
+86,Tvdb,Supernatural,\N,\N,78901,episodetitle
+86,Tvdb,"The Big Bang Theory",\N,\N,80379,episodetitle
+86,Tvdb,"The Big C",\N,\N,161501,episodetitle
+86,Tvdb,"The Mentalist",\N,\N,82459,episodetitle
+86,Tvdb,"The Secret Life of the American Teenager",\N,\N,82422,episodetitle
+86,Tvdb,Tom,\N,\N,164711,episodetitle
+86,Tvdb,Touch,\N,\N,248935,episodetitle
+87,Tvdb,"Um Himmels Willen",\N,\N,93221,episodetitle
+87,Tvdb,"Utta Danella",\N,\N,251554,episodetitle
+86,Tvdb,Victorious,\N,\N,152721,episodetitle
+86,Tvdb,"Vier Frauen und ein Todesfall",\N,\N,152091,episodetitle
+86,Tvdb,"What About Brian",\N,\N,79290,episodetitle
+86,Tvdb,"What About Brian",\N,\N,79290,episodetitle
+86,Tvdb,"What's up, Dad?",\N,\N,70329,episodetitle
+87,Fixups,"^(Der Bulle von Tölz)\s+-\s+(.*)$",\N,\N,\N,splittitle
+87,Tvdb,"Der Bulle von Tölz",\N,\N,82197,episodetitle
+87,Fixups,"^(Inspector Barnaby)\s+-\s+(.*)$",\N,\N,\N,splittitle
+87,Tvdb,"Inspector Barnaby",\N,\N,76846,episodetitle
+87,Tvdb,"Ein Fall für zwei",\N,\N,89901,episodetitle
