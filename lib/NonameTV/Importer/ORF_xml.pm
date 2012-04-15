@@ -47,6 +47,8 @@ sub new {
     my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore}, "Europe/Vienna" );
     $self->{datastorehelper} = $dsh;
 
+    $self->{datastore}->{augment} = 1;
+
     return $self;
 }
 
