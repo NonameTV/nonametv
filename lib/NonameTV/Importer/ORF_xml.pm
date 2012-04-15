@@ -244,7 +244,11 @@ sub ImportContent
 	      $ce->{description} = norm($desc) if $desc;
 
 		my $subtitle =  $sc->findvalue( './subtitel' );
-		if( $subtitle =~ m/^(?:Folge|Kapitel|Teil)\s+\d+$/ ){
+		if( $subtitle =~ m/^(?:Folge|Kapitel|Teil)\s+\d+\s+-\s+.+$/ ){
+			my( $episodenum, $episodetitle )=( $subtitle =~ m/^(?:Folge|Kapitel|Teil)\s+(\d+)\s+-\s+(.+)$/ );
+			$ce->{episode} = '. ' . ($episodenum - 1) . ' .';
+	   	 	$ce->{subtitle} = norm( $episodetitle );
+		}elsif( $subtitle =~ m/^(?:Folge|Kapitel|Teil)\s+\d+$/ ){
 			my( $episodenum )=( $subtitle =~ m/^(?:Folge|Kapitel|Teil)\s+(\d+)$/ );
 			$ce->{episode} = '. ' . ($episodenum - 1) . ' .';
 		}elsif( $subtitle ){
