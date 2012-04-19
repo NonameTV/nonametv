@@ -97,6 +97,8 @@ sub FilterContent {
 
   $cref =~ s| generierungsdatum=\"[^\"]+\"| generierungsdatum=\"\"|;
 
+  $cref =~ s|\s+drgib\d+</text>|i</text>|g;
+
   my $doc = ParseXml( \$cref );
 
   if( not defined $doc ) {
