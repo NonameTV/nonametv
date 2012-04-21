@@ -119,14 +119,17 @@ sub FilteredExtension {
 my %genrewords = (
 	'Abenteuerserie' => 1,
 	'Actionserie' => 1,
+	'Action-Drama-Serie' => 1,
 	'Animation' => 1,
 	'Anwaltsserie' => 1,
+	'Comedyserie' => 1,
 	'Familienserie' => 1,
 	'Jugendserie' => 1,
 	'Kriminalserie' => 1,
 	'Krimiserie' => 1,
 	'Medical Daily' => 1,
 	'Mysteryserie' => 1,
+	'Ratespiel mit Elton' => 1,
 	'Serie' => 1,
 	'Sitcom' => 1,
 	'Stop Motion Trick' => 1,
@@ -190,7 +193,7 @@ sub ImportContent
   	  	my $desc = $sc->findvalue( './info' );
 		# strip repeat
 		$desc =~ s|\(Wh\..+?\)||;
-		my( $genre, $countries, $year )=( $desc =~ m|\((.+?), (.+?) (\d{4})\)| );
+		my( $genre, $countries, $year )=( $desc =~ m|\((.+?), (\S+) (\d{4})\)| );
 		if( $year ){
 			$desc =~ s|\(.+?, .+? \d{4}\)||;
 			$ce->{production_date} = $year . '-01-01';
@@ -200,6 +203,7 @@ sub ImportContent
 			my ( $program_type, $categ ) = $self->{datastore}->LookupCat( "ORF", $genre );
 			# set category, unless category is already set!
 			AddCategory( $ce, $program_type, $categ );
+			AddCategory( $ce, 'movie', undef );
 		}else{
 			my( $genreword )=( $desc =~ m/^(.*?)(?:\n|$)/s );
 			if( $genreword ){
