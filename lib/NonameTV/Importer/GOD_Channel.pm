@@ -20,6 +20,7 @@ use POSIX;
 use DateTime;
 use XML::LibXML;
 use Encode qw/decode/;
+use Data::Dumper;
 
 use NonameTV qw/MyGet Wordfile2Xml Htmlfile2Xml norm MonthNumber/;
 use NonameTV::DataStore::Helper;
@@ -272,6 +273,8 @@ sub isShow {
 
 sub ParseShow {
   my( $title ) = @_;
+
+	print Dumper($title);
 
   my( $subtitle );
 

@@ -301,6 +301,8 @@ sub ImportContent
     }
     else
     {
+	# Remove everything inside ()
+	$org_title =~ s/\(.*\)//g;
       $ce->{title} = norm($org_title) || norm($title);
     }
 
