@@ -42,7 +42,6 @@
 233,Tvdb,"Tummen mitt i handen",program_type,series,77537,episodeseason
 \N,Tvdb,"Kommissarie Morse",program_type,series,76582,episodeseason
 233,Tvdb,"Dr Oz",program_type,series,123401,episodeseason
-233,TvdbEN,"Vita Huset",program_type,series,72521,episodeseason
 233,Tvdb,"Gränsbevakarna UK",program_type,series,83324,episodeseason
 \N,Tvdb,"CSI Miami",program_type,series,78310,episodeseason
 232,Tvdb,"Jamies matrevolution",program_type,series,151421,episodeseason
@@ -59,7 +58,7 @@
 232,Tvdb,"Biggest Loser",program_type,series,75166,episodeseason
 \N,Tvdb,"Magi på Waverly Place",program_type,series,80726,episodeseason
 232,Tvdb,Wipeout,program_type,series,149051,episodeseason
-282,Tvdb,^.*$,program_type,series,\N,episodeseason
+429,Tvdb,^.*$,program_type,series,\N,episodeseason
 234,Tvdb,^.*$,program_type,series,\N,episodeseason
 234,Tvdb,"Queer As Folk UK",program_type,series,75625,episodeseason
 203,Tvdb,^.*$,program_type,series,\N,episodeseason
@@ -234,8 +233,8 @@
 285,Tvdb,Skattejegerne,program_type,series,141181,episodeseason
 285,Tvdb,Dusørjegeren,program_type,series,75036,episodeseason
 285,Tvdb,"Poker: The Big Game",program_type,series,168931,episodeseason
-282,Tvdb,Portlandia,program_type,movie,213221,episodeseason
-282,Tvdb,"Todd and the Book of Pure Evil",program_type,movie,194041,episodeseason
+429,Tvdb,Portlandia,program_type,movie,213221,episodeseason
+429,Tvdb,"Todd and the Book of Pure Evil",program_type,movie,194041,episodeseason
 2341,Tvdb,"Gimme Gimme Gimme",program_type,series,75031,episodeseason
 305,Tvdb,"^.*Frozen planet.*$",program_type,series,251418,episodetitle
 303,Tvdb,"^.*Frozen planet.*$",program_type,series,251418,episodetitle
@@ -279,7 +278,7 @@
 234,Tvrage,"Dante's Cove",program_type,series,2229,episodeseason
 232,Tvrage,"RAW Comedy Club",program_type,series,21721,episodeseason
 232,Tvrage,"Sofias änglar",program_type,series,27497,episodeseason
-282,Tvdb,"Falling Skies",program_type,movie,205281,episodeseason
+429,Tvdb,"Falling Skies",program_type,movie,205281,episodeseason
 297,TvdbDE,^.*$,program_type,series,\N,episodetitle
 298,TvdbDE,^.*$,program_type,series,\N,episodetitle
 232,Tvdb,Tunnelbanan,program_type,series,255533,episodeseason
@@ -292,9 +291,9 @@
 278,Tmdb,"Blair Witch Project, The",program_type,movie,2667,movieid
 281,Tvdb,"The Role That Changed My Life",program_type,series,82511,episodetitle
 278,Tvdb,"Adult Swim: Venture Bros",program_type,movie,72306,episodetitle
-282,Tmdb,"Jeanne d'Arc del 2 av 2",program_type,movie,11944,movieid
-282,Tmdb,"Jeanne d'Arc del 1 av 2",program_type,movie,11944,movieid
-282,Tvdb,"What About Brian",program_type,series,79290,episodetitle
+429,Tmdb,"Jeanne d'Arc del 2 av 2",program_type,movie,11944,movieid
+429,Tmdb,"Jeanne d'Arc del 1 av 2",program_type,movie,11944,movieid
+429,Tvdb,"What About Brian",program_type,series,79290,episodetitle
 278,Fixups,"Adult Swim: Aqua Teen Hunger Force",subtitle,"Mc P Pants","MC Pee Pants",replacesubtitle
 278,Fixups,"Adult Swim: Venture Bros",subtitle,"Ice Station Impossible","Ice Station - Impossible!",replacesubtitle
 278,Fixups,"Adult Swim: Aqua Teen Hunger Force",subtitle,Ol'Drippy,"Ol' Drippy",replacesubtitle
@@ -310,7 +309,7 @@
 278,Fixups,"Adult Swim: Metalocalypse",subtitle,"The Curse Of Deathklok","The Curse of Dethklok",replacesubtitle
 278,Tvdb,"Space Ghost, Coast to Coast",program_type,movie,79171,episodetitle
 278,Fixups,"Adult Swim: Metalocalypse",subtitle,Snake'n'Barrels,"Snakes n' Barrels",replacesubtitle
-282,Fixups,"What About Brian",subtitle,"What About Calling All Friends","What About Calling All Friends...",replacesubtitle
+429,Fixups,"What About Brian",subtitle,"What About Calling All Friends","What About Calling All Friends...",replacesubtitle
 278,Fixups,"Space Ghost, Coast to Coast",subtitle,"Gum Disease","Gum, Disease",replacesubtitle
 278,Fixups,"Space Ghost, Coast to Coast",subtitle,"Episode 109","Self Help",replacesubtitle
 304,Tvdb,"^.*Morden i Midsomer.*$",program_type,series,76846,episodetitle
@@ -630,3 +629,39 @@
 398,Tmdb,"Maria Wern: Sort sommerfugl",program_type,series,72417,movieid
 398,Tmdb,"Maria Wern: Sort sommerfugl - Sesongpremiere!",program_type,series,72417,movieid
 398,Tmdb,"Maria Wern: Drømmer av snø",program_type,series,70242,movieid
+233,TvdbEN,"Vita huset",program_type,series,72521,episodeseason
+256,Tvdb,"Property Ladder UK",program_type,series,81738,episodeseason
+252,TvdbEN,"Steve Irwin: The Crocodile Hunter Diaries",program_type,series,70951,episodeseason
+252,TvdbEN,"Tribe (Bruce Parry)",program_type,series,79119,episodeseason
+252,TvdbEN,Executioners,program_type,series,85482,episodeseason
+256,Tvdb,Politistationen,program_type,series,127811,episodeseason
+256,Tvrage,"Antiques Roadshow",program_type,series,7762,episodeseason
+254,Tvdb,"Navy NCIS",program_type,series,72108,episodeseason
+234,Tvdb,Blodtörst,program_type,series,80300,episodeseason
+256,Tvdb,"Law and Order: Criminal Intent",program_type,series,71489,episodeseason
+248,Tvdb,"Law and Order: Criminal Intent",program_type,series,71489,episodeseason
+278,Tvdb,Masterminds,program_type,movie,79038,episodetitle
+255,Tvdb,"Stargate SG 1",program_type,series,72449,episodeseason
+232,Tvdb,Missing,program_type,series,248797,episodeseason
+254,Tvdb,"Til Death",program_type,series,79384,episodeseason
+232,Tvdb,"Kourtney & Khloé i Miami",program_type,series,109491,episodeseason
+232,Tvdb,"Kitchen Nightmares",program_type,series,74584,episodeseason
+\N,Tvdb,"Without A Trace, TV8",program_type,series,77963,episodeseason
+435,Tvdb,^.*$,\N,\N,\N,episodetitle
+436,Tvdb,^.*$,\N,\N,\N,episodetitle
+435,Tvdb,"Mike Judge's Beavis and Butt-Head",\N,\N,75863,episodetitle
+435,Fixups,"Crash Canyon",subtitle,"Risky Monkey Business","The Tees That Bind",replacesubtitle
+435,Tvdb,"American Dad",\N,\N,73141,episodetitle
+435,Fixups,Audrina,subtitle,"The Last Supper","Donald Trump Has Soft Lips",replacesubtitle
+435,Tvdb,"16 & Pregnant",\N,\N,126011,episodetitle
+435,Fixups,Audrina,subtitle,"Dump His A**","Dump His A..",replacesubtitle
+435,Fixups,"South Park",subtitle,"Quintuplets 2000",Quintuplets,replacesubtitle
+435,Fixups,"The Hills",subtitle,"Hi, Lauren, It's Spencer","Hi Lauren, It's Spencer...",replacesubtitle
+435,Fixups,"Crash Canyon",subtitle,"The Out‐of‐Pantsers","The Out of Pantsers",replacesubtitle
+435,Fixups,"Jessica Simpson's The Price of Beauty",subtitle,France,"Paris, France",replacesubtitle
+435,Fixups,"Jessica Simpson's The Price of Beauty",subtitle,Japan,"Tokyo, Japan",replacesubtitle
+435,Fixups,"Chelsea Settles",subtitle,"I'VE ALWAYS HAD THIS DREAM...","I've Always Had This Dream…",replacesubtitle
+435,Fixups,"Teen Mom",subtitle,"Without You","With Out You",replacesubtitle
+435,Fixups,Audrina,subtitle,"What's in the Box?","Celebrate Good Times, C'Mon!",replacesubtitle
+435,Fixups,"Death Valley",subtitle,"Hottest Day of the Year","The Hottest Day of the Year",replacesubtitle
+437,Tvdb,^.*$,program_type,series,\N,episodeseason

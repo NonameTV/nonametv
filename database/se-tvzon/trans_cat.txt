@@ -347,6 +347,15 @@ Kanal5_xml,series,,series
 MTVde,barnprogram,Children's,series
 MTVde,"children series",Children's,series
 MTVde,show/unterhaltung,Entertainment,series
+MTVNN,actionserie,Action,series
+MTVNN,barnprogram,Children´s,series
+MTVNN,dokusåpa,Soap,series
+MTVNN,komedi,Comedy,series
+MTVNN,konsert,Concert,\N
+MTVNN,livsstilsprogram,Lifestyle,series
+MTVNN,magasin,Magazine,series
+MTVNN,musikklipp,Music,\N
+MTVNN,serie,Series,series
 Nonstop,action,Action,movie
 Nonstop,adventure,Adventure,movie
 Nonstop,animation,Animation,movie
