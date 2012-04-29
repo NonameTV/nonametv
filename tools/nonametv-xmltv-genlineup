@@ -1,0 +1,78 @@
+#! /usr/bin/perl
+
+use strict;
+use warnings;
+
+use File::Compare;
+use FindBin;
+use lib "$FindBin::Bin/../lib";
+
+use IO::Compress::Gzip qw(gzip $GzipError);
+use IO::Uncompress::Gunzip qw(gunzip $GunzipError);
+use XML::LibXML;
+
+use NonameTV qw/ParseXml/;
+use NonameTV::DataStore;
+use NonameTV::Config qw/ReadConfig/;
+
+# Read configuration
+my $conf = ReadConfig();
+
+my $ds = NonameTV::DataStore->new( $conf->{DataStore} );
+
+# TODO target, dynamically generate from Xmltv Exporter configuration
+#my $xmltvdir = $conf->{Exporters}->{Xmltv}->{Root};
+my $xmltvdir = '/home/nonametv/var/xmltv';
+my $datalistxml = $xmltvdir . '/datalist.xml.gz';
+my $dvbservicepointerxml = $xmltvdir . '/datalist2.xml.gz';
+
+my $xml;
+gunzip $datalistxml => \$xml
+        or die "gunzip failed: $GunzipError\n";
+
+my $doc = ParseXml( \$xml );
+
+my @channels = $doc->findnodes( '/tv/channel' );
+
+
+foreach my $chan (@channels) {
+  my $channel = $ds->{sa}->Lookup( 'channels', { xmltvid =>  $chan->findvalue( '@id' ) } );
+
+  my $services =  $ds->{sa}->LookupMany( 'dvb_service_pointer', { channel_id => $channel->{id} },
+                                       [ 'original_network_id', 'transport_id', 'service_id' ] );
+
+  foreach my $service (@{$services}) {
+    my $pointerNode = XML::LibXML::Element->new( 'dvb-service' );
+    $pointerNode->appendText( "\n      " );
+    my $node = $doc->createComment( ' ' . $service->{description} . ' ' );
+    $pointerNode->appendChild( $node );
+    $pointerNode->appendText( "\n      " );
+    $node = $doc->createElement( 'original_network_id' );
+    $node->appendText( $service->{original_network_id} );
+    $pointerNode->appendChild( $node );
+    if( $service->{transport_id} ){
+      $pointerNode->appendText( "\n      " );
+      $node = $doc->createElement( 'transport_id' );
+      $node->appendText( $service->{transport_id} );
+      $pointerNode->appendChild( $node );
+    }
+    $pointerNode->appendText( "\n      " );
+    $node = $doc->createElement( 'service_id' );
+    $node->appendText( $service->{service_id} );
+    $pointerNode->appendChild( $node );
+    $pointerNode->appendText( "\n    " );
+    $chan->appendText( '  ' );
+    $chan->appendChild( $pointerNode );
+    $chan->appendText( "\n  " );
+  }
+}
+
+$xml = $doc->toString( 1 );
+gzip \$xml => $dvbservicepointerxml . '.new', Level => 9, Time => 0
+        or die "gzip failed: $GzipError\n";
+
+if( compare( $dvbservicepointerxml, $dvbservicepointerxml . '.new' )== 0 ){
+  unlink( $dvbservicepointerxml . '.new' );
+} else {
+  rename( $dvbservicepointerxml . '.new', $dvbservicepointerxml );
+}
