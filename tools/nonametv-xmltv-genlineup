@@ -40,7 +40,7 @@ $lineupdoc->insertProcessingInstruction( 'xml-stylesheet', 'type="text/xsl" href
 
 # create root element
 my $node = $lineupdoc->createElement( 'xmltv-lineups' );
-$node->setAttribute( 'xmlns', 'http://supplement.xmltv.org/xmltv-lineups.xsd' );
+#$node->setAttribute( 'xmlns', 'http://supplement.xmltv.org/xmltv-lineups.xsd' );
 
 # define the root
 $lineupdoc->setDocumentElement( $node );
@@ -52,15 +52,16 @@ $node->setAttribute( 'generator-info-name', 'NonameTV' );
 $node->setAttribute( 'generator-info-url', 'http://nonametv.org/' );
 
 $lineupdoc->documentElement( )->addChild( $node );
+my $lineupnode = $node;
 
 # configure the lineup's properties
-
-my $lineupnode = $node;
 $node = $lineupdoc->createElement( 'type' );
 $node->appendText( 'DTV' );
-
 $lineupnode->appendChild( $node );
 
+$node = $lineupdoc->createElement( 'display-name' );
+$node->appendText( 'all channels' );
+$lineupnode->appendChild( $node );
 
 
 my @channels = $doc->findnodes( '/tv/channel' );
@@ -73,6 +74,7 @@ foreach my $chan (@channels) {
   my $stationnode = $lineupdoc->createElement( 'station' );
   $stationnode->setAttribute( 'rfc2838', $channel->{'xmltvid'} );
   $node = $lineupdoc->createElement( 'name' );
+  $node->setAttribute( 'lang', $channel->{'sched_lang'} );
   $node->appendText( $channel->{'display_name'} );
   $stationnode->appendChild( $node );
   if( $channel->{'logo'} == 1 ) {
@@ -110,7 +112,6 @@ foreach my $chan (@channels) {
 }
 
 $xml = $lineupdoc->toString( 1 );
-print STDERR $xml;
 gzip \$xml => $lineupxml . '.new', Level => 9, Time => 0
         or die "gzip failed: $GzipError\n";
 
