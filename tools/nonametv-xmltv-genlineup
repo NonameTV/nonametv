@@ -36,7 +36,7 @@ my $doc = ParseXml( \$xml );
 my $lineupdoc = XML::LibXML::Document->new( );
 
 # insert processing instruction for the stylesheet
-$lineupdoc->insertProcessingInstruction( 'xml-stylesheet', 'type="text/xsl" href="http://supplement.xmltv.org/tv_grab_uk_rt/lineups/xmltv-lineups.xsl"' );
+$lineupdoc->insertProcessingInstruction( 'xml-stylesheet', 'type="text/xsl" href="xmltv-lineups.xsl"' );
 
 # create root element
 my $node = $lineupdoc->createElement( 'xmltv-lineups' );

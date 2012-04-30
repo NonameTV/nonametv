@@ -10,6 +10,7 @@ tools/nonametv-export Xmltv $1 $2 $3
 tools/de/nonametv-xmltv-genhtml $NROOT/xmltv_staging .
 rsync examples/displayfile.html $NROOT/xmltv_staging
 rsync examples/listing.xsl $NROOT/xmltv_staging
+rsync examples/xmltv-lineups.xsl $NROOT/xmltv_staging
 rsync examples/de/index.html $NROOT/xmltv_staging
 
 RSYNC_RSH=ssh
