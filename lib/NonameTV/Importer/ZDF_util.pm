@@ -429,8 +429,8 @@ sub clean_untertitel
     $subtitle =~ s|\s+\(Wh\..*\)$||;
   }
   # strip repeat in ZDFneo style
-  if ($subtitle =~ m|\s*\(vom \d+\.\d+\.\d{4}\)$|) {
-    $subtitle =~ s|\s*\(vom \d+\.\d+\.\d{4}\)$||;
+  if ($subtitle =~ m|\s*\([Vv]om \d+\.\d+\.\d{4}\)$|) {
+    $subtitle =~ s|\s*\([Vv]om \d+\.\d+\.\d{4}\)$||;
   }
   # strip repeat in ZDFneo style
   if ($subtitle =~ m|\s*\(ZDF \d+\.\d+\.\d{4}\)$|) {
