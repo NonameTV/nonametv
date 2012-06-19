@@ -17,7 +17,7 @@ use Data::Dumper;
 use DateTime;
 use XML::LibXML;
 
-use NonameTV qw/AddCategory norm ParseXml/;
+use NonameTV qw/AddCategory norm normUtf8 ParseXml/;
 use NonameTV::Importer::BaseWeekly;
 use NonameTV::Log qw/d progress w error f/;
 
@@ -101,10 +101,10 @@ sub ImportContent( $$$ ) {
   	my $episodenum = norm($pgm->findvalue('./episode-num'));
   	
   	# Description
-  	my $format_desc = norm($pgm->findvalue('./format_desc'));
-  	my $format_desc_short = norm($pgm->findvalue('./format_desc_short'));
-  	my $desc = norm($pgm->findvalue('./desc'));
-  	my $desc_short = norm($pgm->findvalue('./desc_short'));
+  	my $format_desc = normUtf8($pgm->findvalue('./format_desc'));
+  	my $format_desc_short = normUtf8($pgm->findvalue('./format_desc_short'));
+  	my $desc = normUtf8($pgm->findvalue('./desc'));
+  	my $desc_short = normUtf8($pgm->findvalue('./desc_short'));
   	my $description = $desc_short || $desc || $format_desc_short || $format_desc;
   	
   	
@@ -117,7 +117,7 @@ sub ImportContent( $$$ ) {
   	my $ce = {
       title => norm($title),
       channel_id => $chd->{id},
-      description => norm($description),
+      description => $description,
       start_time => $start->ymd("-") . " " . $start->hms(":"),
       #end_time => $stop->ymd("-") . " " . $stop->hms(":"),
     };
