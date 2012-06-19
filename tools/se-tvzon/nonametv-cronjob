@@ -81,7 +81,7 @@ $d tools/nonametv-icon-update --quiet --unattended
 tools/se-tvzon/nonametv-updatesite $Q
 
 # Upload to www - I don't know if I wanna run this here.
-#tools/se-tvzon/nonametv-upload $Q
+tools/se-tvzon/nonametv-upload $Q
 
 # This shouldn't produce any output, but there seems to be a bug
 # somewhere.
@@ -111,7 +111,7 @@ $d tools/se-tvzon/nonametv-upload $Q
 $h tools/se-tvzon/nonametv-upload $Q
 
 # Run after, everything
-$d rsync -rsh=ssh --delete /var/local/nonametv/html/00status.html tvzon:/var/www/xmltv/
+$d rsync --delete -r /var/local/nonametv/html/00status.html /var/www/xmltv/
 
 # Some users seems to download this file from the base url instead, this will fix it.
-$d rsync -rsh=ssh --delete /var/local/nonametv/xmltv/channels.xml.gz tvzon:/var/www/xmltv/
+$d rsync --delete -r /var/local/nonametv/xmltv/channels.xml.gz /var/www/xmltv/
