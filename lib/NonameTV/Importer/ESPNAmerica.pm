@@ -112,7 +112,7 @@ sub ImportXLS
       my $time = ParseTime($oWkC->Value) if( $oWkC->Value );
 
       # title
-      $oWkC = $oWkS->{Cells}[$iR][8];
+      $oWkC = $oWkS->{Cells}[$iR][10];
       next if( ! $oWkC );
       my $title = $oWkC->Value;
 
@@ -121,7 +121,7 @@ sub ImportXLS
       my $genre = $oWkC->Value;
       
 	  	# descr (column 7)
-	  	$oWkC = $oWkS->{Cells}[$iR][9];
+	  	$oWkC = $oWkS->{Cells}[$iR][11];
 	  	my $desc = $oWkC->Value if( $oWkC->Value );
 
       
