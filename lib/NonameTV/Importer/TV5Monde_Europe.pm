@@ -138,8 +138,8 @@ sub ImportXLS
       next if( ! $oWkC );
       my $title = $oWkC->Value if( $oWkC->Value );
       
-      # genre (column 8)
-	  	$oWkC = $oWkS->{Cells}[$iR][8];
+      # genre (column 6)
+	  	$oWkC = $oWkS->{Cells}[$iR][6];
       my $genre = $oWkC->Value;
 
 	  	# descr (column 9)
@@ -203,6 +203,12 @@ sub ParseDate {
   } elsif( $text =~ /^(\d+)-Mai-(\d+)$/ ){
     ( $day, $year ) = ( $text =~ /^(\d+)-Mai-(\d+)$/ );
     $month = "05";
+  } elsif( $text =~ /^(\d+)-Juin-(\d+)$/ ){
+    ( $day, $year ) = ( $text =~ /^(\d+)-Juin-(\d+)$/ );
+    $month = "06";
+  } elsif( $text =~ /^(\d+)-Juillet-(\d+)$/ ){
+    ( $day, $year ) = ( $text =~ /^(\d+)-Juillet-(\d+)$/ );
+    $month = "07";
   }
 
   $year += 2000 if $year < 100;
