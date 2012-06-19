@@ -1,0 +1,122 @@
+#! /usr/bin/perl
+
+use strict;
+use warnings;
+
+use File::Compare;
+use FindBin;
+use lib "$FindBin::Bin/../lib";
+
+use IO::Compress::Gzip qw(gzip $GzipError);
+use IO::Uncompress::Gunzip qw(gunzip $GunzipError);
+use XML::LibXML;
+
+use NonameTV qw/ParseXml/;
+use NonameTV::DataStore;
+use NonameTV::Config qw/ReadConfig/;
+
+# Read configuration
+my $conf = ReadConfig();
+
+my $ds = NonameTV::DataStore->new( $conf->{DataStore} );
+
+# TODO target, dynamically generate from Xmltv Exporter configuration
+#my $xmltvdir = $conf->{Exporters}->{Xmltv}->{Root};
+my $xmltvdir = '/home/nonametv/var/xmltv';
+my $datalistxml = $xmltvdir . '/datalist.xml.gz';
+my $lineupxml = $xmltvdir . '/lineup.xml.gz';
+
+my $xml;
+gunzip $datalistxml => \$xml
+        or die "gunzip failed: $GunzipError\n";
+
+my $doc = ParseXml( \$xml );
+
+# create DOM
+my $lineupdoc = XML::LibXML::Document->new( );
+
+# insert processing instruction for the stylesheet
+$lineupdoc->insertProcessingInstruction( 'xml-stylesheet', 'type="text/xsl" href="xmltv-lineups.xsl"' );
+
+# create root element
+my $node = $lineupdoc->createElement( 'xmltv-lineups' );
+#$node->setAttribute( 'xmlns', 'http://supplement.xmltv.org/xmltv-lineups.xsd' );
+
+# define the root
+$lineupdoc->setDocumentElement( $node );
+
+# create our one-size-fits-all lineup
+
+$node = $lineupdoc->createElement( 'xmltv-lineup' );
+$node->setAttribute( 'generator-info-name', 'NonameTV' );
+$node->setAttribute( 'generator-info-url', 'http://nonametv.org/' );
+
+$lineupdoc->documentElement( )->addChild( $node );
+my $lineupnode = $node;
+
+# configure the lineup's properties
+$node = $lineupdoc->createElement( 'type' );
+$node->appendText( 'DTV' );
+$lineupnode->appendChild( $node );
+
+$node = $lineupdoc->createElement( 'display-name' );
+$node->appendText( 'all channels' );
+$lineupnode->appendChild( $node );
+
+
+my @channels = $doc->findnodes( '/tv/channel' );
+
+
+foreach my $chan (@channels) {
+  my $channel = $ds->{sa}->Lookup( 'channels', { xmltvid =>  $chan->findvalue( '@id' ) } );
+
+  my $channelnode = $lineupdoc->createElement( 'lineup-entry' );
+  my $stationnode = $lineupdoc->createElement( 'station' );
+  $stationnode->setAttribute( 'rfc2838', $channel->{'xmltvid'} );
+  $node = $lineupdoc->createElement( 'name' );
+  $node->setAttribute( 'lang', $channel->{'sched_lang'} );
+  $node->appendText( $channel->{'display_name'} );
+  $stationnode->appendChild( $node );
+  if( $channel->{'logo'} == 1 ) {
+    $node = $lineupdoc->createElement( 'logo' );
+    $node->setAttribute( 'url', $chan->findvalue( 'icon/@src' ) );
+    $stationnode->appendChild( $node );
+  }
+  $channelnode->appendChild( $stationnode );
+
+  my $services =  $ds->{sa}->LookupMany( 'dvb_service_pointer', { channel_id => $channel->{id} },
+                                       [ 'original_network_id', 'transport_id', 'service_id' ] );
+
+  foreach my $service (@{$services}) {
+    my $servicenode = $lineupdoc->createElement( 'dvb-channel' );
+    $node = $doc->createComment( ' ' . $service->{description} . ' ' );
+    $servicenode->appendChild( $node );
+    $node = $lineupdoc->createElement( 'original-network-id' );
+    $node->appendText ( $service->{original_network_id} );
+    $servicenode->appendChild( $node );
+
+    if( $service->{transport_id} ){
+      $node = $lineupdoc->createElement( 'transport-id' );
+      $node->appendText ( $service->{transport_id} );
+      $servicenode->appendChild( $node );
+    }
+
+    $node = $lineupdoc->createElement( 'service-id' );
+    $node->appendText ( $service->{service_id} );
+    $servicenode->appendChild( $node );
+    
+    $channelnode->appendChild( $servicenode );
+  }
+
+  $lineupnode->appendChild( $channelnode );
+}
+
+$xml = $lineupdoc->toString( 1 );
+gzip \$xml => $lineupxml . '.new', Level => 9, Time => 0
+        or die "gzip failed: $GzipError\n";
+
+if( compare( $lineupxml, $lineupxml . '.new' )== 0 ){
+  unlink( $lineupxml . '.new' );
+} else {
+  rename( $lineupxml . '.new', $lineupxml );
+}
