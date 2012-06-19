@@ -3,6 +3,7 @@ package NonameTV::Importer::OUTTV;
 use strict;
 use warnings;
 
+
 =pod
 
 Import data from XLS or XLSX files delivered via e-mail.
@@ -19,14 +20,16 @@ use Spreadsheet::Read;
 
 use Spreadsheet::XLSX;
 use Spreadsheet::XLSX::Utility2007 qw(ExcelFmt ExcelLocaltime LocaltimeExcel);
+use Spreadsheet::Read;
 
 use Text::Iconv;
 my $converter = Text::Iconv -> new ("utf-8", "windows-1251");
 
+
 use Data::Dumper;
 use File::Temp qw/tempfile/;
 
-use NonameTV qw/norm AddCategory/;
+use NonameTV qw/norm normUtf8 AddCategory/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/progress error/;
 
@@ -110,10 +113,12 @@ sub ImportXLS {
   my $colgenre = 5;
 
 my $oBook;
+
 if ( $file =~ /\.xlsx$/i ){ progress( "using .xlsx" );  $oBook = Spreadsheet::XLSX -> new ($file, $converter); }
 else { $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );  }   #  staro, za .xls
 #elsif ( $file =~ /\.xml$/i ){ $oBook = Spreadsheet::ParseExcel::Workbook->Parse($file); progress( "using .xml" );    }   #  staro, za .xls
 #print Dumper($oBook);
+my $ref = ReadData ($file);
 
   # main loop
   for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
@@ -126,9 +131,11 @@ else { $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );  }   #  staro
 
     progress( "OUTTV: Processing worksheet: $oWkS->{Name}" );
 
-		my $foundcolumns = 0;
+	my $foundcolumns = 0;
     # browse through rows
+    my $i = 0;
     for(my $iR = $oWkS->{MinRow} ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
+    $i++;
 
       my $oWkC;
 
@@ -171,8 +178,7 @@ else { $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );  }   #  staro
       next if( ! $oWkC );
       my $title = $oWkC->Value if( $oWkC->Value );
       
-      
-      
+      $title =~ s/\(N\)//g if $title;
 
       
 
@@ -183,25 +189,25 @@ else { $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );  }   #  staro
       };
       
       # Desc (only works on XLS files)
-      if ( $file =~ /\.xls$/i ){
-      	$oWkC = $oWkS->{Cells}[$iR][$coldesc];
-      	$ce->{description} = norm($oWkC->Value) if( $oWkC );
-      }
+      	my $field = "L".$i;
+      	my $desc = $ref->[1]{$field};
+      	$ce->{description} = normUtf8($desc) if( $desc );
+      	$desc = '';
 
 
-			# Genre
-			$oWkC = $oWkS->{Cells}[$iR][5];
-			if( $oWkC and $oWkC->Value ne "" ) {
-      	my $genre = $oWkC->Value;
-				my($program_type, $category ) = $ds->LookupCat( 'OUTTV', $genre );
-				AddCategory( $ce, $program_type, $category );
-			}
+		# Genre
+		$oWkC = $oWkS->{Cells}[$iR][5];
+		if( $oWkC and $oWkC->Value ne "" ) {
+	      	my $genre = $oWkC->Value;
+			my($program_type, $category ) = $ds->LookupCat( 'OUTTV', $genre );
+			AddCategory( $ce, $program_type, $category );
+		}
 			
-			# Episode
-			$oWkC = $oWkS->{Cells}[$iR][$colepisode];
-      my $episode = $oWkC->Value if( $oWkC );
-      $oWkC = $oWkS->{Cells}[$iR][$colseason];
-      my $season = $oWkC->Value if( $oWkC );
+	# Episode
+	$oWkC = $oWkS->{Cells}[$iR][$colepisode];
+	my $episode = $oWkC->Value if( $oWkC );
+	$oWkC = $oWkS->{Cells}[$iR][$colseason];
+	my $season = $oWkC->Value if( $oWkC );
       
       # Try to extract episode-information from the description.
 			if(($season) and ($season ne "")) {
@@ -216,8 +222,8 @@ else { $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );  }   #  staro
 				}
 			}
       
-			progress("OUTTV: $time - $title");
-      $dsh->AddProgramme( $ce );
+			progress("OUTTV: $time - $title") if $title;
+      $dsh->AddProgramme( $ce ) if $title;
     }
 
   }
