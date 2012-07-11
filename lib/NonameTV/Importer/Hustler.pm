@@ -20,9 +20,6 @@ use Spreadsheet::ParseExcel;
 use Data::Dumper;
 use File::Temp qw/tempfile/;
 
-use PDF::Core;
-#use PDF::Parse;
-use PDF;
 use CAM::PDF;
 
 
