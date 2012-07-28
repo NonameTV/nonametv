@@ -282,6 +282,7 @@ sub SyncChannelsToDb {
     deleted => sub {
       print STDERR "Deleting channel info for $_[0]->{xmltvid}\n";
       $self->{datastore}->ClearChannel( $_[0]->{id} );
+      $self->{datastore}->sa->Delete( "dvb_service_pointer", { channel_id => $_[0]->{id} } );
       $self->{datastore}->sa->Delete( "channels", { id => $_[0]->{id} } );
     },
     equal => sub {
