@@ -209,6 +209,9 @@ sub ParseDate {
   } elsif( $text =~ /^(\d+)-Juillet-(\d+)$/ ){
     ( $day, $year ) = ( $text =~ /^(\d+)-Juillet-(\d+)$/ );
     $month = "07";
+  } elsif( $text =~ /^(\d+)-Août-(\d+)$/ ){
+    ( $day, $year ) = ( $text =~ /^(\d+)-Août-(\d+)$/ );
+    $month = "08";
   }
 
   $year += 2000 if $year < 100;

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 NROOT=/var/local/nonametv
-PROOT=/home/beatx/github/nonametv/
+PROOT=/home/beatx/projects/nonametv/
 
 #Q="--quiet --quiet"
 Q="--verbose"
@@ -68,7 +68,7 @@ $d perl -I lib tools/nonametv-update-tvdb no
 # Import everything
 $d tools/se-tvzon/nonametv-import-allhttp $Q
 $h tools/se-tvzon/nonametv-import-allhttp $Q --short-grab
-tools/se-tvzon/nonametv-import-allmail $Q
+#tools/se-tvzon/nonametv-import-allmail $Q
 
 # Remove old
 $d perl -I lib/ tools/nonametv-export Xmltv --remove-old
@@ -112,6 +112,7 @@ $h tools/se-tvzon/nonametv-upload $Q
 
 # Run after, everything
 $d rsync --delete -r /var/local/nonametv/html/00status.html /var/www/xmltv/
+$d rsync --delete -r /var/local/nonametv/xmltv_compare/ /var/www/xmltv/compare/
 
 # Some users seems to download this file from the base url instead, this will fix it.
 $d rsync --delete -r /var/local/nonametv/xmltv/channels.xml.gz /var/www/xmltv/

@@ -19,16 +19,16 @@ use XML::LibXML;
 use Archive::Zip qw/:ERROR_CODES/;
 use Data::Dumper;
 use File::Temp qw/tempfile/;
-use File::Slurp qw/write_file/;
+use File::Slurp qw/write_file read_file/;
 use IO::Scalar;
 
 use NonameTV qw/norm AddCategory/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/d p w f/;
 
-use NonameTV::Importer::BaseUnstructured;
+use NonameTV::Importer::BaseFile;
 
-use base 'NonameTV::Importer::BaseUnstructured';
+use base 'NonameTV::Importer::BaseFile';
 
 sub new {
   my $proto = shift;
@@ -43,26 +43,28 @@ sub new {
   return $self;
 }
 
-sub ImportContent {
+sub ImportContentFile {
   my $self = shift;
-  my( $filename, $cref, $chd ) = @_;
+  my( $filename, $chd ) = @_;
 
   $self->{fileerror} = 0;
 
   my $xmltvid=$chd->{xmltvid};
   my $channel_id = $chd->{id};
   my $ds = $self->{datastore};
+  
+  my $channel_name = $chd->{display_name};
 
   my $data;
 
   if( $filename =~ /\.xml$/i ) {
-    $data = $$cref;
+    $data = read_file($filename);
   }
   elsif( $filename =~ /\.zip$/i ) {
-    my( $fh, $tempname )  = tempfile();
-    write_file( $fh, $cref );
+    #my( $fh, $tempname )  = tempfile();
+    #write_file( $fh, $cref );
     my $zip = Archive::Zip->new();
-    if( $zip->read( $tempname ) != AZ_OK ) {
+    if( $zip->read( $filename ) != AZ_OK ) {
       f "Failed to read zip.";
       return 0;
     }
@@ -165,6 +167,8 @@ sub ImportContent {
 	$ds->EndBatch( 1 );
       }
 
+		print("Date: $date\n");
+
       my $batch_id = $xmltvid . "_" . $date;
       $ds->StartBatch( $batch_id );
       $currdate = $date;
@@ -184,10 +188,14 @@ sub ImportContent {
       start_time => $start_dt->ymd('-') . " " . $start_dt->hms(':'),
     };
     
+    my $timer = $start_dt->hms(':');
+    
     if( $genre and (isGenre($genre)) ){
 			my($program_type, $category ) = $ds->LookupCat( 'DisneyChannel', $genre );
 			AddCategory( $ce, $program_type, $category );
 	}
+    
+    print("$channel_name: $timer - $title\n") if $title;
     
     $ds->AddProgramme( $ce );
   }

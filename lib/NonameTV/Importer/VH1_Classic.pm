@@ -193,6 +193,8 @@ sub ParseDate {
   # format '2011/05/16'
   } elsif( $text =~ /^\d{4}\/\d{2}\/\d{2}$/i ){
     ( $year, $month, $day ) = ( $text =~ /^(\d{4})\/(\d{2})\/(\d{2})$/i );
+  } elsif( $text =~ /^\d{1,2}\/\d{1,2}\/\d{2}$/i ){ # format '18/1/11'
+    ( $day, $month, $year ) = ( $text =~ /^(\d{1,2})\/(\d{1,2})\/(\d{2})$/i );
   } elsif( $text =~ /^\d{1,2}-\d{1,2}-\d{2}$/ ){ # format '10-18-11' or '1-9-11'
      ( $month, $day, $year ) = ( $text =~ /^(\d+)-(\d+)-(\d+)$/ );
   }elsif( $text =~ /^\d{2}\-\d{2}\-\d{4}$/i ){

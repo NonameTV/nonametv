@@ -252,9 +252,9 @@ my $title = norm($title_programme) || norm($title_original);
     }
     
     if( $genre ){
-my($program_type, $category ) = $ds->LookupCat( 'Nonstop', $genre );
-AddCategory( $ce, $program_type, $category );
-}
+		my($program_type, $category ) = $ds->LookupCat( 'Nonstop', $genre );
+		AddCategory( $ce, $program_type, $category );
+	}
 
     $ds->AddProgramme( $ce );
   }

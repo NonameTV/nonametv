@@ -169,8 +169,9 @@ my $ref = ReadData ($file);
       my $time = 0;  # fix for  12:00AM
       $time=$oWkC->{Val} if( $oWkC->Value );
 
-			#Convert Excel Time -> localtime
+	  #Convert Excel Time -> localtime
       $time = ExcelFmt('hh:mm', $time);
+      $time =~ s/_/:/g; # They fail sometimes
 
 
       # title

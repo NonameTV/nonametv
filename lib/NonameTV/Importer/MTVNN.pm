@@ -42,7 +42,7 @@ sub Object2Url {
   my( $year, $week ) = ( $objectname =~ /(\d+)-(\d+)$/ );
 
   my $channel = $chd->{grabber_info};
-  my $url = sprintf( "http://api.mtvnn.com/v2/airings.xmltv?channel_id=%d&program_week_is=%d", $channel, $week );
+  my $url = sprintf( "http://api.mtvnn.com/v2/airings.xmltv?channel_id=%d&program_week_is=%d&language_code=sv&country_code=SE", $channel, $week );
 
   d( "MTVNN: fetching data from $url" );
 

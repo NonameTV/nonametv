@@ -10,6 +10,7 @@ use LWP::Simple qw/get/;
 use Digest::MD5 qw/md5_hex/;
 use File::Path qw/mkpath/;
 use File::stat;
+use Encode qw/encode_utf8/;
 
 use Carp qw/croak carp/;
 
@@ -76,10 +77,11 @@ sub AddFile #( $xmltvid, $filename, $cref )
 
   my( $oldmd5, $ts ) = $self->GetFileMeta( $xmltvid, $filename );
 
-  my $newmd5 = md5_hex( $$cref );
+  my $newmd5 = md5_hex( encode_utf8( $$cref ) );
   if( not defined( $oldmd5 ) ) {
     my $fullname = "$dir/$filename";
     open( OUT, "> $fullname" ) or die "Failed to write to $fullname";
+    binmode(OUT, ":utf8");
     print OUT $$cref;
     close( OUT );
     
@@ -107,6 +109,7 @@ sub AddFile #( $xmltvid, $filename, $cref )
     if( not defined( $nextmd5 ) ) {
       my $fullname = "$dir/$nextfilename";
       open( OUT, "> $fullname" ) or die "Failed to write to $fullname";
+      binmode(OUT, ":utf8");
       print OUT $$cref;
       close( OUT );
       
@@ -269,6 +272,7 @@ sub WriteFileMeta {
 
   my $fullname = $self->{Path} . "/$xmltvid/00files";
   open( OUT, "> $fullname" ) or die "Failed to write to $fullname";
+  binmode(OUT, ":utf8");
   foreach my $e (@{$self->{_fl}->{$xmltvid}}) {
     print OUT join( "\t", @{$e} ) . "\n";
   }

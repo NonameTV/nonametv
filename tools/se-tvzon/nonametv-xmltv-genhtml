@@ -114,7 +114,7 @@ foreach my $channel (sort keys %channels)
 {
   print OUT << "EOD";
 <tr>
-	<th scope='row'><img src='http://tvimg.net/chanlogos/44x44/$channel.png' /></th>
+	<th scope='row'><img src='http://static.tvtab.la/gfx/chanlogos/44x44/$channel.png' /></th>
   <th scope='row'><a href='/nowonchannel.php?channel=$channel'>$channel</a></th>
 
 EOD
@@ -198,9 +198,9 @@ foreach my $channel (sort keys %channels)
   print OUT << "EOREC";
 <tr>
   <td>$channel</td>
-  <td><img src="http://tvimg.net/chanlogos/$channel.png"></td>
-  <td><img src="http://tvimg.net/chanlogos/44x44/$channel.png"></td>
-  <td><img src="http://tvimg.net/chanlogos/16x16/$channel.png"></td>
+  <td><img src="http://static.tvtab.la/gfx/chanlogos/$channel.png"></td>
+  <td><img src="http://static.tvtab.la/gfx/44x44/$channel.png"></td>
+  <td><img src="http://static.tvtab.la/gfx/16x16/$channel.png"></td>
 </tr>
 
 EOREC
@@ -217,7 +217,7 @@ EOFOOT
 close(OUT);
 
 update_if_changed( "$dir/00logos.html.new", "$dir/00logos.html" );
-system( "zcat $dir/channels.xml.gz | xsltproc /home/beatx/github/nonametv/examples/channel-list.xsl - > $dir/channels.html.new" );
+system( "zcat $dir/channels.xml.gz | xsltproc /home/beatx/projects/nonametv/examples/channel-list.xsl - > $dir/channels.html.new" );
 
 update_if_changed( "$dir/channels.html.new", "$dir/channels.html" );
 

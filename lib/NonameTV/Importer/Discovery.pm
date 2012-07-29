@@ -22,14 +22,14 @@ use DateTime;
 use XML::LibXML;
 use Data::Dumper;
 
-use NonameTV qw/Content2Xml norm/;
+use NonameTV qw/Wordfile2Xml norm/;
 use NonameTV::DataStore::Helper;
 use NonameTV::DataStore::Updater;
 use NonameTV::Log qw/w f/;
 use NonameTV::Log qw/progress error/;
 
-use NonameTV::Importer::BaseUnstructured;
-use base 'NonameTV::Importer::BaseUnstructured';
+use NonameTV::Importer::BaseFile;
+use base 'NonameTV::Importer::BaseFile';
 
 my $command_re = "ÄNDRA|RADERA|TILL|INFOGA|EJ ÄNDRAD|" . 
     "CHANGE|DELETE|TO|INSERT|UNCHANGED";
@@ -55,9 +55,11 @@ sub new
   return $self;
 }
 
-sub ImportContent {
+sub ImportContentFile {
   my $self = shift;
-  my( $filename, $cref, $chd ) = @_;
+  my( $filename, $chd ) = @_;
+  
+  
 
   if( $filename =~ /\bhigh/i ) {
     f "Skipping highlights file";
@@ -67,7 +69,7 @@ sub ImportContent {
   my $channel_id = $chd->{id};
   my $channel_xmltvid = $chd->{xmltvid};
 
-  my $doc = Content2Xml( $cref );
+  my $doc = Wordfile2Xml( $filename );
 
   if( not defined( $doc ) ) {
     f "Failed to parse";

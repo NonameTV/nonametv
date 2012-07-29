@@ -58,10 +58,7 @@ my $root = "/home/beatx/maildir/.Projects/";
 my @folders = qw(NonameTV-Data.Disney
 		 NonameTV-Data.GlobalListings
 		 NonameTV-Data.CNBC
-		 NonameTV-Data.Nonstop
 		 NonameTV-Data.OUTTV
-		 NonameTV-Data.YaS
-		 NonameTV-Data.ExtremeSports
 		 NonameTV-Data.TravelChannel
 		 NonameTV-Data.FOX
 		 NonameTV-Data.Kanal10
@@ -227,17 +224,17 @@ sub guess_channel
 	return "cnn.com" if $filename =~ /^cnn\s*\b/i;
   }
 
-   if( $dir =~ /CNBC/ and $filename =~ /\.xls$/i ) {
-     return "cnbceurope.com" if $filename =~ /^\s*\b/i;
- }
+#  if( $dir =~ /CNBC/ and $filename =~ /\.xls$/i ) {
+#     return "cnbceurope.com" if $filename =~ /^\s*\b/i;
+#  }
  
  if( $dir =~ /Chellozone/ and $filename =~ /\.xls$/i ) {
      return "outdoorchannel.com" if $filename =~ /^UTEM\d*V\d*\b/i;
  }
 
-   if( $dir =~ /ExtremeSports/ and $filename =~ /\.xls$/i ) {
+#   if( $dir =~ /ExtremeSports/ and $filename =~ /\.xls$/i ) {
 #     return "extremesports.com";
- }
+# }
    if( $dir =~ /Kanal10/ and $filename =~ /\.doc$/i ) {
      return "kanal10.se";
  }
@@ -265,10 +262,10 @@ sub guess_channel
      return "europe.hustlertv.com" if $filename =~ /^hustler.*gmt.*\b/i;
  }
 
-   if( $dir =~ /YaS/ and $filename =~ /\.xls$/i ) {
+#   if( $dir =~ /YaS/ and $filename =~ /\.xls$/i ) {
 #     return "yachtandsail.com" if $filename =~ /^palinsesto\s*\b/i;
-     return "nauticalchannel.net";
- }
+#     return "nauticalchannel.net";
+# }
 
  if( $dir =~ /Motors/ and $filename =~ /\.xls$/i ) {
      return "motorstv.com" if $filename =~ /pgms/i;

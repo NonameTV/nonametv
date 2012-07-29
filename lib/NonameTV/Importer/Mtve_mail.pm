@@ -101,10 +101,8 @@ sub ImportXLS
           if( $oWkS->{Cells}[$iR][$iC] ){
             $columns{$oWkS->{Cells}[$iR][$iC]->Value} = $iC;
 
-						$columns{'StartDate'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Start Date/ );
-						$columns{'StartTime'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Start Time/ );
-						$columns{'EndDate'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /End Date/ );
-						$columns{'EndTime'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /End Time/ );
+						$columns{'Start'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Start/ );
+						$columns{'End'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /End/ );
 						$columns{'Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Title/ );
           
           	
@@ -122,27 +120,22 @@ sub ImportXLS
         next;
       }
 
-			my $oWkDate = $oWkS->{Cells}[$iR][$columns{'StartDate'}];
+	  my $oWkDate = $oWkS->{Cells}[$iR][$columns{'Start'}];
       next if( ! $oWkDate );
 
       # date & Time - column 1 ('Date')
-      my $date = ParseDate( $oWkDate->Value );
+      my( $date, $time ) = split( ' ', $oWkDate->Value );
+      
+      $date = ParseDate( $date );
       next if( ! $date );
-      
-      my $oWkTime = $oWkS->{Cells}[$iR][$columns{'StartTime'}];
-      my $time = 0;  # fix for  12:00AM	->Value
-      $time = $oWkTime->{Val} if( $oWkTime->Value );
 
-			#Convert Excel Time -> localtime
- 	 		$time = ExcelFmt('hh:mm', $time);
+	  #Convert Excel Time -> localtime
+ 	  $time = ExcelFmt('hh:mm', $time);
       
-      my $enddate = ParseDate($oWkS->{Cells}[$iR][$columns{'EndDate'}]->Value);
-      my $oWkendTime = $oWkS->{Cells}[$iR][$columns{'EndTime'}];
-      my $endtime = 0;  # fix for  12:00AM	->Value
-      $endtime = $oWkendTime->{Val} if( $oWkendTime->Value );
-
-			#Convert Excel Time -> localtime
- 	 		$endtime = ExcelFmt('hh:mm', $endtime);
+      my $enddate = $oWkS->{Cells}[$iR][$columns{'End'}]->Value;
+      my( $enddate2, $endtime ) = split( ' ', $enddate );
+	  # Convert Excel Time -> localtime
+	  $endtime = ExcelFmt('hh:mm', $endtime);
 
 	  	# Startdate
       if( $date ne $currdate ) {
