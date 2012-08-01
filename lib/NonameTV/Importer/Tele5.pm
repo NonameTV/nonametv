@@ -418,12 +418,20 @@ sub ImportRTF {
         }
 
         # aspect
+        if ($text =~ m|^\s*\[Bild: 4:3 \]$|m) {
+          $ce->{aspect} = '4:3';
+          $text =~ s/\n\s*\[Bild: 4:3 \](?:\n|$)/\n/;
+        }
         if ($text =~ m|^\s*Bildformat 16:9$|m) {
           $ce->{aspect} = '16:9';
           $text =~ s/\n\s*Bildformat 16:9(?:\n|$)/\n/;
         }
 
         # stereo
+        if ($text =~ m|^\s*\[Ton: Mono \]$|m) {
+          $ce->{stereo} = 'mono';
+          $text =~ s/\n\s*\[Ton: Mono \](?:\n|$)/\n/;
+        }
         if ($text =~ m|^\s*Stereo$|m) {
           $ce->{stereo} = 'stereo';
           $text =~ s/\n\s*Stereo(?:\n|$)/\n/;
