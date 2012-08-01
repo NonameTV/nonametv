@@ -26,7 +26,6 @@ use Encode qw/from_to/;
 use RTF::Tokenizer;
 use utf8;
 
-use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/d p w error f/;
 use NonameTV qw/AddCategory MonthNumber norm normLatin1 normUtf8/;
 
@@ -367,7 +366,7 @@ sub ImportRTF {
         #
 
         # year of production and genre/program type
-        my ($genre, $production_year) = ($text =~ m |\n\s*(.*)\n\s*Produziert:\s+.*\s(\d+)|);
+        my ($genre, $production_year) = ($text =~ m |\n\s*(.*)\n\s*Produziert:\s*.*\s(\d+)|);
         if ($production_year) {
           $ce->{production_date} = $production_year . '-00-00';
         }
@@ -375,9 +374,9 @@ sub ImportRTF {
           if (!($genre =~ m|^Sendedauer:|)) {
             my ($program_type, $categ) = $ds->LookupCat ('Tele5', $genre);
             AddCategory ($ce, $program_type, $categ);
-            $text =~ s|\n.*\n\s*Produziert:\s+.*\s\d+||;
+            $text =~ s|\n.*\n\s*Produziert:\s*.*\s\d+||;
           } else {
-            $text =~ s|\n\s*Produziert:\s+.*\s\d+||;
+            $text =~ s|\n\s*Produziert:\s*.*\s\d+||;
           }
         }
         $text =~ s|\n\s*Sendedauer:\s+\d+||;
