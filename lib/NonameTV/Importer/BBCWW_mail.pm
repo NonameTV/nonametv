@@ -100,13 +100,21 @@ sub ImportXLS
 
 			$columns{'Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /English Title/ );
 			$columns{'Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Programme Title/ );
+			$columns{'Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Programme \(Swedish\)/ );
 
           $columns{'Episode Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /English Episode Title/ );
+          $columns{'Episode Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Episode Name \(English\)/ );
           
           $columns{'Ser No'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Series No./ );
+          $columns{'Ser No'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Series Number/ );
           $columns{'Ep No'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Episode No./ );
+          $columns{'Ep No'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Episode Number/ );
           
           $columns{'Synopsis'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Synopsis./ );
+          $columns{'Synopsis'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Synopsis \(Swedish\)/ );
+          
+          $columns{'Date'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Date \(CET\/CEST\)/ );
+          $columns{'Time'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Time \(CET\/CEST\)/ );
 
             $foundcolumns = 1 if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Date/ );
           }
@@ -147,6 +155,7 @@ sub ImportXLS
       $oWkC = $oWkS->{Cells}[$iR][$columns{'Time'}];
       next if( ! $oWkC );
       my $time = $oWkC->Value if( $oWkC->Value );
+      $time =~ s/'//g;
 
       # title
       $oWkC = $oWkS->{Cells}[$iR][$columns{'Title'}];
