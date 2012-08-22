@@ -223,9 +223,7 @@ sub ImportRTF {
         $laststart = undef;
       } else { 
 #        $text =~ s|^\s+||mg;
-        if( $self->{RTFDebug} ) {
-          d( 'TEXT: ' . $text );
-        }
+        d( 'TEXT: ' . $text );
 
         my $ce = {};
         $ce->{channel_id} = $chd->{id};
@@ -308,13 +306,18 @@ sub ImportRTF {
           }
         }
 
+        # season number
+        if ($text =~ m|^\s*Staffel \d+$|m) {
+          $text =~ s/\n\s*Staffel \d+(?:\n|$)/\n/;
+        }
+
         # episode number
         my ($episodenum) = ($text =~ m/^\s*Folge\s+(\d+)(?:\/\d+$|\s+von\s+\d+$|$)/m);
         if ($episodenum) {
           $ce->{episode} = ' . ' . ($episodenum - 1) . ' . ';
 
           # episode title
-          my ($episodetitle) = ($text =~ m |\n(.*)\n\s*Folge\s+\d+\n|);
+          my ($episodetitle) = ($text =~ m/\n(.*)\n\s*Folge\s+\d+\n/);
           #error 'episode title: ' . $episodetitle;
           if( defined( $episodetitle ) ) {
             # strip trailing orignal episode title if present
@@ -422,9 +425,23 @@ sub ImportRTF {
           $ce->{aspect} = '4:3';
           $text =~ s/\n\s*\[Bild: 4:3 \](?:\n|$)/\n/;
         }
+        if ($text =~ m|^\s*\[Bild: 16:9 \]$|m) {
+          $ce->{aspect} = '16:9';
+          $text =~ s/\n\s*\[Bild: 16:9 \](?:\n|$)/\n/;
+        }
         if ($text =~ m|^\s*Bildformat 16:9$|m) {
           $ce->{aspect} = '16:9';
           $text =~ s/\n\s*Bildformat 16:9(?:\n|$)/\n/;
+        }
+
+        # quality
+        if ($text =~ m|^\s*\[HDTV: HD \]$|m) {
+          $ce->{quality} = 'HDTV';
+          $text =~ s/\n\s*\[HDTV: HD \](?:\n|$)/\n/;
+        }
+        if ($text =~ m|^\s*HDTV$|m) {
+          $ce->{quality} = 'HDTV';
+          $text =~ s/\n\s*HDTV(?:\n|$)/\n/;
         }
 
         # stereo
@@ -448,6 +465,11 @@ sub ImportRTF {
         if ($text =~ m|^\s*Für Hörgeschädigte$|m) {
           #$ce->{subtitle} = 'yes';
           $text =~ s/\n\s*Für Hörgeschädigte(?:\n|$)/\n/;
+        }
+
+        # repeat
+        if ($text =~ m|^\s*Wiederholung vom \d+\.\d+\.\d+$|m) {
+          $text =~ s/\n\s*Wiederholung vom \d+\.\d+\.\d+(?:\n|$)/\n/;
         }
 
         # category override for kids (as we don't have a good category for anime anyway)
@@ -509,13 +531,13 @@ sub ImportRTF {
 
         # episode number
         my $episode;
-        ($episode, $episodenum) = ($text =~ m|^\s*Folge (\d+) von (\d+)$|m);
+        ($episode, $episodenum) = ($text =~ m/^\s*Folge (\d+) von (\d+)$/m);
         if($episodenum) {
           $ce->{episode} = '. ' . ($episode - 1) . ' .';
           $text =~ s/\n\s*Folge \d+ von \d+(?:\n|$)/\n/;
         }
 
-        ($episode) = ($text =~ m|^\s*Folge (\d+)$|m);
+        ($episode) = ($text =~ m/^\s*Folge (\d+)$/m);
         if($episode) {
           $ce->{episode} = '. ' . ($episode - 1) . ' .';
           $text =~ s/\n\s*Folge \d+(?:\n|$)/\n/;
