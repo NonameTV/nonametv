@@ -175,7 +175,7 @@ sub AugmentProgram( $$$ ){
 
     # filter characters that confuse the search api
     # FIXME check again now that we encode umlauts & co.
-    $searchTerm =~ s|[-#\?]||g;
+    $searchTerm =~ s|[-#\?\N{U+00BF}\(\)]||g;
 
     if( $self->{Slow} ) {
       sleep (1);
@@ -239,6 +239,7 @@ sub AugmentProgram( $$$ ){
             last;
           }
 
+          # FIXME case insensitive match helps with names like "Guillermo del Toro"
           my @nodes = $doc2->findnodes( '/OpenSearchDescription/movies/movie/cast/person[@job=\'Director\' and @name=\'' . $director . '\']' );
           if( @nodes != 1 ){
             $candidate->unbindNode();
