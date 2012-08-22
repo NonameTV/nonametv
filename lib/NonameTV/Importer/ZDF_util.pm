@@ -547,7 +547,7 @@ sub clean_untertitel
   # Film von Sabrina Hermsen und Uschi Hopf
   # Film von Sandra Schlittenhardt, Faika Kalac,
   #
-  if ($subtitle =~ m|^Film\S* von \S+ \S+$|) {
+  if ($subtitle =~ m/^(?:Film\S*|Reportage) von \S+ \S+$/) {
     d( "parsing producer from subtitle: " . $subtitle );
     my ($format, $producer) = ($subtitle =~ m|^(\S+) von (\S+ \S+)$|);
 
