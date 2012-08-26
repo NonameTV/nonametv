@@ -166,11 +166,8 @@ sub AugmentProgram( $$$ ){
     # search by title and year (if present)
 
     my $searchTerm = $ceref->{title};
-    if( $ceref->{production_date} ){
-#      my( $year )=( $ceref->{production_date} =~ m|^(\d{4})\-\d+\-\d+$| );
-#      $searchTerm .= ' ' . $year;
-    }else{
-      return( undef,  "Year unknown, not searching at themoviedb.org!" );
+    if( !$ceref->{production_date} && !$ceref->{directors}){
+      return( undef,  "Year and directors unknown, not searching at themoviedb.org!" );
     }
 
     # filter characters that confuse the search api
@@ -207,16 +204,23 @@ sub AugmentProgram( $$$ ){
     }else{
 #      print STDERR Dumper( $apiresult );
 
-      my( $produced )=( $ceref->{production_date} =~ m|^(\d{4})\-\d+\-\d+$| );
-      my @candidates = $doc->findnodes( '/OpenSearchDescription/movies/movie' );
-      foreach my $candidate ( @candidates ) {
-        # verify that production and release year are close
-        my $released = $candidate->findvalue( './released' );
-        $released =~ s|^(\d{4})\-\d+\-\d+$|$1|;
-        if( !$released ){
-          $candidate->unbindNode();
-        } elsif( abs( $released - $produced ) > 2 ){
-          $candidate->unbindNode();
+      my @candidates;
+      # filter out movies more then 2 years before/after if we know the year
+      if ( $ceref->{production_date} ) {
+        my( $produced )=( $ceref->{production_date} =~ m|^(\d{4})\-\d+\-\d+$| );
+        @candidates = $doc->findnodes( '/OpenSearchDescription/movies/movie' );
+        foreach my $candidate ( @candidates ) {
+          # verify that production and release year are close
+          my $released = $candidate->findvalue( './released' );
+          $released =~ s|^(\d{4})\-\d+\-\d+$|$1|;
+          if( !$released ){
+            $candidate->unbindNode();
+            my $url = $candidate->findvalue( 'url' );
+            w( "year of release not on record, removing candidate. Add it at $url." );
+          } elsif( abs( $released - $produced ) > 2 ){
+            $candidate->unbindNode();
+            d( "year of production '$produced' to far away from year of release '$released', removing candidate" );
+          }
         }
       }
 
