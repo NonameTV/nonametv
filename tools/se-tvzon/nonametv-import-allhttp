@@ -9,6 +9,7 @@ $NONAMETV Arte $1 $2 $3
 $NONAMETV BBCWorld $1 $2 $3
 $NONAMETV Bleb $1 $2 $3
 #$NONAMETV BBCWW $1 $2 $3
+$NONAMETV CMore $1 $2 $3
 $NONAMETV CanalPlus $1 $2 $3
 $NONAMETV Discovery_xml $1 $2 $3
 $NONAMETV DR $1 $2 $3
@@ -27,6 +28,7 @@ $NONAMETV NRK $1 $2 $3
 $NONAMETV ORF $1 $2 $3
 $NONAMETV RadioSeven $1 $2 $3
 $NONAMETV SBSRadio $1 $2 $3
+$NONAMETV SBSTV $1 $2 $3
 $NONAMETV SverigesRadio $1 $2 $3
 $NONAMETV Svt $1 $2 $3
 $NONAMETV Viasat $1 $2 $3
