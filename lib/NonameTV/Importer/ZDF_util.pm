@@ -291,6 +291,9 @@ sub ParseData
           case /highdefinition/   {$ce{quality} = "HDTV"}
           case /zweikanalton/     {$ce{stereo} = "bilingual"}
           case /&zk;/             {$ce{stereo} = "bilingual"} 
+          # new attributes 2012-10
+          case /&mo;/   {$ce{stereo} = "mono"}
+          case /&f43;/  {$ce{aspect} = "4:3"}
           else                    { w ("unhandled attribute: $attribut") } 
         }
       }
