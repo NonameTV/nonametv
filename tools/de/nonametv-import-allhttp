@@ -25,7 +25,8 @@ $NONAMETV DasErsteDE $1 $2 $3
 $NONAMETV DRadioDE $1 $2 $3
 $NONAMETV DRadioWissenDE $1 $2 $3
 $NONAMETV DreiSat $1 $2 $3
-$NONAMETV Eurosport $1 $2 $3
+$NONAMETV DWDE $1 $2 $3
+#$NONAMETV Eurosport $1 $2 $3
 $NONAMETV Infomedia $1 $2 $3
 $NONAMETV KiKaDE $1 $2 $3
 $NONAMETV MTVde $1 $2 $3
@@ -37,5 +38,5 @@ $NONAMETV TechnoBaseFM $1 $2 $3
 #$NONAMETV Tele5 $1 $2 $3
 $NONAMETV ZDF $1 $2 $3
 
-fetch -o /home/nonametv/var/channels/tv_grab/ok54.xml http://programm.ok54.de/xmltv/
-$NONAMETV TVGrabXX $1 $2 $3
+#fetch -o /home/nonametv/var/channels/tv_grab/ok54.xml http://programm.ok54.de/xmltv/
+#$NONAMETV TVGrabXX $1 $2 $3
