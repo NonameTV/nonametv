@@ -76,6 +76,7 @@ sub FilterContent {
   $cref =~ s| target=\"((?!\").)*\"||g;
 
   my $doc = Html2Xml ($cref);
+  $doc->setEncoding('utf-8');
   $cref = $doc->toStringHTML ();
 
   return( \$cref, undef);
@@ -118,7 +119,7 @@ sub ImportContent {
     keep_html => 0
   );
 
-  $$cref = decode( 'windows-1252', $$cref );
+  $$cref = decode( 'utf-8', $$cref );
   $te->parse($$cref);
 
   my $table = $te->table(0,0+1);
