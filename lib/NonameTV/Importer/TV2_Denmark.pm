@@ -109,8 +109,23 @@ sub ImportContent
   	
   	## Batch
   	
-    my $time  = $pgm->findvalue( 'time' );
+    my $time  = ParseDateTime($pgm->findvalue( 'time' ));
     my $title = $pgm->findvalue( 'title' );
+    $title =~ s/\((\d+):(\d+)\)//g if $title;
+    $title =~ s/\((\d+)\)//g if $title;
+    my $genre = $pgm->findvalue( 'category' );
+    my $cast  = $pgm->findvalue( 'cast' );
+    my $year  = $pgm->findvalue( 'year' );
+    
+    if(defined($pgm->findvalue( 'original_title' ))){
+  	  my ( $original_title , $year_series ) = ( $pgm->findvalue( 'original_title' ) =~ /^(.*)-(.*)$/ );
+  	  
+  	  if(norm($original_title) ne "") {
+  	 	 $title = $original_title;
+  	  } else {
+  	  	
+  	  }
+  	}
     
     my $ce = {
       title       => norm($title),
@@ -128,16 +143,79 @@ sub ImportContent
     
     # Subtitle
     if(defined($pgm->findvalue( 'original_episode_title' ))) {
-    	$ce->{subtitle} = norm($pgm->findvalue( 'original_episode_title' ));
+    	if(norm($pgm->findvalue( 'original_episode_title' )) ne "") {
+    		$ce->{subtitle} = norm($pgm->findvalue( 'original_episode_title' ));
+    		$ce->{subtitle} =~ s/ - part/: Part/g if $title;
+    	}
     }
     
-    $ds->AddProgrammeRaw( $ce );
+    if( $genre ){
+			my($program_type, $category ) = $ds->LookupCat( 'TV2Denmark', $genre );
+			AddCategory( $ce, $program_type, $category );
+	}
+	
+	if( $year ){
+		$ce->{production_date} = $year."-01-01";
+	}
+	
+	my( $dumpy, $directors ) = ($cast =~ /(\s)nstruktion:\s*(.*).$/ );
+	if( $directors ) {
+		$ce->{directors} = norm(parse_person_list( $directors ));
+	}
+    
+    $dsh->AddCE( $ce );
   }
   
   #$ds->EndBatch( 1 );
   
   # Success
   return 1;
+}
+
+
+sub parse_person_list
+{
+  my( $str ) = @_;
+
+  $str =~ s/\bog\b/,/;
+  $str =~ s/\bsamt\b/,/;
+
+  my @persons = split( /\s*,\s*/, $str );
+  foreach (@persons)
+  {
+    # The character name is sometimes given . Remove it.
+    # The Cast-entry is sometimes cutoff, which means that the
+    # character name might be missing a trailing ).
+    #s/\s*\(.*$//;
+    #s/.*\s+-\s+//;
+  }
+  
+  Dumper(@persons);
+
+  return join( ", ", grep( /\S/, @persons ) );
+}
+
+# The start and end-times are in the format 2007-12-31T01:00:00
+# and are expressed in the local timezone.
+sub ParseDateTime {
+  my( $str ) = @_;
+
+  my( $year, $month, $day, $hour, $minute, $second ) = 
+      ($str =~ /^(\d+)-(\d+)-(\d+) (\d+):(\d+):(\d+)/ );
+
+  my $dt = DateTime->new(
+    year => $year,
+    month => $month,
+    day => $day,
+    hour => $hour,
+    minute => $minute,
+    second => $second,
+    time_zone => "Europe/Copenhagen"
+      );
+
+  $dt->set_time_zone( "UTC" );
+
+  return $dt;
 }
 
 1;

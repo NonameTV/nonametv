@@ -159,6 +159,7 @@ sub ImportFull
 
       ( $start, $title ) = ($text =~ /^(\d+\:\d+)\s+(.*)\s*$/ );
       $start =~ tr/\./:/;
+      $title =~ s/\s+\(18\+\)//g if $title;
 
     } elsif( $text =~ /^\s*Programme Schedule - \s*$/ ){
 

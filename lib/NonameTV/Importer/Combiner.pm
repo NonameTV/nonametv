@@ -247,6 +247,79 @@ $channel_data{ "neokika.zdfmobil.de" } =
       ],
   };
 
+
+=pod
+
+C More Sport/SF-Kanalen
+
+=cut
+
+$channel_data{ "sport-sf.cmore.se" } =
+  {
+    "sf-kanalen.cmore.se" =>
+	[
+	  {
+	     day => 'mo',
+	     time => '0100-1800',
+	  },
+	  {
+             day => 'tu',
+             time => '0100-1800',
+          },
+          {
+             day => 'we',
+             time => '0100-1800',
+          },
+          {
+             day => 'th',
+             time => '0100-1800',
+          },
+          {
+             day => 'fr',
+             time => '0100-1800',
+          },
+          {
+             day => 'sa',
+             time => '0100-1200',
+          },
+          {
+             day => 'su',
+             time => '0100-1200',
+          },
+	],
+   "sport.cmore.se" =>
+	[
+          {
+             day => 'mo',
+             time => '1800-0100',
+          },
+          {
+             day => 'tu',
+             time => '1800-0100',
+          },
+          {
+             day => 'we',
+             time => '1800-0100',
+          },
+          {
+             day => 'th',
+             time => '1800-0100',
+          },
+          {
+             day => 'fr',
+             time => '1800-0100',
+          },
+          {
+             day => 'sa',
+             time => '1200-0100',
+          },
+          {
+             day => 'su',
+             time => '1200-0100',
+          },
+        ],
+    };
+
 =pod
 
 ARTE / EinsExtra on ARD national mux from HR

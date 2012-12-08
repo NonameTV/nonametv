@@ -201,12 +201,19 @@ sub ParseDate {
   my( $year, $day, $month );
 
   # format '2011-04-13'
-  if( $text =~ /^(\d+)\/(\d+)\/(\d+)$/i ){
-    ( $month, $day, $year ) = ( $text =~ /^(\d+)\/(\d+)\/(\d{2})$/i );
+  if( $text =~ /^\d{2}\/\d{2}\/\d{4}$/i ){
+    ( $day, $month, $year ) = ( $text =~ /^(\d{2})\/(\d{2})\/(\d{4})$/i );
 
   # format '2011-05-16'
   } elsif( $text =~ /^\d{4}-\d{2}-\d{2}$/i ){
     ( $year, $month, $day ) = ( $text =~ /^(\d{4})-(\d{2})-(\d{2})$/i );
+    
+  # format '03-11-2012'
+  } elsif( $text =~ /^\d{2}-\d{2}-\d{4}$/i ){
+    ( $day, $month, $year ) = ( $text =~ /^(\d{2})-(\d{2})-(\d{4})$/i );
+  # format '03/11/2012'
+  } elsif( $text =~ /^(\d+)\/(\d+)\/(\d+)$/i ){
+    ( $month, $day, $year ) = ( $text =~ /^(\d+)\/(\d+)\/(\d{2})$/i );
   }
 
   $year += 2000 if $year < 100;
@@ -234,6 +241,8 @@ sub ParseTime {
 
   if( $text =~ /^\d+:\d+$/ ){
     ( $hour , $min ) = ( $text =~ /^(\d+):(\d+)$/ );
+  } elsif( $text =~ /^\d+:\d+/ ){
+    ( $hour , $min ) = ( $text =~ /^(\d+):(\d+)/ );
   }
 
   return sprintf( "%02d:%02d", $hour, $min );

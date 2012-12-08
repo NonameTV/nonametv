@@ -212,6 +212,18 @@ sub ParseDate {
   } elsif( $text =~ /^(\d+)-Août-(\d+)$/ ){
     ( $day, $year ) = ( $text =~ /^(\d+)-Août-(\d+)$/ );
     $month = "08";
+  } elsif( $text =~ /^(\d+)-Septembre-(\d+)$/ ){
+  	( $day, $year ) = ( $text =~ /^(\d+)-Septembre-(\d+)$/ );
+    $month = "09";
+  } elsif( $text =~ /^(\d+)-Octobre-(\d+)$/ ){
+        ( $day, $year ) = ( $text =~ /^(\d+)-Octobre-(\d+)$/ );
+    $month = "10";
+  } elsif( $text =~ /^(\d+)-Novembre-(\d+)$/ ){
+        ( $day, $year ) = ( $text =~ /^(\d+)-Novembre-(\d+)$/ );
+    $month = "11";
+  } elsif( $text =~ /^(\d+)-Décembre-(\d+)$/ ){
+        ( $day, $year ) = ( $text =~ /^(\d+)-Décembre-(\d+)$/ );
+    $month = "12";
   }
 
   $year += 2000 if $year < 100;

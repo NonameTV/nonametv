@@ -10,9 +10,10 @@ $NONAMETV BBCWorld $1 $2 $3
 $NONAMETV Bleb $1 $2 $3
 #$NONAMETV BBCWW $1 $2 $3
 $NONAMETV CMore $1 $2 $3
-$NONAMETV CanalPlus $1 $2 $3
+#$NONAMETV CanalPlus $1 $2 $3
 $NONAMETV Discovery_xml $1 $2 $3
 $NONAMETV DR $1 $2 $3
+$NONAMETV DK4 $1 $2 $3
 $NONAMETV DreiSat $1 $2 $3
 $NONAMETV DasErste $1 $2 $3
 $NONAMETV Eurosport $1 $2 $3

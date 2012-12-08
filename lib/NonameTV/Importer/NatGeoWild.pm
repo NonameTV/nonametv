@@ -34,6 +34,8 @@ sub new {
 
   my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
   $self->{datastorehelper} = $dsh;
+  
+  $self->{datastore}->{augment} = 1;
 
   return $self;
 }
@@ -139,22 +141,22 @@ sub ImportFlatXLS
 	  
 	  # print "hejhej";
       # program_title (column 4)
-      $oWkC = $oWkS->{Cells}[$iR][4];
+      $oWkC = $oWkS->{Cells}[$iR][2];
 
       # Here's where the magic happends.
 	  # Love goes out to DrForr.
 		if (defined $oWkC)
 		{
-			$test = $oWkC->Value;
+			$title = norm($oWkC->Value);
 		}
 		else
 		{
-			my $oWkl = $oWkS->{Cells}[$iR][8];
+			my $oWkl = $oWkS->{Cells}[$iR][6];
 			next if( ! $oWkl );
 			$test = $oWkl->Value if $oWkl->Value;
 		}
 	  
-	  $title = norm($test) if $test ne "";
+	  $title = norm($test) if !defined($title);
 	  # If no series title, get it from episode name.
 	  
 	  
@@ -178,7 +180,23 @@ sub ImportFlatXLS
         };
 
 		## Episodes and so on ( Doesn't seem to work, fix this later. )
-
+		$oWkC = $oWkS->{Cells}[$iR][15];
+		my $episode = $oWkC->Value if( $oWkC );
+		$oWkC = $oWkS->{Cells}[$iR][14];
+		my $season = $oWkC->Value if( $oWkC );
+      
+        # Try to extract episode-information from the description.
+		if(($season) and ($season ne "")) {
+			# Episode info in xmltv-format
+			if(($episode) and ($episode ne "") and ($season ne "") and ($season ne "N/A") )
+			{
+				$ce->{episode} = sprintf( "%d . %d .", $season-1, $episode-1 );
+			}
+  
+			if( defined $ce->{episode} ) {
+				$ce->{program_type} = 'series';
+			}
+		}
 		## END
 		
         $dsh->AddProgramme( $ce );
@@ -211,20 +229,21 @@ sub ParseDate {
     ( $year, $month, $day ) = ( $text =~ /^(\d{4})-(\d{2})-(\d{2})$/i );
   }
 
-  $year += 2000 if $year < 100;
+  if(defined($year)) {
+  	$year += 2000 if $year < 100;
 
-  my $dt = DateTime->new(
-    year => $year,
-    month => $month,
-    day => $day,
-    time_zone => "Europe/Stockholm"
-      );
-
-  $dt->set_time_zone( "UTC" );
-
-
+	my $dt = DateTime->new(
+	    year => $year,
+	    month => $month,
+	    day => $day,
+	    time_zone => "Europe/Stockholm"
+	);
+	
+	$dt->set_time_zone( "UTC" );
+	
+	
 	return $dt->ymd("-");
-#return $year."-".$month."-".$day;
+  }
 }
 
 sub ParseTime {
