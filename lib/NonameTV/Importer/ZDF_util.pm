@@ -291,6 +291,9 @@ sub ParseData
           case /highdefinition/   {$ce{quality} = "HDTV"}
           case /zweikanalton/     {$ce{stereo} = "bilingual"}
           case /&zk;/             {$ce{stereo} = "bilingual"} 
+          # new attributes 2012-10
+          case /&mo;/   {$ce{stereo} = "mono"}
+          case /&f43;/  {$ce{aspect} = "4:3"}
           else                    { w ("unhandled attribute: $attribut") } 
         }
       }
@@ -429,8 +432,8 @@ sub clean_untertitel
     $subtitle =~ s|\s+\(Wh\..*\)$||;
   }
   # strip repeat in ZDFneo style
-  if ($subtitle =~ m|\s*\(vom \d+\.\d+\.\d{4}\)$|) {
-    $subtitle =~ s|\s*\(vom \d+\.\d+\.\d{4}\)$||;
+  if ($subtitle =~ m|\s*\([Vv]om \d+\.\d+\.\d{4}\)$|) {
+    $subtitle =~ s|\s*\([Vv]om \d+\.\d+\.\d{4}\)$||;
   }
   # strip repeat in ZDFneo style
   if ($subtitle =~ m|\s*\(ZDF \d+\.\d+\.\d{4}\)$|) {
@@ -547,7 +550,7 @@ sub clean_untertitel
   # Film von Sabrina Hermsen und Uschi Hopf
   # Film von Sandra Schlittenhardt, Faika Kalac,
   #
-  if ($subtitle =~ m|^Film\S* von \S+ \S+$|) {
+  if ($subtitle =~ m/^(?:Film\S*|Reportage) von \S+ \S+$/) {
     d( "parsing producer from subtitle: " . $subtitle );
     my ($format, $producer) = ($subtitle =~ m|^(\S+) von (\S+ \S+)$|);
 

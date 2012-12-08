@@ -26,7 +26,6 @@ use Encode qw/from_to/;
 use RTF::Tokenizer;
 use utf8;
 
-use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/d p w error f/;
 use NonameTV qw/AddCategory MonthNumber norm normLatin1 normUtf8/;
 
@@ -224,9 +223,7 @@ sub ImportRTF {
         $laststart = undef;
       } else { 
 #        $text =~ s|^\s+||mg;
-        if( $self->{RTFDebug} ) {
-          d( 'TEXT: ' . $text );
-        }
+        d( 'TEXT: ' . $text );
 
         my $ce = {};
         $ce->{channel_id} = $chd->{id};
@@ -309,13 +306,18 @@ sub ImportRTF {
           }
         }
 
+        # season number
+        if ($text =~ m|^\s*Staffel \d+$|m) {
+          $text =~ s/\n\s*Staffel \d+(?:\n|$)/\n/;
+        }
+
         # episode number
         my ($episodenum) = ($text =~ m/^\s*Folge\s+(\d+)(?:\/\d+$|\s+von\s+\d+$|$)/m);
         if ($episodenum) {
           $ce->{episode} = ' . ' . ($episodenum - 1) . ' . ';
 
           # episode title
-          my ($episodetitle) = ($text =~ m |\n(.*)\n\s*Folge\s+\d+\n|);
+          my ($episodetitle) = ($text =~ m/\n(.*)\n\s*Folge\s+\d+\n/);
           #error 'episode title: ' . $episodetitle;
           if( defined( $episodetitle ) ) {
             # strip trailing orignal episode title if present
@@ -367,7 +369,7 @@ sub ImportRTF {
         #
 
         # year of production and genre/program type
-        my ($genre, $production_year) = ($text =~ m |\n\s*(.*)\n\s*Produziert:\s+.*\s(\d+)|);
+        my ($genre, $production_year) = ($text =~ m |\n\s*(.*)\n\s*Produziert:\s*.*\s(\d+)|);
         if ($production_year) {
           $ce->{production_date} = $production_year . '-00-00';
         }
@@ -375,9 +377,9 @@ sub ImportRTF {
           if (!($genre =~ m|^Sendedauer:|)) {
             my ($program_type, $categ) = $ds->LookupCat ('Tele5', $genre);
             AddCategory ($ce, $program_type, $categ);
-            $text =~ s|\n.*\n\s*Produziert:\s+.*\s\d+||;
+            $text =~ s|\n.*\n\s*Produziert:\s*.*\s\d+||;
           } else {
-            $text =~ s|\n\s*Produziert:\s+.*\s\d+||;
+            $text =~ s|\n\s*Produziert:\s*.*\s\d+||;
           }
         }
         $text =~ s|\n\s*Sendedauer:\s+\d+||;
@@ -419,12 +421,34 @@ sub ImportRTF {
         }
 
         # aspect
+        if ($text =~ m|^\s*\[Bild: 4:3 \]$|m) {
+          $ce->{aspect} = '4:3';
+          $text =~ s/\n\s*\[Bild: 4:3 \](?:\n|$)/\n/;
+        }
+        if ($text =~ m|^\s*\[Bild: 16:9 \]$|m) {
+          $ce->{aspect} = '16:9';
+          $text =~ s/\n\s*\[Bild: 16:9 \](?:\n|$)/\n/;
+        }
         if ($text =~ m|^\s*Bildformat 16:9$|m) {
           $ce->{aspect} = '16:9';
           $text =~ s/\n\s*Bildformat 16:9(?:\n|$)/\n/;
         }
 
+        # quality
+        if ($text =~ m|^\s*\[HDTV: HD \]$|m) {
+          $ce->{quality} = 'HDTV';
+          $text =~ s/\n\s*\[HDTV: HD \](?:\n|$)/\n/;
+        }
+        if ($text =~ m|^\s*HDTV$|m) {
+          $ce->{quality} = 'HDTV';
+          $text =~ s/\n\s*HDTV(?:\n|$)/\n/;
+        }
+
         # stereo
+        if ($text =~ m|^\s*\[Ton: Mono \]$|m) {
+          $ce->{stereo} = 'mono';
+          $text =~ s/\n\s*\[Ton: Mono \](?:\n|$)/\n/;
+        }
         if ($text =~ m|^\s*Stereo$|m) {
           $ce->{stereo} = 'stereo';
           $text =~ s/\n\s*Stereo(?:\n|$)/\n/;
@@ -441,6 +465,11 @@ sub ImportRTF {
         if ($text =~ m|^\s*Für Hörgeschädigte$|m) {
           #$ce->{subtitle} = 'yes';
           $text =~ s/\n\s*Für Hörgeschädigte(?:\n|$)/\n/;
+        }
+
+        # repeat
+        if ($text =~ m|^\s*Wiederholung vom \d+\.\d+\.\d+$|m) {
+          $text =~ s/\n\s*Wiederholung vom \d+\.\d+\.\d+(?:\n|$)/\n/;
         }
 
         # category override for kids (as we don't have a good category for anime anyway)
@@ -502,13 +531,13 @@ sub ImportRTF {
 
         # episode number
         my $episode;
-        ($episode, $episodenum) = ($text =~ m|^\s*Folge (\d+) von (\d+)$|m);
+        ($episode, $episodenum) = ($text =~ m/^\s*Folge (\d+) von (\d+)$/m);
         if($episodenum) {
           $ce->{episode} = '. ' . ($episode - 1) . ' .';
           $text =~ s/\n\s*Folge \d+ von \d+(?:\n|$)/\n/;
         }
 
-        ($episode) = ($text =~ m|^\s*Folge (\d+)$|m);
+        ($episode) = ($text =~ m/^\s*Folge (\d+)$/m);
         if($episode) {
           $ce->{episode} = '. ' . ($episode - 1) . ' .';
           $text =~ s/\n\s*Folge \d+(?:\n|$)/\n/;

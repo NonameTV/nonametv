@@ -109,7 +109,11 @@ sub ImportContent( $$$ ) {
     return 0;
   }
 
-  foreach my $program ($programs->get_nodelist) {
+  sub by_start {
+    return $xpc->findvalue('s:termin/@start', $a) cmp $xpc->findvalue('s:termin/@start', $b);
+  }
+
+  foreach my $program (sort by_start $programs->get_nodelist) {
     $xpc->setContextNode( $program );
     my $ce = ();
     $ce->{channel_id} = $chd->{id};

@@ -76,6 +76,7 @@ sub FilterContent {
   $cref =~ s| target=\"((?!\").)*\"||g;
 
   my $doc = Html2Xml ($cref);
+  $doc->setEncoding('utf-8');
   $cref = $doc->toStringHTML ();
 
   return( \$cref, undef);
@@ -118,17 +119,17 @@ sub ImportContent {
     keep_html => 0
   );
 
-  $$cref = decode( 'windows-1252', $$cref );
+  $$cref = decode( 'utf-8', $$cref );
   $te->parse($$cref);
 
   my $table = $te->table(0,0+1);
   my @firstrow = $table->row(0);
   my $firstdate = $firstrow[1];
 
-  # the first day is the monday of the week that contains the 1st of this month
+  # the first day is the monday of the week three weeks ago
   my $year = DateTime->now()->year();
   my $month = DateTime->now()->month();
-  my $day = 1;
+  my $day = DateTime->now()->day();
 
   my $dt = DateTime->new( 
                           year  => $year,
@@ -138,6 +139,8 @@ sub ImportContent {
                           );
   # subtract days since monday to get monday
   $dt->add (days => -($dt->day_of_week() - 1));
+
+  $dt->add (days => - 3*7);
 
 
   $month = $dt->month();
