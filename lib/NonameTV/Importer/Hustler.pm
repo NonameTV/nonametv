@@ -20,6 +20,9 @@ use Spreadsheet::ParseExcel;
 use Data::Dumper;
 use File::Temp qw/tempfile/;
 
+use CAM::PDF;
+
+
 use NonameTV qw/norm AddCategory MonthNumber/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/progress error/;
@@ -54,9 +57,13 @@ sub ImportContentFile {
 
 #return if( $file !~ /Blue Hustler listings - November 2008 in CET\.xls/ );
 
+
+if( $file =~ /\.pdf$/i ) {return $self->ImportPDF( $file, $channel_id, $xmltvid );}
+
   # Only process .xls files.
   return if( $file !~ /\.xls$/i );
   progress( "Hustler: $xmltvid: Processing $file" );
+
 
   my %columns = ();
   my $datecolumn;
@@ -183,18 +190,19 @@ sub ImportContentFile {
 
       progress("Hustler: $xmltvid: $time - $title");
 
+
       my $ce = {
         channel_id => $channel_id,
         start_time => $time,
         title => norm($title),
+        rating => 18,
       };
 
-      $ce->{subtitle} = $duration if $duration;
 
       if( $genre ){
         my($program_type, $category ) = $ds->LookupCat( 'Hustler', $genre );
         AddCategory( $ce, $program_type, $category );
-      }
+      } else {AddCategory( $ce, "movie", "adult" );}
 
       $dsh->AddProgramme( $ce );
     }
@@ -207,6 +215,101 @@ sub ImportContentFile {
 
   return;
 }
+
+
+
+sub ImportPDF{
+  my $self = shift;
+  my( $file, $channel_id, $xmltvid ) = @_;
+
+  my $dsh = $self->{datastorehelper};
+  my $ds = $self->{datastore};
+
+  # Only process .pdf files.
+  return if $file !~  /\.pdf$/i;
+
+  my $batch_id;
+  my $date;
+  my $currdate = "x";
+
+  progress( "Daring: $xmltvid: Processing $file" );
+
+  my $doc = CAM::PDF->new($file) || die "$CAM::PDF::errstr\n";
+  my $str;
+  my $time;
+  my $title;
+  my $genre;
+
+  foreach my $p ($doc->rangeToArray(1,$doc->numPages(),'1-end'))
+      {
+      $str = $str . $doc->getPageText($p); 
+      }   
+
+ CAM::PDF->asciify(\$str);  #print "stra: $str";
+
+  # filtering
+  $str =~ s/\n+/\n/g;
+  $str =~ s/PREMIER.{0,3}\n/PREMIERE-/g; 
+  $str =~ s/\nDaring.TV\nListing.*\n.Times shown are in CET.\n/\n/g;
+
+  my @lines = split("\n", $str);
+
+  foreach my $line (@lines) {
+
+   # if( ($line eq "") || ($line eq "Daring!TV") || ($line eq "Listings for July      2012")  || ($line eq "(Times shown are in CET)") ){next;}
+
+      if( isDate( $line ) ){
+        $date = ParseDate( $line ); #print "date: $date \n";
+        if( $date ne $currdate ){
+          progress("Hustler: Date is $date");
+
+          if( $currdate ne "x" ) {
+            $dsh->EndBatch( 1 );
+          }
+
+          my $batch_id = $xmltvid . "_" . $date;
+          $dsh->StartBatch( $batch_id , $channel_id );
+          $dsh->StartDate( $date , "05:00" );
+          $currdate = $date;
+        }
+        next;
+      }
+
+      if( isTime( $line ) ){
+        $time = ParseTime( $line ); #print "vreme: $time ";
+        next;
+      }
+
+      if( not isDuration( $line ) and not isTime( $line ) and not isDate( $line ) ){
+        $title = $line; #print ": $title \n";
+        next;
+      }
+
+        progress("Hustler: $xmltvid: $time - $title");
+
+      if( isDuration( $line ) ){
+        my $duration = $line; #print "trajanje: $duration ";
+       my $ce = {
+        channel_id => $channel_id,
+        start_time => $time,
+        title => norm($title),
+        rating => 18,
+       };
+
+      if( $genre ){
+        my($program_type, $category ) = $ds->LookupCat( 'Hustler', $genre );
+        AddCategory( $ce, $program_type, $category );
+      } else {AddCategory( $ce, "movie", "adult" );}
+
+      $dsh->AddProgramme( $ce );
+        next;
+      }
+   }
+
+  return;
+}
+
+
 
 sub isDate
 {
