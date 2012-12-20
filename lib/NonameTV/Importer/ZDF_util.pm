@@ -57,7 +57,7 @@ sub ParseData
 
   my $FixupDSTStarttime;
   if( ( $chd->{xmltvid} eq 'hd.zdf.de' ) ) {
-    $FixupDSTStarttime = 1;
+#    $FixupDSTStarttime = 1;
   }
   # keep last endtime as a hint for DST switch issues
   my $lastendtime;
@@ -700,6 +700,14 @@ sub clean_untertitel
     return undef;
   }
 
+  # ZDFneo episode number in front of episode title but keep "10.000 Meilen"
+  # 1. Folgentitle
+  if (my ($ep, $eptitle) = ($subtitle =~ m|^(\d+)\.\s(.*)$|)) {
+    if( !$sce->{episode} ){
+      $subtitle = $eptitle;
+      $sce->{episode} = '. ' . ($ep - 1) . ' .';
+    }
+  }
   # Zeichentrickserie
   # CGI-Animationsserie
   # Fantasy-Serie
