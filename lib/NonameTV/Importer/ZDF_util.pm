@@ -702,7 +702,9 @@ sub clean_untertitel
 
   # ZDFneo episode number in front of episode title but keep "10.000 Meilen"
   # 1. Folgentitle
-  if (my ($ep, $eptitle) = ($subtitle =~ m|^(\d+)\.\s(.*)$|)) {
+  # but not for parts!
+  # 1. Teil
+  if (my ($ep, $eptitle) = ($subtitle =~ m|^(\d+)\.\s+((?!Teil).*)$|)) {
     if( !$sce->{episode} ){
       $subtitle = $eptitle;
       $sce->{episode} = '. ' . ($ep - 1) . ' .';
