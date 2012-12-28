@@ -216,7 +216,10 @@ sub ImportContent( $$$ ) {
 
     my $url = $xpc->findvalue( 's:infos/s:url/@link' );
     if( $url ){
-      $ce->{url} = $url;
+      # a link to the root of the arte+7 website gains us nothing progam specific, so skip it
+      if( $url ne 'videos.arte.tv'){
+         $ce->{url} = $url;
+      }
     }
 
     my $synopsis = $xpc->findvalue( 's:text[@textart="Beschreibung"]' );
