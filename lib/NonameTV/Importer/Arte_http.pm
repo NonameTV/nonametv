@@ -193,6 +193,13 @@ sub ImportContent( $$$ ) {
       }
     }
 
+    my $original_title = norm( $xpc->findvalue( 's:titel/s:alias[@titelart="originaltitel"]/@aliastitel' ) );
+    if( $original_title ){
+      # remove braces
+      $original_title =~ s|^\((.*)\)$|\1|;
+      $ce->{original_title} = $original_title;
+    }
+
     my $production_year = $xpc->findvalue( 's:infos/s:produktion/s:produktionszeitraum/s:jahr/@von' );
     if( $production_year =~ m|^\d{4}$| ){
       $ce->{production_date} = $production_year . '-01-01';

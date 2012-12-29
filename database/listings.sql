@@ -84,6 +84,7 @@ CREATE TABLE `programs` (
   `url_image_thumbnail` varchar(100) default NULL,
   `url_image_icon` varchar(100) default NULL,
   `star_rating` varchar(20) default NULL,
+  `original_title` varchar(255) DEFAULT NULL COMMENT 'Original Title',
   PRIMARY KEY  (`channel_id`,`start_time`),
   KEY `batch` (`batch_id`,`start_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
