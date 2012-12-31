@@ -444,6 +444,7 @@ sub parse_subtitle
   } elsif ($subtitle =~ m|^\(.*\)$|) {
     my ($title_orig) = ($subtitle =~ m|^\((.*)\)$|);
     # original title
+    $sce->{original_title} = norm($title_orig);
     $subtitle = undef;
   } elsif ($subtitle =~ m|^Reporter: \S+ \S+$|) {
     my ($presenter) = ($subtitle =~ m|^Reporter: (\S+ \S+)$|);
