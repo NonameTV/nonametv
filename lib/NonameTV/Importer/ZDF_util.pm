@@ -78,6 +78,12 @@ sub ParseData
     }
     $sce{title} = norm($title);
 
+    # the original title
+    my $original_title = norm( $sc->findvalue( './programm//originaltitel' ) );
+    if ($original_title) {
+      $sce{original_title} = $original_title;
+    }
+
     # episode title
     my $episodetitle = $sc->findvalue( './programm//folgentitel' );
 
