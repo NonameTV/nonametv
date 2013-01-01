@@ -200,6 +200,18 @@ sub ImportContent( $$$ ) {
       $ce->{original_title} = norm( $original_title );
     }
 
+    # parse sendung_id to guess if its a series of some kind.
+    # JT-010252 is a "klammer"
+    # 000000-000-A is a program (seen A and B)
+    #        ^^^- is 0 for movie/tvshow and >= 1 for series (episode id starting from 1)
+    my $sendung_id = $xpc->findvalue( './@sendung_id' );
+    if( $sendung_id ){
+      my( $folge )=( $sendung_id =~ m|^\d{6}-(\d{3})-[A-Z]$| );
+      if( $folge > 0 ) {
+        $ce->{program_type} = 'series';
+      }
+    }
+
     my $production_year = $xpc->findvalue( 's:infos/s:produktion/s:produktionszeitraum/s:jahr/@von' );
     if( $production_year =~ m|^\d{4}$| ){
       $ce->{production_date} = $production_year . '-01-01';
