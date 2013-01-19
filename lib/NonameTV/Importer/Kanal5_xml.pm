@@ -15,15 +15,16 @@ use utf8;
 use DateTime;
 use XML::LibXML;
 use IO::Scalar;
+use Data::Dumper;
 
 use NonameTV qw/norm ParseDescCatSwe ParseXml AddCategory MonthNumber/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/progress error/;
 use NonameTV::Config qw/ReadConfig/;
 
-use NonameTV::Importer::BaseFile;
+use NonameTV::Importer::BaseWeekly;
 
-use base 'NonameTV::Importer::BaseFile';
+use base 'NonameTV::Importer::BaseWeekly';
 
 sub new {
   my $proto = shift;
@@ -44,24 +45,35 @@ sub new {
   return $self;
 }
 
-sub ImportContentFile
+sub Object2Url {
+  my $self = shift;
+  my( $objectname, $chd ) = @_;
+
+  my( $year, $week ) = ($objectname =~ /_20(\d+)-(\d+)/);
+
+  my $url = sprintf( "%stab%02d%02d.xml", $self->{UrlRoot}, $week, $year );
+
+  #progress( "Kanal5_xml: $chd->{xmltvid}: Processing XML $url" );
+
+  return( $url, undef );
+}
+
+sub ImportContent
 {
   my $self = shift;
-  my( $file, $chd ) = @_;
+  my( $batch_id, $cref, $chd ) = @_;
 
   my $dsh = $self->{datastorehelper};
   my $ds = $self->{datastore};
   $ds->{SILENCE_END_START_OVERLAP}=1;
   $ds->{SILENCE_DUPLICATE_SKIP}=1;
 
-  progress( "Kanal5_xml: $chd->{xmltvid}: Processing XML $file" );
-
   my $doc;
   my $xml = XML::LibXML->new;
-  eval { $doc = $xml->parse_file($file); };
+  eval { $doc = $xml->parse_string($$cref); };
 
   if( not defined( $doc ) ) {
-    error( "Kanal5_xml: $file: Failed to parse xml" );
+    error( "Kanal5_xml: $batch_id: Failed to parse xml" );
     return;
   }
 
@@ -91,8 +103,8 @@ sub ImportContentFile
       my $titles = $row->findnodes( ".//titles/PRODUCTTITLE" );
       foreach my $t ($titles->get_nodelist) {
       	# predefined is which title you want, these can be: TTV (chosen by Kanal5), SwedishTitle, OriginalTitle.
-      	if($t->findvalue( './/type/PSIPRODUCTITLETYPE/@predefined' ) eq "TTV") {
-      		$title = $t->findvalue( './@title' )
+      	if($t->findvalue( './/type/PSIPRODUCTTITLETYPE/@predefined' ) eq "TTV") {
+      		$title = $t->findvalue( './@title' );
       	}
       	
       }
@@ -111,12 +123,12 @@ sub ImportContentFile
       
 	  if($date ne $currdate ) {
         if( $currdate ne "x" ) {
-					$ds->EndBatch( 1 );
+					#$ds->EndBatch( 1 );
         }
 
         my $batchid = $chd->{xmltvid} . "_" . $date;
-        $ds->StartBatch( $batchid );
-        #$dsh->StartDate( $date );
+        #$ds->StartBatch( $batchid );
+        $dsh->StartDate( $date );
         $currdate = $date;
 
         progress("Kanal5_xml: Date is: $date");
@@ -126,7 +138,7 @@ sub ImportContentFile
 	  # description is in shortdescription and shortdescriptionTTV (TTV has more info)
 	  my $desc = $row->findvalue( './/shortdescriptionTTV/TEXT' );
 	  
-		#my $genre = $row->findvalue( './/category/CATEGORY/@name' );
+	  my $genre = $row->findvalue( './/category/CATEGORY/@name' );
 		
       my $ce = {
         channel_id => $chd->{id},
@@ -136,19 +148,14 @@ sub ImportContentFile
         description => norm($desc),
       };
       
-
-      
-      
-      #my($program_type, $category ) = $ds->LookupCat( 'Kanal5_xml', $genre );
-			#AddCategory( $ce, $program_type, $category );
-      
       progress( "Kanal5_xml: $chd->{xmltvid}: $start - $title" );
       extract_extra_info( $ds, $ce );
+      
+      my($program_type, $category ) = $ds->LookupCat( 'Kanal5_xml', $genre );
+	  AddCategory( $ce, $program_type, $category );
+      
       $ds->AddProgramme( $ce );
-
     } # next row
-
-$ds->EndBatch( 1 );
 
   return 1;
 }
@@ -273,7 +280,7 @@ sub extract_extra_info
     }
     elsif( my( $guestactor ) = ($sentences[$i] =~ /G.stsk.despelare:\s*(.*)/ ) )
     {
-    	# Kanal5 listes it in Skådespelare. No need to have it in guests.
+    	# Kanal5 listes it in Skï¿½despelare. No need to have it in guests.
       #$ce->{guests} = parse_person_list( $guestactor );
       $sentences[$i] = "";
     }
