@@ -16,11 +16,11 @@ TV Channels: Yle TV1, Yle TV2, MTV3, Nelonen, Sub, SuomiTV, TV5, Yle Teema, Yle 
 						 Nelonen Kino, Nelonen Perhe, Nelonen Maailma, MTV3 MAX, MTV3 Fakta, MTV3 Sarja, MTV3 Scifi, MTV3 Komedia,
 						 MTV3 LEFFA, MTV3 Juniori, Nelonen Pro 1, Nelonen Pro 2
 
-Radio Channels: Yle Radio Suomi, Yle Puhe, Yle Radio 1, YleX, Yle Klassinen, Yle Mondo, Etelä-Karjalan Radio, Etelä-Savon Radio,
+Radio Channels: Yle Radio Suomi, Yle Puhe, Yle Radio 1, YleX, Yle Klassinen, Yle Mondo, Etelï¿½-Karjalan Radio, Etelï¿½-Savon Radio,
 								Kainuun Radio, Kymenlaakson Radio, Lahden Radio, Lapin Radio, Oulu Radio, Pohjanmaan Radio, Pohjois-Karjalan Radio,
-								Radio Häme, Radio Itä-Uusimaa, Radio Keski-Pohjanmaa, Radio Keski-Suomi, Radio Perämeri, Radio Savo, Satakunnan Radio,
-								Tampereen Radio, Turun Radio, Ylen aikainen, Ylen läntinen, Yle Sámi Radio, Yle Radio Vega, Yle X3M, Radio Vega Huvudstadsregionen,
-								Radio Vega Västnyland, Radio Vega Åboland, Radio Vega Österbotten, Radio Vega Östnyland, YleSat 1, YleSat 2, Radio Nova
+								Radio Hï¿½me, Radio Itï¿½-Uusimaa, Radio Keski-Pohjanmaa, Radio Keski-Suomi, Radio Perï¿½meri, Radio Savo, Satakunnan Radio,
+								Tampereen Radio, Turun Radio, Ylen aikainen, Ylen lï¿½ntinen, Yle Sï¿½mi Radio, Yle Radio Vega, Yle X3M, Radio Vega Huvudstadsregionen,
+								Radio Vega Vï¿½stnyland, Radio Vega ï¿½boland, Radio Vega ï¿½sterbotten, Radio Vega ï¿½stnyland, YleSat 1, YleSat 2, Radio Nova
 
 =cut
 
@@ -50,7 +50,7 @@ sub new {
 
   $self->{FileStore} = $conf->{FileStore};
 
-  my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore}, "Europe/Helsinki" );
+  my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
   $self->{datastorehelper} = $dsh;
   
   # use augment
@@ -201,15 +201,9 @@ sub create_dt
   my $self = shift;
   my( $str ) = @_;
   
+  my( $year, $month, $day, $hour, $minute, $second, $timezone_hour, $timezone_minute ) = 
+      ($str =~ /^(\d+)-(\d+)-(\d+)T(\d+):(\d+):(\d+)\+(\d+):(\d+)$/ );
   
-  # Remove timezone shitty
-  $str =~ s/\+02:00$//;
-  
-  my( $date, $time ) = split( 'T', $str );
-
-  my( $year, $month, $day ) = split( '-', $date );
-  
-  my( $hour, $minute, $second ) = split( ":", $time );
   
 
   my $dt = DateTime->new( year   => $year,
@@ -217,10 +211,11 @@ sub create_dt
                           day    => $day,
                           hour   => $hour,
                           minute => $minute,
-                          time_zone => 'Europe/Helsinki',
                           );
   
   $dt->set_time_zone( "UTC" );
+  
+  $dt->subtract( hours => $timezone_hour ); # Remove the timezone they add, so it become an UTC time
   
   return $dt;
 }

@@ -99,6 +99,7 @@ sub ImportContent( $$$ ) {
   	
   	# Episode
   	my $episodenum = norm($pgm->findvalue('./episode-num'));
+  	my $seasonnum = norm($pgm->findvalue('./season-num'));
   	
   	# Description
   	my $format_desc = normUtf8($pgm->findvalue('./format_desc'));
@@ -140,6 +141,9 @@ sub ImportContent( $$$ ) {
         $subtitle =~ s|[ ,-]+pt. (\d)+$| \($1\)|;
         $ce->{subtitle} = norm( $subtitle );
       }
+    }
+    if($seasonnum and $seasonnum ne "") {
+    	$ce->{episode} = sprintf( "%d . %d .", $seasonnum-1, $episodenum-1 );
     }
     if( $production_year =~ m|^\d{4}$| ){
       $ce->{production_date} = $production_year . '-01-01';

@@ -4,21 +4,28 @@ use strict;
 use warnings;
 
 =pod
+Importer for BBC Worldwide
 
-Import data for TravelChannel.
-Version 2 - Mail - Working.
+Channels: BBC Entertainment, BBC Knowledge, BBC HD, BBC Lifestyle, CBeebies
 
-Features:
+The excel files is downloaded from TravelChannels.com
+
+Every month is runned as a seperate batch.
 
 =cut
 
 use utf8;
 
+use POSIX;
 use DateTime;
+use XML::LibXML;
 use Spreadsheet::ParseExcel;
-#use Data::Dumper;
 
-use NonameTV qw/MyGet norm AddCategory MonthNumber/;
+use Spreadsheet::XLSX;
+use Spreadsheet::XLSX::Utility2007 qw(ExcelFmt ExcelLocaltime LocaltimeExcel);
+use Spreadsheet::Read;
+
+use NonameTV qw/norm MonthNumber/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/progress error/;
 use NonameTV::Config qw/ReadConfig/;
@@ -33,13 +40,14 @@ sub new {
   my $self  = $class->SUPER::new( @_ );
   bless ($self, $class);
 
-  $self->{MinMonths} = 1 unless defined $self->{MinMonths};
-  $self->{MaxMonths} = 2 unless defined $self->{MaxMonths};
-	  
-  defined( $self->{UrlRoot} ) or die "You must specify UrlRoot";
-  
+  my $conf = ReadConfig();
+
+  $self->{FileStore} = $conf->{FileStore};
+
   my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
   $self->{datastorehelper} = $dsh;
+  
+  $self->{datastore}->{augment} = 1;
 
   return $self;
 }
@@ -50,16 +58,12 @@ sub ImportContentFile {
 
   $self->{fileerror} = 0;
 
-  if( $file =~ /\.xls$/i ){
-    $self->ImportFlatXLS( $file, $chd );
-  } else {
-    error( "TC: Unknown file format: $file" );
-  }
+    $self->ImportXLS( $file, $chd );
 
   return;
 }
 
-sub ImportFlatXLS
+sub ImportXLS
 {
   my $self = shift;
   my( $file, $chd ) = @_;
@@ -71,241 +75,143 @@ sub ImportFlatXLS
   my $date;
   my $currdate = "x";
 
-  progress( "TC FlatXLS: $chd->{xmltvid}: Processing flat XLS $file" );
-
   my $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
 
-    my($iR, $oWkS, $oWkC);
-	
-	  my( $time, $episode );
-  my( $program_title , $program_description );
-    my @ces;
-  
   # main loop
+  #for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
   foreach my $oWkS (@{$oBook->{Worksheet}}) {
-  
-    progress("--------- SHEET: $oWkS->{Name}");
 
-    # start from row 2
-    # the first row looks like one cell saying like "EPG DECEMBER 2007  (Yamal - HotBird)"
-    # the 2nd row contains column names Date, Time (local), Progran, Description
-    #for(my $iR = $oWkS->{MinRow} ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
-    for(my $iR = 2 ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
+    #my $oWkS = $oBook->{Worksheet}[$iSheet];
+    progress( "Travel: $chd->{xmltvid}: Processing worksheet: $oWkS->{Name}" );
 
-      # date (column 1)
-      $oWkC = $oWkS->{Cells}[$iR][1];
+	my $foundcolumns = 0;
+
+    # browse through rows
+    for(my $iR = 1 ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
+
+      if( not %columns ){
+        # the column names are stored in the first row
+        # so read them and store their column positions
+        # for further findvalue() calls
+
+        for(my $iC = $oWkS->{MinCol} ; defined $oWkS->{MaxCol} && $iC <= $oWkS->{MaxCol} ; $iC++) {
+          if( $oWkS->{Cells}[$iR][$iC] ){
+            $columns{$oWkS->{Cells}[$iR][$iC]->Value} = $iC;
+
+			$columns{'Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Series Title/ );
+
+          $columns{'Episode Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Episode Title/ );
+          
+          $columns{'Ser No'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Series/ );
+          $columns{'Ep No'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Episode/ );
+          
+          $columns{'Synopsis'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Epg/ );
+          $columns{'Synopsis'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Listing/ );
+          
+          $columns{'Date'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Date/ );
+          $columns{'Time'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Plan Time/ );
+
+            $foundcolumns = 1 if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Date/ );
+          }
+        }
+#foreach my $cl (%columns) {
+#	print "$cl\n";
+#}
+        %columns = () if( $foundcolumns eq 0 );
+
+        next;
+      }
+
+
+
+      # date - column 0 ('Date')
+      my $oWkC = $oWkS->{Cells}[$iR][$columns{'Date'}];
       next if( ! $oWkC );
-		$date = ParseDate( $oWkC->Value );
-		#$date = $oWkC->Value;
+      next if( ! $oWkC->Value );
+      $date = ParseDate( $oWkC->Value );
       next if( ! $date );
 
-	  unless( $date ) {
-		progress("SKIPPING :D");
-	  next;
-	  }
-	  
-	  if($date ne $currdate ) {
-        if( $currdate ne "x" ) {
+	  # Startdate
+      if( $date ne $currdate ) {
+      	if( $currdate ne "x" ) {
 			# save last day if we have it in memory
 		#	FlushDayData( $channel_xmltvid, $dsh , @ces );
 			$dsh->EndBatch( 1 );
         }
-
-
-
-        my $batchid = $chd->{xmltvid} . "_" . $date;
+      
+      	my $batchid = $chd->{xmltvid} . "_" . $date;
         $dsh->StartBatch( $batchid , $chd->{id} );
-        $dsh->StartDate( $date , "06:00" );
+        progress("Travel: $chd->{xmltvid}: Date is $date");
+        $dsh->StartDate( $date , "00:00" ); 
         $currdate = $date;
-
-        progress("TC: Date is: $date");
       }
-	  
-	  	#if($iR == 28) { next; }
-	  
-	# time (column 1)
-	 #  print "hejhejhej";
-      $oWkC = $oWkS->{Cells}[$iR][2];
+
+	  # time
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'Time'}];
       next if( ! $oWkC );
-      my $time = ParseTime( $oWkC->Value );
-      next if( ! $time );
-	  
-	  #use Data::Dumper; print Dumper($oWkS->{Cells}[28]);
+      my $time = $oWkC->Value if( $oWkC->Value );
+      $time =~ s/'//g;
 
-	  
-	  my $title;
-	  my $test;
-	  my $season;
-	  my $episode;
-	  #my $epg;
-	  
-	  # print "hejhej";
-      # program_title (column 3)
-      $oWkC = $oWkS->{Cells}[$iR][3];
+      # title
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'Title'}];
+      next if( ! $oWkC );
+      my $title = $oWkC->Value if( $oWkC->Value );
 
-      # Here's where the magic happends.
-	  # Love goes out to DrForr.
-	  $title = $oWkC->Value;
-	  
+	  # episode and season
+      my $epino = $oWkS->{Cells}[$iR][$columns{'Ep No'}]->Value if $oWkS->{Cells}[$iR][$columns{'Ep No'}];
+      my $seano = $oWkS->{Cells}[$iR][$columns{'Ser No'}]->Value if $oWkS->{Cells}[$iR][$columns{'Ser No'}];
 
-	  # EPG is actually listing.
-          $oWkC = $oWkS->{Cells}[$iR][8];
-          my $epg = $oWkC->Value;
-	  
-	  $oWkC = $oWkS->{Cells}[$iR][6];
-      my $subtitle = $oWkC->Value;
-	  
-	  $oWkC = $oWkS->{Cells}[$iR][4];
-      my $sea = $oWkC->Value;
-	  
-	  $oWkC = $oWkS->{Cells}[$iR][5];
-      my $epi = $oWkC->Value;
-	  
-	  # Episode info in xmltv-format
-      if( ($epi > 0) and ($sea > 0) )
-      {
-        $episode = sprintf( "%d . %d .", $sea-1, $epi-1 );
-      }
-      elsif( $epi > 0 )
-      {
-        $episode = sprintf( ". %d .", $epi-1 );
+	  # extra info
+	  my $desc = $oWkS->{Cells}[$iR][$columns{'Synopsis'}]->Value if $oWkS->{Cells}[$iR][$columns{'Synopsis'}];
+	  my $subtitle = $oWkS->{Cells}[$iR][$columns{'Episode Title'}]->Value if $oWkS->{Cells}[$iR][$columns{'Episode Title'}];
+
+      progress("Travel: $chd->{xmltvid}: $time - $title");
+
+      my $ce = {
+        channel_id => $chd->{channel_id},
+        title => norm( $title ),
+        start_time => $time,
+        description => norm( $desc ),
+      };
+
+	  # Subtitle
+	  $ce->{subtitle} = norm( $subtitle ) if $subtitle;
+
+      if( $epino ){
+        if( $seano ){
+          $ce->{episode} = sprintf( "%d . %d .", $seano-1, $epino-1 );
+        } else {
+          $ce->{episode} = sprintf( ". %d .", $epino-1 );
+        }
       }
 
-      if( $time and $title ){
-	  
-	  # empty last day array
-      undef @ces;
-	  
-        progress("$time $title");
-
-        my $ce = {
-          channel_id   => $chd->{id},
-		  title		   => norm($title),
-          start_time   => $time,
-		  subtitle     => norm($subtitle),
-          episode      => $episode,
-	description	=> norm($epg),
-        };
-
-		## Episodes and so on ( Doesn't seem to work, fix this later. )
-
-		## END
-		
-        $dsh->AddProgramme( $ce );
-		
-		push( @ces , $ce );
-      }
+      $dsh->AddProgramme( $ce );
 
     } # next row
-	
   } # next worksheet
 
-  $dsh->EndBatch( 1 );
-  
-  return;
+	$dsh->EndBatch( 1 );
+
+  return 1;
 }
 
 sub ParseDate {
-  my ( $text ) = @_;
-
-#print ">$text<\n";
-
-  my( $year, $day, $month );
-
-  # format '2011-04-13'
-#  if( $text =~ /^(\d+)\/(\d+)\/(\d+)$/i ){
-#    ( $month, $day, $year ) = ( $text =~ /^(\d+)\/(\d+)\/(\d{2})$/i );
-
-  # format '2011-05-16'
-#  } elsif( $text =~ /^\d{4}-\d{2}-\d{2}$/i ){
-#    ( $year, $month, $day ) = ( $text =~ /^(\d{4})-(\d{2})-(\d{2})$/i );
-#  }
-
-  #if( $text =~ /^(\d+)-(\w)-(\d+)$/ ){
-  #  ( $day, $month, $year ) = ( $text =~ /^(\d+)-(\w)-(\d+)$/ );
-  #}
-    if( $text =~ /^(\d+)-Jan-(\d+)$/ ){
-    ( $day, $year ) = ( $text =~ /^(\d+)-Jan-(\d+)$/ );
-    $month = "01";
-  } elsif( $text =~ /^(\d+)-Feb-(\d+)$/ ){
-    ( $day, $year ) = ( $text =~ /^(\d+)-Feb-(\d+)$/ );
-    $month = "02";
-  } elsif( $text =~ /^(\d+)-Mar-(\d+)$/ ){
-    ( $day, $year ) = ( $text =~ /^(\d+)-Mar-(\d+)$/ );
-    $month = "03";
-  } elsif( $text =~ /^(\d+)-Apr-(\d+)$/ ){
-    ( $day, $year ) = ( $text =~ /^(\d+)-Apr-(\d+)$/ );
-    $month = "04";
-  } elsif( $text =~ /^(\d+)-May-(\d+)$/ ){
-    ( $day, $year ) = ( $text =~ /^(\d+)-May-(\d+)$/ );
-    $month = "05";
-  } elsif( $text =~ /^(\d+)-Jun-(\d+)$/ ){
-    ( $day, $year ) = ( $text =~ /^(\d+)-Jun-(\d+)$/ );
-    $month = "06";
-  } elsif( $text =~ /^(\d+)-Jul-(\d+)$/ ){
-    ( $day, $year ) = ( $text =~ /^(\d+)-Jul-(\d+)$/ );
-    $month = "07";
-  } elsif( $text =~ /^(\d+)-Aug-(\d+)$/ ){
-    ( $day, $year ) = ( $text =~ /^(\d+)-Aug-(\d+)$/ );
-    $month = "08";
-  } elsif( $text =~ /^(\d+)-Sep-(\d+)$/ ){
-    ( $day, $year ) = ( $text =~ /^(\d+)-Sep-(\d+)$/ );
-    $month = "09";
-  } elsif( $text =~ /^(\d+)-Oct-(\d+)$/ ){
-    ( $day, $year ) = ( $text =~ /^(\d+)-Oct-(\d+)$/ );
-    $month = "10";
-  } elsif( $text =~ /^(\d+)-Nov-(\d+)$/ ){
-    ( $day, $year ) = ( $text =~ /^(\d+)-Nov-(\d+)$/ );
-    $month = "11";
-  } elsif( $text =~ /^(\d+)-Dec-(\d+)$/ ){
-    ( $day, $year ) = ( $text =~ /^(\d+)-Dec-(\d+)$/ );
-    $month = "12";
-  } else {
-    return undef;
-  }
-  
-  my %mon2num = qw(
-	jan 1  feb 2  mar 3  apr 4  maj 5  jun 6
-	jul 7  aug 8  sep 9  okt 10 nov 11 dec 12
-  );
-  
-  #print ">$month<";
-  
-  #$month = $mon2num{ lc substr($month, 0, 3) };
-
-  $year += 2000 if $year < 100;
-
-  my $dt = DateTime->new(
-    year => $year,
-    month => $month,
-    day => $day,
-    time_zone => "Europe/Stockholm"
-      );
-
-  $dt->set_time_zone( "UTC" );
-
-
-	return $dt->ymd("-");
-#return $year."-".$month."-".$day;
-}
-
-sub ParseTime {
   my( $text ) = @_;
 
-#print "ParseTime: >$text<\n";
+  $text =~ s/^\s+//;
 
-  my( $hour , $min );
+  my( $dayname, $day, $monthname, $year );
+  my $month;
 
-  if( $text =~ /^\d+:\d+$/ ){
-    ( $hour , $min ) = ( $text =~ /^(\d+):(\d+)$/ );
+  if( $text =~ /^\d+-\d+-\d+$/ ) { # format '2011-07-01'
+    ( $year, $month, $day ) = ( $text =~ /^(\d+)-(\d+)-(\d+)$/ );
+    $year += 2000 if $year lt 100;
+  } elsif( $text =~ /^\d+\/\d+\/\d+$/ ) { # format '01/11/2008'
+    ( $day, $month, $year ) = ( $text =~ /^(\d+)\/(\d+)\/(\d+)$/ );
+    $year += 2000 if $year lt 100;
   }
 
-  return sprintf( "%02d:%02d", $hour, $min );
+  return sprintf( '%d-%02d-%02d', $year, $month, $day );
 }
 
 1;
-
-### Setup coding system
-## Local Variables:
-## coding: utf-8
-## End:

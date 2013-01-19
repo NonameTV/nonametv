@@ -7,7 +7,7 @@ $NONAMETV AFN $1 $2 $3
 $NONAMETV Axess $1 $2 $3
 $NONAMETV Arte $1 $2 $3
 $NONAMETV BBCWorld $1 $2 $3
-$NONAMETV Bleb $1 $2 $3
+#$NONAMETV Bleb $1 $2 $3
 #$NONAMETV BBCWW $1 $2 $3
 $NONAMETV CMore $1 $2 $3
 #$NONAMETV CanalPlus $1 $2 $3
@@ -17,7 +17,7 @@ $NONAMETV DK4 $1 $2 $3
 $NONAMETV DreiSat $1 $2 $3
 $NONAMETV DasErste $1 $2 $3
 $NONAMETV Eurosport $1 $2 $3
-$NONAMETV Infomedia $1 $2 $3
+#$NONAMETV Infomedia $1 $2 $3
 $NONAMETV Kanal5 $1 $2 $3
 $NONAMETV Kanal9 $1 $2 $3
 $NONAMETV KanalGlobal $1 $2 $3

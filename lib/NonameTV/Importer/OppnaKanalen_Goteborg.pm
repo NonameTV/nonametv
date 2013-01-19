@@ -15,6 +15,7 @@ use utf8;
 
 use DateTime;
 use Spreadsheet::ParseExcel;
+use Data::Dumper;
 
 use NonameTV qw/norm AddCategory MonthNumber/;
 use NonameTV::DataStore::Helper;
@@ -81,7 +82,7 @@ sub ImportFlatXLS
 
       # date (column 1)
       $oWkC = $oWkS->{Cells}[$iR][0];
-      if($oWkC->Value ne "") {
+      if( $oWkC->Value =~ /^\d{4}\/\d{2}\/\d{2}$/i ){
 	  		if(isDate( $oWkC->Value ) ){
 					$date = ParseDate( $oWkC->Value );
 	  		}
@@ -100,10 +101,10 @@ sub ImportFlatXLS
         progress("OKGoteborg: Date is: $date");
       }
 
-
       $oWkC = $oWkS->{Cells}[$iR][1];
       next if( ! $oWkC );
       my $time = ParseTime( $oWkC->Value );
+            print Dumper($time);
       next if( ! $time );
       
       $oWkC = $oWkS->{Cells}[$iR][2];
@@ -114,7 +115,7 @@ sub ImportFlatXLS
 
       $oWkC = $oWkS->{Cells}[$iR][4];
       my $title =  norm( $oWkC->Value );
-      
+            print Dumper($title);
       if( $time and $title ){
 	  
 	  # empty last day array
@@ -132,7 +133,7 @@ sub ImportFlatXLS
 		
         $dsh->AddProgramme( $ce );
 		
-				push( @ces , $ce );
+				#push( @ces , $ce );
       }
 
     } # next row
@@ -160,6 +161,8 @@ sub isDate {
 
 sub ParseDate {
   my ( $text ) = @_;
+
+	#print Dumper($text);
 
   my( $year, $day, $month );
 

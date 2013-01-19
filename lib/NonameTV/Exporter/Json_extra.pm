@@ -635,6 +635,16 @@ sub WriteEntry
   	$d->{extra}->{type} = $entry->{extra_id_type};
   }
   
+  if( $entry->{live} )
+  {
+    $d->{live} = $entry->{live};
+  }
+  
+  if( $entry->{rerun} )
+  {
+    $d->{rerun} = $entry->{rerun};
+  }
+  
   if( $entry->{original_title} ) {
   	$d->{original_title} = $entry->{original_title};
   }

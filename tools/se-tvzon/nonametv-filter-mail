@@ -9,7 +9,7 @@ use lib "$FindBin::Bin/../../lib";
 use Mail::Box;
 use Mail::Box::Manager;
 
-my $maildir = "/home/beatx/maildir/";
+my $maildir = "/home/jnylen/maildir/";
 my $infoldername = ".Projects/xmltv-data-in";
 my $targetprefix = ".Projects/.NonameTV-Data.";
 

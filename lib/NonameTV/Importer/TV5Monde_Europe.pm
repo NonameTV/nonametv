@@ -200,6 +200,9 @@ sub ParseDate {
   # format '2011/05/16'
   } elsif( $text =~ /^\d{2}\/\d{2}\/\d{4}$/i ){
     ( $day, $month, $year ) = ( $text =~ /^(\d{2})\/(\d{2})\/(\d{4})$/i );
+  } elsif( $text =~ /^(\d+)-Janvier-(\d+)$/ ){
+        ( $day, $year ) = ( $text =~ /^(\d+)-Janvier-(\d+)$/ );
+    $month = "01";
   } elsif( $text =~ /^(\d+)-Mai-(\d+)$/ ){
     ( $day, $year ) = ( $text =~ /^(\d+)-Mai-(\d+)$/ );
     $month = "05";

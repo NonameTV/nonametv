@@ -26,7 +26,7 @@ use Data::Dumper;
 
 use NonameTV qw/ParseXml norm AddCategory/;
 use NonameTV::Log qw/w progress error f/;
-
+use NonameTV::DataStore::Helper;
 use NonameTV::Importer::BaseWeekly;
 
 use base 'NonameTV::Importer::BaseWeekly';
@@ -41,7 +41,12 @@ sub new {
     $self->{MinWeeks} = 0 unless defined $self->{MinWeeks};
     $self->{MaxWeeks} = 4 unless defined $self->{MaxWeeks};
     
+    my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
+    
+    # use augment
     $self->{datastore}->{augment} = 1;
+
+    $self->{datastorehelper} = $dsh;
 
     return $self;
 }
@@ -51,6 +56,8 @@ sub Object2Url {
   my( $objectname, $chd ) = @_;
 
   my( $year, $week ) = ( $objectname =~ /(\d+)-(\d+)$/ );
+  my $pad_len = 2;
+  $week = sprintf("%0${pad_len}d", $week);
 
   my $url = 'http://press.viasat.tv/press/cm/listings/'. $chd->{grabber_info} . $year . '-' . $week.'.xml';
 
@@ -91,8 +98,10 @@ sub ImportContent {
 
   my $channel_id = $chd->{id};
   my $ds = $self->{datastore};
+  my $dsh = $self->{datastorehelper};
 
   my $doc = ParseXml( $cref );
+  my $currdate = "x";
   
   if( not defined( $doc ) ) {
     f "Failed to parse";
@@ -111,6 +120,20 @@ sub ImportContent {
   	# Date
     my( $date ) = norm( $sched_date->findvalue( '@date' ) );
     
+    if( $currdate ne "x" ){
+		# save last day if we have it in memory
+		#FlushDayData( $xmltvid, $dsh , @ces );
+		#$dsh->EndBatch( 1 );
+		#@ces = ();
+	}
+
+	#my $batch_id = "${xmltvid}_" . $date;
+	#$dsh->StartBatch( $batch_id, $channel_id );
+	$dsh->StartDate( $date , "00:00" ); 
+	$currdate = $date;
+
+	progress("Viasat: $xmltvid: Date is $date");
+    
     # Programmes
     my $ns2 = $sched_date->find('program');
     foreach my $emission ($ns2->get_nodelist) {
@@ -120,6 +143,18 @@ sub ImportContent {
       my $original_name = $emission->findvalue( 'orgName' );
       my $name = $original_name || $other_name;
       $name =~ s/#//g; # crashes the whole importer
+      
+      # # End of airtime
+      if( ($name eq "END") )
+      {
+      	$name = "end-of-transmission";
+      }
+      
+      if( ($name eq "GODNAT") )
+      {
+      	$name = "end-of-transmission";
+      }
+      
       
       # Category and genre
       my $category = $emission->findvalue( 'category' ); # category_series, category_movie, category_news
@@ -142,32 +177,103 @@ sub ImportContent {
       
       # Extra stuff
       my $prodyear = $emission->findvalue( 'productionYear' );
+      my $widescreen = $emission->findvalue( 'wideScreen' );
+      my $bline = $emission->findvalue( 'bline' );
+      my $rerun = $emission->findvalue( 'rerun' );
+      my $live = $emission->findvalue( 'live' );
       
       # Actors and directors
       my @actors;
       my @directors;
 
-      my $ns2 = $emission->find( './/castMember' );
-      foreach my $act ($ns2->get_nodelist)
+      my $ns3 = $emission->find( './/castMember' );
+      foreach my $act ($ns3->get_nodelist)
 	  {
-	  	push @actors, $act;
+	  	push @actors, $act->to_literal;
 	  }
 	  
 	  
 	  my $ce = {
 	      title       => norm($name),
 	      description => norm($desc),
-	      start_time  => $date." ".$start_time,
+	      start_time  => $start_time,
       };
       
+      $ce->{bline} = $bline if $bline;
       
+      # Actors
       if( scalar( @actors ) > 0 )
 	  {
 	      $ce->{actors} = join ", ", @actors;
 	  }
+	  
+	  # prod year
+	  if(defined($prodyear) and $prodyear ne "" and $prodyear =~ /(\d\d\d\d)/)
+	  {
+	  	$ce->{production_date} = "$1-01-01";
+	  }
+	  
+	  # Find aspect-info
+	  if( $widescreen eq "true" )
+	  {
+	    $ce->{aspect} = "16:9";
+	  }
+	  else
+	  {
+	    $ce->{aspect} = "4:3";
+	  }
+	  
+	  # Find rerun-info
+	  if( $rerun eq "true" )
+	  {
+	    $ce->{rerun} = "1";
+	  }
+	  else
+	  {
+	    $ce->{rerun} = "0";
+	  }
+	  
+	  # Find live-info
+	  if( $live eq "true" )
+	  {
+	    $ce->{live} = "1";
+	  }
+	  else
+	  {
+	    $ce->{live} = "0";
+	  }
 	
-		$ce->{directors} = norm($emission->findvalue( 'director' )) if $emission->findvalue( 'director' );
+	  $ce->{directors} = norm($emission->findvalue( 'director' )) if $emission->findvalue( 'director' );
       
+      # Episodes
+      if($episode) {
+      	if($season) {
+      		if($eps) {
+      			$ce->{episode} = sprintf( "%d . %d/%d . ", $season-1, $episode-1, $eps );
+      		} else {
+      			$ce->{episode} = sprintf( "%d . %d .", $season-1, $episode-1 );
+      		}
+      	}elsif($eps) {
+      		$ce->{episode} = sprintf( " . %d/%d . ", $episode-1, $eps );
+      	} else {
+      		$ce->{episode} = sprintf( " . %d . ", $episode-1 );
+      	}
+      }
+      
+      # Genres and category
+      my( $pty, $cat );
+	  if(defined($genre) and $genre and $genre ne "") {
+	      ( $pty, $cat ) = $ds->LookupCat( 'Viasat2_genre', $genre );
+	  	  AddCategory( $ce, $pty, $cat );
+	  }
+	  
+	  if(defined($category) and $category and $category ne "") {
+	      ( $pty, $cat ) = $ds->LookupCat( 'Viasat2_category', $category );
+	  	  AddCategory( $ce, $pty, $cat );
+	  }
+      
+      progress( "Viasat: $chd->{xmltvid}: $start_time - $name" );
+      $dsh->AddProgramme( $ce );
     }
   }
 

@@ -105,6 +105,8 @@ sub ImportContent {
       my $title = norm( $emission->findvalue( 'Title' ) );
       my $desc = norm( $emission->findvalue( 'Feature' ) );
 
+	  my $type = norm( $emission->findvalue( 'BroadcastType' ) );
+
       my $ce = {
         channel_id => $channel_id,
         start_time => $start_dt->ymd('-') . ' ' . $start_dt->hms(':'),
@@ -112,6 +114,25 @@ sub ImportContent {
         title => $title,
         description => $desc,
       };
+      
+      # Find live-info and rerun
+	  if( $type eq "DIREKT" )
+	  {
+	    $ce->{live} = "1";
+	  }
+	  else
+	  {
+	    $ce->{live} = "0";
+	  }
+	  
+	  if( $type eq "Repris" )
+	  {
+	    $ce->{rerun} = "1";
+	  }
+	  else
+	  {
+	    $ce->{rerun} = "0";
+	  }
 
       $ds->AddProgramme( $ce );
       

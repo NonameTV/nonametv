@@ -303,7 +303,7 @@ sub extract_extra_info
   $ce->{title} =~ s/^Novellfilm:\s*//;
 
   # Default aspect is 4:3.
-  $ce->{aspect} = "4:3";
+  #$ce->{aspect} = "4:3";
 
   for( my $i=0; $i<scalar(@sentences); $i++ )
   {
@@ -318,6 +318,12 @@ sub extract_extra_info
     if( $sentences[$i] eq "Bredbild." )
     {
       $ce->{aspect} = "16:9";
+      $sentences[$i] = "";
+    }
+    elsif( $sentences[$i] eq "4:3-format." )
+    {
+   	  print("HEJ\n");
+      $ce->{aspect} = "4:3";
       $sentences[$i] = "";
     }
     elsif( $sentences[$i] =~ /(.ven|Fr.n)
@@ -336,7 +342,7 @@ sub extract_extra_info
     	$sentences[$i] = "";
 #      $self->parse_other_showings( $ce, $sentences[$i] );
     }
-    elsif( $sentences[$i] =~ /Text(at|-tv)\s+sid(an)*\s+\d+\./ )
+    elsif( $sentences[$i] =~ /Text(at|-tv)\s+(sid|sid.|sidan)*\s+\d+\./ )
     {
 #      $ce->{subtitle} = 'sv,teletext';
       $sentences[$i] = "";

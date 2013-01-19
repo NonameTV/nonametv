@@ -54,7 +54,7 @@ EOHELP
 
 my $ds = CreateDataStore();
 
-my $root = "/home/beatx/maildir/.Projects/";
+my $root = "/home/jnylen/maildir/.Projects/";
 my @folders = qw(NonameTV-Data.Disney
 		 NonameTV-Data.GlobalListings
 		 NonameTV-Data.CNBC

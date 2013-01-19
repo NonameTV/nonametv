@@ -21,6 +21,15 @@ use DateTime;
 use XML::LibXML;
 use Spreadsheet::ParseExcel;
 
+use Spreadsheet::Read;
+
+use Spreadsheet::XLSX;
+use Spreadsheet::XLSX::Utility2007 qw(ExcelFmt ExcelLocaltime LocaltimeExcel);
+use Spreadsheet::Read;
+
+use Text::Iconv;
+my $converter = Text::Iconv -> new ("utf-8", "windows-1251");
+
 use NonameTV qw/norm MonthNumber/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/progress error/;
@@ -74,8 +83,13 @@ sub ImportXLS
   my %columns = ();
   my $date;
   my $currdate = "x";
+  my $oBook;
 
-  my $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
+if ( $file =~ /\.xlsx$/i ){ progress( "using .xlsx" );  $oBook = Spreadsheet::XLSX -> new ($file, $converter); }
+else { $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );  }   #  staro, za .xls
+#elsif ( $file =~ /\.xml$/i ){ $oBook = Spreadsheet::ParseExcel::Workbook->Parse($file); progress( "using .xml" );    }   #  staro, za .xls
+#print Dumper($oBook);
+my $ref = ReadData ($file);
 
   # main loop
   #for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {

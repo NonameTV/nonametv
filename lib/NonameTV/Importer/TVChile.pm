@@ -194,7 +194,7 @@ sub ParseDate
 sub create_dt
 {
   my( $str ) = shift;
-  my( $year, $month, $day, $hour, $minute );
+  my( $year, $month, $day, $hour, $minute, $second );
 
   if( $str =~ /^\d{4}-\d{2}-\d{2} \d{1,2}:\d{2}$/ ){
   	( $year, $month, $day, $hour, $minute ) = 
@@ -205,6 +205,9 @@ sub create_dt
   } elsif( $str =~ /^\d{4}-\d{2}-\d{2} \d{1,2}:\d{2} $/ ){
   	( $year, $month, $day, $hour, $minute ) = 
       ($str =~ /(\d+)-(\d+)-(\d+) (\d+):(\d+) $/ );
+  } elsif( $str =~ /^\d{4}-\d{2}-\d{2} \d{1,2}:\d{2}:\d{2}/ ){
+  	( $year, $month, $day, $hour, $minute, $second ) = 
+      ($str =~ /(\d+)-(\d+)-(\d+) (\d+):(\d+):(\d+)/ );
   } elsif( $str =~ /^\d{4}\/\d{2}\/\d{2}$/ ){
   	( $year, $month, $day ) = 
       ($str =~ /(\d+)\/(\d+)\/(\d+)$/ );

@@ -104,7 +104,7 @@ foreach my $fsf (@fsfiles)
   # check if there is a subdirectory named 'old' inside of the channel directory
   if( not File::Util->existent( "$filestore/$fsf/old" ) ){
     progress( "Creating the subdirectory $fsf/old" );
-    File::Util->make_dir( "$filestore/$fsf/old", 0755 );
+    system("mkdir $filestore/$fsf/old");
   }
 
   # list files inside of the channel directory and check when they have been touched

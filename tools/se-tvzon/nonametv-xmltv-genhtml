@@ -217,7 +217,7 @@ EOFOOT
 close(OUT);
 
 update_if_changed( "$dir/00logos.html.new", "$dir/00logos.html" );
-system( "zcat $dir/channels.xml.gz | xsltproc /home/beatx/projects/nonametv/examples/channel-list.xsl - > $dir/channels.html.new" );
+system( "zcat $dir/channels.xml.gz | xsltproc /home/jnylen/projects/nonametv/examples/channel-list.xsl - > $dir/channels.html.new" );
 
 update_if_changed( "$dir/channels.html.new", "$dir/channels.html" );
 

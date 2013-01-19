@@ -1,13 +1,13 @@
 #!/bin/sh
 
-#getmail -q --rcfile=/home/beatx/.getmail/xmltv.espn.gmail --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
-getmail -q --rcfile=/home/beatx/.getmail/xmltv.gmail --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
-#getmail -q --rcfile=/home/beatx/.getmail/xmltv.natgeo.gmail --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
-#getmail -q --rcfile=/home/beatx/.getmail/xmltv.travel.gmail --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
-#getmail -q --rcfile=/home/beatx/.getmail/xmltv.disney.gmail --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
-#getmail -q --rcfile=/home/beatx/.getmail/poker.rc --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
-#getmail -q --rcfile=/home/beatx/.getmail/ngcwild.rc --getmaildir=/home/beatx/maildir/.Projects/xmltv-data-in
+#getmail -q --rcfile=/home/jnylen/.getmail/xmltv.espn.gmail --getmaildir=/home/jnylen/maildir/.Projects/xmltv-data-in
+getmail -q --rcfile=/home/jnylen/.getmail/xmltv.gmail --getmaildir=/home/jnylen/maildir/.Projects/xmltv-data-in
+#getmail -q --rcfile=/home/jnylen/.getmail/xmltv.natgeo.gmail --getmaildir=/home/jnylen/maildir/.Projects/xmltv-data-in
+#getmail -q --rcfile=/home/jnylen/.getmail/xmltv.travel.gmail --getmaildir=/home/jnylen/maildir/.Projects/xmltv-data-in
+#getmail -q --rcfile=/home/jnylen/.getmail/xmltv.disney.gmail --getmaildir=/home/jnylen/maildir/.Projects/xmltv-data-in
+#getmail -q --rcfile=/home/jnylen/.getmail/poker.rc --getmaildir=/home/jnylen/maildir/.Projects/xmltv-data-in
+#getmail -q --rcfile=/home/jnylen/.getmail/ngcwild.rc --getmaildir=/home/jnylen/maildir/.Projects/xmltv-data-in
 
 # Parse it
-/home/beatx/projects/nonametv/tools/se-tvzon/nonametv-filter-mail
-/home/beatx/projects/nonametv/tools/se-tvzon/nonametv-parse-maildir
+/home/jnylen/projects/nonametv/tools/se-tvzon/nonametv-filter-mail
+/home/jnylen/projects/nonametv/tools/se-tvzon/nonametv-parse-maildir

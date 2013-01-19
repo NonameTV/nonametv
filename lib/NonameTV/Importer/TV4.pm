@@ -13,22 +13,22 @@ previously-shown-date info available but not currently used.
 
    <program>
       <transmissiontime>15:45</transmissiontime>
-      <title>Säsongsstart: Melrose Place </title>
-      <description>Amerikansk dramaserie från 1995 i 34 avsnitt.  Om en grupp unga 
-människor som bor i ett hyreshus på Melrose Place i Los Angeles. Frågan är vem de kan 
-lita på bland sina grannar, för på Melrose Place kan den man tror är ens bästa vän 
-visa sig vara ens värsta fiende.      Del 17 av 34.  Bobby får ett ultimatum av 
-Peter. Kimberley berättar för Alan om Matts tidigare kärleksaffärer vilket får Alan 
-att ta avstånd från Matt. Billy har skuldkänslor efter Brooks självmordsförsök och 
-kräver att Amanda tar henne tillbaka.</description>
-      <episode_description> Del 17 av 34.  Bobby får ett ultimatum av Peter. 
-Kimberley berättar för Alan om Matts tidigare kärleksaffärer vilket får Alan att ta 
-avstånd från Matt. Billy har skuldkänslor efter Brooks självmordsförsök och kräver 
+      <title>Sï¿½songsstart: Melrose Place </title>
+      <description>Amerikansk dramaserie frï¿½n 1995 i 34 avsnitt.  Om en grupp unga 
+mï¿½nniskor som bor i ett hyreshus pï¿½ Melrose Place i Los Angeles. Frï¿½gan ï¿½r vem de kan 
+lita pï¿½ bland sina grannar, fï¿½r pï¿½ Melrose Place kan den man tror ï¿½r ens bï¿½sta vï¿½n 
+visa sig vara ens vï¿½rsta fiende.      Del 17 av 34.  Bobby fï¿½r ett ultimatum av 
+Peter. Kimberley berï¿½ttar fï¿½r Alan om Matts tidigare kï¿½rleksaffï¿½rer vilket fï¿½r Alan 
+att ta avstï¿½nd frï¿½n Matt. Billy har skuldkï¿½nslor efter Brooks sjï¿½lvmordsfï¿½rsï¿½k och 
+krï¿½ver att Amanda tar henne tillbaka.</description>
+      <episode_description> Del 17 av 34.  Bobby fï¿½r ett ultimatum av Peter. 
+Kimberley berï¿½ttar fï¿½r Alan om Matts tidigare kï¿½rleksaffï¿½rer vilket fï¿½r Alan att ta 
+avstï¿½nd frï¿½n Matt. Billy har skuldkï¿½nslor efter Brooks sjï¿½lvmordsfï¿½rsï¿½k och krï¿½ver 
 att Amanda tar henne tillbaka.</episode_description>
-<program_description>Amerikansk dramaserie från 1995 i 34 avsnitt.  Om en grupp unga 
-människor som bor i ett hyreshus på Melrose Place i Los Angeles. Frågan är vem de kan 
-lita på bland sina grannar, för på Melrose Place kan den man tror är ens bästa vän 
-visa sig vara ens värsta fiende.     </program_description>
+<program_description>Amerikansk dramaserie frï¿½n 1995 i 34 avsnitt.  Om en grupp unga 
+mï¿½nniskor som bor i ett hyreshus pï¿½ Melrose Place i Los Angeles. Frï¿½gan ï¿½r vem de kan 
+lita pï¿½ bland sina grannar, fï¿½r pï¿½ Melrose Place kan den man tror ï¿½r ens bï¿½sta vï¿½n 
+visa sig vara ens vï¿½rsta fiende.     </program_description>
 <creditlist>
   <person>
     <role_played>Michael Mancini</role_played>
@@ -158,6 +158,8 @@ sub ImportContent
     my $desc = $pgm->findvalue( 'description' );
     my $ep_desc = $pgm->findvalue( 'episode_description' );
     my $pr_desc = $pgm->findvalue( 'program_description' );
+    my $live = $pgm->findvalue( 'live' );
+    my $definition = $pgm->findvalue( 'definition' );
     
     my $prev_shown_date = $pgm->findvalue( 'previous_transmissiondate' );
     
@@ -180,6 +182,22 @@ sub ImportContent
 #     $ce->{prev_shown_date} = norm($prev_shown_date)
 #     if( $prev_shown_date =~ /\S/ );
 
+	# Find live-info
+	  if( $live eq "true" )
+	  {
+	    $ce->{live} = "1";
+	  }
+	  else
+	  {
+	    $ce->{live} = "0";
+	  }
+	  
+	# HDTV
+	  if( $definition eq "HD" )
+	  {
+	    $ce->{quality} = "HDTV";
+	  }
+
     my @actors;
     my @directors;
 
@@ -195,7 +213,7 @@ sub ImportContent
       	$role = norm( $act->findvalue('./role_played') );
       }
       
-    if( (defined $role) and ( $role =~ /Regissör/ ) )
+    if( (defined $role) and ( $role =~ /Regissï¿½r/ ) )
       {
         push @directors, $name;
       }
@@ -278,7 +296,7 @@ sub extract_extra_info
 
   if( $ce->{title} =~ /^Pokemon\s+(\d+)\s*$/ )
   {
-    $ce->{title} = "Pokémon";
+    $ce->{title} = "Pokï¿½mon";
     $ce->{subtitle} = $1;
   }
 

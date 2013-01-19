@@ -65,7 +65,7 @@ sub ImportContentFile {
   if( $file =~ /\.xls$/i ){
     $self->ImportXLS( $file, $channel_id, $xmltvid );
   } elsif( $file =~ /\.doc$/i ){
-    #$self->ImportDOC( $file, $channel_id, $xmltvid );
+    $self->ImportDOC( $file, $channel_id, $xmltvid );
   }
 
   return;
@@ -402,45 +402,6 @@ sub ParseShow {
   ( $hour, $min, $title ) = ( $text =~ /^(\d+)\:(\d+)\s+(.*)/ );
 
   return( $hour . ":" . $min , $title , $genre );
-}
-
-sub UpdateFiles {
-  my( $self ) = @_;
-
-  # get current month name
-  my $year = DateTime->today->strftime( '%g' );
-
-  # the url to fetch data from
-  # is in the format http://newsroom.zonemedia.net/Files/Schedules/REA11009L01.xls
-  # UrlRoot = http://newsroom.zonemedia.net/Files/Schedules/
-  # GrabberInfo = <empty>
-
-  foreach my $data ( @{$self->ListChannels()} ) {
-
-    my $xmltvid = $data->{xmltvid};
-
-    my $today = DateTime->today;
-
-    # do it for MaxMonths in advance
-    for(my $month=0; $month <= $self->{MaxMonths} ; $month++) {
-
-      my $dt = $today->clone->add( months => $month );
-
-      for( my $v=1; $v<=4; $v++ ){
-        my $filename = sprintf( "REA1%02d%02dL%02d.xls", $dt->month, $dt->strftime( '%y' ), $v );
-        my $url = $self->{UrlRoot} . "/" . $filename;
-        progress("ZoneReality: $xmltvid: Fetching xls file from $url");
-        http_get( $url, $self->{FileStore} . '/' . $xmltvid . '/' . $filename );
-      }
-
-    }
-  }
-}
-
-sub http_get {
-  my( $url, $file ) = @_;
-
-  qx[curl -s -S -z "$file" -o "$file" "$url"];
 }
 
 1;
