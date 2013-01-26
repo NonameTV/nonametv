@@ -249,7 +249,7 @@ sub ImportContent {
       description => norm_desc($desc),
     };
     
-    print("Title: '$title_fixed'\n");
+    #print("Title: '$title_fixed'\n");
     
     if( defined( $endtime ) )
     {
@@ -308,6 +308,7 @@ sub extract_extra_info
 
   $ce->{title} =~ s/^Seriestart:\s*//;
   $ce->{title} =~ s/^Novellfilm:\s*//;
+  $ce->{title} =~ s/^Filmklubben\s+Norden:\s*//;
 
   # Default aspect is 4:3.
   #$ce->{aspect} = "4:3";
@@ -335,7 +336,7 @@ sub extract_extra_info
       
       $season = SeasonText($seasontext);
       
-      print("Text: $seasontext - Num: $season\n");
+      #print("Text: $seasontext - Num: $season\n");
       
       # Only remove sentence if it could find a season
       if($season ne "") {
