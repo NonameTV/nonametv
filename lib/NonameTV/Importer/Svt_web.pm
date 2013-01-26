@@ -330,11 +330,12 @@ sub extract_extra_info
     }
     elsif( my( $seasontext ) = ($sentences[$i] =~ /^(.*) säsongen./ ) )
     {
+      $seasontext =~ s/ och sista//g;
       $seasontext = lc($seasontext);
       
       $season = SeasonText($seasontext);
       
-      #print("Text: $seasontext - Num: $season\n");
+      print("Text: $seasontext - Num: $season\n");
       
       # Only remove sentence if it could find a season
       if($season ne "") {
@@ -420,7 +421,20 @@ sub extract_extra_info
  	}
     elsif( my( $directors ) = ($sentences[$i] =~ /^Regi:\s*(.*)/) )
     {
+      # If this program has an director, it should be
+	  # a movie. If it isn't, please tag this DIRECTLY.
+	  $ce->{program_type} = 'movie';
+    
       $ce->{directors} = parse_person_list( $directors );
+      $sentences[$i] = "";
+    }
+    elsif( my( $directors2 ) = ($sentences[$i] =~ /^I\s+regi\s+av\s+(.*)/) )
+    {
+      # If this program has an director, it should be
+	  # a movie. If it isn't, please tag this DIRECTLY.
+	  $ce->{program_type} = 'movie';
+	  
+      $ce->{directors} = parse_person_list( $directors2 );
       $sentences[$i] = "";
     }
     elsif( my( $actors ) = ($sentences[$i] =~ /^I rollerna:\s*(.*)/ ) )
