@@ -123,19 +123,25 @@ sub ImportContent {
   		next;
   	}
   
-  
-  	# Start and so on
-    my $starttime = $b->findvalue( "starttid" );
-    my( $start, $start_dummy ) = ( $starttime =~ /(\d+:\d+):(\d+)/ );
-    my $stoptime = $b->findvalue( "sluttid" );
-    my( $stop, $stop_dummy ) = ( $stoptime =~ /(\d+:\d+):(\d+)/ );
-    
-    my $title = $b->findvalue( "titel" );
+  	my $title = $b->findvalue( "titel" );
     $title =~ s/\(.*\)//g;
     $title =~ s/:\|apostrofe\|;/'/g;
     my $org_title = $b->findvalue( "originaltitel" );
     $org_title =~ s/:\|apostrofe\|;/'/g;
     my $titles = $org_title || $title;
+  
+  
+  	# Start and so on
+    my $starttime = $b->findvalue( "starttid" );
+    
+    if($starttime eq "") {
+    	f("No starttime for $titles");
+    	next;
+    }
+    
+    my( $start, $start_dummy ) = ( $starttime =~ /(\d+:\d+):(\d+)/ );
+    #my $stoptime = $b->findvalue( "sluttid" );
+    #my( $stop, $stop_dummy ) = ( $stoptime =~ /(\d+:\d+):(\d+)/ );
 
     
     # Descr. and genre

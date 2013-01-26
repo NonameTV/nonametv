@@ -197,18 +197,16 @@ sub ImportXLS
 
 sub ParseDate {
   my( $text ) = @_;
+  print("Text: \"$text\"\n");
 
   $text =~ s/^\s+//;
 
   my( $dayname, $day, $monthname, $year );
   my $month;
 
-  if( $text =~ /^\d+-\d+-\d+$/ ) { # format '2011-07-01'
-    ( $year, $month, $day ) = ( $text =~ /^(\d+)-(\d+)-(\d+)$/ );
-    $year += 2000 if $year lt 100;
-  } elsif( $text =~ /^\d+\/\d+\/\d+$/ ) { # format '01/11/2008'
-    ( $day, $month, $year ) = ( $text =~ /^(\d+)\/(\d+)\/(\d+)$/ );
-    $year += 2000 if $year lt 100;
+  if( $text =~ /^(\d+)\/(\s+)\/(\d+)$/ ){
+  		print("HEJ");
+        ( $day, $monthname, $year ) = ( $text =~ /^(\d+)\/(\s+)\/(\d+)$/ );
   }
 
   return sprintf( '%d-%02d-%02d', $year, $month, $day );
