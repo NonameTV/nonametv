@@ -444,6 +444,7 @@ $sm->AddRegexp( qr/intervjuserie/i,     			[ 'series', 'Talk' ] );
 #$sm->AddRegexp( qr/\b(familje|drama|action)*komedi\b/i,  [ 'movie', "Comedy" ] ); # Sets even series at movies
 
 $sm->AddRegexp( qr/\b(krigs|kriminal)*drama\b/i,  [ 'movie', "Drama" ] );
+$sm->AddRegexp( qr/familjefilm/i,         		  [ 'movie', "Family" ] );
 
 $sm->AddRegexp( qr/\baction(drama|film)*\b/i,     [ 'movie', "Action/Adv" ] );
 $sm->AddRegexp( qr/actionthrillerfilm/i,     	  [ 'movie', "Action/Thriller" ] );
@@ -463,6 +464,7 @@ $sm->AddRegexp( qr/\b(l.ng)\s*film\b/i,             [ 'movie', undef ] );
 
 $sm->AddRegexp( qr/\bbollywoodfilm\b/i,             [ 'movie', "Bollywood" ] );
 $sm->AddRegexp( qr/långfilm/i,                 [ 'movie', undef ] );
+$sm->AddRegexp( qr/tv-film/i,                 [ 'movie', undef ] );
 
 
 # Kanal 5

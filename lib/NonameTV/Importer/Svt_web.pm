@@ -420,13 +420,13 @@ sub extract_extra_info
  	  
  	  $sentences[$i] = "";
  	}
-    elsif( my( $directors ) = ($sentences[$i] =~ /^Regi\s+och\s+manus:\s*(.*)/) )
+    elsif( my( $directors4 ) = ($sentences[$i] =~ /^Regi\s+och\s+manus:\s*(.*)/) )
     {
       # If this program has an director, it should be
 	  # a movie. If it isn't, please tag this DIRECTLY.
 	  $ce->{program_type} = 'movie';
     
-      $ce->{directors} = parse_person_list( $directors );
+      $ce->{directors} = parse_person_list( $directors4 );
       $sentences[$i] = "";
     }
     elsif( my( $directors ) = ($sentences[$i] =~ /^Regi:\s*(.*)/) )
@@ -451,9 +451,9 @@ sub extract_extra_info
     {
       $ce->{actors} = parse_person_list( $actors );
       $sentences[$i] = "";
-    }elsif( my( $actors ) = ($sentences[$i] =~ /^Medverkande:\s*(.*)/ ) )
+    }elsif( my( $actors2 ) = ($sentences[$i] =~ /^Medverkande:\s*(.*)/ ) )
     {
-      $ce->{actors} = parse_person_list( $actors );
+      $ce->{actors} = parse_person_list( $actors2 );
       $sentences[$i] = "";
     }elsif( $sentences[$i] =~ /l.ngfilm/ ) {
         $ce->{program_type} = "movie";
