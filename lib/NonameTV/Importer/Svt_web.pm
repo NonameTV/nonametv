@@ -304,8 +304,6 @@ sub extract_extra_info
     $program_type = undef; 
   }
 
-  AddCategory( $ce, $program_type, $category );
-
   $ce->{title} =~ s/^Seriestart:\s*//;
   $ce->{title} =~ s/^Novellfilm:\s*//;
   $ce->{title} =~ s/^Filmklubben\s+Norden:\s*//;
@@ -387,6 +385,10 @@ sub extract_extra_info
     }
     elsif( $sentences[$i] =~ /Del\s+\d+\.*/ )
     {
+      # If this program has an episode-number, it is by definition
+	  # a series (?). Svt often miscategorize series as movie.
+	  $ce->{program_type} = 'series';
+	  
       my( $ep, $eps, $name, $episode, $dummy );
       # Del 2 av 3: Pilot (episodename)
  	  ( $ce->{subtitle} ) = ($sentences[$i] =~ /:\s*(.+)\./);
@@ -413,9 +415,6 @@ sub extract_extra_info
 	    	$episode = $season-1 . $episode;
 	    }
 	    $ce->{episode} = $episode;
-	    # If this program has an episode-number, it is by definition
-	    # a series (?). Svt often miscategorize series as movie.
-	    $ce->{program_type} = 'series';
 	  }
  	  
  	  $sentences[$i] = "";
@@ -458,6 +457,13 @@ sub extract_extra_info
     }elsif( $sentences[$i] =~ /l.ngfilm/ ) {
         $ce->{program_type} = "movie";
     }
+  }
+  
+  # Parse the desc if it doesnt have a program_type
+  if(!defined($ce->{program_type})) {
+  	AddCategory( $ce, $program_type, $category );
+  } elsif(defined($ce->{program_type}) and $ce->{program_type} ne "movie") {
+  	AddCategory( $ce, $program_type, $category );
   }
   
   $ce->{description} = join_text( @sentences );
