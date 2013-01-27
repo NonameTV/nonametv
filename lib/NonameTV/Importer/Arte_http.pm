@@ -54,7 +54,7 @@ sub InitiateDownload {
   $mech->form_with_fields( ( 'form1:password' ) );
   $mech->field( 'form1:user', $self->{Username}, 1 );
   $mech->field( 'form1:password', $self->{Password}, 1 );
-  $mech->click_button( name => 'form1:j_idt106' );
+  $mech->click_button( name => 'form1:j_idt108' );
 
   if ($mech->success()) {
     return undef;
@@ -155,7 +155,7 @@ sub ImportContent( $$$ ) {
         ($episodenum, $episodetotal) = ( $title =~ m/\s+\((\d+)(?:\/(\d+)|)\)$/ );
         $title =~ s/\s+\(\d+(?:\/\d+|)\)$//;
       }
-      $ce->{title} = $title;
+      $ce->{title} = norm( $title );
     }
 
     if( !$title ){
@@ -193,6 +193,13 @@ sub ImportContent( $$$ ) {
       }
     }
 
+    my $original_title = norm( $xpc->findvalue( 's:titel/s:alias[@titelart="originaltitel"]/@aliastitel' ) );
+    if( $original_title ){
+      # remove braces
+      $original_title =~ s|^\((.*)\)$|$1|;
+      $ce->{original_title} = norm( $original_title );
+    }
+
     my $production_year = $xpc->findvalue( 's:infos/s:produktion/s:produktionszeitraum/s:jahr/@von' );
     if( $production_year =~ m|^\d{4}$| ){
       $ce->{production_date} = $production_year . '-01-01';
@@ -214,9 +221,24 @@ sub ImportContent( $$$ ) {
       AddCategory( $ce, $program_type, $category );
     }
 
+    # parse sendung_id to guess if its a series of some kind unless we know it from the genre
+    # JT-010252 is a "klammer"
+    # 000000-000-A is a program (seen A and B)
+    #        ^^^- is 0 for movie/tvshow and >= 1 for series (episode id starting from 1)
+    my $sendung_id = $xpc->findvalue( './@sendung_id' );
+    if( $sendung_id && !$ce->{program_type}){
+      my( $folge )=( $sendung_id =~ m|^\d{6}-(\d{3})-[A-Z]$| );
+      if( $folge > 0 ) {
+        $ce->{program_type} = 'series';
+      }
+    }
+
     my $url = $xpc->findvalue( 's:infos/s:url/@link' );
     if( $url ){
-      $ce->{url} = $url;
+      # a link to the root of the arte+7 website gains us nothing progam specific, so skip it
+      if( $url ne 'videos.arte.tv'){
+         $ce->{url} = $url;
+      }
     }
 
     my $synopsis = $xpc->findvalue( 's:text[@textart="Beschreibung"]' );

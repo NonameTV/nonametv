@@ -102,6 +102,7 @@ sub FilterContent {
   }
 
   $$cref =~ s|<Pressetext>([^<]*)</Pressetext>|<Pressetext xml:space="preserve">$1</Pressetext>|g;
+  $$cref =~ s|<Zusatztext>([^<]*)</Zusatztext>|<Zusatztext xml:space="preserve">$1</Zusatztext>|g;
   $$cref =~ s|&#13;&#10;|\n|g;
 
   # header says utf-8 but it's really windows-1252 in entities
@@ -198,6 +199,9 @@ sub ImportContent {
     };
 
     my $desc  = $pgm->findvalue( 'Pressetext' );
+    if (!$desc) {
+      $desc = $pgm->findvalue( 'Zusatztext' );
+    }
     # cleanup some characters
     # ellipsis
     $desc =~ s|…|...|g;
@@ -440,6 +444,7 @@ sub parse_subtitle
   } elsif ($subtitle =~ m|^\(.*\)$|) {
     my ($title_orig) = ($subtitle =~ m|^\((.*)\)$|);
     # original title
+    $sce->{original_title} = norm($title_orig);
     $subtitle = undef;
   } elsif ($subtitle =~ m|^Reporter: \S+ \S+$|) {
     my ($presenter) = ($subtitle =~ m|^Reporter: (\S+ \S+)$|);

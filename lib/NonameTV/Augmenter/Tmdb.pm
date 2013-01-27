@@ -97,12 +97,15 @@ sub FillHash( $$$ ) {
   # FIXME shall we use the alternative name if that's what was in the guide???
   # on one hand the augmenters are here to unify various styles on the other
   # hand matching the other guides means less surprise for the users
+  #<<<<<<< HEAD
   #
   # Change original_name to name if you want your specific language's movie name.
-  $resultref->{title} = norm( $doc->findvalue( '/OpenSearchDescription/movies/movie/original_name' ) );
-  $resultref->{original_title} = norm($ceref->{title});
+  #$resultref->{title} = norm( $doc->findvalue( '/OpenSearchDescription/movies/movie/original_name' ) );
+  #$resultref->{original_title} = norm($ceref->{title});
+  $resultref->{title} = norm( $doc->findvalue( '/OpenSearchDescription/movies/movie/name' ) );
+  $resultref->{original_title} = norm( $doc->findvalue( '/OpenSearchDescription/movies/movie/original_name' ) );
 
-  # TODO shall we add the tagline as subtitle?
+  # TODO shall we add the tagline as subtitle? (for german movies the tv title is often made of the movie title plus tagline)
   $resultref->{subtitle} = undef;
 
   # is it a movie? (makes sense once we match by other attributes then program_type=movie :)
