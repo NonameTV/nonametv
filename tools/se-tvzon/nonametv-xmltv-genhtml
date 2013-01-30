@@ -114,8 +114,8 @@ foreach my $channel (sort keys %channels)
 {
   print OUT << "EOD";
 <tr>
-	<th scope='row'><img src='http://static.tvtab.la/gfx/chanlogos/44x44/$channel.png' /></th>
-  <th scope='row'><a href='/nowonchannel.php?channel=$channel'>$channel</a></th>
+	<th scope='row'><img src='http://tvimg.net/chanlogos/44x44/$channel.png' /></th>
+  <th scope='row'>$channel</th>
 
 EOD
 
@@ -198,9 +198,9 @@ foreach my $channel (sort keys %channels)
   print OUT << "EOREC";
 <tr>
   <td>$channel</td>
-  <td><img src="http://static.tvtab.la/gfx/chanlogos/$channel.png"></td>
-  <td><img src="http://static.tvtab.la/gfx/44x44/$channel.png"></td>
-  <td><img src="http://static.tvtab.la/gfx/16x16/$channel.png"></td>
+  <td><img src="http://tvimg.net/chanlogos/$channel.png"></td>
+  <td><img src="http://tvimg.net/44x44/$channel.png"></td>
+  <td><img src="http://tvimg.net/16x16/$channel.png"></td>
 </tr>
 
 EOREC

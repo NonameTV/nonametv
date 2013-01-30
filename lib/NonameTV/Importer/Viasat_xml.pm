@@ -201,6 +201,11 @@ sub ImportContent {
       
       $ce->{bline} = $bline if $bline;
       
+      # Send back original swedish title
+      if(norm($name) ne norm($other_name)) {
+      	$ce->{original_title} = norm($other_name);
+      }
+      
       # Actors
       if( scalar( @actors ) > 0 )
 	  {

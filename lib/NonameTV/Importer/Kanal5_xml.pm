@@ -153,6 +153,40 @@ sub ImportContent
       
       my($program_type, $category ) = $ds->LookupCat( 'Kanal5_xml', $genre );
 	  AddCategory( $ce, $program_type, $category );
+	  
+	  # Castmembers
+	  my @actors;
+      my @directors;
+
+      my $ns2 = $pgm->find( './/CASTMEMBER' );
+  
+      foreach my $act ($ns2->get_nodelist)
+      {
+    	my $role = undef;
+        my $name = norm( $act->findvalue('./person/PERSON/@fullname') );
+        my $type = norm( $act->findvalue('./function/FUNCTION/@printcode') );
+      
+        if($type eq "director" )
+        {
+          push @directors, $name;
+        }
+        else
+        {
+          push @actors, $name;
+        }
+      }
+      
+      if( scalar( @actors ) > 0 and !defined($ce->{actors}) )
+      {
+        $ce->{actors} = join ", ", @actors;
+      }
+
+      if( scalar( @directors ) > 0 and !defined($ce->{directors}) )
+      {
+        $ce->{directors} = join ", ", @directors;
+      }
+      
+      # Add programme
       
       $ds->AddProgramme( $ce );
     } # next row

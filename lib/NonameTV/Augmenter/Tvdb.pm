@@ -96,8 +96,13 @@ sub FillHash( $$$$ ) {
   my $episodeid = $series->{Seasons}[$episode->{SeasonNumber}][$episode->{EpisodeNumber}];
 
   $resultref->{title} = normUtf8( norm( $series->{SeriesName} ) );
-  $resultref->{original_title} = norm($ceref->{title});
-
+  
+  # Only set original title if its not defined
+  # and the title aint like the original title.
+  if(!defined($resultref->{original_title}) and ($resultref->{title} ne norm($ceref->{title}))) {
+  	$resultref->{original_title} = norm($ceref->{title});
+  }
+  
   if( $episode->{SeasonNumber} == 0 ){
     # it's a special
     $resultref->{episode} = undef;

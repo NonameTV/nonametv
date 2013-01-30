@@ -307,6 +307,12 @@ sub extract_extra_info
   $ce->{title} =~ s/^Seriestart:\s*//;
   $ce->{title} =~ s/^Novellfilm:\s*//;
   $ce->{title} =~ s/^Filmklubben\s+Norden:\s*//;
+  
+  # Sports
+  #if( $ce->{title} =~ /^(Sportspegeln|Sportnytt|Hockeykväll|Vintermagasin|Vinterstudion|Längdskidor|Skicross|X-Games|Handboll|Alpint|Ridsport|SM-vecka|Konståkning|VM-rally|Skidskytte|Extremsport|Svenska idrottsgalan).*$/x )
+ # {
+#
+#  }
 
   # Default aspect is 4:3.
   #$ce->{aspect} = "4:3";

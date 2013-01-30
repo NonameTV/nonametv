@@ -171,12 +171,12 @@ sub ImportContent
     }
     
     my $ce = {
-      title       => norm($title),
-      title_org		=> norm($title_org),
-      description => norm($description),
-      start_time  => $starttime,
-      ep_desc     => norm($ep_desc),
-      pr_desc     => norm($pr_desc),
+      title       	 => norm($title),
+      title_org		 => norm($title_org),
+      description    => norm($description),
+      start_time  	 => $starttime,
+      ep_desc     	 => norm($ep_desc),
+      pr_desc     	 => norm($pr_desc),
     };
     
 #     $ce->{prev_shown_date} = norm($prev_shown_date)
