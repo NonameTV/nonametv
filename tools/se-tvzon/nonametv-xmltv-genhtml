@@ -199,8 +199,8 @@ foreach my $channel (sort keys %channels)
 <tr>
   <td>$channel</td>
   <td><img src="http://tvimg.net/chanlogos/$channel.png"></td>
-  <td><img src="http://tvimg.net/44x44/$channel.png"></td>
-  <td><img src="http://tvimg.net/16x16/$channel.png"></td>
+  <td><img src="http://tvimg.net/chanlogos/44x44/$channel.png"></td>
+  <td><img src="http://tvimg.net/chanlogos/16x16/$channel.png"></td>
 </tr>
 
 EOREC

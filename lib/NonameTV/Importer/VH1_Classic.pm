@@ -106,12 +106,12 @@ sub ImportXLS
           if( $oWkS->{Cells}[$iR][$iC] ){
             $columns{$oWkS->{Cells}[$iR][$iC]->Value} = $iC;
 
-						$columns{'StartDate'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Date/ );
-						$columns{'StartTime'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Time/ );
+						$columns{'Start'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Start/ );
+						$columns{'End'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /End/ );
 						$columns{'Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Title/ );
-          	$columns{'Description'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Synopsis/ );
+          	$columns{'Description'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Description/ );
 
-            $foundcolumns = 1 if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Date/ );
+            $foundcolumns = 1 if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Start/ );
           }
         }
 #foreach my $cl (%columns) {
@@ -122,19 +122,23 @@ sub ImportXLS
         next;
       }
 
-			my $oWkDate = $oWkS->{Cells}[$iR][$columns{'StartDate'}];
-      next if( ! $oWkDate );
+
+	  my( $date, $time ) = ($oWkS->{Cells}[$iR][$columns{'Start'}]->Value =~ /(.*) (.*)/);
+	  my( $enddate, $endtime ) = ($oWkS->{Cells}[$iR][$columns{'End'}]->Value =~ /(.*) (.*)/);
+	  
+	  #my $oWkDate = $date;
+      #next if( ! $oWkDate );
 
       # date & Time - column 1 ('Date')
-      my $date = ParseDate( $oWkDate->Value );
+      #my $date = ParseDate( $oWkDate->Value );
       next if( ! $date );
       
-      my $oWkTime = $oWkS->{Cells}[$iR][$columns{'StartTime'}];
-      my $time = 0;  # fix for  12:00AM	->Value
-      $time = $oWkTime->{Val} if( $oWkTime->Value );
+      #my $oWkTime = ;
+      #my $time = 0;  # fix for  12:00AM	->Value
+      #$time = $oWkTime->{Val} if( $oWkTime );
 
 			#Convert Excel Time -> localtime
- 	 		$time = ExcelFmt('hh:mm', $time);
+ 	 		#$time = ExcelFmt('hh:mm', $time);
 
 	  	# Startdate
       if( $date ne $currdate ) {
@@ -164,6 +168,7 @@ sub ImportXLS
         channel_id => $chd->{channel_id},
         title => norm( $title ),
         start_time => $time,
+        end_time => $endtime,
         description => norm( $desc ),
       };
       
