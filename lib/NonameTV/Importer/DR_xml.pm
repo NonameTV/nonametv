@@ -45,6 +45,9 @@ sub ApproveContent {
   if( $$cref eq '<!--error in request: -->' ) {
     return "404 not found";
   }
+  elsif( $$cref eq '' ) {
+    return "404 not found";
+  }
   else {
     return undef;
   }
@@ -136,6 +139,29 @@ sub ImportContent {
     my $widescreen =  $b->findvalue( 'pro_publish[1]/ppu_video' );
 	if( $widescreen eq '16:9' ){
    	 	$ce->{aspect} = '16:9';
+	}
+	if( $widescreen eq 'HD' ){
+   	 	$ce->{quality} = "HDTV";
+	}
+	
+	my $live = $b->findvalue( 'pro_publish[1]/ppu_islive' );
+	if( $live eq "TRUE" )
+	{
+		$ce->{live} = "1";
+	}
+	else
+	{
+		$ce->{live} = "0";
+	}
+	
+	my $rerun = $b->findvalue( 'pro_publish[1]/ppu_isrerun' );
+	if( $rerun eq "TRUE" )
+	{
+		$ce->{rerun} = "1";
+	}
+	else
+	{
+		$ce->{rerun} = "0";
 	}
     
     $ce->{production_date} = "$year-01-01" if $year ne "";
