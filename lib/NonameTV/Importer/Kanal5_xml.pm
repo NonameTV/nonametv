@@ -158,7 +158,7 @@ sub ImportContent
 	  my @actors;
       my @directors;
 
-      my $ns2 = $pgm->find( './/CASTMEMBER' );
+      my $ns2 = $row->find( './/CASTMEMBER' );
   
       foreach my $act ($ns2->get_nodelist)
       {
