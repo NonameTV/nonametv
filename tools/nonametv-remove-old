@@ -14,17 +14,17 @@ my $conf = ReadConfig();
 # Create Datastore
 my $ds = NonameTV::DataStore->new( $conf->{DataStore} );
 
-# print "Deleting old programs and batches from database\n";
+print "Deleting old programs and batches from database\n";
 $ds->sa->DoSql( "delete from programs where TO_DAYS(now()) - TO_DAYS(start_time) > 7" ); 
 
-# print "Deleting batches\n";
+print "Deleting batches\n";
 
 # Retrieve a list of all batches with no matching programme.
 my( $res, $sth ) = $ds->sa->Sql( "select batches.id, batches.name from batches left join programs on batches.id=programs.batch_id where programs.batch_id is null;" );
 
 while( my $d = $sth->fetchrow_hashref() )
 {
-  # print $d->{name} . "\n";
+  #print $d->{name} . "\n";
   $ds->sa->Delete( 'batches', { id => $d->{id} } );
 }
 
