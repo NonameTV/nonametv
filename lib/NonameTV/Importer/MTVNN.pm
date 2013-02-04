@@ -109,11 +109,11 @@ sub ImportContent( $$$ ) {
   	my $description = $desc_short || $desc || $format_desc_short || $format_desc;
   	
   	
-  	# Genre
+  	# Other
   	my $genre = norm($pgm->findvalue('./format_genre'));
-  	
-  	# Prod. year
   	my $production_year = norm($pgm->findvalue('./format_production_year'));
+  	my $live = norm($pgm->findvalue( './live' ));
+  	my $repeat = norm($pgm->findvalue( './repeat_level' ));
   	
   	my $ce = {
       title => norm($title),
@@ -130,6 +130,8 @@ sub ImportContent( $$$ ) {
       my $dummy;
       if( ($dummy, $season, $episode ) = ($subtitle =~ m|^S(.*)song (\d+) Avsnitt (\d+)$| ) ){
         $ce->{episode} = ($season - 1) . ' . ' . ($episode - 1) . ' .';
+      #} elsif( ($dummy, $season, $episode ) = ($subtitle =~ m|^Season (\d+) Episode (\d+)$| ) ){
+      #  $ce->{episode} = ($season - 1) . ' . ' . ($episode - 1) . ' .';
       } elsif( ( $episode ) = ($subtitle =~ m|^Avsnitt (\d+)$| ) ){
         $ce->{episode} = '. ' . ($episode - 1) . ' .';
       } else {
@@ -152,6 +154,24 @@ sub ImportContent( $$$ ) {
       my ( $program_type, $category ) = $self->{datastore}->LookupCat( "MTVNN", $genre );
       AddCategory( $ce, $program_type, $category );
     }
+    
+    # Other
+	if( $live eq "true" )
+	{
+		$ce->{live} = "1";
+	}
+	else
+	{
+		$ce->{live} = "0";
+	}
+	if( $repeat eq "1" )
+	{
+		$ce->{rerun} = "1";
+	}
+	else
+	{
+		$ce->{rerun} = "0";
+	}
     
     progress("MTVNN: $chd->{xmltvid}: ".$start->ymd("-") . " " . $start->hms(":")." - $title");
   	
