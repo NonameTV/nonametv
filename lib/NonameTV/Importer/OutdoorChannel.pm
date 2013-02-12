@@ -107,7 +107,7 @@ sub ImportGridXLS
         next if( ! $oWkC );
         next if( ! $oWkC->Value );
 
-        if( $oWkC->Value =~ /^\d{2} \d{2} \d{4}$/i ){
+        if( $oWkC->Value =~ /^\d{2}\/\d{2}\/\d{4}$/i ){
 
           # DATE
           $date = ParseDate( $oWkC->Value );
@@ -132,7 +132,7 @@ sub ImportGridXLS
       }
 
       # programmes start from row 15
-      for(my $iR = 3 ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
+      for(my $iR = 2 ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
 
         # Title
         $oWkC = $oWkS->{Cells}[$iR][$iC];
@@ -193,8 +193,10 @@ sub ParseTime
 {
   my ( $tinfo ) = @_;
 
+	print("Time: $tinfo\n");
+
   # format 'hh:mm'
-  my( $h, $m, $title ) = ( $tinfo =~ /^(\d+):(\d+)\s+(.*)$/ );
+  my( $h, $m ) = ( $tinfo =~ /^(\d+):(\d+):/ );
 
   #$h -= 24 if $h >= 24;
 
@@ -207,8 +209,8 @@ sub ParseDate {
   my( $day, $month, $year );
 
   # format '2011-04-13'
-  if( $text =~ /^\d{2} \d{2} \d{4}$/i ){
-    ( $day, $month, $year ) = ( $text =~ /^(\d{2}) (\d{2}) (\d{4})$/i );
+  if( $text =~ /^\d{2}\/\d{2}\/\d{4}$/i ){
+    ( $day, $month, $year ) = ( $text =~ /^(\d{2})\/(\d{2})\/(\d{4})$/i );
   }
   
   return sprintf( "%04d-%02d-%02d" , $year, $month, $day );
