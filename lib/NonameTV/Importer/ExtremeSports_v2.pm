@@ -16,7 +16,7 @@ use utf8;
 
 use DateTime;
 use Spreadsheet::ParseExcel;
-#use Data::Dumper;
+use Data::Dumper;
 
 use NonameTV qw/norm AddCategory MonthNumber/;
 use NonameTV::DataStore::Helper;
@@ -35,6 +35,8 @@ sub new {
 
   my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
   $self->{datastorehelper} = $dsh;
+
+  $self->{datastore}->{augment} = 1;
 
   return $self;
 }
@@ -157,8 +159,38 @@ sub ImportFlatXLS
 	  
 	  # empty last day array
       undef @ces;
+      
+      # Season
+      my($season);
+  	  ( $season ) = ($title =~ /Season\s+(\d+)$/ );
+  	  ( $season ) = ($title =~ /Series\s+(\d+)$/ );
+      
+      # Clean up the title
+      $title =~ s/Season (.*)$//;
+      $title = norm($title);
+      $title =~ s/Series (.*)$//;
+      $title = norm($title);
+      $title =~ s/S(\d+) Ep(\d+)$//;
+      $title = norm($title);
+      $title =~ s/S(\d+) Ep (\d+)$//;
+      $title = norm($title);
+      $title =~ s/S(\d+) Ep$//;
+      $title = norm($title);
+      $title =~ s/-(.*)$//;
+      $title = norm($title);
+      $title =~ s/, (.*)$//;
+      $title = norm($title);
+      $title =~ s/(\d+)$//;
+      $title = norm($title);
+      $title =~ s/(\d\d\d\d)$//;
+      $title = norm($title);
+      $title =~ s/S$//;
+      $title = norm($title);
+      $title =~ s/(\d+)\/$//;
+      
+      
 	  
-        progress("$time $title");
+        progress("$time - $title");
 
         my $ce = {
           channel_id   => $chd->{id},
@@ -168,12 +200,16 @@ sub ImportFlatXLS
         };
 
 		## Episode
-			$oWkC = $oWkS->{Cells}[$iR][29];
-      my $episode = $oWkC->Value;
+		$oWkC = $oWkS->{Cells}[$iR][29];
+     	my $episode = $oWkC->Value;
       
-      if($episode > 0) {
-      	$ce->{episode} = ". " . ($episode-1) . " ." if $episode ne "";
-			}
+      	if($episode > 0) {
+      		$ce->{episode} = ". " . ($episode-1) . " ." if $episode ne "";
+		}
+		
+		if(defined($ce->{episode}) and defined($season)) {
+			$ce->{episode} = $season . $ce->{episode};
+		}
 		## END
 		
         $dsh->AddProgramme( $ce );
