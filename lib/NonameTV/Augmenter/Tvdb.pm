@@ -108,7 +108,19 @@ sub FillHash( $$$$ ) {
     $resultref->{episode} = undef;
     $resultref->{subtitle} = normUtf8( norm( "Special - ".$episode->{EpisodeName} ) );
   }else{
-    $resultref->{episode} = ($episode->{SeasonNumber} - 1) . ' . ' . ($episode->{EpisodeNumber} - 1) . ' .';
+  	my $data = $series->{Seasons}[$episode->{SeasonNumber}];
+  	my $of_episodes = $#$data;
+  	my $currentyear = (localtime)[5] + 1900;
+  	my $FirstAired = $episode->{FirstAired};
+    $FirstAired =~ s|^(\d{4})\-\d+\-\d+$|$1|;
+
+	# Provide of_episodes only if the firstaired of the episode is more than 1
+	# As the seasons continue mostly over 2 years. And only if the of_episodes is less than 100.
+  	if( abs( $FirstAired - $currentyear ) > 1  and $of_episodes < 100 ) {
+  		$resultref->{episode} = sprintf( "%d . %d/%d . ", $episode->{SeasonNumber}-1, $episode->{EpisodeNumber}-1, $of_episodes );
+  	} else {
+    	$resultref->{episode} = ($episode->{SeasonNumber} - 1) . ' . ' . ($episode->{EpisodeNumber} - 1) . ' .';
+    }
     
     # use episode title
     $resultref->{subtitle} = normUtf8( norm( $episode->{EpisodeName} ) );
