@@ -216,6 +216,13 @@ sub ImportContent {
     my @descs = split (/\n\Q*\E\n/, $desc);
     $desc = $descs[0];
     if ($desc) {
+      if ($desc =~ m|^\(Vom \d+\.\d+\.\d{4}\)$|) {
+        my ($psd) = ($desc =~ m|^Vom (\S+)$|);
+        # is a repeat from $previously shown date
+        $desc = undef;
+      }
+    }
+    if ($desc) {
       $ce->{description} = $desc;
     }
 
