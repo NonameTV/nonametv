@@ -254,6 +254,11 @@ sub RecreateIndex #( $xmltvid )
     my( $name ) = ($file =~ /.*\/(.*)/ );
     open(FILE, $file) or die "Can’t open ’$file’: $!";
     binmode(FILE);
+    
+    # Dont fucking do that.
+    if($name eq "old") {
+    	return;
+    }
 
     my $md5 = Digest::MD5->new->addfile(*FILE)->hexdigest;
     my $st = stat($file) or die "Couldn't stat $file: $!";
