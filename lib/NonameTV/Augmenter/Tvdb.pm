@@ -116,7 +116,7 @@ sub FillHash( $$$$ ) {
 
 	# Provide of_episodes only if the firstaired of the episode is more than 1
 	# As the seasons continue mostly over 2 years. And only if the of_episodes is less than 100.
-  	if( abs( $FirstAired - $currentyear ) > 1  and $of_episodes < 100 ) {
+  	if( abs( $FirstAired - $currentyear ) > 1 and $episode->{EpisodeNumber} <= $of_episodes and $of_episodes < 100 ) {
   		$resultref->{episode} = sprintf( "%d . %d/%d . ", $episode->{SeasonNumber}-1, $episode->{EpisodeNumber}-1, $of_episodes );
   	} else {
     	$resultref->{episode} = ($episode->{SeasonNumber} - 1) . ' . ' . ($episode->{EpisodeNumber} - 1) . ' .';
