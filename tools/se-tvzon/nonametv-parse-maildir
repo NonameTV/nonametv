@@ -169,42 +169,6 @@ sub guess_channel
 {
   my( $dir, $from, $subject, $filename, $type, $size ) = @_;
 
-  if( $dir =~ /Disney/ ) {
-    # The Disney filenames are very unreliable. 
-    if( $filename =~ /\bxd/i ) {
-      return "xd.disneychannel.se";
-    }
-    if( $filename =~ /\bdxd/i ) {
-      return "xd.disneychannel.se";
-    }
-    elsif( $filename =~ /playhouse/i ) {
-      return "junior.disney.se";
-    }
-    elsif( $filename =~ /junior/i ) {
-      return "junior.disney.se";
-    }
-    elsif( $filename =~ /disney\s*channel/i ) {
-      return "disneychannel.se";
-    }
-    elsif( $filename eq "noname" ) {
-      return undef;
-    }
-    elsif( $subject =~ /toon\s*disney/i ) {
-      return "toon.disneychannel.se";
-    }
-    elsif( $subject =~ /playhouse/i ) {
-      return "junior.disney.se";
-    }
-    elsif( $subject =~ /junior/i ) {
-      return "junior.disney.se";
-    }
-    elsif( $subject =~ /disney\s*channel/i ) {
-      return "disneychannel.se";
-    }
-
-    return undef;
-  }
-
    if( $dir =~ /GlobalListings/ ) {
      return "hd.natgeo.se" if $filename =~ /^ng\s*swe\s*hd\b/i;
      return "natgeo.se" if $filename =~ /^ng\s*swe\b/i;
