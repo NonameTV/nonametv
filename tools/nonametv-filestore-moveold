@@ -5,6 +5,7 @@ use strict;
 use FindBin;
 use lib "$FindBin::Bin/../lib";
 
+use DateTime;
 use File::Util;
 use File::Copy qw/copy move/;
 
@@ -64,6 +65,8 @@ my $filestore = $conf->{FileStore};
 my $now = time();
 my $date = localtime( $now - ( 86400 * $leavedays ) );
 print "Moving all files modified before $date\n";
+my $keepdate = DateTime->today()->add( days => -8 )->ymd();
+print "And moving all files ending before $keepdate\n";
 
 print "Reading directories in $filestore\n";
 
@@ -126,11 +129,26 @@ foreach my $fsf (@fsfiles)
 	next;
     }
 
-    my $modified = File::Util->last_modified( "$filestore/$fsf/$cff" );
+    # file contains program from more then a week ago? move it!
+    my $latestdate = $ds->{sa}->Lookup( 'files', { channelid => $channel_id, filename => $cff }, 'latestdate' );
+    my $oktomove = 0;
+    if( defined( $latestdate ) ) {
+      if( ( $latestdate ne '' )&&( $latestdate ne '1970-01-01' )&&( $latestdate ne '1970-01-01 00:00:00' ) ){
+        print "  -> $cff (" . $latestdate . ") ... ";
+        if( $latestdate lt $keepdate ){
+          $oktomove = 1;
+        }
+      }
+    }
+    # if we don't know, look at the last modified date of the file
+    if( !$oktomove ){
+      my $modified = File::Util->last_modified( "$filestore/$fsf/$cff" );
 
-    print "  -> $cff (" . gmtime( $modified ) . ") ... ";
+      print "  -> $cff (" . gmtime( $modified ) . ") ... ";
 
-    my $oktomove = isToMove( $modified, $leavedays );
+      $oktomove = isToMove( $modified, $leavedays );
+    }
+
     if( $oktomove ){
       move( "$filestore/$fsf/$cff", "$filestore/$fsf/old/$cff" );
       print "moved to old\n";
