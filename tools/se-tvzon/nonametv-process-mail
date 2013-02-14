@@ -1,13 +1,7 @@
 #!/bin/sh
 
-#getmail -q --rcfile=/home/jnylen/.getmail/xmltv.espn.gmail --getmaildir=/home/jnylen/maildir/.Projects/xmltv-data-in
-getmail -q --rcfile=/home/jnylen/.getmail/xmltv.gmail --getmaildir=/home/jnylen/maildir/.Projects/xmltv-data-in
-#getmail -q --rcfile=/home/jnylen/.getmail/xmltv.natgeo.gmail --getmaildir=/home/jnylen/maildir/.Projects/xmltv-data-in
-#getmail -q --rcfile=/home/jnylen/.getmail/xmltv.travel.gmail --getmaildir=/home/jnylen/maildir/.Projects/xmltv-data-in
-#getmail -q --rcfile=/home/jnylen/.getmail/xmltv.disney.gmail --getmaildir=/home/jnylen/maildir/.Projects/xmltv-data-in
-#getmail -q --rcfile=/home/jnylen/.getmail/poker.rc --getmaildir=/home/jnylen/maildir/.Projects/xmltv-data-in
-#getmail -q --rcfile=/home/jnylen/.getmail/ngcwild.rc --getmaildir=/home/jnylen/maildir/.Projects/xmltv-data-in
+getmail --rcfile=/home/jnylen/.getmail/xmltv.gmail --getmaildir=/home/jnylen/maildir/.Projects/xmltv-data-in
 
 # Parse it
 /home/jnylen/projects/nonametv/tools/se-tvzon/nonametv-filter-mail
-/home/jnylen/projects/nonametv/tools/se-tvzon/nonametv-parse-maildir
+/home/jnylen/projects/nonametv/tools/se-tvzon/nonametv-parse-maildir --verbose

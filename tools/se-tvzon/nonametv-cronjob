@@ -71,7 +71,7 @@ $d perl -I lib tools/nonametv-update-tvdb no
 # Import everything
 $d tools/se-tvzon/nonametv-import-allhttp $Q
 $h tools/se-tvzon/nonametv-import-allhttp $Q --short-grab
-#tools/se-tvzon/nonametv-import-allmail $Q
+tools/se-tvzon/nonametv-import-allmail $Q
 
 # Remove old
 $d perl -I lib/ tools/nonametv-export Xmltv --remove-old

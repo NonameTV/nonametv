@@ -55,8 +55,7 @@ EOHELP
 my $ds = CreateDataStore();
 
 my $root = "/home/jnylen/maildir/.Projects/";
-my @folders = qw(NonameTV-Data.Disney
-		 NonameTV-Data.GlobalListings
+my @folders = qw(NonameTV-Data.GlobalListings
 		 NonameTV-Data.CNBC
 		 NonameTV-Data.OUTTV
 		 NonameTV-Data.TravelChannel
@@ -184,7 +183,10 @@ sub guess_channel
    if( $dir =~ /Turner/ ) {
 	return "cartoonnetwork.se" if $filename =~ /^cn\s*nordic\s+\(swe\)\s*\b/i;
 	return "boomerangtv.se" if $filename =~ /^boomerang\s*nordic\s*\(swe\)\s*\b/i;
-	return "tcmeurope.com" if $type =~ /application\/vnd.ms-excel/ and $filename =~ /tcm\s*nordic\s*/i;
+	
+	if( $filename =~ /\.xls$/i ) {
+		return "tcmeurope.com" if $filename =~ /^tcm/i;
+	}
 	return "cnn.com" if $filename =~ /^cnn\s*\b/i;
   }
 
@@ -219,6 +221,7 @@ sub guess_channel
  if( $dir =~ /Playboy/ and $filename =~ /\.xls$/i ) {
      return "europe.playboytv.com" if $filename =~ /^playboy\s*\b/i;
      return "adultchannel.co.uk" if $filename =~ /^the\s*adult\s*\b/i;
+     return "privatespice.com" if $filename =~ /^private\s*\b/i;
  }
  
  if( $dir =~ /Hustler/ and $filename =~ /\.xls$/i ) {
@@ -226,10 +229,10 @@ sub guess_channel
      return "europe.hustlertv.com" if $filename =~ /^hustler.*gmt.*\b/i;
  }
 
-#   if( $dir =~ /YaS/ and $filename =~ /\.xls$/i ) {
+   if( $dir =~ /YaS/ and $filename =~ /\.xls$/i ) {
 #     return "yachtandsail.com" if $filename =~ /^palinsesto\s*\b/i;
-#     return "nauticalchannel.net";
-# }
+     return "nauticalchannel.net" if $filename =~ /^nc/i;
+ }
 
  if( $dir =~ /Motors/ and $filename =~ /\.xls$/i ) {
      return "motorstv.com" if $filename =~ /pgms/i;
