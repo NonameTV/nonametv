@@ -441,9 +441,10 @@ $sm->AddRegexp( qr/intervjuserie/i,     			[ 'series', 'Talk' ] );
 #$sm->AddRegexp( qr/\b\s*film\b/i,        					[ 'movie', "Movies" ] );
 
 # Movies
-#$sm->AddRegexp( qr/\b(familje|drama|action)*komedi\b/i,  [ 'movie', "Comedy" ] ); # Sets even series at movies
+$sm->AddRegexp( qr/\b(svensk|amerikansk|familje|drama|action|thriller|romantisk)*komedi\b/i,  [ 'movie', "Comedy" ] ); # Sets even series at movies
 
-$sm->AddRegexp( qr/\b(krigs|kriminal)*drama\b/i,  [ 'movie', "Drama" ] );
+$sm->AddRegexp( qr/\b(krigs|kriminal|action)*drama\b/i,  [ 'movie', "Drama" ] );
+
 $sm->AddRegexp( qr/familjefilm/i,         		  [ 'movie', "Family" ] );
 
 $sm->AddRegexp( qr/\baction(drama|film)*\b/i,     [ 'movie', "Action/Adv" ] );
@@ -452,11 +453,11 @@ $sm->AddRegexp( qr/äventyrsfilm/i,     			  [ 'movie', 'Action/Adv' ] );
 $sm->AddRegexp( qr/westernfilm/i,     			  [ 'movie', 'Western' ] );
 $sm->AddRegexp( qr/\b.ventyrsdrama\b/i,           [ 'movie', "Action/Adv" ] );
 $sm->AddRegexp( qr/skräckfilm/i,     			  [ 'movie', 'Horror' ] );
-
+$sm->AddRegexp( qr/\b(amerikansk)*rysare\b/i,	  [ 'movie', "Horror" ] );
 
 $sm->AddRegexp( qr/\bv.stern(film)*\b/i,          [ 'movie', undef ] );
 
-$sm->AddRegexp( qr/\b(drama)*thriller\b/i,        [ 'movie', "Crime" ] );
+$sm->AddRegexp( qr/\b(action|drama)*thriller\b/i,        [ 'movie', "Crime" ] );
 
 $sm->AddRegexp( qr/\bscience\s*fiction(rysare)*\b/i, [ 'movie', "SciFi" ] );
 
