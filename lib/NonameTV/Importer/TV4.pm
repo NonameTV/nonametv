@@ -213,7 +213,7 @@ sub ImportContent
       	$role = norm( $act->findvalue('./role_played') );
       }
       
-    if( (defined $role) and ( $role =~ /Regiss�r/ ) )
+    if( (defined $role) and ( $role =~ /Regiss(.*)r/i  ) )
       {
         push @directors, $name;
       }
