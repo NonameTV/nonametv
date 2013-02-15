@@ -279,8 +279,12 @@ sub guess_channel
      return "pokerchanneleurope.com";
  }
  
- if( $dir =~ /LifestyleTV/ and $filename =~ /\.xls$/i ) {
+ if( $dir =~ /LifestyleTV/ and $filename =~ /\.xls|.xlsx$/i ) {
      return "lifestyletv.se";
+ }
+ 
+ if( $dir =~ /TVChile/ and $filename =~ /\.xls|.xlsx$/i ) {
+     return "tvchile.cl";
  }
 
   return undef;
