@@ -328,6 +328,10 @@ sub ImportRTF {
             $ce->{subtitle} = $episodetitle;
           }
         } else {
+          # FIXME why do we not have a title???
+          if (!$title) {
+            w ("No title found in: $text");
+          } else {
           # seems to be a movie, maybe it's a multi part movie
           if ($title =~ m|[,-] Teil \d+$|) {
             my ($partnum) = ($title =~ m|[,-] Teil (\d+)$|);
@@ -338,6 +342,7 @@ sub ImportRTF {
             $title =~ s|[,-] Teil \d+: .*$||;
             $ce->{episode} = ' . . ' . ($partnum - 1);
             $ce->{subtitle} = $episodetitle;
+          }
           }
         }
 
@@ -545,6 +550,15 @@ sub ImportRTF {
 
         $ce->{title} = $title;
         $self->{datastore}->AddProgramme ($ce);
+        # FIXME this should be handled in a generic way, but until then
+        # do it on a one off base
+        if( $self->{earliestdate} gt $ce->{start_time} ) {
+          $self->{earliestdate} = $ce->{start_time};
+        }
+        # end_time would be better, but we don't have end_time
+        if( $self->{latestdate} lt $ce->{start_time} ) {
+          $self->{latestdate} = $ce->{start_time};
+        }
         if( $text ){
           d( 'left over text: ' . $text );
         }
