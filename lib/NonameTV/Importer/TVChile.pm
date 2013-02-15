@@ -3,9 +3,10 @@ package NonameTV::Importer::TVChile;
 use strict;
 use warnings;
 
+
 =pod
 
-Import data from XLS files delivered via e-mail.
+Import data from XLS or XLSX files delivered via e-mail.
 
 Features:
 
@@ -15,12 +16,20 @@ use utf8;
 
 use DateTime;
 use Spreadsheet::ParseExcel;
+use Spreadsheet::Read;
+
+use Spreadsheet::XLSX;
 use Spreadsheet::XLSX::Utility2007 qw(ExcelFmt ExcelLocaltime LocaltimeExcel);
+use Spreadsheet::Read;
+
+use Text::Iconv;
+my $converter = Text::Iconv -> new ("utf-8", "windows-1251");
+
 
 use Data::Dumper;
 use File::Temp qw/tempfile/;
 
-use NonameTV qw/normUtf8 AddCategory/;
+use NonameTV qw/norm normUtf8 AddCategory/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/progress error/;
 
@@ -38,12 +47,33 @@ sub new {
   my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
   $self->{datastorehelper} = $dsh;
   
-  $self->{datastore}->{augment} = 1;
+  #$self->{datastore}->{augment} = 1;
 
   return $self;
 }
 
 sub ImportContentFile {
+  my $self = shift;
+  my( $file, $chd ) = @_;
+
+  $self->{fileerror} = 0;
+
+  my $channel_id = $chd->{id};
+  my $channel_xmltvid = $chd->{xmltvid};
+  my $dsh = $self->{datastorehelper};
+  my $ds = $self->{datastore};
+
+  if( $file =~ /\.xls|.xlsx$/i ){
+    $self->ImportXLS( $file, $chd );
+  }else {
+  	
+  }
+
+
+  return;
+}
+
+sub ImportXLS {
   my $self = shift;
   my( $file, $chd ) = @_;
 
@@ -55,7 +85,6 @@ sub ImportContentFile {
   my $ds = $self->{datastore};
 
   # Only process .xls or .xlsx files.
-  return if( $file !~ /\.xls$/i );
   progress( "TVChile: $xmltvid: Processing $file" );
 
 	my %columns = ();
@@ -64,27 +93,24 @@ sub ImportContentFile {
   my $coldate = 0;
   my $coltime = 1;
   my $coltitle = 2;
-  my $coldesc = 4;
   my $colgenre = 3;
+  my $coldesc = 4;
 
-	my $oBook;
-	$oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
+  my $oBook;
 
+  if ( $file =~ /\.xlsx$/i ){ progress( "using .xlsx" );  $oBook = Spreadsheet::XLSX -> new ($file, $converter); }
+  else { $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );  }
 
   # main loop
   for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
 
     my $oWkS = $oBook->{Worksheet}[$iSheet];
-    #if( $oWkS->{Name} !~ /1/ ){
-    #  progress( "OUTTV: Skipping other sheet: $oWkS->{Name}" );
-    #  next;
-    #}
 
     progress( "TVChile: Processing worksheet: $oWkS->{Name}" );
 
-		my $foundcolumns = 0;
+	my $foundcolumns = 0;
     # browse through rows
-    for(my $iR = $oWkS->{MinRow} ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
+    for(my $iR = 5 ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
 
       my $oWkC;
 
@@ -94,37 +120,8 @@ sub ImportContentFile {
 
       $date = ParseDate( $oWkC->Value );
       next if( ! $date );
-      
-      
 
-      # time
-      $oWkC = $oWkS->{Cells}[$iR][$coltime];
-      next if( ! $oWkC->Value );
-      my $time = $oWkC->Value;
-      
-      my $start = create_dt($date." ".$time);
-      next if( ! $start );
-
-      # title
-      $oWkC = $oWkS->{Cells}[$iR][$coltitle];
-      next if( ! $oWkC );
-      my $title = $oWkC->Value if( $oWkC->Value );
-      
-      # Uppercase the first letter
-      $title = ucfirst(lcfirst($title));
-
-      # desc
-      $oWkC = $oWkS->{Cells}[$iR][$coldesc];
-      next if( ! $oWkC );
-      my $desc = $oWkC->Value if( $oWkC->Value );
-      
-      
-      # Date in time sometimes, skip it
-      if($time =~ /PROGRAMACI/) {
-      	#next;
-      }
-
-			if( $date ne $currdate ){
+      if( $date ne $currdate ){
 
         progress("TVChile: Date is $date");
 
@@ -132,30 +129,53 @@ sub ImportContentFile {
           $dsh->EndBatch( 1 );
         }
 
-        my $batch_id = $xmltvid . "_" . $start->ymd("-");
+        my $batch_id = $xmltvid . "_" . $date;
         $dsh->StartBatch( $batch_id , $channel_id );
-        $dsh->StartDate( $start->ymd("-") , "00:00" );
-        $currdate = $start->ymd("-");
+        $dsh->StartDate( $date , "00:00" );
+        $currdate = $date;
       }
+
+      # time
+      $oWkC = $oWkS->{Cells}[$iR][$coltime];
+      next if( ! $oWkC );
+
+      my $time = 0;  # fix for  12:00AM
+      $time=$oWkC->{Val} if( $oWkC->Value );
+
+	  #Convert Excel Time -> localtime
+      $time = ExcelFmt('hh:mm', $time);
+      $time =~ s/_/:/g; # They fail sometimes
+      
+	  # desc
+      $oWkC = $oWkS->{Cells}[$iR][$coldesc];
+      next if( ! $oWkC );
+      my $desc = $oWkC->Value if( $oWkC->Value );
+
+      # title
+      $oWkC = $oWkS->{Cells}[$iR][$coltitle];
+      next if( ! $oWkC );
+      my $title = $oWkC->Value if( $oWkC->Value );
+
+	  my $start = create_dt($date." ".$time);
+      next if( ! $start );
 
       my $ce = {
         channel_id => $channel_id,
         start_time => $start->hms(":"),
-        title => normUtf8($title),
+        title	   => norm($title),
         description => normUtf8($desc),
       };
-
-
-			# Genre
-			$oWkC = $oWkS->{Cells}[$iR][$colgenre];
-			if( $oWkC and $oWkC->Value ne "" ) {
-      	my $genre = $oWkC->Value;
-				my($program_type, $category ) = $ds->LookupCat( 'TVChile', $genre );
-				AddCategory( $ce, $program_type, $category );
-			}
       
-			progress("TVChile: $start - $title");
-      $dsh->AddProgramme( $ce );
+      # Genre
+	  $oWkC = $oWkS->{Cells}[$iR][$colgenre];
+	  if( $oWkC and $oWkC->Value ne "" ) {
+      	my $genre = $oWkC->Value;
+	  	my($program_type, $category ) = $ds->LookupCat( 'TVChile', $genre );
+	  	AddCategory( $ce, $program_type, $category );
+	  }
+      
+	  progress("TVChile: ".$start->hms(":")." - $title") if $title;
+      $dsh->AddProgramme( $ce ) if $title;
     }
 
   }
@@ -168,6 +188,8 @@ sub ImportContentFile {
 sub ParseDate
 {
   my ( $dinfo ) = @_;
+  
+  #print Dumper($dinfo);
 
   my( $month, $day, $year );
 #      progress("Mdatum $dinfo");
@@ -179,8 +201,6 @@ sub ParseDate
     ( $month, $day, $year ) = ( $dinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
   } elsif( $dinfo =~ /^\d{1,2}\/\d{1,2}\/\d{2}$/ ){ # format '10-18-11' or '1-9-11'
     ( $month, $day, $year ) = ( $dinfo =~ /^(\d+)\/(\d+)\/(\d+)$/ );
-  }elsif( $dinfo =~ /^\d{4}\/\d{2}\/\d{2}$/ ){ # format '10-18-11' or '1-9-11'
-    ( $year, $month, $day ) = ( $dinfo =~ /^(\d+)\/(\d+)\/(\d+)$/ );
   }
 
   return undef if( ! $year );
