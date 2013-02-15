@@ -5,10 +5,7 @@ use warnings;
 
 =pod
 
-Channels: GOD Channel/GOD TV (http://www.god.tv/)
-
-Import data from Word-files delivered via e-mail.  Each day
-is handled as a separate batch.
+Import data from Excel files delivered via e-mail.
 
 Features:
 
@@ -16,16 +13,14 @@ Features:
 
 use utf8;
 
-use POSIX;
 use DateTime;
-use XML::LibXML;
-use Encode qw/decode/;
+use Spreadsheet::ParseExcel;
+use File::Temp qw/tempfile/;
 use Data::Dumper;
 
-use NonameTV qw/MyGet Wordfile2Xml Htmlfile2Xml norm MonthNumber/;
-use NonameTV::DataStore::Helper;
+use NonameTV qw/norm MonthNumber/;
 use NonameTV::Log qw/progress error/;
-
+use NonameTV::DataStore::Helper;
 use NonameTV::Importer::BaseFile;
 
 use base 'NonameTV::Importer::BaseFile';
@@ -36,17 +31,13 @@ sub new {
   my $self  = $class->SUPER::new( @_ );
   bless ($self, $class);
 
-
   my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
-  #$dsh->{DETECT_SEGMENTS} = 1;
-  $self->{datastore}->{SILENCE_DUPLICATE_SKIP} = 1;
   $self->{datastorehelper} = $dsh;
-
+  
   return $self;
 }
 
-sub ImportContentFile
-{
+sub ImportContentFile {
   my $self = shift;
   my( $file, $chd ) = @_;
 
@@ -56,272 +47,165 @@ sub ImportContentFile
   my $channel_id = $chd->{id};
   my $dsh = $self->{datastorehelper};
   my $ds = $self->{datastore};
-  
-  return if( $file !~ /\.doc$/i );
 
-  progress( "GODTV: $xmltvid: Processing $file" );
-  
-  my $doc;
-  $doc = Wordfile2Xml( $file );
+  # Only process .xls files.
+  return if( $file !~ /\.xls$/i );
+  progress( "GOD_Channel: $xmltvid: Processing $file" );
 
-  if( not defined( $doc ) ) {
-    error( "GODTV: $file: Failed to parse" );
-    return;
-  }
-
-  #my @nodes = $doc->findnodes( '//table/text()' );
-  #foreach my $node (@nodes) {
-  #  my $str = $node->getData();
-  #  $node->setData( uc( $str ) );
-  #}
-  
-  # Find all paragraphs.
-  my $ns = $doc->find( "//p" );
-  
-  if( $ns->size() == 0 ) {
-    error( "GODTV: $file: No p:s found." ) ;
-    return;
-  }
-
+  my %columns = ();
+  my $date;
   my $currdate = "x";
-  my $date = undef;
-  my @ces;
-  my $description;
-  my $year;
-  
-  # Get year from filename
-  $year = ParseYear( $file );
-  progress("GODTV: Year is $year");
 
-  foreach my $div ($ns->get_nodelist) {
+  my $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
 
-    my( $text ) = norm( $div->findvalue( './/text()' ) );
+  # main loop
+  for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
+
+    my $oWkS = $oBook->{Worksheet}[$iSheet];
     
-    if( isDate( $text ) ) { # the line with the date in format 'Thursday 5th January'
+    if( $oWkS->{Name} !~ /GMT/ ){
+      progress( "GOD_Channel: Skipping other sheet: $oWkS->{Name}" );
+      next;
+    }
+    
+    progress( "GOD_Channel: $chd->{xmltvid}: Processing worksheet: $oWkS->{Name}" );
 
-      $date = ParseDate( $text, $year );
+    # browse through rows
+    for(my $iR = 6 ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
 
-      if( $date ) {
+      # get the names of the columns from the 1st row
+      if( not %columns ){
+        for(my $iC = $oWkS->{MinCol} ; defined $oWkS->{MaxCol} && $iC <= $oWkS->{MaxCol} ; $iC++) {
+          $columns{norm($oWkS->{Cells}[$iR][$iC]->Value)} = $iC;
 
-        progress("GODTV: Date is $date");
-
-        if( $date ne $currdate ) {
-
-          if( $currdate ne "x" ){
-            # save last day if we have it in memory
-                    FlushDayData( $xmltvid, $dsh , @ces );
-            $dsh->EndBatch( 1 );
-          }
-
-          my $batch_id = "${xmltvid}_" . $date;
-          $dsh->StartBatch( $batch_id, $channel_id );
-          $dsh->StartDate( $date , "00:00" ); 
-          $currdate = $date;
+          # columns alternate names
+          $columns{'Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Programme Title/i );
+          $columns{'Date'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Date/i );
+          $columns{'Start'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Start/i );
+          $columns{'Synopsis'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Synopsis/i );
         }
+        next;
       }
 
-      # empty last day array
-      undef @ces;
-      undef $description;
-      
-      # Empty text
-      #undef $text;
+      # date - column 0 ('Date')
+      my $oWkC = $oWkS->{Cells}[$iR][$columns{'Date'}];
+      next if( ! $oWkC );
 
-    } elsif( isTime( $text ) ) {
-        # Time is in this format: 7,00 (note the comma)
-        my $time = ParseTime($text);
-        my $ce = {
-            channel_id => $chd->{id},
-            start_time => $time,
-        };
-        push( @ces , $ce );
-        
-        # Empty text
-        #undef $text;
-    } elsif( isShow( $text ) ) {
-      # Showname and description is like this: "The Book of Colossians - Chuck Missler"
-      # I think its SHOWNAME - ACTOR (but put actor in subtitle as it seems LIVE is actor sometimes)
-      my( $title, $subtitle ) = ParseShow( $text );
-      next if( ! $title );
+      $date = ParseDate( $oWkC->Value );
+      next if( ! $date );
+      
+      if( $date ne $currdate ){
 
-      # the last element is the one to which
-      # this show belongs to
-      my $element = $ces[$#ces];
-      
-      
-      
-      # End of schedule
-      if ( ($title eq "slut") or
-       ($title eq "godnatt") or
-       ($title eq "end") or
-       ($title eq "close") or
-       ($title eq "pause") or
-       ($title eq "END OF SCHEDULE") )               
-  {
-    $element->{title} = "end-of-transmission";
-  } else {
-      $element->{title} = norm($title);
-      $element->{subtitle} = norm($subtitle);
-  }
+        progress("GOD_Channel: Date is $date");
 
+        if( $currdate ne "x" ) {
+          $dsh->EndBatch( 1 );
+        }
+
+        my $batch_id = $xmltvid . "_" . $date;
+        $dsh->StartBatch( $batch_id , $channel_id );
+        $dsh->StartDate( $date , "00:00" );
+        $currdate = $date;
+      }
       
       
-      # Empty text
-      #undef $text;
-    } else {
-        # skip
-        next;
+
+      # starttime - column ('Start')
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'Start'}];
+      next if( ! $oWkC );
+      my $starttime = create_dt( $date , $oWkC->Value ) if( $oWkC->Value );
+
+      # title - column ('Title')
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'Title'}+1];
+      next if( ! $oWkC );
+      my $title = $oWkC->Value if( $oWkC->Value );
+      
+      $title =~ s/-.*//g if $title;
+      
+      my $synopsis = $oWkS->{Cells}[$iR][$columns{'Synopsis'}]->Value if $oWkS->{Cells}[$iR][$columns{'Synopsis'}];
+
+      progress("$xmltvid: $starttime - $title");
+
+      my $ce = {
+        channel_id   => $channel_id,
+        start_time   => $starttime,
+        title        => norm($title),
+      };
+
+      $ce->{description} = norm($synopsis) if $synopsis;
+
+	 # print Dumper($ce);
+
+      $dsh->AddProgramme( $ce );
     }
+
+    %columns = ();
+
   }
 
-    # save last day if we have it in memory
-  FlushDayData( $xmltvid, $dsh , @ces );
+  $ds->EndBatch( 1 );
 
-  $dsh->EndBatch( 1 );
-    
   return;
 }
 
+sub ParseDate
+{
+  my ( $dinfo ) = @_;
 
-sub isTime {
-  my ( $text ) = @_;
+  my( $day, $monthname, $year );
 
-    #print("text:  $text\n");
+#print ">$dinfo<\n";
 
-  # format '7,00'
-  if( $text =~ /^\d+\,\d+$/i ){ 
-    return 1;
+  # format '033 03 Jul 2008'
+  if( $dinfo =~ /^\d+\s+\d+\s+\S+\s+\d+$/ ){
+    ( $day, $monthname, $year ) = ( $dinfo =~ /^\d+\s+(\d+)\s+(\S+)\s+(\d+)$/ );
+
+  # format '05-sep-08'
+  } elsif( $dinfo =~ /^\d+-(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)-\d+$/i ){
+    ( $day, $monthname, $year ) = ( $dinfo =~ /^(\d+)-(\S+)-(\d+)$/ );
+
+  # format 'Fri 30 Apr 2010'
+  } elsif( $dinfo =~ /^\S+\s*\d+\s*(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\s*\d+$/i ){
+    ( $day, $monthname, $year ) = ( $dinfo =~ /^\S+\s*(\d+)\s*(\S+)\s*(\d+)$/ );
   }
 
-  return 0;
-}
-
-sub ParseTime {
-  my( $time ) = @_;
-#print("text2:  $time\n");
-  my( $hour, $min, $dummy );
-  
-  if( $time =~ /^\d+\,\d+$/i ){ 
-    ($hour, $min) = split(/,/, $time);
-    #$dummy = join(':', split(/,/, $time)), "\n";
-    
-    $hour = $hour-1;
-
-  }
-  
-  # Set hour to 00 if hour = 24
-    if($hour eq "24") {
-        $hour = "0";
-    } elsif($hour eq "25") {
-        $hour = "1";
-    }
-
-   #print("hour: $hour, min: $min\n");
-
-  return sprintf( '%02d:%02d', $hour, $min );
-  #return $dummy;
-}
-
-sub isDate {
-  my ( $text ) = @_;
-
-	if($text =~ /-/i){
-    	return 0;
-  	}
-
-    #print("text:  $text\n");
-
-  # format 'Monday 12th September'
-  if( $text =~ /(.*)\s+\d+(st|nd|rd|th)\s*(january|february|march|april|may|june|july|august|september|october|november|december)/i ){ 
-    return 1;
+  else {
+    return undef;
   }
 
-  return 0;
+#print "DAY: $day\n";
+#print "MON: $monthname\n";
+#print "YEA: $year\n";
+
+  return undef if( ! $year);
+
+  $year+= 2000 if $year< 100;
+
+  my $mon = MonthNumber( $monthname, "en" );
+
+#print "DAY: $day\n";
+#print "MON: $mon\n";
+
+  my $dt = DateTime->new( year   => $year,
+                          month  => $mon,
+                          day    => $day,
+                          hour   => 0,
+                          minute => 0,
+                          second => 0,
+                          );
+
+  $dt->set_time_zone( "UTC" );
+
+  return $dt->ymd();
 }
 
-sub ParseDate {
-  my( $text, $year ) = @_;
-  my( $dayname, $dummy, $day, $monthname, $month );
-    # format 'Måndag 11 Juli'
-  if( $text =~ /(.*)\s+\d+(st|nd|rd|th)\s*(january|february|march|april|may|june|july|august|september|october|november|december)/i ){ 
-    ( $dayname, $day, $dummy, $monthname ) = ( $text =~ /^(\S+)\s+(\d+)(st|rd|nd|th)\s+(\S+)$/i );
+sub create_dt
+{
+  my( $date, $time ) = @_;
 
-    $month = MonthNumber( $monthname, 'en' );
-  }
+  my( $hour, $min ) = ( $time =~ /(\d+).(\d{2})/ );
 
-    #print("day: $day, month: $month, year: $year\n");
-
-  my $dt = DateTime->new(
-                year => $year,
-                month => $month,
-                day => $day,
-            );
-
-  #return sprintf( '%d-%02d-%02d', $year, $month, $day );
-  return $dt->ymd("-");
-}
-
-sub isShow {
-  my ( $text ) = @_;
-
-  if( $text =~ /\s*/i ){
-    return 1;
-  }
-
-  return 0;
-}
-
-sub ParseShow {
-  my( $title ) = @_;
-
-	print Dumper($title);
-
-  my( $subtitle );
-
-  if( $title =~ /\s+-\s+(.*)$/ ){
-    ( $subtitle ) = ( $title =~ /\s+-\s+(.*)$/ );
-    $title =~ s/\s+-\s+(.*)$//;
-  } else {
-      $subtitle = "";
-  }
-
-  return( $title, $subtitle );
-}
-
-sub isYear {
-  my ( $text ) = @_;
-
-  # format 'January 2012*'
-  if( $text =~ /(january|february|march|april|may|june|july|august|september|october|november|december)\s+\d+\s*/i ){
-    return 1;
-  }
-
-  return 0;
-}
-
-sub ParseYear {
-  my( $text ) = @_;
-  my( $year, $dummy );
-
-  # format 'Måndag 11 06'
-  if( $text =~ /(january|february|march|april|may|june|july|august|september|october|november|december)\s+\d+\s+/i ){ # format 'Måndag 11 Juli'
-    ( $dummy, $year ) = ( $text =~ /(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d+)\s+(\S+)/i );
-  }
-  return $year;
-}
-
-
-sub FlushDayData {
-  my ( $xmltvid, $dsh , @data ) = @_;
-
-    if( @data ){
-      foreach my $element (@data) {
-
-        progress("GODTV: $element->{start_time} - $element->{title}");
-
-        $dsh->AddProgramme( $element );
-      }
-    }
+  return sprintf( "%02d:%02d:00", $hour, $min );
 }
 
 1;

@@ -155,6 +155,8 @@ sub ImportXLS {
       $oWkC = $oWkS->{Cells}[$iR][$coltitle];
       next if( ! $oWkC );
       my $title = $oWkC->Value if( $oWkC->Value );
+      
+      $title =~ s/\(RESUMEN SEMANAL\)//g if $title;
 
 	  my $start = create_dt($date." ".$time);
       next if( ! $start );
