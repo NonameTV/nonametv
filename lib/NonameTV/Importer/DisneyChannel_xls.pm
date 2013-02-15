@@ -17,10 +17,11 @@ use utf8;
 use DateTime;
 use Spreadsheet::ParseExcel;
 use Data::Dumper;
+use Archive::Zip qw/:ERROR_CODES/;
 
 use NonameTV qw/norm AddCategory MonthNumber/;
 use NonameTV::DataStore::Helper;
-use NonameTV::Log qw/progress error/;
+use NonameTV::Log qw/progress error d p w f/;
 use NonameTV::Config qw/ReadConfig/;
 
 use NonameTV::Importer::BaseFile;
@@ -49,6 +50,48 @@ sub ImportContentFile {
 
   if( $file =~ /\.xls$/i ){
     $self->ImportFlatXLS( $file, $chd );
+  } elsif( $file =~ /\.zip$/i ) {
+  	# When ParseExcel can load a XLS file
+  	# from a string Please remove this
+  	# as this is too stupid.
+
+    my $zip = Archive::Zip->new();
+    if( $zip->read( $file ) != AZ_OK ) {
+      f "Failed to read zip.";
+      return 0;
+    }
+
+    my @swedish_files;
+    
+    my @members = $zip->members();
+    foreach my $member (@members) {
+      push( @swedish_files, $member->{fileName} ) 
+	  if $member->{fileName} =~ /swe*.*xls$/i;
+    }
+    
+    my $numfiles = scalar( @swedish_files );
+    if( $numfiles != 1 ) {
+      f "Found $numfiles matching files, expected 1.";
+      return 0;
+    }
+
+    d "Using file $swedish_files[0]";
+    
+    # file exists - could be a new file with the same filename
+    # remove it.
+    my $filename = '/tmp/'.$swedish_files[0];
+    if (-e $filename) {
+    	unlink $filename; # remove file
+    }
+    
+    my $content = $zip->contents( $swedish_files[0] );
+    
+    open (MYFILE, '>>'.$filename);
+	print MYFILE $content;
+	close (MYFILE); 
+
+    $self->ImportFlatXLS( $filename, $chd );
+    unlink $filename; # remove file
   } else {
     error( "Disney: Unknown file format: $file" );
   }
@@ -122,6 +165,12 @@ sub ImportFlatXLS
 	  
       # program_title (column 4)
       $oWkC = $oWkS->{Cells}[$iR][4];
+      $title = norm($oWkC->Value);
+      
+      # Remove
+	  $title =~ s/S(\d+)$//;
+	  
+      # Clean it
 	  $title = norm($oWkC->Value);
 	  
 	  
@@ -158,7 +207,7 @@ sub ImportFlatXLS
 		}
 		
 		if(defined($ce->{episode}) and $season > 0) {
-			$ce->{episode} = $season . $ce->{episode};
+			$ce->{episode} = $season-1 . $ce->{episode};
 		}
 		## END
 		
