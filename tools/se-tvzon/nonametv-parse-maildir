@@ -61,6 +61,9 @@ my @folders = qw(NonameTV-Data.Disney
 		 NonameTV-Data.GlobalListings
 		 NonameTV-Data.CNBC
 		 NonameTV-Data.OUTTV
+		 NonameTV-Data.FuelTV
+		 NonameTV-Data.GodTV
+		 NonameTV-Data.TVChile
 		 NonameTV-Data.TravelChannel
 		 NonameTV-Data.FOX
 		 NonameTV-Data.Kanal10
@@ -217,18 +220,11 @@ sub guess_channel
 	}
 	return "cnn.com" if $filename =~ /^cnn\s*\b/i;
   }
-
-#  if( $dir =~ /CNBC/ and $filename =~ /\.xls$/i ) {
-#     return "cnbceurope.com" if $filename =~ /^\s*\b/i;
-#  }
  
  if( $dir =~ /Chellozone/ and $filename =~ /\.xls$/i ) {
      return "outdoorchannel.com" if $filename =~ /^UTEM\d*V\d*\b/i;
  }
-
-#   if( $dir =~ /ExtremeSports/ and $filename =~ /\.xls$/i ) {
-#     return "extremesports.com";
-# }
+ 
    if( $dir =~ /Kanal10/ and $filename =~ /\.doc$/i ) {
      return "kanal10.se";
  }
@@ -250,6 +246,7 @@ sub guess_channel
      return "europe.playboytv.com" if $filename =~ /^playboy\s*\b/i;
      return "adultchannel.co.uk" if $filename =~ /^the\s*adult\s*\b/i;
      return "privatespice.com" if $filename =~ /^private\s*\b/i;
+     return "viasat.spice.com" if $filename =~ /^spice\s*viasat\b/i;
  }
  
  if( $dir =~ /Hustler/ and $filename =~ /\.xls$/i ) {
@@ -258,7 +255,6 @@ sub guess_channel
  }
 
    if( $dir =~ /YaS/ and $filename =~ /\.xls$/i ) {
-#     return "yachtandsail.com" if $filename =~ /^palinsesto\s*\b/i;
      return "nauticalchannel.net" if $filename =~ /^nc/i;
  }
 
@@ -266,16 +262,11 @@ sub guess_channel
      return "motorstv.com" if $filename =~ /pgms/i;
  }
 
- if( $dir =~ /Svt/ ) {
- 		 if( $filename =~ /svt1/i ) {
-	   #  return "dev.svt1.se";
-		 }
- }
-   if( $dir =~ /TravelChannel/ and $filename =~ /\.xls$/i ) {
+ if( $dir =~ /TravelChannel/ and $filename =~ /\.xls$/i ) {
      return "travelchanneltv.se" if $filename =~ /^epg\s*\b/i;
  }
 
-   if( $dir =~ /PokerChannel/ and $filename =~ /\.xls$/i ) {
+ if( $dir =~ /PokerChannel/ and $filename =~ /\.xls$/i ) {
      return "pokerchanneleurope.com";
  }
  
@@ -285,6 +276,14 @@ sub guess_channel
  
  if( $dir =~ /TVChile/ and $filename =~ /\.xls|.xlsx$/i ) {
      return "tvchile.cl";
+ }
+ 
+ if( $dir =~ /FuelTV/ and $filename =~ /epg/i ) {
+     return "fuel.tv";
+ }
+ 
+ if( $dir =~ /GodTV/ and $filename =~ /\.xls$/i ) {
+     return "god.tv";
  }
 
   return undef;
