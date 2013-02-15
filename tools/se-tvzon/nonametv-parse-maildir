@@ -15,6 +15,7 @@ use File::Basename;
 
 use Getopt::Long;
 use Digest::MD5;
+use Data::Dumper;
 
 use Encode qw/decode/;
 
@@ -55,7 +56,9 @@ EOHELP
 my $ds = CreateDataStore();
 
 my $root = "/home/jnylen/maildir/.Projects/";
-my @folders = qw(NonameTV-Data.GlobalListings
+my @folders = qw(NonameTV-Data.Disney
+		 NonameTV-Data.Turner
+		 NonameTV-Data.GlobalListings
 		 NonameTV-Data.CNBC
 		 NonameTV-Data.OUTTV
 		 NonameTV-Data.TravelChannel
@@ -158,6 +161,7 @@ sub process_parts
     my $fs = GetFileStore( $chd->{grabber} );
 
     my $content = $part->decoded->string;
+    #print Dumper($content);
     $fs->AddFile( $channel, $name, \$content );
   }
 
@@ -167,6 +171,30 @@ sub process_parts
 sub guess_channel
 {
   my( $dir, $from, $subject, $filename, $type, $size ) = @_;
+
+  if( $dir =~ /Disney/ ) {
+    # The Disney filenames are very unreliable. 
+     if( $filename =~ /\bxd/i and $filename =~ /series\s*linking/i ) {
+       return "xd.disneychannel.se";
+     }
+     if( $filename =~ /\bdxd/i and $filename =~ /series\s*linking/i ) {
+       return "xd.disneychannel.se";
+     }
+     elsif( $filename =~ /disney\s*channel/i and $filename =~ /series\s*linking/i ) {
+       return "disneychannel.se";
+     }
+     elsif( $filename =~ /disney\s*junior/i and $filename =~ /series\s*linking/i ) {
+       return "junior.disney.se";
+     }
+     elsif( $filename eq "noname" ) {
+       return undef;
+     }
+     elsif( $subject =~ /disney\s*channel/i and $filename =~ /series\s*linking/i ) {
+       return "disneychannel.se";
+     }
+
+     return undef;
+   }
 
    if( $dir =~ /GlobalListings/ ) {
      return "hd.natgeo.se" if $filename =~ /^ng\s*swe\s*hd\b/i;
