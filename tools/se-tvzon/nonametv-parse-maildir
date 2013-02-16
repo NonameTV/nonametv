@@ -205,8 +205,8 @@ sub guess_channel
 	# Nat geo wild sends in XLS format
      return "wild.natgeo.se" if $filename =~ /^ngwscan\s*\b/i;
 	# History Channel
-     	return "historytv.se" if $filename =~ /^his.sd.swe\s*\b/i;
-	return "hd.historytv.se" if $filename =~ /^his.hd.swe\s*\b/i;
+     	return "historytv.se" if $filename =~ /his.sd.swe/i;
+	return "hd.historytv.se" if $filename =~ /his.hd.swe/i;
 	# ESPN Classic
      return "classic.espn.com" if $filename =~ /^espn.eur.eng\s*\b/i;
  }
@@ -255,11 +255,11 @@ sub guess_channel
  }
 
    if( $dir =~ /YaS/ and $filename =~ /\.xls$/i ) {
-     return "nauticalchannel.net" if $filename =~ /^nc/i;
+     return "nauticalchannel.net" if $filename =~ /nc/i;
  }
 
  if( $dir =~ /Motors/ and $filename =~ /\.xls$/i ) {
-     return "motorstv.com" if $filename =~ /pgms/i;
+     return "motorstv.com" if $filename =~ /pgms/i and $filename !~ /french/i;
  }
 
  if( $dir =~ /TravelChannel/ and $filename =~ /\.xls$/i ) {
