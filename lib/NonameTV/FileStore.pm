@@ -75,8 +75,9 @@ sub AddFile #( $xmltvid, $filename, $cref )
   mkpath( $dir );
 
   my( $oldmd5, $ts ) = $self->GetFileMeta( $xmltvid, $filename );
-
-  my $newmd5 = md5_hex( $$cref );
+  
+  use bytes; # Wide character fix
+  my $newmd5 = md5_hex( $$cref . "" ); # Wide character fix
   if( not defined( $oldmd5 ) ) {
     my $fullname = "$dir/$filename";
     open( OUT, "> $fullname" ) or die "Failed to write to $fullname";
