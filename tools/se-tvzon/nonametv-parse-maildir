@@ -221,11 +221,11 @@ sub guess_channel
 	if( $filename =~ /\.xls$/i ) {
 		return "tcmeurope.com" if $filename =~ /^tcm/i;
 	}
-	return "cnn.com" if $filename =~ /^cnn\s*\b/i;
+	return "cnn.com" if $filename =~ /^cnn\s*\(in\s+cet\)\b/i;
   }
  
  if( $dir =~ /Chellozone/ and $filename =~ /\.xls$/i ) {
-     return "outdoorchannel.com" if $filename =~ /^UTEM\d*V\d*\b/i;
+     return "outdoorchannel.com" if $filename =~ /^UTEM\d*L\d*\b/i;
  }
  
    if( $dir =~ /Kanal10/ and $filename =~ /\.doc$/i ) {
