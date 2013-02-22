@@ -129,9 +129,8 @@ my $ref = ReadData ($file);
           $columns{'Synopsis'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /English Synopsis/ );
           $columns{'Synopsis'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Synopsis \(Swedish\)/ );
           
-          $columns{'Date'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Date \(CET\/CEST\)/ );
-          $columns{'Time'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Time \(CET\/CEST\)/ );
-          $columns{'Time'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Time \(EET\/EEST\)/ );
+          $columns{'Date'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Date/ );
+          $columns{'Time'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Time/ );
 
             $foundcolumns = 1 if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Date/ );
           }

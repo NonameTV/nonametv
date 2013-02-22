@@ -100,113 +100,91 @@ sub ImportGridXLS
 
       my $firstrow;
 
-      # skip to the row with the date
-      for(my $iR = 1 ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
-
-        $oWkC = $oWkS->{Cells}[$iR][$iC];
-        next if( ! $oWkC );
-        next if( ! $oWkC->Value );
-
-        if( $oWkC->Value =~ /^\d{2}\/\d{2}\/\d{4}$/i ){
-
-          # DATE
-          $date = ParseDate( $oWkC->Value );
-          next if ( ! $date );
-          if( $date ne $currdate ){
-
-            if( $currdate ne "x" ) {
-              $dsh->EndBatch( 1 );
-            }
-
-            my $batch_id = $xmltvid . "_" . $date;
-            $dsh->StartBatch( $batch_id , $channel_id );
-            $dsh->StartDate( $date , "00:00" );
-            $currdate = $date;
-          }
-
-          progress("Outdoor: $xmltvid: Date is: $date");
-          $firstrow = $iR + 1;
-
-        }
-
-      }
-
       # programmes start from row 15
       for(my $iR = 2 ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
 
-        # Title
-        $oWkC = $oWkS->{Cells}[$iR][$iC];
+		# date (column 1)
+        $oWkC = $oWkS->{Cells}[$iR][0];
         next if( ! $oWkC );
-        next if( ! $oWkC->Value );
-        my $timeandtitle = $oWkC->Value;
-        next if ( ! $timeandtitle );
-        
-        # Time is before title
-        my $time = ParseTime($timeandtitle);
-        
-        # Title, and remove time from title
-        my $title = $timeandtitle;
-        $title =~ s/$time //g;
-        
-        # Year
-        my ( $year ) = ($title =~ /\(s(.+)\)/ );
-	    $title =~ s/ \(s(.+)\)//g;
-        
-        #Ep
-        my ( $episode ) = ($title =~ /ep(.+)/ );
-	    $title =~ s/ ep$episode//g;
-        
+		$date = ParseDate( norm($oWkC->Value) );
+		#$date = $oWkC->Value;
+        next if( ! $date );
 
-        progress("Outdoor: $xmltvid: $time - $title");
+	    unless( $date ) {
+		  progress("SKIPPING :D");
+	      next;
+	    }
+	  
+	  if($date ne $currdate ) {
+        if( $currdate ne "x" ) {
+			# save last day if we have it in memory
+		#	FlushDayData( $channel_xmltvid, $dsh , @ces );
+			$dsh->EndBatch( 1 );
+        }
+
+
+
+        my $batchid = $xmltvid . "_" . $date;
+        $dsh->StartBatch( $batchid , $channel_id );
+        $dsh->StartDate( $date , "06:00" );
+        $currdate = $date;
+
+        progress("ExtremeSports: Date is: $date");
+      }
+	  
+	  	#if($iR == 28) { next; }
+	  
+	  # time (column 1)
+      $oWkC = $oWkS->{Cells}[$iR][1];
+      next if( ! $oWkC );
+      my $time = ParseTime( norm($oWkC->Value) );
+      next if( ! $time );
+      
+      # title
+      $oWkC = $oWkS->{Cells}[$iR][3];
+      my $title = $oWkC->Value;
+      
+      progress("$time - $title");
 
         my $ce = {
           channel_id   => $channel_id,
+		  title		   => norm($title),
           start_time   => $time,
-          title        => norm($title),
         };
-        
-        
-        if(defined ($episode)) {
-        	$ce->{episode} = sprintf( ". %d .", $episode-1 );
-        }
-
-    	if( defined( $year ) and ($year =~ /(\d\d\d\d)/) )
-    	{
-      		$ce->{production_date} = "$1-01-01";
-    	}
-
-        $dsh->AddProgramme( $ce );
+      
+      $dsh->AddProgramme( $ce );
 
       } # next row (next show)
 
     } # next column (next day)
 
     $dsh->EndBatch( 1 );
-    $currdate = "x";
 
   } # next worksheet
 
   return;
 }
 
-sub ParseTime
-{
-  my ( $tinfo ) = @_;
+sub ParseTime {
+  my( $text ) = @_;
 
-	print("Time: $tinfo\n");
+#	print "ParseTime: >$text<\n";
 
-  # format 'hh:mm'
-  my( $h, $m ) = ( $tinfo =~ /^(\d+):(\d+):/ );
+  my( $hour , $min, $sec );
 
-  #$h -= 24 if $h >= 24;
+  if( $text =~ /^\d+:\d+$/ ){
+    ( $hour , $min ) = ( $text =~ /^(\d+):(\d+)$/ );
+  }
 
-  return sprintf( "%02d:%02d", $h, $m );
+  return sprintf( "%02d:%02d", $hour, $min );
 }
 
 sub ParseDate {
   my ( $text ) = @_;
 
   my( $day, $month, $year );
+  
+#  print("Date: $text\n");
 
   # format '2011-04-13'
   if( $text =~ /^\d{2}\/\d{2}\/\d{4}$/i ){
