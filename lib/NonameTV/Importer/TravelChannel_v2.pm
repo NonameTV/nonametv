@@ -20,10 +20,14 @@ use POSIX;
 use DateTime;
 use XML::LibXML;
 use Spreadsheet::ParseExcel;
+use Data::Dumper;
 
 use Spreadsheet::XLSX;
 use Spreadsheet::XLSX::Utility2007 qw(ExcelFmt ExcelLocaltime LocaltimeExcel);
 use Spreadsheet::Read;
+
+use Text::Iconv;
+my $converter = Text::Iconv -> new ("utf-8", "windows-1251");
 
 use NonameTV qw/norm MonthNumber/;
 use NonameTV::DataStore::Helper;
@@ -75,7 +79,11 @@ sub ImportXLS
   my $date;
   my $currdate = "x";
 
-  my $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
+  my $oBook;
+
+  if ( $file =~ /\.xlsx$/i ){ progress( "using .xlsx" );  $oBook = Spreadsheet::XLSX -> new ($file, $converter); }
+  else { $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );  }   #  staro, za .xls
+  my $ref = ReadData ($file);
 
   # main loop
   #for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
@@ -102,8 +110,8 @@ sub ImportXLS
 
           $columns{'Episode Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Episode Title/ );
           
-          $columns{'Ser No'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Series/ );
-          $columns{'Ep No'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Episode/ );
+          $columns{'Ser No'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Series$/ );
+          $columns{'Ep No'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Episode$/ );
           
           $columns{'Synopsis'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Epg/ );
           $columns{'Synopsis'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Listing/ );
@@ -149,8 +157,13 @@ sub ImportXLS
 	  # time
       $oWkC = $oWkS->{Cells}[$iR][$columns{'Time'}];
       next if( ! $oWkC );
-      my $time = $oWkC->Value if( $oWkC->Value );
-      $time =~ s/'//g;
+
+      my $time = 0;  # fix for  12:00AM
+      $time=$oWkC->{Val} if( $oWkC->Value );
+
+	  #Convert Excel Time -> localtime
+      $time = ExcelFmt('hh:mm', $time);
+      $time =~ s/_/:/g; # They fail sometimes
 
       # title
       $oWkC = $oWkS->{Cells}[$iR][$columns{'Title'}];
@@ -201,13 +214,14 @@ sub ParseDate {
 
   $text =~ s/^\s+//;
 
-  my( $dayname, $day, $monthname, $year );
-  my $month;
+  my( $dayname, $day, $monthname, $year, $month );
 
-  if( $text =~ /^(\d+)\/(\s+)\/(\d+)$/ ){
-  		print("HEJ");
-        ( $day, $monthname, $year ) = ( $text =~ /^(\d+)\/(\s+)\/(\d+)$/ );
+  if( $text =~ /^\d+\/(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\/\d+$/i ){
+    ( $day, $monthname, $year ) = ( $text =~ /^(\d+)\/(\S+)\/(\d+)$/ );
+    $month = MonthNumber( lc($monthname), "en" );
   }
+  
+  $year+= 2000 if $year< 100;
 
   return sprintf( '%d-%02d-%02d', $year, $month, $day );
 }
