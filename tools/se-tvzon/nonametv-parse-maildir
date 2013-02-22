@@ -63,6 +63,7 @@ my @folders = qw(NonameTV-Data.Disney
 		 NonameTV-Data.CNBC
 		 NonameTV-Data.OUTTV
 		 NonameTV-Data.FuelTV
+		 NonameTV-Data.LuxeTV
 		 NonameTV-Data.GodTV
 		 NonameTV-Data.TVChile
 		 NonameTV-Data.TravelChannel
@@ -290,6 +291,10 @@ sub guess_channel
  
  if( $dir =~ /GodTV/ and $filename =~ /\.xls$/i ) {
      return "god.tv";
+ }
+ 
+ if( $dir =~ /LuxeTV/ and $filename =~ /\.xls$/i ) {
+     return "luxe.tv" if $filename =~ /\d\.xls$/i;
  }
 
   return undef;

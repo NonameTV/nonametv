@@ -116,9 +116,6 @@ foreach my $msg ($infolder->messages) {
   elsif( $fromaddr =~ /\@turner.com/i ) {
     MoveMessage( $msg, "Turner" );
   }
-  elsif( $fromaddr =~ /\@tvtab.la/i ) {
-    MoveMessage( $msg, "OUTTV" );
-  }
   elsif( $fromaddr =~ /\@espnamerica.com/i ) {
     MoveMessage( $msg, "ESPN" );
   }
@@ -134,8 +131,16 @@ foreach my $msg ($infolder->messages) {
   elsif( $fromaddr =~ /\@fyc.pt/i ) {
     MoveMessage( $msg, "FuelTV" );
   }
+  elsif( $fromaddr =~ /\@luxe.tv/i ) {
+    MoveMessage( $msg, "LuxeTV" );
+  }
   elsif( $fromaddr =~ /\@god.tv/i ) {
     MoveMessage( $msg, "GodTV" );
+  }
+  
+  
+  elsif( $fromaddr =~ /\@tvzon.se/i ) {
+    MoveMessage( $msg, "LuxeTV" );
   }
 }
 
