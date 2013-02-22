@@ -59,6 +59,7 @@ my $root = "/home/jnylen/maildir/.Projects/";
 my @folders = qw(NonameTV-Data.Disney
 		 NonameTV-Data.Turner
 		 NonameTV-Data.GlobalListings
+		 NonameTV-Data.France24
 		 NonameTV-Data.CNBC
 		 NonameTV-Data.OUTTV
 		 NonameTV-Data.FuelTV
@@ -76,6 +77,7 @@ my @folders = qw(NonameTV-Data.Disney
 		 NonameTV-Data.Playboy
 		 NonameTV-Data.Hustler
 		 NonameTV-Data.Chellozone
+		 NonameTV-Data.YaS
                  );
 
 # Flag messages AFTER they have been processed. Then I normally
@@ -231,6 +233,10 @@ sub guess_channel
    if( $dir =~ /OKGoteborg/ and $filename =~ /\.xls$/i ) {
      return "oppnakanalengoteborg.se";
  }
+   if( $dir =~ /France24/ and $filename =~ /\.zip$/i ) {
+     return "france24.com" if $filename =~ /ANGL/i;
+ }
+
    if( $dir =~ /TV5Monde/ and $filename =~ /\.xls$/i ) {
      return "tv5monde.org";
  }
