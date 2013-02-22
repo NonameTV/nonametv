@@ -223,9 +223,9 @@ sub ImportFlatXLS
 		}
 		
 		# Find production year from description.
-	    if( $ce->{description} =~ /^\((\d\d\d\d)\)/ )
+	    if( $ce->{description} =~ /\((\d\d\d\d)\)/ )
 	    {
-	    	$ce->{description} =~ s/^\((\d\d\d\d)\) //;
+	    	$ce->{description} =~ s/\((\d\d\d\d)\) //;
 	    	$ce->{production_date} = "$1-01-01";
 	    }
 		
