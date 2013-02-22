@@ -497,7 +497,7 @@
 262,Tvdb,"Fyra bröllop och en smekmånad",program_type,series,103001,episodeseason
 262,Tvdb,"Jamie Olivers twist",program_type,series,72239,episodeseason
 262,Tvdb,"Hemsökta hus",program_type,series,73245,episodeseason
-262,Fixups,"Law & Order",subtitle,"Special victims unit","Law & Order: Special victims unit",replacetitle
+262,Tvdb,"Law & Order",subtitle,"Special victims unit",75692,episodeseason
 262,Tvdb,"Vem dömer Amy?",program_type,series,71909,episodeseason
 262,Fixups,"Law & Order",subtitle,"Criminal intent","Law & Order: Criminal intent",replacetitle
 264,Fixups,"Tori & Dean",subtitle,"Hem ljuva Hollywood","Tori And Dean: Home Sweet Hollywood",replacetitle
@@ -665,3 +665,57 @@
 435,Fixups,Audrina,subtitle,"What's in the Box?","Celebrate Good Times, C'Mon!",replacesubtitle
 435,Fixups,"Death Valley",subtitle,"Hottest Day of the Year","The Hottest Day of the Year",replacesubtitle
 437,Tvdb,^.*$,program_type,series,\N,episodeseason
+256,Tvdb,"Law and Order",program_type,series,72368,episodeseason
+256,Tvdb,"Navy NCIS",program_type,series,72108,episodeseason
+256,Tvdb,"Masterchef - The Professionals",program_type,series,82817,episodeseason
+262,Tvdb,"Law & order UK",program_type,series,85228,episodeseason
+262,Tvdb,"Wife Swap",program_type,series,80640,episodeseason
+232,Tvdb,"Tredje skiftet",program_type,series,73107,episodeseason
+232,Tvdb,"Ett fall för Dalziel & Pascoe",program_type,series,76187,episodeseason
+304,TvdbEN,"^.*Friday night dinner.*$",program_type,series,235081,episodetitle
+304,TvdbEN,"^.*Engelska Antikrundan.*$",program_type,series,83774,episodetitle
+305,TvdbEN,"^.*Nurse Jackie.*$",program_type,series,95731,episodetitle
+305,TvdbEN,"^.*Kingdom hospital.*$",program_type,series,78951,episodetitle
+304,TvdbEN,"^.*Married single other.*$",program_type,series,143691,episodetitle
+265,Tvdb,Dallas,program_type,series,242521,episodeseason
+\N,Tvdb,"Parenthood 3",program_type,series,94551,episodeseason
+476,Tvdb,^.*$,program_type,series,\N,episodetitle
+477,Tvdb,^.*$,program_type,series,\N,episodetitle
+478,Tvdb,^.*$,program_type,series,\N,episodetitle
+260,Tvdb,Wilfred,program_type,series,239761,episodeseason
+482,Tvdb,^.*$,program_type,series,\N,episodeseason
+489,Tvdb,^.*$,program_type,series,\N,episodeseason
+491,Tvdb,^.*$,program_type,series,\N,episodeseason
+492,Tvdb,^.*$,program_type,series,\N,episodeseason
+308,Tvdb,^.*$,program_type,series,\N,episodeseason
+307,Tvdb,^.*$,program_type,series,\N,episodeseason
+306,Tvdb,^.*$,program_type,series,\N,episodeseason
+303,Tvdb,^.*$,program_type,series,\N,episodeseason
+514,Tvdb,^.*$,program_type,series,\N,episodeseason
+514,Tvdb,"The Daily Show",program_type,series,71256,episodeseason
+514,Tvdb,"Stand up; Live at Gotham",program_type,series,125171,episodeseason
+514,Tmdb,"Stand Up Brian Regan: Standing Up",program_type,series,22564,movieid
+436,Tvdb,^.*$,program_type,series,\N,episodeseason
+397,Tvdb,^.*$,program_type,series,\N,episodeseason
+436,Tvdb,"Teenage Mutant Ninja Turtles",program_type,series,261451,episodeseason
+436,Tvdb,"NED'S DECLASSIFIED",program_type,series,79821,episodeseason
+436,Tvdb,"Kung Fu Panda",program_type,series,250632,episodeseason
+436,Tvdb,UMIZOOMI,program_type,series,145951,episodeseason
+397,Tvdb,UMIZOOMI,program_type,series,145951,episodeseason
+435,Tvdb,"The Inbetweeners (MTV US version)",program_type,series,260189,episodeseason
+435,Tvdb,"Plain Jane International",program_type,series,179881,episodeseason
+311,Tvdb,^.*$,program_type,series,\N,episodeseason
+264,Tvdb,"Last Man Standing",program_type,series,248834,episodeseason
+489,Tmdb,"G.I. Joe",program_type,movie,14869,movieid
+489,Tmdb,"The mist",program_type,series,5876,movieid
+489,Tmdb,"Åsa-Nisse - wälkom to Knohult",program_type,series,56991,movieid
+489,Tmdb,Helgonet,program_type,series,10003,movieid
+207,Tvdb,^.*$,program_type,series,\N,episodeseason
+208,Tvdb,^.*$,program_type,series,\N,episodeseason
+209,Tvdb,^.*$,program_type,series,\N,episodeseason
+\N,Fixups,"Austin& Ally",program_type,series,"Austin & Ally",replacetitle
+207,Tvdb,Jessie,program_type,series,252312,episodeseason
+208,Tvdb,Jessie,program_type,series,252312,episodeseason
+209,Tvdb,Jessie,program_type,series,252312,episodeseason
+254,Tvdb,"The Last Resort",program_type,series,255413,episodeseason
+255,Tvdb,"The Last Resort",program_type,series,255413,episodeseason
