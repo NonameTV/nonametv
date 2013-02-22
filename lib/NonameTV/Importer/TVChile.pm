@@ -100,6 +100,7 @@ sub ImportXLS {
 
   if ( $file =~ /\.xlsx$/i ){ progress( "using .xlsx" );  $oBook = Spreadsheet::XLSX -> new ($file, $converter); }
   else { $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );  }
+  my $ref = ReadData ($file);
 
   # main loop
   for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
@@ -110,8 +111,9 @@ sub ImportXLS {
 
 	my $foundcolumns = 0;
     # browse through rows
+    my $i = 5;
     for(my $iR = 5 ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
-
+	$i++;
       my $oWkC;
 
       # date
@@ -145,11 +147,6 @@ sub ImportXLS {
 	  #Convert Excel Time -> localtime
       $time = ExcelFmt('hh:mm', $time);
       $time =~ s/_/:/g; # They fail sometimes
-      
-	  # desc
-      $oWkC = $oWkS->{Cells}[$iR][$coldesc];
-      next if( ! $oWkC );
-      my $desc = $oWkC->Value if( $oWkC->Value );
 
       # title
       $oWkC = $oWkS->{Cells}[$iR][$coltitle];
@@ -165,8 +162,13 @@ sub ImportXLS {
         channel_id => $channel_id,
         start_time => $start->hms(":"),
         title	   => norm($title),
-        description => normUtf8($desc),
       };
+      
+      # Desc (only works on XLS files)
+      my $field = "E".$i;
+      my $desc = $ref->[1]{$field};
+      $ce->{description} = normUtf8($desc) if( $desc );
+      $desc = '';
       
       # Genre
 	  $oWkC = $oWkS->{Cells}[$iR][$colgenre];
