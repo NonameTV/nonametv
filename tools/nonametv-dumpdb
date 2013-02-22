@@ -54,7 +54,7 @@ my $conf = ReadConfig();
 
 my $ds = NonameTV::DataStore->new( $conf->{DataStore} );
 
-dump_structure( "$datadir/listings.sql" );
+#dump_structure( "$datadir/listings.sql" ); # bugs out on mariadb
 
 dump_table( $ds, "languagestrings", "$datadir/languagestrings.txt" );
 dump_table( $ds, "dvb_cat", "$datadir/dvb_cat.txt" );
@@ -75,6 +75,7 @@ sub dump_structure {
 
   my $dbuser = $conf->{DataStore}->{username};
   my $dbpassword = $conf->{DataStore}->{password};
+  my $dbhost = $conf->{DataStore}->{dbhost};
   my $dbname = $conf->{DataStore}->{dbname};
 
   print "Writing database structure to $outfile\n";
@@ -93,7 +94,7 @@ sub dump_structure {
     $pw = "-p$dbpassword";
   }
 
-  my $output = qx/mysqldump -u$dbuser $pw $dbname $command/;
+  my $output = qx/mysqldump -h$dbhost -u$dbuser $pw $dbname $command/;
 
   # Remove comments
   $output =~ s(/\*.*?\*/;\n)()gm;
