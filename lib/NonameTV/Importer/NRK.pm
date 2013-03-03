@@ -92,10 +92,12 @@ sub ImportContent
             $title = "$title: $subtitle";
             
         }
-        #if ($title eq "") {
-        #    $title = $subtitle;
-        #    $subtitle = "";
-        #}
+        
+        # Film
+        if ($title eq "Film") {
+            $title = $subtitle;
+            $subtitle = "";
+        }
         
         my $desc = $sc->findvalue( './RUBRIKKTEKST' );
         my( $episode, $ep, $eps, $seas, $dummy );
@@ -109,7 +111,7 @@ sub ImportContent
   			$desc =~ s/\((\d+)\)$//;
   			$desc = norm($desc);
         
-        # Säsong 2
+        # Sï¿½song 2
   			( $seas ) = ($desc =~ /Sesong\s*(\d+)/ );
 				$desc =~ s/Sesong (\d+)$//;
 				$desc = norm($desc);
@@ -119,7 +121,7 @@ sub ImportContent
         if($subtitles) {
         	my ( $realtitle, $realsubtitle ) = ($subtitles =~ /(.*)\:(.*)/ );
         	if(defined($realtitle)) {
-        		$title = $realtitle;
+        		#$title = $realtitle;
         		$subtitles = $realsubtitle;
         	}
         	
@@ -159,12 +161,6 @@ sub ImportContent
         	$ce->{subtitle} = norm($subtitles);
         }
         
-        my ( $filmtitle ) = ($ce->{title} =~ /^Film\:(.*)$/ );
-        if(defined($filmtitle) and ($filmtitle ne "")) {
-        	 $ce->{program_type} = "movie";
-        	 $ce->{title} = norm($filmtitle);
-        }
-        
         $ce->{episode} = $episode if $episode;
         
         # Directors
@@ -177,11 +173,27 @@ sub ImportContent
         
         # Get actors
         if( my( $actors ) = ($desc =~ /Med\:\s*(.*)$/ ) )
-    		{
+    	{
       		$ce->{actors} = parse_person_list( $actors );
       		#$desc =~ s/Med\:(.*)$//;
       		#$desc = norm($desc);
-   			}
+   		}
+   		
+   		if( ($desc =~ /fr. (\d\d\d\d)\b/i) or
+		($desc =~ /fra (\d\d\d\d)\.*$/i) )
+    	{
+      		$ce->{production_date} = "$1-01-01";
+    	}
+    	
+    	if ($sc->findvalue( './SERIETITTEL' ) eq "Film") {
+    		$ce->{program_type} = "movie";
+    		$ce->{subtitle} = undef;
+    	}
+    	
+    	# Title cleanup
+    	$ce->{title} =~ s/Nattkino://g;
+    	$ce->{title} =~ s/Film://g;
+    	$ce->{title} = norm($ce->{title});
         
         $dsh->AddProgramme( $ce );
     

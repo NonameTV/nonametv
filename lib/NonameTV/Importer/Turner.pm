@@ -309,6 +309,12 @@ sub FlushDayData {
 							$element->{actors} = join( ", ", grep( /\S/, @actors ) );
 						}
 						
+						# TCM only provides a weird description, so please use
+						# themoviedb.
+						if($xmltvid eq "tcmeurope.com") {
+							$element->{description} = undef;
+						}
+						
 						# Movies
 						$element->{program_type} = "movie";
       		}

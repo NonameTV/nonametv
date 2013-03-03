@@ -63,7 +63,7 @@ sub ImportContentFile {
 
     my $oWkS = $oBook->{Worksheet}[$iSheet];
     
-    if( $oWkS->{Name} !~ /GMT/ ){
+    if( $oWkS->{Name} !~ /CET/ and $oWkS->{Name} !~ /CEST/ ){
       progress( "GOD_Channel: Skipping other sheet: $oWkS->{Name}" );
       next;
     }
@@ -76,20 +76,22 @@ sub ImportContentFile {
       # get the names of the columns from the 1st row
       if( not %columns ){
         for(my $iC = $oWkS->{MinCol} ; defined $oWkS->{MaxCol} && $iC <= $oWkS->{MaxCol} ; $iC++) {
-          $columns{norm($oWkS->{Cells}[$iR][$iC]->Value)} = $iC;
+          #$columns{norm($oWkS->{Cells}[$iR][$iC]->Value)} = $iC;
 
           # columns alternate names
           $columns{'Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Programme Title/i );
           $columns{'Date'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Date/i );
           $columns{'Start'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Start/i );
           $columns{'Synopsis'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Synopsis/i );
+          
+          #print Dumper(%columns);
         }
         next;
       }
 
       # date - column 0 ('Date')
       my $oWkC = $oWkS->{Cells}[$iR][$columns{'Date'}];
-      next if( ! $oWkC );
+      
 
       $date = ParseDate( $oWkC->Value );
       next if( ! $date );
@@ -154,7 +156,7 @@ sub ParseDate
 
   my( $day, $monthname, $year );
 
-#print ">$dinfo<\n";
+print ">$dinfo<\n";
 
   # format '033 03 Jul 2008'
   if( $dinfo =~ /^\d+\s+\d+\s+\S+\s+\d+$/ ){
@@ -173,9 +175,9 @@ sub ParseDate
     return undef;
   }
 
-#print "DAY: $day\n";
-#print "MON: $monthname\n";
-#print "YEA: $year\n";
+print "DAY: $day\n";
+print "MON: $monthname\n";
+print "YEA: $year\n";
 
   return undef if( ! $year);
 
@@ -183,8 +185,8 @@ sub ParseDate
 
   my $mon = MonthNumber( $monthname, "en" );
 
-#print "DAY: $day\n";
-#print "MON: $mon\n";
+print "DAY: $day\n";
+print "MON: $mon\n";
 
   my $dt = DateTime->new( year   => $year,
                           month  => $mon,
@@ -204,6 +206,13 @@ sub create_dt
   my( $date, $time ) = @_;
 
   my( $hour, $min ) = ( $time =~ /(\d+).(\d{2})/ );
+  
+  # Sometimes.
+  if($hour >= 24) {
+  	$hour = $hour-24;
+  	
+  	#print("Hour: $hour\n");
+  }
 
   return sprintf( "%02d:%02d:00", $hour, $min );
 }

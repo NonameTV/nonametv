@@ -110,6 +110,7 @@ sub ImportXLS {
   my $colepisode = 9;
   my $coldesc = 11;
   my $colseason = 8;
+  my $colyear = 6;
   my $colgenre = 5;
 
 my $oBook;
@@ -204,26 +205,35 @@ my $ref = ReadData ($file);
 			AddCategory( $ce, $program_type, $category );
 		}
 			
-	# Episode
-	$oWkC = $oWkS->{Cells}[$iR][$colepisode];
-	my $episode = $oWkC->Value if( $oWkC );
-	$oWkC = $oWkS->{Cells}[$iR][$colseason];
-	my $season = $oWkC->Value if( $oWkC );
+	  # Episode
+	  $oWkC = $oWkS->{Cells}[$iR][$colepisode];
+	  my $episode = $oWkC->Value if( $oWkC );
+	  $oWkC = $oWkS->{Cells}[$iR][$colseason];
+	  my $season = $oWkC->Value if( $oWkC );
+	  
+	  # Prod year
+	  $oWkC = $oWkS->{Cells}[$iR][$colyear];
+	  my $year = $oWkC->Value if( $oWkC );
+	  
+	  if(($year) and $year ne "" and $year =~ /(\d\d\d\d)/) {
+	  	$ce->{production_date} = "$1-01-01";
+	  	$ce->{program_type} = 'movie'; # Only movies and documentary movies got year.
+	  }
       
       # Try to extract episode-information from the description.
-			if(($season) and ($season ne "")) {
-				# Episode info in xmltv-format
-  			if(($episode) and ($episode ne "") and ($season ne "") )
-   			{
-        	$ce->{episode} = sprintf( "%d . %d .", $season-1, $episode-1 );
-   			}
+	  if(($season) and ($season ne "")) {
+		# Episode info in xmltv-format
+		if(($episode) and ($episode ne "") and ($season ne "") )
+		{
+			$ce->{episode} = sprintf( "%d . %d .", $season-1, $episode-1 );
+		}
   
-  			if( defined $ce->{episode} ) {
-    			$ce->{program_type} = 'series';
-				}
-			}
+		if( defined $ce->{episode} ) {
+			$ce->{program_type} = 'series';
+		}
+	  }
       
-			progress("OUTTV: $time - $title") if $title;
+	  progress("OUTTV: $time - $title") if $title;
       $dsh->AddProgramme( $ce ) if $title;
     }
 
