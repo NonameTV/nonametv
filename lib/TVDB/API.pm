@@ -571,6 +571,14 @@ sub haveSeries {
 # Get series/lang.xml for series
 sub getSeries {
 	my ($self, $name, $nocache) = @_;
+	
+	# If no name is found, return undef, as the language
+	# is probably wrong and is not translated (mostly norweigan series)
+	if(!defined($name)) {
+		&verbose(1, "TVDB::API: No translated seriesname found - try to change the language from $self->{lang}.\n");
+		return undef;
+	}
+	
 	&debug(2, "getSeries: $name, $nocache\n");
 
 	my $sid = $self->getSeriesId($name, $nocache?$nocache-1:0);

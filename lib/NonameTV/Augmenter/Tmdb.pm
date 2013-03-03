@@ -175,13 +175,26 @@ sub AugmentProgram( $$$ ){
     $resultref = undef;
   } elsif( $ruleref->{matchby} eq 'movieid' ) {
     $self->FillHash( $resultref, $ruleref->{remoteref}, $ceref );
+    
   } elsif( $ruleref->{matchby} eq 'title' ) {
-    # search by title and year (if present)
-
-    my $searchTerm = $ceref->{title};
+    # year and directors
     if( !$ceref->{production_date} && !$ceref->{directors}){
       return( undef,  "Year and directors unknown, not searching at themoviedb.org!" );
     }
+
+	$ruleref->{matchby} = "titleonly";
+	
+  } elsif( $ruleref->{matchby} eq 'titleonlyyear' ) {
+    # year and directors
+    if( !$ceref->{production_date} ){
+      return( undef,  "Year unknown, not searching at themoviedb.org!" );
+    }
+
+	$ruleref->{matchby} = "titleonly";
+
+  } elsif( $ruleref->{matchby} eq 'titleonly' ) {
+    # search by title and year (if present)
+    my $searchTerm = $ceref->{title};
 
     # filter characters that confuse the search api
     # FIXME check again now that we encode umlauts & co.
