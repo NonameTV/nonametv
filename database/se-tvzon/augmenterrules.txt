@@ -528,7 +528,7 @@
 320,Tvdb,^.*$,program_type,series,\N,episodeseason
 321,Tvdb,^.*$,program_type,series,\N,episodeseason
 268,Tvdb,^.*$,program_type,series,\N,episodetitle
-295,Tvdb,^.*$,program_type,series,\N,episodetitle
+295,TvdbNO,^.*$,program_type,series,\N,episodeseason
 295,Tvdb,Dallas,program_type,series,\N,episodeseason
 295,Tvdb,"Mord och inga visor",program_type,series,78049,episodeseason
 295,Fixups,Sherlock,subtitle,"The Great Gane","The Great Game",replacesubtitle
@@ -719,3 +719,42 @@
 209,Tvdb,Jessie,program_type,series,252312,episodeseason
 254,Tvdb,"The Last Resort",program_type,series,255413,episodeseason
 255,Tvdb,"The Last Resort",program_type,series,255413,episodeseason
+234,Tmdb,^.*$,program_type,movie,\N,titleonlyyear
+331,TmdbDESC,\N,program_type,movie,\N,title
+516,Tvdb,^.*$,program_type,series,\N,episodeseason
+296,TvdbNO,^.*$,program_type,series,\N,episodeseason
+519,TvdbNO,^.*$,program_type,series,\N,episodeseason
+516,Tvdb,Rome,program_type,series,73508,episodetitle
+516,Tvdb,"Pinlige sykdommer",program_type,series,136191,episodeseason
+516,Tvdb,"Millionær i forkledning",program_type,series,79687,episodeseason
+516,Tvdb,NTSF:SD:SUV:,program_type,series,248261,episodetitle
+516,Tvdb,"Standup: Live fra Apollo",program_type,series,80905,episodeseason
+516,Tvdb,"Bisarre skader",program_type,series,102391,episodeseason
+516,Tvdb,"Kates affærar",program_type,series,175011,episodeseason
+516,Tvdb,Interiørhelvete,program_type,series,204531,episodeseason
+516,Tvdb,"Sporløst forsvunnet",program_type,series,77963,episodeseason
+516,Tvdb,"Tause vitner",program_type,series,76355,episodeseason
+516,Tvdb,"Kalde spor",program_type,series,79053,episodeseason
+516,Tvdb,"Mannens unyttige verden",program_type,series,202351,episodeseason
+516,Tvdb,"Partydronninger - Australia",program_type,series,85104,episodeseason
+516,Tvdb,Ekstremfiske,program_type,series,83834,episodeseason
+516,Tvdb,"Top Gear",program_type,series,74608,episodeseason
+295,Tvdb,"Frå Lark Rise til Candleford",program_type,series,81161,episodeseason
+295,Tvdb,"Scott og Bailey",program_type,series,249128,episodeseason
+295,Tvdb,"Med hjartet på rette staden",program_type,series,74684,episodeseason
+295,Tvdb,"Kalde spor",program_type,series,79053,episodeseason
+295,Tvdb,^Poirot.*$,program_type,series,76133,episodeseason
+295,TvdbNO,"Ørnen",program_type,series,79579,episodeseason
+295,Tvdb,"Kates affærar",program_type,series,175011,episodeseason
+295,Tvdb,"Hvilket liv!",program_type,series,74438,episodeseason
+295,Tvdb,"Bondi Beach",program_type,series,81967,episodeseason
+295,TvdbNO,Hjem,program_type,series,265646,episodeseason
+295,Tvdb,"Tause vitner",program_type,series,76355,episodeseason
+296,Tvdb,"Mannens unyttige verden",program_type,series,202351,episodeseason
+296,TvdbNO,Hjem,program_type,series,265646,episodeseason
+296,Tvdb,"Med hjartet på rette staden",program_type,series,74684,episodeseason
+\N,Tvdb,"Jessica Fletcher",program_type,series,78049,episodeseason
+296,Fixups,^(Underveis):\s+(.*)$,program_type,series,\N,splittitle
+295,Fixups,^(Underveis):\s+(.*)$,program_type,series,\N,splittitle
+519,TvdbNO,"M.I. High",program_type,series,95901,episodeseason
+519,TvdbNO,AF1,program_type,series,250880,episodeseason
