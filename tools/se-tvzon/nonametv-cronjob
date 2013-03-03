@@ -84,11 +84,11 @@ $d tools/nonametv-icon-update --quiet --unattended
 tools/se-tvzon/nonametv-updatesite $Q
 
 # Upload to www - I don't know if I wanna run this here.
-tools/se-tvzon/nonametv-upload $Q
+#tools/se-tvzon/nonametv-upload $Q
 
 # This shouldn't produce any output, but there seems to be a bug
 # somewhere.
-$d perl -I lib tools/nonametv-export Xmltv --force-export --verbose 
+#$d perl -I lib tools/nonametv-export Xmltv --force-export --verbose 
 
 # Update the Combiner-channels as well.
 $d perl -I lib tools/nonametv-import Combiner $Q
@@ -111,7 +111,7 @@ $d tools/se-tvzon/nonametv-xmltv-compare-run
 $d tools/se-tvzon/nonametv-upload $Q
 
 # Upload to www (at 13.00)
-$h tools/se-tvzon/nonametv-upload $Q
+#$h tools/se-tvzon/nonametv-upload $Q
 
 # Run after, everything
 $d rsync --delete -r /var/local/nonametv/html/00status.html /var/www/xmltv/

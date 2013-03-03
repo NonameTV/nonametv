@@ -1,6 +1,6 @@
 #!/bin/sh
 
-getmail --rcfile=/home/jnylen/.getmail/xmltv.gmail --getmaildir=/home/jnylen/maildir/.Projects/xmltv-data-in
+getmail --quiet --rcfile=/home/jnylen/.getmail/xmltv.gmail --getmaildir=/home/jnylen/maildir/.Projects/xmltv-data-in
 
 # Parse it
 /home/jnylen/projects/nonametv/tools/se-tvzon/nonametv-filter-mail

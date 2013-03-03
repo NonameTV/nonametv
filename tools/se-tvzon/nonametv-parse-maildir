@@ -215,13 +215,15 @@ sub guess_channel
  }
 
    if( $dir =~ /Turner/ ) {
+    # Word files
 	return "cartoonnetwork.se" if $filename =~ /^cn\s*nordic\s+\(swe\)\s*\b/i;
 	return "boomerangtv.se" if $filename =~ /^boomerang\s*nordic\s*\(swe\)\s*\b/i;
 	
+	# Excel (XLS)
 	if( $filename =~ /\.xls$/i ) {
-		return "tcmeurope.com" if $filename =~ /^tcm/i;
+		return "tcmeurope.com" if $filename =~ /tcm\s+nordic/i;
+		return "cnn.com" if $filename =~ /^cnn\s*\(in\s+cet\)\b/i;
 	}
-	return "cnn.com" if $filename =~ /^cnn\s*\(in\s+cet\)\b/i;
   }
  
  if( $dir =~ /Chellozone/ and $filename =~ /\.xls$/i ) {
