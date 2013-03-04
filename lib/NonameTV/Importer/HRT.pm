@@ -31,6 +31,9 @@ sub new {
     bless ($self, $class);
 
     defined( $self->{UrlRoot} ) or die "You must specify UrlRoot";
+    
+    # use augment
+    $self->{datastore}->{augment} = 1;
 
     return $self;
 }
@@ -91,6 +94,10 @@ sub ImportContent
     my $org_title = $sc->getElementsByTagName('sub-title');
     my $subtitle = $sc->getElementsByTagName('sub-title');
     
+    $title =~ s/\(R\)//g if $title;
+    $title =~ s/^Filmski maraton://;
+    
+    
     #
     # description
     #
@@ -138,8 +145,6 @@ sub ImportContent
     my $commentators = $sc->getElementsByTagName( 'commentator' );
     my $guests = $sc->getElementsByTagName( 'guest' );
 
-    progress("HRT: $chd->{xmltvid}: $start - $title");
-
     my $ce = {
       channel_id   => $chd->{id},
       title        => norm($title) || norm($org_title),
@@ -164,15 +169,53 @@ sub ImportContent
       $ce->{episode} = norm($episode);
       $ce->{program_type} = 'series';
     }
+    
+    # (episodenum/of_episods)
+  	my ( $ep2, $eps2 ) = ($ce->{title} =~ /\((\d+)\/(\d+)\)/ );
+  	$ce->{episode} = sprintf( " . %d/%d . ", $ep2-1, $eps2 ) if defined $eps2;
+  	$ce->{title} =~ s/\(.*\)//g;
+    $ce->{title} = norm($ce->{title});
+    
+	my( $title_split, $genre_split ) = split( ',', norm($ce->{title}) );
 
-    #my($program_type, $category ) = $ds->LookupCat( "HRT", $genre );
+	my($program_type, $category ) = undef;
 
-    #AddCategory( $ce, $program_type, $category );
-
+	if(defined($genre_split)) {
+		($program_type, $category ) = $ds->LookupCat( "HRT", $genre_split );
+		AddCategory( $ce, $program_type, $category );
+		
+		$ce->{title} = norm($title_split);
+	}
+	
+	if(defined($org_title) and defined($program_type)) {
+		my ( $season ) = ($org_title =~ /(\d+)$/ );
+			
+		# Season
+		if(defined($season) and defined($program_type) and $program_type eq "series") {
+			$ce->{episode} = $season-1 . $ce->{episode};
+			
+			if("$org_title" ne "") {
+				$org_title =~ s/\d+$//g;
+				$org_title = ucfirst(lc($org_title));
+				$org_title = norm($org_title);
+				$org_title =~ s/,$//g;
+				
+				$ce->{subtitle} = undef;
+				$ce->{title} = norm($org_title);
+			}
+		} elsif(defined($program_type) and $program_type eq "movie" and "$org_title" ne "") {
+			$org_title = ucfirst(lc($org_title));
+			$ce->{title} = norm($org_title);
+			$ce->{subtitle} = undef;
+		}
+	}
+	
     if( defined( $production_year ) and ($production_year =~ /(\d\d\d\d)/) )
     {
       $ce->{production_date} = "$1-01-01";
     }
+    
+    progress("HRT: $chd->{xmltvid}: $start - $ce->{title}");
 
     $ds->AddProgramme( $ce );
   }
