@@ -86,6 +86,31 @@ sub AugmentProgram( $$$ ){
 			
 			my $cids_string = join(', ', @cids);
 		
+			# Match a movie (they not have subtitles nor episode info)
+			if( !$matchdone && $ceref->{program_type} eq "movie" )
+			{
+			  my ( $res, $sth ) = $self->{datastore}->sa->Sql( "
+		          SELECT c.xmltvid, p.start_time from programs p
+		          LEFT JOIN channels c ON c.id = p.channel_id
+		          WHERE p.channel_id IN ( ".$cids_string." ) and p.title = ? and p.end_time <= ? and p.end_time != '0000-00-00 00:00' and p.program_type = ?
+		          ORDER BY p.start_time asc, p.end_time desc
+		          LIMIT 1", 
+		        [$ceref->{title}, $dt_new, $ceref->{program_type}] );
+		      my $ce;
+		      
+		      
+		      
+		      #die();
+		      
+		      while( defined( my $ce = $sth->fetchrow_hashref() ) ) {
+		        print("FILM: $ceref->{title} - old: $ceref->{start_time} - prev: $ce->{start_time}\n");
+		        $resultref->{previously_shown} = $ce->{xmltvid}."|".$ce->{start_time};
+		        
+		        
+		        $matchdone=1;
+		      }
+			}
+		
 			# Match by episode
 			if( !$matchdone && $ceref->{episode} && $ceref->{episode} ne '' ) {
 				#w("Match by episode");
@@ -93,15 +118,13 @@ sub AugmentProgram( $$$ ){
 				my ( $res, $sth ) = $self->{datastore}->sa->Sql( "
 		          SELECT c.xmltvid, p.start_time from programs p
 		          LEFT JOIN channels c ON c.id = p.channel_id
-		          WHERE p.channel_id IN(?) and p.title = ? and p.episode = ? and p.end_time <= ? and p.program_type = ?
+		          WHERE p.channel_id IN ( ".$cids_string." ) and p.title = ? and p.episode = ? and p.end_time <= ? and p.end_time != '0000-00-00 00:00' and p.program_type = ?
 		          ORDER BY p.start_time asc, p.end_time desc
 		          LIMIT 1", 
-		        [$ceref->{channel_id}, $ceref->{title}, $ceref->{episode}, $dt_new, $ceref->{program_type}] );
+		        [$ceref->{title}, $ceref->{episode}, $dt_new, $ceref->{program_type}] );
+		        
 		      my $ce;
 		      while( defined( my $ce = $sth->fetchrow_hashref() ) ) {
-		        #CopyProgramWithoutTransmission( $resultref, $ce );
-		        #print Dumper($ce);
-		        
 		        print("$ceref->{title} - old: $ceref->{start_time} - prev: $ce->{start_time}\n");
 		        $resultref->{previously_shown} = $ce->{xmltvid}."|".$ce->{start_time};
 		        
@@ -116,15 +139,12 @@ sub AugmentProgram( $$$ ){
 				my ( $res, $sth ) = $self->{datastore}->sa->Sql( "
 		          SELECT c.xmltvid, p.start_time from programs p
 		          LEFT JOIN channels c ON c.id = p.channel_id
-		          WHERE p.channel_id IN(?) and p.title = ? and p.subtitle = ? and p.end_time <= ? and p.program_type = ?
+		          WHERE p.channel_id IN ( ".$cids_string." ) and p.title = ? and p.subtitle = ? and p.end_time <= ? and p.end_time != '0000-00-00 00:00' and p.program_type = ?
 		          ORDER BY p.start_time asc, p.end_time desc
 		          LIMIT 1", 
-		        [$ceref->{channel_id}, $ceref->{title}, $ceref->{subtitle}, $dt_new, $ceref->{program_type}] );
+		        [$ceref->{title}, $ceref->{subtitle}, $dt_new, $ceref->{program_type}] );
 		      my $ce;
 		      while( defined( my $ce = $sth->fetchrow_hashref() ) ) {
-		        #CopyProgramWithoutTransmission( $resultref, $ce );
-		        #print Dumper($ce);
-		        
 		        print("SUB: $ceref->{title} - old: $ceref->{start_time} - prev: $ce->{start_time}\n");
 		        $resultref->{previously_shown} = $ce->{xmltvid}."|".$ce->{start_time};
 		        
@@ -134,6 +154,25 @@ sub AugmentProgram( $$$ ){
 		}
 	} else {
 		if( !$matchdone && $ceref->{'title'} ){
+			# Match a movie (they not have subtitles nor episode info)
+			if( !$matchdone && $ceref->{program_type} eq "movie" )
+			{
+			  my ( $res, $sth ) = $self->{datastore}->sa->Sql( "
+		          SELECT c.xmltvid, p.start_time from programs p
+		          LEFT JOIN channels c ON c.id = p.channel_id
+		          WHERE p.channel_id = ? and p.title = ? and p.end_time <= ? and p.end_time != '0000-00-00 00:00' and p.program_type = ?
+		          ORDER BY p.start_time asc, p.end_time desc
+		          LIMIT 1", 
+		        [$ceref->{channel_id}, $ceref->{title}, $dt_new, $ceref->{program_type}] );
+		      my $ce;
+		      while( defined( my $ce = $sth->fetchrow_hashref() ) ) {
+		        print("FILM: $ceref->{title} - old: $ceref->{start_time} - prev: $ce->{start_time}\n");
+		        $resultref->{previously_shown} = $ce->{xmltvid}."|".$ce->{start_time};
+		        
+		        $matchdone=1;
+		      }
+			}
+		
 			# Match by episode
 			if( !$matchdone && $ceref->{episode} && $ceref->{episode} ne '' ) {
 				#w("Match by episode");
@@ -141,15 +180,12 @@ sub AugmentProgram( $$$ ){
 			  my ( $res, $sth ) = $self->{datastore}->sa->Sql( "
 		          SELECT c.xmltvid, p.start_time from programs p
 		          LEFT JOIN channels c ON c.id = p.channel_id
-		          WHERE p.channel_id = ? and p.title = ? and p.episode = ? and p.end_time <= ? and p.program_type = ?
+		          WHERE p.channel_id = ? and p.title = ? and p.episode = ? and p.end_time <= ? and p.end_time != '0000-00-00 00:00' and p.program_type = ?
 		          ORDER BY p.start_time asc, p.end_time desc
 		          LIMIT 1", 
 		        [$ceref->{channel_id}, $ceref->{title}, $ceref->{episode}, $dt_new, $ceref->{program_type}] );
 		      my $ce;
 		      while( defined( my $ce = $sth->fetchrow_hashref() ) ) {
-		        #CopyProgramWithoutTransmission( $resultref, $ce );
-		        #print Dumper($ce);
-		        
 		        print("$ceref->{title} - old: $ceref->{start_time} - prev: $ce->{start_time}\n");
 		        $resultref->{previously_shown} = $ce->{xmltvid}."|".$ce->{start_time};
 		        
@@ -162,15 +198,12 @@ sub AugmentProgram( $$$ ){
 				my ( $res, $sth ) = $self->{datastore}->sa->Sql( "
 		          SELECT c.xmltvid, p.start_time from programs p
 		          LEFT JOIN channels c ON c.id = p.channel_id
-		          WHERE p.channel_id = ? and p.title = ? and p.subtitle = ? and p.end_time <= ? and p.program_type = ?
+		          WHERE p.channel_id = ? and p.title = ? and p.subtitle = ? and p.end_time <= ? and p.end_time != '0000-00-00 00:00' and p.program_type = ?
 		          ORDER BY p.start_time asc, p.end_time desc
 		          LIMIT 1", 
 		        [$ceref->{channel_id}, $ceref->{title}, $ceref->{subtitle}, $dt_new, $ceref->{program_type}] );
 		      my $ce;
 		      while( defined( my $ce = $sth->fetchrow_hashref() ) ) {
-		        #CopyProgramWithoutTransmission( $resultref, $ce );
-		        #print Dumper($ce);
-		        
 		        print("SUB: $ceref->{title} - old: $ceref->{start_time} - prev: $ce->{start_time}\n");
 		        $resultref->{previously_shown} = $ce->{xmltvid}."|".$ce->{start_time};
 		        
