@@ -248,14 +248,14 @@ sub guess_channel
  }
  
  if( $dir =~ /Gmail/ and $filename =~ /\.xls$/i ) {
-     return "privatespice.com" if $filename =~ /^private\s*\b/i;
+     return "privatespice.com" if $filename =~ /^private/i;
  }
  
  if( $dir =~ /Playboy/ and $filename =~ /\.xls$/i ) {
-     return "europe.playboytv.com" if $filename =~ /^playboy\s*\b/i;
-     return "adultchannel.co.uk" if $filename =~ /^the\s*adult\s*\b/i;
-     return "privatespice.com" if $filename =~ /^private\s*\b/i;
-     return "viasat.spice.com" if $filename =~ /^spice\s*viasat\b/i;
+     return "europe.playboytv.com" if $filename =~ /^playboy/i;
+     return "adultchannel.co.uk" if $filename =~ /^the\s*adult/i;
+     return "privatespice.com" if $filename =~ /^private/i;
+     return "viasat.spice.com" if $filename =~ /^spice\s*viasat/i;
  }
  
  if( $dir =~ /Hustler/ and $filename =~ /\.xls$/i ) {

@@ -34,8 +34,9 @@ then
   tools/nonametv-export Xmltv --force-export
   tools/nonametv-export Json --force-export
   
-  # Remove old programmes and batches
-  perl -I lib tools/nonametv-remove-old
+  # Remove old programmes and batches - dont use, fucks up the previouslyshown
+  # augmenter
+  #perl -I lib tools/nonametv-remove-old
 
   exit
 fi
@@ -88,7 +89,7 @@ tools/se-tvzon/nonametv-updatesite $Q
 
 # This shouldn't produce any output, but there seems to be a bug
 # somewhere.
-#$d perl -I lib tools/nonametv-export Xmltv --force-export --verbose 
+$d perl -I lib tools/nonametv-export Xmltv --force-export --verbose 
 
 # Update the Combiner-channels as well.
 $d perl -I lib tools/nonametv-import Combiner $Q
