@@ -1,7 +1,4 @@
 #!/usr/bin/perl
 
-$role = "Regissör";
-if( (defined $role) and ( $role =~ /Regiss(.*)r/i ) )
-      {
-        print("HEJ\n");
-      }
+my $filename = "EPG_2013_S13.xls";
+print("Tjenare\n")  if $filename =~ /\d\.xls$/i;
