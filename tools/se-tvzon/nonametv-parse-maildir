@@ -180,27 +180,36 @@ sub guess_channel
 
   if( $dir =~ /Disney/ ) {
     # The Disney filenames are very unreliable. 
-     if( $filename =~ /\bxd/i and $filename =~ /series\s*linking/i ) {
-       return "xd.disneychannel.se";
-     }
-     if( $filename =~ /\bdxd/i and $filename =~ /series\s*linking/i ) {
-       return "xd.disneychannel.se";
-     }
-     elsif( $filename =~ /disney\s*channel/i and $filename =~ /series\s*linking/i ) {
-       return "disneychannel.se";
-     }
-     elsif( $filename =~ /disney\s*junior/i and $filename =~ /series\s*linking/i ) {
-       return "junior.disney.se";
-     }
-     elsif( $filename eq "noname" ) {
-       return undef;
-     }
-     elsif( $subject =~ /disney\s*channel/i and $filename =~ /series\s*linking/i ) {
-       return "disneychannel.se";
-     }
+    if( $filename =~ /\bxd/i ) {
+      return "xd.disneychannel.se";
+    }
+    if( $filename =~ /\bdxd/i ) {
+      return "xd.disneychannel.se";
+    }
+    elsif( $filename =~ /playhouse/i ) {
+      return "junior.disney.se";
+    }
+    elsif( $filename =~ /junior/i ) {
+      return "junior.disney.se";
+    }
+    elsif( $filename =~ /disney\s*channel/i ) {
+      return "disneychannel.se";
+    }
+    elsif( $filename eq "noname" ) {
+      return undef;
+    }
+    elsif( $subject =~ /playhouse/i ) {
+      return "junior.disney.se";
+    }
+    elsif( $subject =~ /junior/i ) {
+      return "junior.disney.se";
+    }
+    elsif( $subject =~ /disney\s*channel/i ) {
+      return "disneychannel.se";
+    }
 
-     return undef;
-   }
+    return undef;
+  }
 
    if( $dir =~ /GlobalListings/ ) {
      return "hd.natgeo.se" if $filename =~ /^ng\s*swe\s*hd\b/i;

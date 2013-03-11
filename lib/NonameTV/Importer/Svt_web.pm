@@ -31,6 +31,8 @@ use base 'NonameTV::Importer::BaseDaily';
 my %channelids = ( "SVT1" => "svt1.svt.se",
                    "SVT2" => "svt2.svt.se",
                    );
+                   
+my @channels_no_hd = qw(svt1.svt.se svt2.svt.se);
 
 sub new {
     my $proto = shift;
@@ -258,6 +260,11 @@ sub ImportContent {
     }
     
     $self->extract_extra_info( $ce );
+    
+    if((grep $_ eq $chd->{xmltvid}, @channels_no_hd) and defined($ce->{quality})) {
+    	delete $ce->{quality};
+    }
+    
     $dsh->AddProgramme( $ce );
     $programs++;
   }
@@ -384,6 +391,7 @@ sub extract_extra_info
     }
     elsif( $sentences[$i] eq "HD." )
     {
+      # HD
       $ce->{quality} = "HDTV";
     
       # Set somethiing?
@@ -723,6 +731,15 @@ sub SeasonText {
   my $null = "";
 
   return $season||$null;
+}
+
+sub in_array {
+    my ($arr, $search_for) = @_;
+
+    foreach my $value (\@$arr) {
+        return 1 if $value eq $search_for;
+    }
+    return 0;
 }
 
 1;

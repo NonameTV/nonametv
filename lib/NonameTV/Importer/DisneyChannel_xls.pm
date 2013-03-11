@@ -124,12 +124,42 @@ sub ImportFlatXLS
   # main loop
   foreach my $oWkS (@{$oBook->{Worksheet}}) {
 
+	my $foundcolumns = 0;
+
     # start from row 3
     #for(my $iR = $oWkS->{MinRow} ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
-    for(my $iR = 2 ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
+    for(my $iR = 1 ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
+
+      if( not %columns ){
+        # the column names are stored in the first row
+        # so read them and store their column positions
+        # for further findvalue() calls
+
+        for(my $iC = $oWkS->{MinCol} ; defined $oWkS->{MaxCol} && $iC <= $oWkS->{MaxCol} ; $iC++) {
+          if( $oWkS->{Cells}[$iR][$iC] ){
+
+			$columns{'Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Title/ );
+			$columns{'Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /\(NOT\) Title/ ); # Often SWE Title
+			$columns{'Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /\(SWE\) Title/ );
+
+          	$columns{'Time'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Time/ );
+          	$columns{'Date'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Date/ );
+          	$columns{'Season'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Season Number/ );
+          	$columns{'Episode'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Episode Number/ );
+          	$columns{'Genre'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Genre/ );
+          	$columns{'Synopsis'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Synopsis/ );
+          	
+
+            $foundcolumns = 1 if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Season/ ); # Only import if season number is found
+          }
+        }
+        %columns = () if( $foundcolumns eq 0 );
+
+        next;
+      }
 
       # date (column 1)
-      $oWkC = $oWkS->{Cells}[$iR][0];
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'Date'}];
 	  $date = ParseDate( $oWkC->Value );
 	  
 	  if($date ne $currdate ) {
@@ -152,7 +182,7 @@ sub ImportFlatXLS
       }
 	  
 	  # time (column 1)
-      $oWkC = $oWkS->{Cells}[$iR][1];
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'Time'}];
       next if( ! $oWkC );
       my $time = ParseTime( $oWkC->Value );
       next if( ! $time );
@@ -164,7 +194,7 @@ sub ImportFlatXLS
 	  my $episode;
 	  
       # program_title (column 4)
-      $oWkC = $oWkS->{Cells}[$iR][4];
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'Title'}];
       $title = norm($oWkC->Value);
       
       # Remove
@@ -174,7 +204,7 @@ sub ImportFlatXLS
 	  $title = norm($oWkC->Value);
 	  
 	  
-	  $oWkC = $oWkS->{Cells}[$iR][10];
+	  $oWkC = $oWkS->{Cells}[$iR][$columns{'Synopsis'}];
       my $desc = $oWkC->Value;
 
       if( $time and $title ){
@@ -192,14 +222,14 @@ sub ImportFlatXLS
         };
 
 		## Episode
-		$oWkC = $oWkS->{Cells}[$iR][6];
+		$oWkC = $oWkS->{Cells}[$iR][$columns{'Episode'}];
      	my $episode = $oWkC->Value;
      	
-     	$oWkC = $oWkS->{Cells}[$iR][5];
+     	$oWkC = $oWkS->{Cells}[$iR][$columns{'Season'}];
      	my $season = $oWkC->Value;
      	
      	# genre (column 6)
-        $oWkC = $oWkS->{Cells}[$iR][7];
+        $oWkC = $oWkS->{Cells}[$iR][$columns{'Genre'}];
 	    my $genre = norm($oWkC->Value) if( $oWkC );
       
       	if($episode > 0) {
