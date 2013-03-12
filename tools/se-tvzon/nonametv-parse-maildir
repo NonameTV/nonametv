@@ -80,6 +80,7 @@ my @folders = qw(NonameTV-Data.Disney
 		 NonameTV-Data.Chellozone
 		 NonameTV-Data.YaS
 		 NonameTV-Data.ESPN
+		 NonameTV-Data.MTV
                  );
 
 # Flag messages AFTER they have been processed. Then I normally
@@ -271,6 +272,18 @@ sub guess_channel
  if( $dir =~ /Hustler/ and $filename =~ /\.xls$/i ) {
      return "europe.bluehustler.com" if $filename =~ /^blue.*gmt.*\b/i;
      return "europe.hustlertv.com" if $filename =~ /^hustler.*gmt.*\b/i;
+ }
+ 
+ if( $dir =~ /MTV/ ) {
+ 	# excel (XLS)
+ 	if($filename =~ /\.xls$/i) {
+    	
+    }
+    
+    # excel (XLSX)
+    if($filename =~ /\.xlsx$/i) {
+    	return "classic.vh1.se" if $filename =~ /vh1.*euro.*classic/i;
+    }
  }
 
    if( $dir =~ /YaS/ and $filename =~ /\.xls$/i ) {
