@@ -140,7 +140,7 @@ foreach my $msg ($infolder->messages) {
   
   
   elsif( $fromaddr =~ /\@tvzon.se/i ) {
-    MoveMessage( $msg, "Disney" );
+    MoveMessage( $msg, "Svt" );
   }
 }
 

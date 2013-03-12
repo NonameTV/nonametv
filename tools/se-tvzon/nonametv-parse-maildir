@@ -79,6 +79,7 @@ my @folders = qw(NonameTV-Data.Disney
 		 NonameTV-Data.Hustler
 		 NonameTV-Data.Chellozone
 		 NonameTV-Data.YaS
+		 NonameTV-Data.ESPN
                  );
 
 # Flag messages AFTER they have been processed. Then I normally
@@ -260,7 +261,7 @@ sub guess_channel
      return "privatespice.com" if $filename =~ /^private/i;
  }
  
- if( $dir =~ /Playboy/ and $filename =~ /\.xls$/i ) {
+ if( $dir =~ /Playboy/ and $filename =~ /\.doc$/i ) {
      return "europe.playboytv.com" if $filename =~ /^playboy/i;
      return "adultchannel.co.uk" if $filename =~ /^the\s*adult/i;
      return "privatespice.com" if $filename =~ /^private/i;
@@ -306,6 +307,19 @@ sub guess_channel
  
  if( $dir =~ /LuxeTV/ and $filename =~ /\.xls$/i ) {
      return "luxe.tv" if $filename =~ /\d\.xls$/i;
+ }
+ 
+ if( $dir =~ /ESPN/ and $filename =~ /\.xls$/i ) {
+     return "america.espn.com" if $filename =~ /cet/i;
+ }
+ 
+ if( $dir =~ /Svt/ and $filename =~ /\.xml$/i ) {
+     return "svt1.svt.se" if $filename =~ /svt1/i; 				# SVT_SCHEDULE_SVT1_20130311_20130425.xml
+     return "svt2.svt.se" if $filename =~ /svt2/i; 				# SVT_SCHEDULE_SVT2_20130311_20130425.xml
+     return "svtb.svt.se" if $filename =~ /svtb/i; 				# SVT_SCHEDULE_SVTB_20130311_20130425.xml
+     return "kunskapskanalen.svt.se" if $filename =~ /svtk/i;   # SVT_SCHEDULE_SVTK_20130311_20130425.xml
+     return "svtworld.svt.se" if $filename =~ /svte/i; 			# SVT_SCHEDULE_SVTE_20130311_20130425.xml
+     return "svt24.svt.se" if $filename =~ /_24_/i; 			# SVT_SCHEDULE_24_20130311_20130425.xml
  }
 
   return undef;

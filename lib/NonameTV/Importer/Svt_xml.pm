@@ -26,8 +26,9 @@ use utf8;
 use DateTime;
 use XML::LibXML;
 use IO::Scalar;
+use Data::Dumper;
 
-use NonameTV qw/norm ParseXml AddCategory MonthNumber ParseDescCatSwe AddCategory/;
+use NonameTV qw/ParseXml normLatin1 normUtf8 norm AddCategory MonthNumber ParseDescCatSwe AddCategory/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/progress error/;
 use NonameTV::Config qw/ReadConfig/;
@@ -74,6 +75,20 @@ sub ImportContentFile {
   return;
 }
 
+sub FilterContent {
+  my $self = shift;
+  my( $cref, $chd ) = @_;
+
+  # mixed in windows line breaks
+  $$cref =~ s|
+||g;
+
+  $$cref =~ s| xmlns:se="http://www.svt.se/svti9n/svtxml/schedules"||;
+  $$cref =~ s| encoding="ISO-8859-1"||; # Actually utf-8
+
+  return( $cref, undef);
+}
+
 sub ImportXML
 {
   my $self = shift;
@@ -109,7 +124,8 @@ sub ImportXML
   foreach my $row ($rows->get_nodelist) {
 
       my $time = $row->findvalue( './/se:StartTime/@startcet' );
-      my $title = $row->findvalue( './/se:Title/@official' );
+      my $title = normUtf8($row->findvalue( './/se:Title/@official' ));
+      $title =~ s/¿/‒/g; # Wrong encoded char
       my $date = $row->findvalue( './/se:Date/@startcet' );
       
 	  if($date ne $currdate ) {
@@ -129,19 +145,19 @@ sub ImportXML
 	  my $season = $row->findvalue( './/se:TechnicalDetails/@seriesno' );
 	  my $episode = $row->findvalue( './/se:TechnicalDetails/@episodeno' );
 	  my $of_episode = $row->findvalue( './/se:TechnicalDetails/@episodecount' );
-	  my $desc = norm( $row->findvalue( './/se:LongDescription/@description' ) );
+	  my $desc = normUtf8( $row->findvalue( './/se:LongDescription/@description' ) );
 	  my $year = $row->findvalue( './/se:TechnicalDetails/@productionyear' );
 	  
 	  my $start = $self->create_dt( $date."T".$time );
 	  
 	  # Genre description
-	  my $genredesc = norm( $row->findvalue( './/se:ShortDescription/@description' ) );
+	  my $genredesc = normUtf8( $row->findvalue( './/se:ShortDescription/@description' ) );
 	  
 
 
       my $ce = {
         channel_id => $chd->{id},
-        title => norm($title),
+        title => normUtf8($title),
         start_time => $start->ymd("-") . " " . $start->hms(":"),
       };
       
@@ -154,6 +170,92 @@ sub ImportXML
 
   	  AddCategory( $ce, $program_type, $category );
       
+      # Season sutff
+
+      my @sentences2 = (split_text( $genredesc ), "");
+      
+      for( my $i2=0; $i2<scalar(@sentences2); $i2++ )
+  	  {
+  	  	if( my( $seasontextnum ) = ($sentences2[$i2] =~ /^Säsong (\d+)./ ) )
+	    {
+	      $season = $seasontextnum;
+	      
+	      #print("Text: $seasontext - Num: $season\n");
+	      
+	      # Only remove sentence if it could find a season
+	      if($season ne "") {
+	      	$sentences2[$i2] = "";
+	      }
+	    }
+	    elsif( my( $seasontext ) = ($sentences2[$i2] =~ /^(.*) säsongen./ ) )
+	    {
+	      $seasontext =~ s/ och sista//g;
+	      $seasontext = lc($seasontext);
+	      
+	      $season = SeasonText($seasontext);
+	      
+	      #print("Text: $seasontext - Num: $season\n");
+	      
+	      # Only remove sentence if it could find a season
+	      if($season ne "") {
+	      	$sentences2[$i2] = "";
+	      }
+	    }
+	 }
+      
+      
+      # Person
+      my @sentences = (split_text( $desc ), "");
+      
+      for( my $i=0; $i<scalar(@sentences); $i++ )
+  	  {
+	  	if( $sentences[$i] =~ /Del\s+\d+\.*/ )
+	    {
+	      # If this program has an episode-number, it is by definition
+		  # a series (?). Svt often miscategorize series as movie.
+		  $ce->{program_type} = 'series';
+		  
+	      my( $ep, $eps, $name, $episode, $dummy );
+	      # Del 2 av 3: Pilot (episodename)
+	 	  ( $ce->{subtitle} ) = ($sentences[$i] =~ /:\s*(.+)\./);
+	 	  
+	 	  # norm
+	 	  $ce->{subtitle} = normUtf8($ce->{subtitle});
+	 	  
+	 	  $sentences[$i] = "";
+	 	}
+  	  	elsif( my( $directors ) = ($sentences[$i] =~ /^Regi:\s*(.*)/) )
+    	{
+      		$ce->{directors} = parse_person_list( $directors );
+      		$sentences[$i] = "";
+    	}
+   		elsif( my( $actors ) = ($sentences[$i] =~ /^I rollerna:\s*(.*)/ ) )
+    	{
+      		$ce->{actors} = parse_person_list( $actors );
+      		$sentences[$i] = "";
+    	}
+    	elsif( my( $actors2 ) = ($sentences[$i] =~ /^Övriga\s+medverkande:\s*(.*)/ ) )
+    	{
+      		$ce->{actors} = parse_person_list( $actors2 );
+      		$sentences[$i] = "";
+    	}
+    	elsif( my( $commentators ) = ($sentences[$i] =~ /^Kommentator:\s*(.*)/ ) )
+    	{
+      		$ce->{commentators} = parse_person_list( $commentators );
+      		$sentences[$i] = "";
+    	}
+    	elsif( my( $presenters ) = ($sentences[$i] =~ /^Programledare:\s*(.*)/ ) )
+    	{
+      		$ce->{presenters} = parse_person_list( $presenters );
+      		$sentences[$i] = "";
+    	}
+    	elsif( my( $guestartist ) = ($sentences[$i] =~ /^Gästartist:\s*(.*)/ ) )
+    	{
+      		$ce->{guests} = parse_person_list( $guestartist );
+      		$sentences[$i] = "";
+    	}
+     }
+     
       # Episode info in xmltv-format
       if( ($episode ne "0") and ( $of_episode ne "0") and ( $season ne "0") )
       {
@@ -174,39 +276,12 @@ sub ImportXML
       
       # Remove if season = 0, episode 1, of_episode 1 - it's a one episode only programme
       if(($episode eq "1") and ( $of_episode eq "1") and ( $season eq "0")) {
-      	$ce->{episode} = undef;
+      	delete($ce->{episode});
       }
       
-      
-      # Person
-      my @sentences = (split_text( $desc ), "");
-      
-      for( my $i=0; $i<scalar(@sentences); $i++ )
-  	  {
-  	  	if( my( $directors ) = ($sentences[$i] =~ /^Regi:\s*(.*)/) )
-    	{
-      		$ce->{directors} = parse_person_list( $directors );
-      		$sentences[$i] = "";
-    	}
-   		elsif( my( $actors ) = ($sentences[$i] =~ /^I rollerna:\s*(.*)/ ) )
-    	{
-      		$ce->{actors} = parse_person_list( $actors );
-      		$sentences[$i] = "";
-    	}
-    	elsif( my( $actors2 ) = ($sentences[$i] =~ /^Övriga\s+medverkande:\s*(.*)/ ) )
-    	{
-      		$ce->{actors} = parse_person_list( $actors2 );
-      		$sentences[$i] = "";
-    	}
-    	elsif( my( $commentators ) = ($sentences[$i] =~ /^Kommentator:\s*(.*)/ ) )
-    	{
-      		$ce->{commentators} = parse_person_list( $commentators );
-      		$sentences[$i] = "";
-    	}
-     }
-      
       $ce->{description} = join_text( @sentences );
-      
+     
+     print Dumper($ce);
       
      progress( "SvtXML: $chd->{xmltvid}: $time - $title" );
      $ds->AddProgramme( $ce );
@@ -299,7 +374,7 @@ sub split_text
   # Lines ending with a comma is not the end of a sentence
 #  $t =~ s/,\s*\n+\s*/, /g;
 
-# newlines have already been removed by norm() 
+# newlines have already been removed by normUtf8() 
   # Replace newlines followed by a capital with space and make sure that there 
   # is a dot to mark the end of the sentence. 
 #  $t =~ s/([\!\?])\s*\n+\s*([A-Z���])/$1 $2/g;
@@ -324,6 +399,29 @@ sub split_text
   }
 
   return @sent;
+}
+
+sub SeasonText {
+  my( $seasonname ) = @_;
+
+  my( @seasons_1, @seasons_2 );
+  @seasons_1 = qw/första andra tredje fjärde femte sjätte/;
+  @seasons_2 = qw//;
+
+  my %seasons = ();
+
+  for( my $i = 0; $i < scalar(@seasons_1); $i++ ){
+    $seasons{$seasons_1[$i]} = $i+1;
+  }
+
+  for( my $i = 0; $i < scalar(@seasons_2); $i++ ){
+    $seasons{$seasons_2[$i]} = $i+1;
+  }
+
+  my $season = $seasons{$seasonname};
+  my $null = "";
+
+  return $season||$null;
 }
 
 # Join a number of sentences into a single paragraph.
