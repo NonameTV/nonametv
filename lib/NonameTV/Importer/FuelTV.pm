@@ -173,8 +173,9 @@ my $ref = ReadData ($file);
       $oWkC = $oWkS->{Cells}[$iR][$coltitle];
       next if( ! $oWkC );
       my $title = $oWkC->Value if( $oWkC->Value );
-      
-      $title =~ s/\(N\)//g if $title;
+      $title =~ s/&amp;/&/g;
+      $title =~ s/\(.*\)//g;
+      $title =~ s/\[.*\]//g;
 
       
 
@@ -184,10 +185,19 @@ my $ref = ReadData ($file);
         title => norm($title),
       };
       
+    my( $t, $st ) = ($ce->{title} =~ /(.*)\: (.*)/);
+    if( defined( $st ) )
+    {
+      # This program is part of a series and it has a colon in the title.
+      # Assume that the colon separates the title from the subtitle.
+      $ce->{title} = norm($t);
+      $ce->{subtitle} = norm($st);
+    }
+      
       # Desc (only works on XLS files)
       	my $field = "L".$i;
       	my $desc = $ref->[1]{$field};
-      	$ce->{description} = normUtf8($desc) if( $desc );
+      	$ce->{description} = normUtf8($desc) if( $desc and $desc ne "WITHOUT SYNOPSIS" );
       	$desc = '';
 
 	# Episode

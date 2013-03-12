@@ -36,6 +36,8 @@ sub new {
       w( 'UrlRoot is deprecated as we read directly from our database now.' );
     }
 
+  	#$self->{datastore}->{augment} = 1;
+
     return $self;
 }
 
@@ -66,6 +68,11 @@ sub ImportContent {
     $e->{end_time} = $e->{stop_dt}->ymd('-') . ' ' . 
         $e->{stop_dt}->hms(':');
     delete $e->{stop_dt};
+    
+    # prev shown
+    if(defined($e->{previously_shown})) {
+    	$e->{previously_shown} = undef;
+    }
 
     foreach my $flag (@flags) {
       # quality
