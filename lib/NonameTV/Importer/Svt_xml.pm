@@ -51,7 +51,7 @@ sub new {
   $self->{datastorehelper} = $dsh;
   
   # use augment
-  #$self->{datastore}->{augment} = 1;
+  $self->{datastore}->{augment} = 1;
 
   return $self;
 }
@@ -147,6 +147,8 @@ sub ImportXML
 	  my $of_episode = $row->findvalue( './/se:TechnicalDetails/@episodecount' );
 	  my $desc = normUtf8( $row->findvalue( './/se:LongDescription/@description' ) );
 	  my $year = $row->findvalue( './/se:TechnicalDetails/@productionyear' );
+	  my $hd = $row->findvalue( './/se:TechnicalDetails/@hd' );
+	  my $live = $row->findvalue( './/se:TechnicalDetails/@live' );
 	  
 	  my $start = $self->create_dt( $date."T".$time );
 	  
@@ -158,7 +160,7 @@ sub ImportXML
       my $ce = {
         channel_id => $chd->{id},
         title => normUtf8($title),
-        start_time => $start->ymd("-") . " " . $start->hms(":"),
+        start_time => $start->hms(":"),
       };
       
       if( defined( $year ) and ($year =~ /(\d\d\d\d)/) )
@@ -281,10 +283,25 @@ sub ImportXML
       
       $ce->{description} = join_text( @sentences );
      
-     print Dumper($ce);
+     #print Dumper($ce);
+     
+     # hd
+    if( $hd eq "true") {
+     	$ce->{quality} = "HDTV";
+    }
+     
+    # Find live-info
+	if( $live eq "true" )
+	{
+		$ce->{live} = "1";
+	}
+	else
+	{
+		$ce->{live} = "0";
+	}
       
      progress( "SvtXML: $chd->{xmltvid}: $time - $title" );
-     $ds->AddProgramme( $ce );
+     $dsh->AddProgramme( $ce );
 
     } # next row
 
