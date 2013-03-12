@@ -387,6 +387,28 @@ ESPNAmerica,"undefined sports",sports,sports
 ESPNAmerica,"undefined sports sports",\N,sports
 ESPNAmerica,"volleyball sports",Volleyball,sports
 ESPNAmerica,"wrestling sports",Wrestling,sports
+HRT,"američi film",\N,movie
+HRT,"američki film",\N,movie
+HRT,"američki film 86'",\N,movie
+HRT,"američkki film",\N,movie
+HRT,"britanski film",\N,movie
+HRT,"dokumentarna serija",Documentary,series
+HRT,"dokumentarni film",\N,movie
+HRT,"dramska serija",\N,series
+HRT,"film 2",\N,movie
+HRT,"humoristična serija",Comedy,series
+HRT,"japanski film",\N,movie
+HRT,mini-serija,\N,series
+HRT,"otvoreni grad - talijanski film",\N,movie
+HRT,"politički talk-show",Talk,tvshow
+HRT,"religijski program",Religious,series
+HRT,serija,\N,series
+HRT,"strani igrani film",\N,movie
+HRT,"subota 1. film",\N,movie
+HRT,"talk show",Talk,tvshow
+HRT,talk-show,Talk,tvshow
+HRT,telenovela,\N,series
+HRT,"zaslužio si v - humoristična serija",\N,series
 Kanal5,documentary,Documentary,
 Kanal5,film,,movie
 Kanal5,series,,series
