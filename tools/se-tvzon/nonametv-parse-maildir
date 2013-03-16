@@ -81,6 +81,8 @@ my @folders = qw(NonameTV-Data.Disney
 		 NonameTV-Data.YaS
 		 NonameTV-Data.ESPN
 		 NonameTV-Data.MTV
+		 NonameTV-Data.Mezzo
+		 NonameTV-Data.HighTV
                  );
 
 # Flag messages AFTER they have been processed. Then I normally
@@ -219,8 +221,8 @@ sub guess_channel
 	# Nat geo wild sends in XLS format
      return "wild.natgeo.se" if $filename =~ /^ngwscan\s*\b/i;
 	# History Channel
-     	return "historytv.se" if $filename =~ /his.sd.swe/i;
-	return "hd.historytv.se" if $filename =~ /his.hd.swe/i;
+     return "historytv.se" if $filename =~ /his.sd.swe/i;
+     return "hd.historytv.se" if $filename =~ /his.hd.swe/i;
 	# ESPN Classic
      return "classic.espn.com" if $filename =~ /^espn.eur.eng\s*\b/i;
  }
@@ -233,7 +235,7 @@ sub guess_channel
 	# Excel (XLS)
 	if( $filename =~ /\.xls$/i ) {
 		return "tcmeurope.com" if $filename =~ /tcm\s+nordic/i;
-		return "cnn.com" if $filename =~ /^cnn\s*\(in\s+cet\)\b/i;
+		return "cnn.com" if $filename =~ /cnn\s*\(in\s+cet\)/i;
 	}
   }
  
@@ -324,6 +326,14 @@ sub guess_channel
  
  if( $dir =~ /ESPN/ and $filename =~ /\.xls$/i ) {
      return "america.espn.com" if $filename =~ /cet/i;
+ }
+ 
+ if( $dir =~ /Mezzo/ and $filename =~ /\.xls$/i ) {
+     return "mezzo.tv" if $filename !~ /hd/i; # dont import mezzo live hd channel
+ }
+ 
+ if( $dir =~ /HighTV/ and $filename =~ /\.xls$/i ) {
+     return "hightv.tv" if $filename =~ /epg/i;
  }
  
  if( $dir =~ /Svt/ and $filename =~ /\.xml$/i ) {

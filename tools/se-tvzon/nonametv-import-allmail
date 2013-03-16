@@ -13,7 +13,7 @@ tools/nonametv-import History $1 $2 $3
 tools/nonametv-import TravelChannel $1 $2 $3
 tools/nonametv-import God $1 $2 $3
 tools/nonametv-import TVChile $1 $2 $3
-tools/nonametv-import Svt $1 $2 $3
+#tools/nonametv-import Svt $1 $2 $3
 
 # Porn
 tools/nonametv-import HustlerTV $1 $2 $3
@@ -23,6 +23,8 @@ tools/nonametv-import LifestyleTV $1 $2 $3
 tools/nonametv-import FuelTV $1 $2 $3
 tools/nonametv-import France24 $1 $2 $3
 tools/nonametv-import LuxeTV $1 $2 $3
+tools/nonametv-import Mezzo $1 $2 $3
+tools/nonametv-import HighTV $1 $2 $3
 
 # Boomerang and Cartoon network
 tools/nonametv-import Turner_doc $1 $2 $3
