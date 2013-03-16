@@ -73,6 +73,8 @@ if( $file =~ /\.pdf$/i ) {return $self->ImportPDF( $file, $channel_id, $xmltvid 
 
   my $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
 
+  #print Dumper($oBook->{SheetCount});
+
   # main loop
   for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
 
@@ -164,6 +166,9 @@ if( $file =~ /\.pdf$/i ) {return $self->ImportPDF( $file, $channel_id, $xmltvid 
       # time - column $coltime
       $oWkC = $oWkS->{Cells}[$iR][$coltime];
       next if( ! $oWkC );
+      
+      if($oWkC->Value eq "") { next; }
+      
       my $time = ParseTime( $oWkC->Value ) if( $oWkC->Value );
       next if( ! $time );
 
@@ -172,6 +177,11 @@ if( $file =~ /\.pdf$/i ) {return $self->ImportPDF( $file, $channel_id, $xmltvid 
       next if( ! $oWkC );
       my $title = $oWkC->Value if( $oWkC->Value );
       next if( ! $title );
+      
+      $title =~ s/PREMIERE -//g if $title;
+      $title =~ s/HUSTLER TV-//g if $title;
+      $title =~ s/HUSTLER TV -//g if $title;
+      $title =~ s/#//g if $title;
 
       # duration - column $colduration
       my $duration;

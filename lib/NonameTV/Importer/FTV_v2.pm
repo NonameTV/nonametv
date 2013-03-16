@@ -104,7 +104,7 @@ sub ImportFlatXLS
       next;
     }
   
-    progress( "OUTTV: Processing worksheet: $oWkS->{Name}" );
+    progress( "FTV: Processing worksheet: $oWkS->{Name}" );
 
     # start from row 2
     # the first row looks like one cell saying like "EPG DECEMBER 2007  (Yamal - HotBird)"
@@ -148,8 +148,14 @@ sub ImportFlatXLS
 	# time (column 1)
 	 #  print "hejhejhej";
       $oWkC = $oWkS->{Cells}[$iR][1];
+      
       next if( ! $oWkC );
-      my $time = ParseTime( $oWkC->Value );
+      #my $time = ParseTime( $oWkC->Value );
+      my $time = 0;  # fix for  12:00AM
+      $time=$oWkC->{Val} if( $oWkC->Value );
+
+	  #Convert Excel Time -> localtime
+      $time = ExcelFmt('hh:mm', $time);
       next if( ! $time );
 	  
 	  #use Data::Dumper; print Dumper($oWkS->{Cells}[28]);
@@ -247,10 +253,12 @@ sub ParseTime {
 
 #print "ParseTime: >$text<\n";
 
-  my( $hour , $min );
+  my( $hour , $min, $secs );
 
   if( $text =~ /^\d+:\d+$/ ){
     ( $hour , $min ) = ( $text =~ /^(\d+):(\d+)$/ );
+  } elsif( $text =~ /^\d+:\d+:\d+$/ ){
+    ( $hour , $min, $secs ) = ( $text =~ /^(\d+):(\d+):(\d+)$/ );
   } elsif( $text =~ /^\d+:\d+/ ){
     ( $hour , $min ) = ( $text =~ /^(\d+):(\d+)/ );
   }

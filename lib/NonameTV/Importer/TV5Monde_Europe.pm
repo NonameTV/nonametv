@@ -209,6 +209,9 @@ sub ParseDate {
   } elsif( $text =~ /^(\d+)-Mars-(\d+)$/ ){
         ( $day, $year ) = ( $text =~ /^(\d+)-Mars-(\d+)$/ );
     $month = "03";
+  } elsif( $text =~ /^(\d+)-Avril-(\d+)$/ ){
+    ( $day, $year ) = ( $text =~ /^(\d+)-Avril-(\d+)$/ );
+    $month = "04";
   } elsif( $text =~ /^(\d+)-Mai-(\d+)$/ ){
     ( $day, $year ) = ( $text =~ /^(\d+)-Mai-(\d+)$/ );
     $month = "05";

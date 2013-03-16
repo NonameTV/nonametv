@@ -553,7 +553,14 @@ sub extract_extra_info
   $ce->{title} =~ s/:\s*Avsnitt\s*(\d+)$//; 
   $ce->{episode} = sprintf(" . %d . ", $episode-1)
     if defined( $episode );
-  ( $ce->{subtitle} ) = ($ce->{title} =~ /:\s*(.+)$/);  #moje obriso subtitle
+  my( $t, $st ) = ($ce->{title} =~ /(.*)\: (.*)/);
+  if( defined( $st ) )
+  {
+      # This program is part of a series and it has a colon in the title.
+      # Assume that the colon separates the title from the subtitle.
+      $ce->{title} = $t;
+      $ce->{subtitle} = $st;
+  }
   $ce->{title} =~ s/:\s*(.+)$//;
 
   $ce->{title} =~ s/^PREMI.R\s+//;

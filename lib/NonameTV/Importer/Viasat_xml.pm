@@ -171,8 +171,9 @@ sub ImportContent {
       my $episode = $emission->findvalue( 'episode' );
       my $season = $emission->findvalue( 'season' );
       my $eps = "";
-      ( $episode, $eps ) = ($desc =~ /del\s+(\d+):(\d+)/ );
-      ( $episode, $eps ) = ($desc =~ /Del\s+(\d+):(\d+)/ );
+      my $episode2 = "";
+      ( $episode2, $eps ) = ($desc =~ /del\s+(\d+):(\d+)/ );
+      ( $episode2, $eps ) = ($desc =~ /Del\s+(\d+):(\d+)/ );
       $desc =~ s/Del (\d+):(\d+)//g;
       
       # Extra stuff
@@ -251,14 +252,26 @@ sub ImportContent {
 	  $ce->{directors} = norm($emission->findvalue( 'director' )) if $emission->findvalue( 'director' );
       
       # Episodes
-      if($episode) {
+      if($episode2 and $episode2 ne "") {
       	if($season) {
-      		if($eps) {
+      		if($eps and $eps ne "") {
+      			$ce->{episode} = sprintf( "%d . %d/%d . ", $season-1, $episode2-1, $eps );
+      		} else {
+      			$ce->{episode} = sprintf( "%d . %d .", $season-1, $episode2-1 );
+      		}
+      	}elsif($eps and $eps ne "") {
+      		$ce->{episode} = sprintf( " . %d/%d . ", $episode2-1, $eps );
+      	} else {
+      		$ce->{episode} = sprintf( " . %d . ", $episode2-1 );
+      	}
+      } elsif($episode) {
+      	if($season) {
+      		if($eps and $eps ne "") {
       			$ce->{episode} = sprintf( "%d . %d/%d . ", $season-1, $episode-1, $eps );
       		} else {
       			$ce->{episode} = sprintf( "%d . %d .", $season-1, $episode-1 );
       		}
-      	}elsif($eps) {
+      	}elsif($eps and $eps ne "") {
       		$ce->{episode} = sprintf( " . %d/%d . ", $episode-1, $eps );
       	} else {
       		$ce->{episode} = sprintf( " . %d . ", $episode-1 );
