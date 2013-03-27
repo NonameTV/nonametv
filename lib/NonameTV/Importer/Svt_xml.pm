@@ -27,8 +27,11 @@ use DateTime;
 use XML::LibXML;
 use IO::Scalar;
 use Data::Dumper;
+use Text::Unidecode;
+use File::Slurp;
+use Encode;
 
-use NonameTV qw/ParseXml normLatin1 normUtf8 norm AddCategory MonthNumber ParseDescCatSwe AddCategory/;
+use NonameTV qw/ParseXml norm normLatin1 normUtf8 AddCategory MonthNumber ParseDescCatSwe AddCategory/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/progress error/;
 use NonameTV::Config qw/ReadConfig/;
@@ -75,20 +78,6 @@ sub ImportContentFile {
   return;
 }
 
-sub FilterContent {
-  my $self = shift;
-  my( $cref, $chd ) = @_;
-
-  # mixed in windows line breaks
-  $$cref =~ s|
-||g;
-
-  $$cref =~ s| xmlns:se="http://www.svt.se/svti9n/svtxml/schedules"||;
-  $$cref =~ s| encoding="ISO-8859-1"||; # Actually utf-8
-
-  return( $cref, undef);
-}
-
 sub ImportXML
 {
   my $self = shift;
@@ -101,9 +90,14 @@ sub ImportXML
 
   progress( "SvtXML: $chd->{xmltvid}: Processing XML $file" );
 
+
+  #my $cref = do{local(@ARGV,$/)=$file;<>};
+  my $cref=`cat $file`;
+  #$cref =~ s|&#(\d+);|chr($1)|eg;
+
   my $doc;
   my $xml = XML::LibXML->new;
-  eval { $doc = $xml->parse_file($file); };
+  eval { $doc = $xml->parse_string($cref); };
 
   if( not defined( $doc ) ) {
     error( "SvtXML: $file: Failed to parse xml" );
@@ -122,11 +116,13 @@ sub ImportXML
     }
 
   foreach my $row ($rows->get_nodelist) {
-
-      my $time = $row->findvalue( './/se:StartTime/@startcet' );
-      my $title = normUtf8($row->findvalue( './/se:Title/@official' ));
+      my $title = norm2($row->findvalue( './/se:Title/@official' ) );
       $title =~ s/¿/‒/g; # Wrong encoded char
+      
+      my $time = $row->findvalue( './/se:StartTime/@startcet' );
+      my $endtime = $row->findvalue( './/se:StartTime/@endcet' );
       my $date = $row->findvalue( './/se:Date/@startcet' );
+      my $enddate = $row->findvalue( './/se:Date/@endcet' );
       
 	  if($date ne $currdate ) {
         if( $currdate ne "x" ) {
@@ -145,22 +141,24 @@ sub ImportXML
 	  my $season = $row->findvalue( './/se:TechnicalDetails/@seriesno' );
 	  my $episode = $row->findvalue( './/se:TechnicalDetails/@episodeno' );
 	  my $of_episode = $row->findvalue( './/se:TechnicalDetails/@episodecount' );
-	  my $desc = normUtf8( $row->findvalue( './/se:LongDescription/@description' ) );
+	  my $desc = norm2( $row->findvalue( './/se:LongDescription/@description' ) );
 	  my $year = $row->findvalue( './/se:TechnicalDetails/@productionyear' );
 	  my $hd = $row->findvalue( './/se:TechnicalDetails/@hd' );
 	  my $live = $row->findvalue( './/se:TechnicalDetails/@live' );
 	  
 	  my $start = $self->create_dt( $date."T".$time );
+	  my $end = $self->create_dt( $enddate."T".$endtime );
 	  
 	  # Genre description
-	  my $genredesc = normUtf8( $row->findvalue( './/se:ShortDescription/@description' ) );
+	  my $genredesc = norm2( $row->findvalue( './/se:ShortDescription/@description' ) );
 	  
 
 
       my $ce = {
         channel_id => $chd->{id},
-        title => normUtf8($title),
-        start_time => $start->hms(":"),
+        title => norm2($title),
+        start_time => $start,
+        end_time => $end,
       };
       
       if( defined( $year ) and ($year =~ /(\d\d\d\d)/) )
@@ -221,8 +219,8 @@ sub ImportXML
 	      # Del 2 av 3: Pilot (episodename)
 	 	  ( $ce->{subtitle} ) = ($sentences[$i] =~ /:\s*(.+)\./);
 	 	  
-	 	  # norm
-	 	  $ce->{subtitle} = normUtf8($ce->{subtitle});
+	 	  # norm2
+	 	  $ce->{subtitle} = norm2($ce->{subtitle});
 	 	  
 	 	  $sentences[$i] = "";
 	 	}
@@ -265,7 +263,11 @@ sub ImportXML
       }
       elsif( ($episode ne "0") and ( $of_episode ne "0") )
       {
-        $ce->{episode} = sprintf( ". %d/%d .", $episode-1, $of_episode );
+      	if( defined( $year ) and ($year =~ /(\d\d\d\d)/) ) {
+      		$ce->{episode} = sprintf( "%d . %d/%d .", $1-1, $episode-1, $of_episode );
+      	} else {
+        	$ce->{episode} = sprintf( ". %d/%d .", $episode-1, $of_episode );
+        }
       }
       elsif( ($episode ne "0") and ( $season ne "0") )
       {
@@ -273,7 +275,12 @@ sub ImportXML
       }
       elsif( $episode ne "0" )
       {
-        $ce->{episode} = sprintf( ". %d .", $episode-1 );
+      	if( defined( $year ) and ($year =~ /(\d\d\d\d)/) ) {
+      		$ce->{episode} = sprintf( "%d . %d .", $1-1, $episode-1 );
+      	} else {
+      		$ce->{episode} = sprintf( ". %d .", $episode-1 );
+      	}
+        	
       }
       
       # Remove if season = 0, episode 1, of_episode 1 - it's a one episode only programme
@@ -301,7 +308,8 @@ sub ImportXML
 	}
       
      progress( "SvtXML: $chd->{xmltvid}: $time - $title" );
-     $dsh->AddProgramme( $ce );
+     #progress( "SvtXML: $chd->{xmltvid}: $time - $ce->{description}" );
+     $dsh->AddCE( $ce );
 
     } # next row
 
@@ -391,7 +399,7 @@ sub split_text
   # Lines ending with a comma is not the end of a sentence
 #  $t =~ s/,\s*\n+\s*/, /g;
 
-# newlines have already been removed by normUtf8() 
+# newlines have already been removed by norm() 
   # Replace newlines followed by a capital with space and make sure that there 
   # is a dot to mark the end of the sentence. 
 #  $t =~ s/([\!\?])\s*\n+\s*([A-Z���])/$1 $2/g;
@@ -439,6 +447,19 @@ sub SeasonText {
   my $null = "";
 
   return $season||$null;
+}
+
+sub norm2 {
+  my( $str ) = @_;
+
+  return "" if not defined( $str );
+  
+  #$str =~ s/ï¿½/ä/;
+  #$str =~ s/ï¿½/å/;
+  
+  #return $str;
+  
+  return normUtf8($str);
 }
 
 # Join a number of sentences into a single paragraph.
