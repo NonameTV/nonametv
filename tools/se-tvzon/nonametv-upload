@@ -20,7 +20,7 @@ rsync -c --delete -r $NROOT/json_staging/ $NROOT/json/
 $V && echo "tvzon"
 #sitecopy --update $SC_OPT tvzon
 
-rsync -c --delete -r $NROOT/json_extra/ /var/www/xmltv/json_extra/
-rsync -c --delete -r $NROOT/xmltv/ /var/www/xmltv/xmltv/
-rsync -c --delete -r $NROOT/xmltv_iso/ /var/www/xmltv/xmltv_iso/
-rsync -c --delete -r $NROOT/json/ /var/www/xmltv/json/
+rsync -c --delete -r $NROOT/json_extra/ /server/www/xmltv/json_extra/
+rsync -c --delete -r $NROOT/xmltv/ /server/www/xmltv/xmltv/
+rsync -c --delete -r $NROOT/xmltv_iso/ /server/www/xmltv/xmltv_iso/
+rsync -c --delete -r $NROOT/json/ /server/www/xmltv/json/

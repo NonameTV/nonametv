@@ -115,8 +115,8 @@ $d tools/se-tvzon/nonametv-upload $Q
 #$h tools/se-tvzon/nonametv-upload $Q
 
 # Run after, everything
-$d rsync --delete -r /var/local/nonametv/html/00status.html /var/www/xmltv/
-$d rsync --delete -r /var/local/nonametv/xmltv_compare/ /var/www/xmltv/compare/
+$d rsync --delete -r /var/local/nonametv/html/00status.html /server/www/xmltv/
+$d rsync --delete -r /var/local/nonametv/xmltv_compare/ /server/www/xmltv/compare/
 
 # Some users seems to download this file from the base url instead, this will fix it.
-$d rsync --delete -r /var/local/nonametv/xmltv/channels.xml.gz /var/www/xmltv/
+$d rsync --delete -r /var/local/nonametv/xmltv/channels.xml.gz /server/www/xmltv/
