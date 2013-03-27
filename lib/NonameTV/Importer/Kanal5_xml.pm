@@ -58,6 +58,17 @@ sub Object2Url {
   return( $url, undef );
 }
 
+ sub FilterContent {
+   my $self = shift;
+   my( $cref, $chd ) = @_;
+
+   if( $$cref =~ /Sidan kunde tyv\S*rr inte hittas/ ) {
+     return( undef, "Failed to download" );
+   }
+
+   return( \$$cref, undef );
+ }
+
 sub ImportContent
 {
   my $self = shift;
@@ -127,7 +138,7 @@ sub ImportContent
         }
 
         my $batchid = $chd->{xmltvid} . "_" . $date;
-        #$ds->StartBatch( $batchid );
+        #$dsh->StartBatch( $batchid );
         $dsh->StartDate( $date );
         $currdate = $date;
 
@@ -143,7 +154,7 @@ sub ImportContent
       my $ce = {
         channel_id => $chd->{id},
         title => norm($title),
-        start_time => $start->ymd("-") . " " . $start->hms(":"),
+        start_time => $start->hms(":"),
         #end_time => $end->hms(":"),
         description => norm($desc),
       };
@@ -188,8 +199,10 @@ sub ImportContent
       
       # Add programme
       
-      $ds->AddProgramme( $ce );
+      $dsh->AddProgramme( $ce );
     } # next row
+
+	#$ds->EndBatch( 1 );
 
   return 1;
 }
@@ -222,10 +235,10 @@ sub create_dt
                           day    => $day,
                           hour   => $hour,
                           minute => $minute,
-                          time_zone => 'Europe/Stockholm',
+
                           );
-  
-  $dt->set_time_zone( "UTC" );
+ ##                           time_zone => 'Europe/Stockholm',
+ ## $dt->set_time_zone( "UTC" );
   
   return $dt;
 }
