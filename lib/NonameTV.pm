@@ -31,7 +31,8 @@ BEGIN {
                       Word2Xml Wordfile2Xml 
 		      File2Xml Content2Xml
 		      FindParagraphs
-                      norm normLatin1 normUtf8 AddCategory
+                      norm normLatin1 normUtf8
+                      AddCategory
                       ParseDescCatSwe FixProgrammeData
 		      ParseXml ParseXmltv ParseJson
                       MonthNumber DayNumber
