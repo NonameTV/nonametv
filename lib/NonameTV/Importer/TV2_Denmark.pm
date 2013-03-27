@@ -37,7 +37,7 @@ sub new {
     $self->{MinWeeks} = 0;
     $self->{MaxWeeks} = 3;
 
-    my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
+    my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore}, "Europe/Copenhagen" );
     #$dsh->{DETECT_SEGMENTS} = 1;
     $self->{datastorehelper} = $dsh;
 
@@ -106,10 +106,22 @@ sub ImportContent
   foreach my $pgm ($rows->get_nodelist)
   {
   	my $date  = $pgm->findvalue( 'date' );
-  	
+
   	## Batch
+	if($date ne $currdate ) {
+		if( $currdate ne "x" ) {
+			#$ds->EndBatch( 1 );
+		}
+
+		my $batchid = $chd->{xmltvid} . "_" . $date;
+		#$dsh->StartBatch( $batchid );
+		$dsh->StartDate( $date );
+		$currdate = $date;
+
+		progress("TV2: Date is: $date");
+	}
   	
-    my $time  = ParseDateTime($pgm->findvalue( 'time' ));
+    my $start  = ParseDateTime($pgm->findvalue( 'time' ));
     my $title = $pgm->findvalue( 'title' );
     $title =~ s/\((\d+):(\d+)\)//g if $title;
     $title =~ s/\((\d+)\)//g if $title;
@@ -129,12 +141,12 @@ sub ImportContent
     
     my $ce = {
       title       => norm($title),
-      start_time 	=> $time,
+      start_time 	=> $start->hms(":"),
       channel_id  => $chd->{id},
       batch_id		=> $batch_id,
     };
     
-    progress( "TV2: $chd->{xmltvid}: $time - $title" );
+    progress( "TV2: $chd->{xmltvid}: $start - $title" );
     
     # Desc
     if(defined($pgm->findvalue( 'description' ))) {
@@ -154,8 +166,8 @@ sub ImportContent
 			AddCategory( $ce, $program_type, $category );
 	}
 	
-	if( $year ){
-		$ce->{production_date} = $year."-01-01";
+	if( defined( $year ) and ($year =~ /(\d\d\d\d)/) ) {
+		$ce->{production_date} = "$1-01-01";
 	}
 	
 	my( $dumpy, $directors ) = ($cast =~ /(\s)nstruktion:\s*(.*).$/ );
@@ -163,7 +175,7 @@ sub ImportContent
 		$ce->{directors} = norm(parse_person_list( $directors ));
 	}
     
-    $dsh->AddCE( $ce );
+    $dsh->AddProgramme( $ce );
   }
   
   #$ds->EndBatch( 1 );
@@ -210,10 +222,10 @@ sub ParseDateTime {
     hour => $hour,
     minute => $minute,
     second => $second,
-    time_zone => "Europe/Copenhagen"
+#    time_zone => "Europe/Copenhagen"
       );
 
-  $dt->set_time_zone( "UTC" );
+#  $dt->set_time_zone( "UTC" );
 
   return $dt;
 }
