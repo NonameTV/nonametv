@@ -224,7 +224,7 @@ sub guess_channel
      return "historytv.se" if $filename =~ /his.sd.swe/i;
      return "hd.historytv.se" if $filename =~ /his.hd.swe/i;
 	# ESPN Classic
-     return "classic.espn.com" if $filename =~ /^espn.eur.eng\s*\b/i;
+     return "classic.espn.com" if $filename =~ /^espn\s+classic\s+europe/i;
  }
 
    if( $dir =~ /Turner/ ) {

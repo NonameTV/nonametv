@@ -17,7 +17,7 @@ use XML::LibXML;
 
 use NonameTV qw/ParseXml AddCategory norm normUtf8/;
 use NonameTV::DataStore::Helper;
-use NonameTV::Log qw/w f/;
+use NonameTV::Log qw/w p f/;
 use Data::Dumper;
 
 use NonameTV::Importer::BaseOne;
@@ -29,6 +29,9 @@ sub new {
   my $class = ref($proto) || $proto;
   my $self  = $class->SUPER::new( @_ );
   bless ($self, $class);
+
+  my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
+  $self->{datastorehelper} = $dsh;
 
   return $self;
 }
@@ -60,8 +63,10 @@ sub ImportContent {
 
   my $xmltvid=$chd->{xmltvid};
   my $channel_id = $chd->{id};
+  my $currdate = "x";
 
   my $ds = $self->{datastore};
+  my $dsh = $self->{datastorehelper};
 
   my $doc = ParseXml( $cref );
 
@@ -79,7 +84,22 @@ sub ImportContent {
   
   foreach my $b ($ns->get_nodelist) {
   	# Start and so on
-    my $start = $b->findvalue( "StartTid" );
+    my $start = ParseDateTime( $b->findvalue( "StartTid" ) );
+    my $date = $start->ymd("-");
+
+	if($date ne $currdate ) {
+		if( $currdate ne "x" ) {
+			#$ds->EndBatch( 1 );
+		}
+
+		my $batchid = $chd->{xmltvid} . "_" . $date;
+		#$dsh->StartBatch( $batchid );
+		$dsh->StartDate( $date );
+		$currdate = $date;
+
+		p("DK4: Date is: $date");
+	}
+
     my $stop = $b->findvalue( "SlutTid" );
     my $title = $b->findvalue( "OriginalTitel" );
     my $subtitle = $b->findvalue( "EpisodeTitel" );
@@ -99,7 +119,7 @@ sub ImportContent {
 	# Put everything in a array	
     my $ce = {
       channel_id => $chd->{id},
-      start_time => ParseDateTime( $start ),
+      start_time => $start->hms(":"),
       title => norm($title),
       description => norm($desc),
       subtitle	  => norm($subtitle),
@@ -120,7 +140,9 @@ sub ImportContent {
     my($program_type, $category ) = $ds->LookupCat( 'DK4', $genre );
 	AddCategory( $ce, $program_type, $category );
 
-    $ds->AddProgramme( $ce );
+	p( "DK4: $start - $title" );
+
+    $dsh->AddProgramme( $ce );
   }
 
   return 1;
@@ -141,12 +163,12 @@ sub ParseDateTime {
     hour => $hour,
     minute => $minute,
     second => $second,
-    time_zone => "Europe/Copenhagen"
+#    time_zone => "Europe/Copenhagen"
       );
 
-  $dt->set_time_zone( "UTC" );
+#  $dt->set_time_zone( "UTC" );
 
-  return $dt->ymd("-") . " " . $dt->hms(":");
+  return $dt;
 }
 
 sub Object2Url {
