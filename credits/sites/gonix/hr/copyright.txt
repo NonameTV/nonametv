@@ -1,5 +1,0 @@
-#
-# Gonix copyright event
-#
-TITLE: Kreirano na www.gonix.net
-DESCRIPTION: Ovaj raspored kreiran je na www.gonix.net. Neovlasteno koristenje nije dozvoljeno. Vise informacija na www.gonix.net.

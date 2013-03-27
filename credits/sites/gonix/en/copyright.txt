@@ -1,5 +1,0 @@
-#
-# Gonix copyright event
-#
-TITLE: Created at www.gonix.net
-DESCRIPTION: This schedule is created at www.gonix.net. Any unauthorized use is not permitted. More information at www.gonix.net.
