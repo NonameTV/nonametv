@@ -162,6 +162,7 @@ sub ImportXML
     # title
     #
     my $title = $sc->findvalue( './title' );
+    $title =~ s/ amp / &amp; /g if $title; # What the hell
     
     #
     # description
@@ -212,7 +213,7 @@ sub create_dt
                           day    => $day,
                           hour   => $hour,
                           minute => $minute,
-                          time_zone => 'Europe/Zagreb',
+                          time_zone => 'America/Belem', # Canada
                           );
   $dt->set_time_zone( "UTC" );
   

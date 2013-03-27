@@ -51,23 +51,23 @@ sub ContentExtension {
 }
 
 sub FilteredExtension {
-  return 'xml';
-}
+   return 'xml';
+ }
 
 
-sub FilterContent {
-  my $self = shift;
-  my( $cref, $chd ) = @_;
+ sub FilterContent {
+   my $self = shift;
+   my( $cref, $chd ) = @_;
 
-  if( $$cref =~ /Sidan kunde tyv\S*rr inte hittas/ ) {
-    return( undef, "Failed to download" );
-  }
+   if( $$cref =~ /Sidan kunde tyv\S*rr inte hittas/ ) {
+     return( undef, "Failed to download" );
+   }
 
-  my $doc = Word2Xml( $$cref );
-  my $str = $doc->toString(1);
+   my $doc = Word2Xml( $$cref );
+   my $str = $doc->toString(1);
 
-  return( \$str, undef );
-}
+   return( \$str, undef );
+ }
 
 sub ImportContent
 {

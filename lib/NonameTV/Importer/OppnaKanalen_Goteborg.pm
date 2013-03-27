@@ -131,7 +131,7 @@ sub ImportFlatXLS
 		
 				$ce->{end_time} = $endtime if $endtime;
 		
-        $dsh->AddProgramme( $ce );
+        #$dsh->AddProgramme( $ce );
 		
 				#push( @ces , $ce );
       }
@@ -162,7 +162,7 @@ sub isDate {
 sub ParseDate {
   my ( $text ) = @_;
 
-	#print Dumper($text);
+	print Dumper($text);
 
   my( $year, $day, $month );
 
