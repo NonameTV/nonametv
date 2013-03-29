@@ -306,8 +306,8 @@ sub extract_extra_info
 #  if( defined($ce->{program_type}) and ($ce->{program_type} eq 'series') )
 #  {
     my( $t, $st ) = ($ce->{title} =~ /(.*)\: (.*)/);
-    if( defined( $st ) )
-    {
+         if( defined( $st ) )
+         {
       # This program is part of a series and it has a colon in the title.
       # Assume that the colon separates the title from the subtitle.
       $ce->{title} = $t;
