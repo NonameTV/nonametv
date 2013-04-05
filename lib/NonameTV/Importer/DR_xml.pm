@@ -207,6 +207,12 @@ sub ImportContent {
     {
 		if( my( $role, $name ) = ($sentences[$i] =~ /^(.*)\:\s+(.*)./) )
         {
+        	# If name is longer than 15 skip. Probably a fucked up text.
+        	if(length($name) > 15) {
+        		print("Longer than 15.\n");
+        		next;
+        	}
+
         	# Include the role
 			my $name_new = norm( $name )." (".norm($role).")";
 
