@@ -209,7 +209,7 @@ sub ImportContent {
         {
         	# If name is longer than 15 skip. Probably a fucked up text.
         	if(length($name) > 15) {
-        		print("Longer than 15.\n");
+        		#print("Longer than 15.\n");
         		next;
         	}
 
