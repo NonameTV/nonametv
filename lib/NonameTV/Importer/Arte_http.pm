@@ -45,7 +45,7 @@ sub InitiateDownload {
 
   my $mech = $self->{cc}->UserAgent();
 
-  $mech->get('http://presse.arte.tv/ArtePro2/index.jsp');
+  $mech->get('http://presse.arte.tv/ArtePro2/home.xhtml');
 
   if (!$mech->success()) {
     return $mech->status_line;
@@ -54,7 +54,7 @@ sub InitiateDownload {
   $mech->form_with_fields( ( 'form1:password' ) );
   $mech->field( 'form1:user', $self->{Username}, 1 );
   $mech->field( 'form1:password', $self->{Password}, 1 );
-  $mech->click_button( name => 'form1:j_idt108' );
+  $mech->click_button( name => 'form1:j_idt106' );
 
   if ($mech->success()) {
     return undef;
@@ -228,8 +228,10 @@ sub ImportContent( $$$ ) {
     my $sendung_id = $xpc->findvalue( './@sendung_id' );
     if( $sendung_id && !$ce->{program_type}){
       my( $folge )=( $sendung_id =~ m|^\d{6}-(\d{3})-[A-Z]$| );
-      if( $folge > 0 ) {
-        $ce->{program_type} = 'series';
+      if( defined( $folge ) ) {
+        if( $folge > 0 ) {
+          $ce->{program_type} = 'series';
+        }
       }
     }
 

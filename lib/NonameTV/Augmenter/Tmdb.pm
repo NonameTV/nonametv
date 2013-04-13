@@ -8,7 +8,7 @@ use Encode;
 use utf8;
 use WWW::TheMovieDB::Search;
 
-use NonameTV qw/norm ParseXml/;
+use NonameTV qw/AddCategory norm ParseXml/;
 use NonameTV::Augmenter::Base;
 use NonameTV::Config qw/ReadConfig/;
 use NonameTV::Log qw/w d/;
@@ -137,6 +137,13 @@ sub FillHash( $$$ ) {
     if( $desc ne 'No overview found.' ) {
       $resultref->{description} = $desc;
     }
+  }
+
+  my @genres = $doc->findnodes( '/OpenSearchDescription/movies/movie/categories/category[@type="genre"]' );
+  foreach my $node ( @genres ) {
+    my $genre_id = $node->findvalue( './@id' );
+    my ( $type, $categ ) = $self->{datastore}->LookupCat( "Tmdb_genre", $genre_id );
+    AddCategory( $resultref, $type, $categ );
   }
 
   # TODO themoviedb does not store a year of production only the first screening, that should go to previosly-shown instead
