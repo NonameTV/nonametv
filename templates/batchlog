@@ -11,7 +11,7 @@
     <div>
     <h2>[% error.name %]</h2>
     Last ok: [% INCLUDE process_ts ts=error.last_updated %]<br />
-    <pre>[% error.abort_message %]</pre>
+    <pre>[% error.abort_message FILTER html_entity %]</pre>
     </div>
   [% END %]
 
@@ -20,7 +20,7 @@
     <div>
     <h2>[% error.name %]</h2>
     Last ok: [% INCLUDE process_ts ts=error.last_updated %]<br />
-    <pre>[% error.message %]</pre>
+    <pre>[% error.message FILTER html_entity %]</pre>
     </div>
   [% END %]
 
@@ -28,7 +28,7 @@
   [% FOREACH error = files %]
     <div>
     <h2>[% error.filename %]</h2>
-    <pre>[% error.message %]</pre>
+    <pre>[% error.message FILTER html_entity %]</pre>
     </div>
   [% END %]
 
