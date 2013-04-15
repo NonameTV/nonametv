@@ -525,8 +525,8 @@
 257,Tvdb,"Andar, finns dom?",program_type,series,83929,episodeseason
 262,Tvdb,"Law & Order",subtitle,"Criminal intent",71489,episodeseason
 255,Tvdb,"Battlestar Galactica",program_type,series,73545,episodeseason
-320,Tvdb,^.*$,program_type,series,\N,episodeseason
-321,Tvdb,^.*$,program_type,series,\N,episodeseason
+320,Tvdb,^.*$,program_type,series,\N,episodetitle
+321,Tvdb,^.*$,program_type,series,\N,episodetitle
 268,Tvdb,^.*$,program_type,series,\N,episodetitle
 295,TvdbNO,^.*$,program_type,series,\N,episodeseason
 295,Tvdb,Dallas,program_type,series,\N,episodeseason
@@ -802,3 +802,10 @@
 494,PreviouslyShown,^.*$,\N,\N,\N,\N
 493,Tvdb,^.*$,program_type,series,\N,episodeseason
 494,Tvdb,^.*$,program_type,series,\N,episodeseason
+288,Tvdb,^.*$,program_type,series,\N,episodeseason
+289,Tvdb,^.*$,program_type,series,\N,episodeseason
+510,Tvdb,^.*$,program_type,series,\N,episodeseason
+472,Tvdb,^.*$,program_type,series,\N,episodeseason
+473,Tvdb,^.*$,program_type,series,\N,episodeseason
+493,Tvdb,"The Newsroom",program_type,series,256227,episodeseason
+493,Tvdb,"Engelska Antikrundan",program_type,series,83774,episodeseason
