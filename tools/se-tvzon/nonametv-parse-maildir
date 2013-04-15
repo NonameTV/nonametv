@@ -83,6 +83,7 @@ my @folders = qw(NonameTV-Data.Disney
 		 NonameTV-Data.MTV
 		 NonameTV-Data.Mezzo
 		 NonameTV-Data.HighTV
+		 NonameTV-Data.BBC
                  );
 
 # Flag messages AFTER they have been processed. Then I normally
@@ -343,6 +344,13 @@ sub guess_channel
      return "kunskapskanalen.svt.se" if $filename =~ /svtk/i;   # SVT_SCHEDULE_SVTK_20130311_20130425.xml
      return "svtworld.svt.se" if $filename =~ /svte/i; 			# SVT_SCHEDULE_SVTE_20130311_20130425.xml
      return "svt24.svt.se" if $filename =~ /_24_/i; 			# SVT_SCHEDULE_24_20130311_20130425.xml
+ }
+
+ if( $dir =~ /BBC/ and $filename =~ /\.xls$/i ) {
+     return "bbcentertainment.com" if $filename =~ /entertainment/i;
+     return "bbchd.com" if $filename =~ /hd/i;
+     return "bbcknowledge.com" if $filename =~ /knowledge/i;
+     return "bbclifestyle.com" if $filename =~ /lifestyle/i;
  }
 
   return undef;

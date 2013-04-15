@@ -30,6 +30,9 @@ foreach my $msg ($infolder->messages) {
   if( $fromaddr =~ /\@mtvne.com/i ) {
     MoveMessage( $msg, "MTV" );
   }
+  elsif( $fromaddr =~ /\@bbc.com/i ) {
+    MoveMessage( $msg, "BBC" );
+  }
   elsif( $fromaddr =~ /\@vimn.com/i ) {
     MoveMessage( $msg, "MTV" );
   }
@@ -126,7 +129,7 @@ foreach my $msg ($infolder->messages) {
   }
   elsif( $fromaddr =~ /\@dotmedia.nu/i ) {
       MoveMessage( $msg, "Svt" );
-    }
+  }
 }
 
 sub MoveMessage {
