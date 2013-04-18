@@ -287,6 +287,11 @@ sub ImportXML
       if(($episode eq "1") and ( $of_episode eq "1") and ( $season eq "0")) {
       	delete($ce->{episode});
       }
+
+      # News programmes shouldn't have episodeinfo
+      if($ce->{title} =~ /^(Rapport|Regionala nyheter|Sportnytt|Kulturnyheterna|Uutiset|Oddasat|Nyhetstecken|SVT Forum|Sydnytt|Värmlandsnytt|Nordnytt|Mittnytt|Gävledala|Tvärsnytt|Östnytt|Smålandsnytt|Västnytt|ABC)$/i) {
+      	delete($ce->{episode});
+      }
       
       $ce->{description} = join_text( @sentences );
      
