@@ -131,7 +131,7 @@ foreach my $msg ($infolder->messages) {
     MoveMessage( $msg, "Svt" );
   }
   elsif( $fromaddr =~ /\@dotmedia.nu/i ) {
-      MoveMessage( $msg, "Svt" );
+    MoveMessage( $msg, "Svt" );
   }
 }
 
