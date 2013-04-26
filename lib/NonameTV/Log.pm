@@ -349,7 +349,7 @@ sub StartLogSection #( $sectionname, $captured )
 {
   my( $sectionname, $captured ) = @_;
 
-  confess "You need to specify $captured to StartLogSection"
+  confess "You need to specify \$captured to StartLogSection"
       if not defined $captured;
 
   unshift @section, [ $sectionname, "", 0, $captured ];
