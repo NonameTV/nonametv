@@ -223,8 +223,8 @@ sub guess_channel
 	# Nat geo wild sends in XLS format
      return "wild.natgeo.se" if $filename =~ /^ngwscan\s*\b/i;
 	# History Channel
-     return "historytv.se" if $filename =~ /his.sd.swe/i;
-     return "hd.historytv.se" if $filename =~ /his.hd.swe/i;
+     return "historytv.se" if $filename =~ /his.eur.swe/i;
+     #return "hd.historytv.se" if $filename =~ /his.hd.swe/i;
 	# ESPN Classic
      return "classic.espn.com" if $filename =~ /^espn\s+classic\s+europe/i;
 	# Travel Channel
