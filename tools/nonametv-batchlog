@@ -6,11 +6,13 @@ use FindBin;
 use lib "$FindBin::Bin/../lib";
 
 use NonameTV;
-use NonameTV::DataStore;
 use NonameTV::Config qw/ReadConfig/;
+use NonameTV::DataStore;
+use NonameTV::Log qw/f/;
+#use NonameTV::TemplateLinkify;
 
-use Getopt::Long;
-use POSIX qw/strftime/;
+#use Getopt::Long;
+#use POSIX qw/strftime/;
 use Template;
 
 # Read configuration
@@ -65,15 +67,20 @@ sub GeneratePage {
   my $config = {};
 
   $config->{INCLUDE_PATH} = [ "$FindBin::Bin/../templates/" ];
+
+  # if TemplateCountry is defined we unshift it in front of the generic templates
   if( defined( $NonameTV::Conf->{TemplateCountry} ) ) {
     unshift( @{$config->{INCLUDE_PATH}}, 
 	     "$FindBin::Bin/../templates/$NonameTV::Conf->{TemplateCountry}" );
   }
 
+  $config->{PLUGINS} = {
+      linkify => 'NonameTV::TemplateLinkify',
+  };
 
   # create Template object
   my $template = Template->new($config);
 
-  $template->process( $templatename, $data );
+  $template->process( $templatename, $data )
+    || f $template->error();
 }
-

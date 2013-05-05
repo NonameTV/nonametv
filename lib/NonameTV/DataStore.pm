@@ -6,7 +6,7 @@ use warnings;
 
 use NonameTV qw/FixProgrammeData/;
 use NonameTV::Augmenter;
-use NonameTV::Log qw/d p w f/;
+use NonameTV::Log qw/d p w f StartLogSection EndLogSection/;
 use SQLAbstraction::mysql;
 
 use Carp qw/confess/;
@@ -192,6 +192,15 @@ sub EndBatch {
     }
   }
   elsif ( $success == 1 ) {
+    if( exists( $self->{augment} ) ){
+      StartLogSection( 'augment ' . $self->{currbatchname}, 1 );
+      if( $self->{augment} == 1 ){
+        my $augmenter = NonameTV::Augmenter->new( $self );
+        $augmenter->AugmentBatch( $self->{currbatchname} );
+      }
+      $log .= EndLogSection( 'augment ' . $self->{currbatchname} );
+    }
+
     $self->{sa}->Update(
       'batches',
       { id => $self->{currbatch} },
@@ -201,13 +210,6 @@ sub EndBatch {
         abort_message => "",
       }
     );
-
-    if( exists( $self->{augment} ) ){
-      if( $self->{augment} == 1 ){
-        my $augmenter = NonameTV::Augmenter->new( $self );
-        $augmenter->AugmentBatch( $self->{currbatchname} );
-      }
-    }
 
     $self->{sa}->DoSql("Commit");
   }
