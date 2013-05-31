@@ -69,6 +69,7 @@ my @folders = qw(NonameTV-Data.Disney
 		 NonameTV-Data.TravelChannel
 		 NonameTV-Data.FOX
 		 NonameTV-Data.Kanal10
+		 NonameTV-Data.SBSTV
 		 NonameTV-Data.TV5Monde
 		 NonameTV-Data.Motors
 		 NonameTV-Data.Svt
@@ -215,6 +216,30 @@ sub guess_channel
     }
 
     return undef;
+  }
+
+  if( $dir =~ /SBSTV/ ) {
+  	# Kanal 5
+  	if( $subject =~ /kanal 5/i ) {
+          return "kanal5.se";
+    }
+    elsif( $subject =~ /kanal5/i ) {
+          return "kanal5.se";
+    }
+    # Kanal 9
+    elsif( $subject =~ /kanal 9/i ) {
+          return "kanal9.se";
+    }
+    elsif( $subject =~ /kanal9/i ) {
+          return "kanal9.se";
+    }
+    # TV 11 (taken over from TV4 from 1st June)
+    elsif( $subject =~ /tv 11/i ) {
+          return "tv11.sbstv.se";
+    }
+    elsif( $subject =~ /tv11/i ) {
+    	  return "tv11.sbstv.se";
+    }
   }
 
    if( $dir =~ /GlobalListings/ ) {

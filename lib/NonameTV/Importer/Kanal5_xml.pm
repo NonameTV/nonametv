@@ -22,9 +22,9 @@ use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/progress error/;
 use NonameTV::Config qw/ReadConfig/;
 
-use NonameTV::Importer::BaseWeekly;
+use NonameTV::Importer::BaseFile;
 
-use base 'NonameTV::Importer::BaseWeekly';
+use base 'NonameTV::Importer::BaseFile';
 
 sub new {
   my $proto = shift;
@@ -45,34 +45,30 @@ sub new {
   return $self;
 }
 
-sub Object2Url {
+sub ImportContentFile {
   my $self = shift;
-  my( $objectname, $chd ) = @_;
+  my( $file, $chd ) = @_;
 
-  my( $year, $week ) = ($objectname =~ /_20(\d+)-(\d+)/);
+  $self->{fileerror} = 0;
 
-  my $url = sprintf( "%stab%02d%02d.xml", $self->{UrlRoot}, $week, $year );
+  my $channel_id = $chd->{id};
+  my $channel_xmltvid = $chd->{xmltvid};
+  my $dsh = $self->{datastorehelper};
+  my $ds = $self->{datastore};
 
-  #progress( "Kanal5_xml: $chd->{xmltvid}: Processing XML $url" );
+  if( $file =~ /\.xml$/i ){
+  print("$file\n");
+    $self->ImportXML( $file, $chd );
+  }
 
-  return( $url, undef );
+
+  return;
 }
 
- sub FilterContent {
-   my $self = shift;
-   my( $cref, $chd ) = @_;
-
-   if( $$cref =~ /Sidan kunde tyv\S*rr inte hittas/ ) {
-     return( undef, "Failed to download" );
-   }
-
-   return( \$$cref, undef );
- }
-
-sub ImportContent
+sub ImportXML
 {
   my $self = shift;
-  my( $batch_id, $cref, $chd ) = @_;
+  my( $file, $chd ) = @_;
 
   my $dsh = $self->{datastorehelper};
   my $ds = $self->{datastore};
@@ -80,11 +76,12 @@ sub ImportContent
   $ds->{SILENCE_DUPLICATE_SKIP}=1;
 
   my $doc;
+  #my $cref=`cat $file`;
   my $xml = XML::LibXML->new;
-  eval { $doc = $xml->parse_string($$cref); };
+  eval { $doc = $xml->parse_file($file); };
 
   if( not defined( $doc ) ) {
-    error( "Kanal5_xml: $batch_id: Failed to parse xml" );
+    error( "Kanal5_xml: $file: Failed to parse xml" );
     return;
   }
 
@@ -102,7 +99,7 @@ sub ImportContent
   foreach my $row ($rows->get_nodelist) {
       my $start = $self->create_dt( $row->findvalue( './/start/TIMEINSTANT/@full' ) );
       my $end = $self->create_dt( $row->findvalue( './/end/TIMEINSTANT/@full' ) );
-      
+
       my $date = $start->ymd("-");
       
       my $title = undef;
@@ -119,7 +116,9 @@ sub ImportContent
       	}
       	
       }
-      
+
+      #print("Title:$title\n");
+
       # Home shopping
       if($row->findvalue( './/transmissiontype/TXTYPEK5/@name' ) eq "Tele Shopping") {
       	$title = "Homeshopping";
@@ -133,17 +132,17 @@ sub ImportContent
       
       
 	  if($date ne $currdate ) {
-        if( $currdate ne "x" ) {
-					#$ds->EndBatch( 1 );
-        }
+              if( $currdate ne "x" ) {
+      			$dsh->EndBatch( 1 );
+              }
 
-        my $batchid = $chd->{xmltvid} . "_" . $date;
-        #$dsh->StartBatch( $batchid );
-        $dsh->StartDate( $date );
-        $currdate = $date;
+              my $batchid = $chd->{xmltvid} . "_" . $date;
+              $dsh->StartBatch( $batchid , $chd->{id} );
+              $dsh->StartDate( $date , "06:00" );
+              $currdate = $date;
 
-        progress("Kanal5_xml: Date is: $date");
-      }
+              progress("Kanal5_xml: Date is: $date");
+            }
       
 	  # extra info
 	  # description is in shortdescription and shortdescriptionTTV (TTV has more info)
@@ -202,7 +201,7 @@ sub ImportContent
       $dsh->AddProgramme( $ce );
     } # next row
 
-	#$ds->EndBatch( 1 );
+	$dsh->EndBatch( 1 );
 
   return 1;
 }
