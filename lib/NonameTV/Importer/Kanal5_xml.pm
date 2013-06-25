@@ -97,7 +97,7 @@ sub ImportXML
     }
 
   foreach my $row ($rows->get_nodelist) {
-      my $start = $self->create_dt( $row->findvalue( './/start/TIMEINSTANT/@full' ) );
+      my $start = $self->create_dt( $row->findvalue( './/starttime/TIMEINSTANT/@full' ) );
       my $end = $self->create_dt( $row->findvalue( './/end/TIMEINSTANT/@full' ) );
 
       my $date = $start->ymd("-");
@@ -153,11 +153,11 @@ sub ImportXML
       my $ce = {
         channel_id => $chd->{id},
         title => norm($title),
-        start_time => $start->hms(":"),
-        #end_time => $end->hms(":"),
+        start_time => $start->ymd("-")." ".$start->hms(":"),
+        end_time => $end->ymd("-")." ".$end->hms(":"),
         description => norm($desc),
       };
-      
+
       progress( "Kanal5_xml: $chd->{xmltvid}: $start - $title" );
       extract_extra_info( $ds, $ce );
       
@@ -198,7 +198,7 @@ sub ImportXML
       
       # Add programme
       
-      $dsh->AddProgramme( $ce );
+      $ds->AddProgramme( $ce );
     } # next row
 
 	$dsh->EndBatch( 1 );
@@ -234,10 +234,10 @@ sub create_dt
                           day    => $day,
                           hour   => $hour,
                           minute => $minute,
-
+						  time_zone => 'Europe/Stockholm',
                           );
- ##                           time_zone => 'Europe/Stockholm',
- ## $dt->set_time_zone( "UTC" );
+ ##
+  $dt->set_time_zone( "UTC" );
   
   return $dt;
 }
