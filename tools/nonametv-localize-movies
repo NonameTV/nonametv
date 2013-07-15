@@ -34,6 +34,8 @@ my( $res, $sth ) = $ds->sa->Sql(
         "ORDER BY title;");
 
 while( my $d = $sth->fetchrow_hashref() ) {
+  my @directors = split( ', ', $d->{directors} );
+  $d->{directors} = \@directors;
   push @{$data->{movies}}, $d;
 }
 

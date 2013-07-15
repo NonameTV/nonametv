@@ -20,7 +20,11 @@
       <td><a href="http://www.themoviedb.org/search/movie?query=[% movie.title %]">[% movie.title FILTER html_entity %]</a></td>
       <td><a href="http://www.themoviedb.org/search/movie?query=[% movie.original_title %]">[% movie.original_title FILTER html_entity %]</a></td>
       <td>[% movie.production_date %]</td>
-      <td><a href="http://www.themoviedb.org/search/person?query=[% movie.directors %]">[% movie.directors FILTER html_entity %]</a></td>
+      <td>
+      [% FOREACH director = movie.directors %]
+        <a href="http://www.themoviedb.org/search/person?query=[% director %]">[% director FILTER html_entity %]</a>
+      [% END %]
+      </td>
     </tr>
   [% END %]
   </table>
