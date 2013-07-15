@@ -8,6 +8,7 @@
 </head>
 <body>
   <h1>Movies not found</h1>
+  <p>These movies have not been found at TheMovieDB, but they do have an original title. Maybe its just a missing translation of an already existing movie.</p>
   <table>
     <tr>
       <th>Title</th>
