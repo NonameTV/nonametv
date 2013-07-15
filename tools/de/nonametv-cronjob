@@ -71,6 +71,7 @@ $d perl -I lib tools/nonametv-import Timeshifter $Q
 $h perl -I lib tools/nonametv-import Timeshifter --short-grab $Q
 
 perl -I lib tools/nonametv-batchlog > $NROOT/xmltv_staging/00status.html
+perl -I lib tools/nonametv-localize-movies > $NROOT/xmltv_staging/00movies.html
 tools/de/nonametv-updatesite $Q
 
 $d tools/de/nonametv-xmltv-compare-run
