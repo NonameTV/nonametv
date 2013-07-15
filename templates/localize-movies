@@ -9,6 +9,12 @@
 <body>
   <h1>Movies not found</h1>
   <table>
+    <tr>
+      <th>Title</th>
+      <th>Original Title</th>
+      <th>Date of Production / Release</th>
+      <th>Director(s)</th>
+    </tr>
   [% FOREACH movie = movies %]
     <tr>
       <td><a href="http://www.themoviedb.org/search/movie?query=[% movie.title %]">[% movie.title FILTER html_entity %]</a></td>
