@@ -28,7 +28,9 @@ my $data = {
 my( $res, $sth ) = $ds->sa->Sql( 
         "SELECT DISTINCT title, original_title, production_date, directors " .
         "FROM programs " .
-        "WHERE original_title IS NOT NULL AND url IS NULL " .
+        "WHERE original_title IS NOT NULL " .
+        "  AND url IS NULL " .
+        "  AND title NOT LIKE \"(P) %\" " .
         "ORDER BY title;");
 
 while( my $d = $sth->fetchrow_hashref() ) {

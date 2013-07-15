@@ -11,10 +11,10 @@
   <table>
   [% FOREACH movie = movies %]
     <tr>
-      <td><a href="http://www.themoviedb.org/search/movie?query=[% movie.title %]">[% movie.title %]</a></td>
-      <td><a href="http://www.themoviedb.org/search/movie?query=[% movie.original_title %]">[% movie.original_title %]</a></td>
+      <td><a href="http://www.themoviedb.org/search/movie?query=[% movie.title %]">[% movie.title FILTER html_entity %]</a></td>
+      <td><a href="http://www.themoviedb.org/search/movie?query=[% movie.original_title %]">[% movie.original_title FILTER html_entity %]</a></td>
       <td>[% movie.production_date %]</td>
-      <td><a href="http://www.themoviedb.org/search/person?query=[% movie.directors %]">[% movie.directors %]</a></td>
+      <td><a href="http://www.themoviedb.org/search/person?query=[% movie.directors %]">[% movie.directors FILTER html_entity %]</a></td>
     </tr>
   [% END %]
   </table>
