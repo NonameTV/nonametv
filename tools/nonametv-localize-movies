@@ -31,6 +31,8 @@ my( $res, $sth ) = $ds->sa->Sql(
         "WHERE original_title IS NOT NULL " .
         "  AND url IS NULL " .
         "  AND title NOT LIKE \"(P) %\" " .
+        "  AND start_time > now() " .
+        "  AND program_type NOT IN ('series', 'tvshow', 'sports') " .
         "ORDER BY title;");
 
 while( my $d = $sth->fetchrow_hashref() ) {
