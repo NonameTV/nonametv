@@ -23,6 +23,7 @@ use IO::Scalar;
 use Unicode::String;
 use Data::Dumper;
 use Archive::Zip qw/:ERROR_CODES/;
+use File::Slurp;
 
 use NonameTV qw/norm normUtf8 ParseXml AddCategory MonthNumber/;
 use NonameTV::DataStore::Helper;
@@ -78,7 +79,7 @@ sub ImportContentFile {
     my @members = $zip->members();
     foreach my $member (@members) {
       push( @swedish_files, $member->{fileName} ) 
-	  if $member->{fileName} =~ /^current/i;
+	  if $member->{fileName} =~ /.xml$/i;
     }
     
     my $numfiles = scalar( @swedish_files );

@@ -86,6 +86,7 @@ my @folders = qw(NonameTV-Data.Disney
 		 NonameTV-Data.HighTV
 		 NonameTV-Data.BBC
 		 NonameTV-Data.EBS
+		 NonameTV-Data.WildTV
                  );
 
 # Flag messages AFTER they have been processed. Then I normally
@@ -386,6 +387,10 @@ sub guess_channel
      return "bbchd.com" if $filename =~ /hd\s+scandi/i;
      return "bbcknowledge.com" if $filename =~ /knowledge\s+scandi/i;
      return "bbclifestyle.com" if $filename =~ /lifestyle\s+scandi/i;
+ }
+
+ if( $dir =~ /WildTV/ and $filename =~ /\.xml/i ) {
+ 	return "wildtv.ca";
  }
 
 

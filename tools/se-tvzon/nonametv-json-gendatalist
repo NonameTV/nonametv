@@ -3,29 +3,23 @@
 use strict;
 use warnings;
 
+use File::Compare;
 use FindBin;
 use lib "$FindBin::Bin/../../lib";
-=pod
 
-Converts datalist in xml format to json.
-
-=cut
-
-use XML::XML2JSON;
 use DateTime;
 use IO::Compress::Gzip qw(gzip $GzipError);
 use IO::Uncompress::Gunzip qw(gunzip $GunzipError);
 use XML::LibXML;
-use JSON::XS;
 
 use NonameTV qw(ParseXml);
 
 # sources
 my $channelsxml = '/var/local/nonametv/xmltv/channels.xml.gz';
-my $xmltvdir    = '/var/local/nonametv/xmltv';
+my $xmltvdir    = '/var/local/nonametv/json';
 
 # target
-my $datalistjson = '/var/local/nonametv/json/datalist.js.gz';
+my $datalistxml = '/var/local/nonametv/datalist.xml.gz';
 
 my $xml;
 gunzip $channelsxml => \$xml
@@ -46,11 +40,11 @@ foreach my $channel (@channels) {
 
   foreach my $filename (@files) {
     my $modified = ( stat( "$xmltvdir/$filename" ) )[9];
-    my( $date )=( $filename =~ m|^.*_(\d{4}-\d{2}-\d{2})\.xml.gz$| );
+    my( $date )=( $filename =~ m|^.*_(\d{4}-\d{2}-\d{2})\.js.gz$| );
     my $dt = DateTime->from_epoch( epoch => $modified );
 
     my $element = XML::LibXML::Element->new( 'datafor' );
-    $element->setAttribute( 'lastmodified', $dt->ymd( '' ) . $dt->hms( '' ) . ' +0200' );
+    $element->setAttribute( 'lastmodified', $dt->ymd( '' ) . $dt->hms( '' ) . ' +0000' );
     $element->appendText( $date );
     $channel->appendText( '  ' );
     $channel->appendChild( $element );
@@ -59,20 +53,11 @@ foreach my $channel (@channels) {
 }
 
 $xml = $doc->toString( 1 );
-
-my $XML2JSON = XML::XML2JSON->new();
-my $JSONXS = JSON::XS->new()->pretty;
-$XML2JSON->{module} = $JSONXS;
-$XML2JSON->{attribute_prefix} = "";
-$XML2JSON->{content_key} = "date";
-$XML2JSON->{pretty} = 1;
-$XML2JSON->{private_attributes} = {"version", "generator-info-name"};
-
-my $Obj = $XML2JSON->xml2obj($xml);
-$XML2JSON->sanitize($Obj);
-my $json = $XML2JSON->obj2json($Obj);
-
-
-
-gzip \$json => $datalistjson, Level => 9
+gzip \$xml => $datalistxml . '.new', Level => 9, Time => 0
         or die "gzip failed: $GzipError\n";
+
+if( compare( $datalistxml, $datalistxml . '.new' )== 0 ){
+  unlink( $datalistxml . '.new' );
+} else {
+  rename( $datalistxml . '.new', $datalistxml );
+}

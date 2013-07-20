@@ -33,6 +33,11 @@ foreach my $msg ($infolder->messages) {
   elsif( $fromaddr =~ /\@bbc.com/i ) {
     MoveMessage( $msg, "BBC" );
   }
+  elsif( $fromaddr =~ /\@
+    MoveMessage( $msg, "BBC" );
+/i ) {
+    MoveMessage( $msg, "MTV" );
+  }
   elsif( $fromaddr =~ /\@vimn.com/i ) {
     MoveMessage( $msg, "MTV" );
   }
@@ -72,17 +77,11 @@ foreach my $msg ($infolder->messages) {
   elsif( $fromaddr =~ /\@motorstv.com/i ) {
     MoveMessage( $msg, "Motors" );
   }
-  elsif( $fromaddr =~ /\@ebs.tv/i ) {
-    MoveMessage( $msg, "EBS" );
-  }
   elsif( $fromaddr =~ /\@chellozone.com/i ) {
     MoveMessage( $msg, "Chellozone" );
   }
   elsif( $fromaddr =~ /\@svt.se/i ) {
     MoveMessage( $msg, "Svt" );
-  }
-  elsif( $fromaddr =~ /\@sbstv.se/i ) {
-    MoveMessage( $msg, "SBSTV" );
   }
   elsif( $fromaddr =~ /\@fox.com/i ) {
     MoveMessage( $msg, "FOX" );
@@ -129,16 +128,13 @@ foreach my $msg ($infolder->messages) {
   elsif( $fromaddr =~ /\@hightv.tv/i ) {
     MoveMessage( $msg, "HighTV" );
   }
-  elsif( $fromaddr =~ /\@wildtv.ca/i ) {
-  	MoveMessage( $msg, "WildTV" );
-  }
   
   elsif( $fromaddr =~ /\@tvzon.se/i ) {
     MoveMessage( $msg, "Svt" );
   }
   elsif( $fromaddr =~ /\@dotmedia.nu/i ) {
-    MoveMessage( $msg, "Svt" );
-  }
+      MoveMessage( $msg, "Svt" );
+    }
 }
 
 sub MoveMessage {

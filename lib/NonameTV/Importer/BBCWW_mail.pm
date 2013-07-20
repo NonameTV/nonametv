@@ -131,6 +131,7 @@ my $ref = ReadData ($file);
           
           $columns{'Date'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Date/ );
           $columns{'Time'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Time/ );
+          $columns{'TimeCET'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Time \(CET\/CEST\)/ );
 
             $foundcolumns = 1 if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Date/ );
           }
@@ -168,7 +169,11 @@ my $ref = ReadData ($file);
       }
 
 	  # time
-      $oWkC = $oWkS->{Cells}[$iR][$columns{'Time'}];
+	  if($columns{'TimeCET'}) {
+	  	$oWkC = $oWkS->{Cells}[$iR][$columns{'TimeCET'}];
+	  } else {
+	  	$oWkC = $oWkS->{Cells}[$iR][$columns{'Time'}];
+	  }
       next if( ! $oWkC );
       my $time = $oWkC->Value if( $oWkC->Value );
       $time =~ s/'//g;
