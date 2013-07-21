@@ -95,6 +95,12 @@ my $ref = ReadData ($file);
   #for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
   foreach my $oWkS (@{$oBook->{Worksheet}}) {
 
+	# main worksheet is "Schedule" if thats not the right one, jump to "Hungary"
+	if( $oWkS->{Name} !~ /Schedule/ and $oWkS->{Name} !~ /Hungary/ ){
+          progress( "BBCWW: $chd->{xmltvid}: Skipping worksheet: $oWkS->{Name}" );
+          next;
+    }
+
     #my $oWkS = $oBook->{Worksheet}[$iSheet];
     progress( "BBCWW: $chd->{xmltvid}: Processing worksheet: $oWkS->{Name}" );
 
@@ -130,8 +136,8 @@ my $ref = ReadData ($file);
           $columns{'Synopsis'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Synopsis \(Swedish\)/ );
           
           $columns{'Date'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Date/ );
-          $columns{'Time'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Time/ );
-          $columns{'TimeCET'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Time \(CET\/CEST\)/ );
+          $columns{'Time'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Time/ and $oWkS->{Cells}[$iR][$iC]->Value !~ /EET/ ); # Dont set the time to EET
+          $columns{'Time'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Time \(CET\/CEST\)/ );
 
             $foundcolumns = 1 if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Date/ );
           }
@@ -169,11 +175,7 @@ my $ref = ReadData ($file);
       }
 
 	  # time
-	  if($columns{'TimeCET'}) {
-	  	$oWkC = $oWkS->{Cells}[$iR][$columns{'TimeCET'}];
-	  } else {
-	  	$oWkC = $oWkS->{Cells}[$iR][$columns{'Time'}];
-	  }
+	  $oWkC = $oWkS->{Cells}[$iR][$columns{'Time'}];
       next if( ! $oWkC );
       my $time = $oWkC->Value if( $oWkC->Value );
       $time =~ s/'//g;
