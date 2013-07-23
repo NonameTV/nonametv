@@ -101,6 +101,7 @@ $h perl -I lib tools/nonametv-import Downconverter --short-grab $Q
 
 # Batchlog
 $d perl -I lib tools/nonametv-batchlog > $NROOT/html/00status.html
+$d perl -I lib tools/nonametv-localize-movies > $NROOT/html/00movies.html
 
 # Export
 tools/se-tvzon/nonametv-updatesite $Q
@@ -116,6 +117,7 @@ $d tools/se-tvzon/nonametv-upload $Q
 
 # Run after, everything
 $d rsync --delete -r /var/local/nonametv/html/00status.html /server/www/xmltv/
+$d rsync --delete -r /var/local/nonametv/html/00movies.html /server/www/xmltv/
 $d rsync --delete -r /var/local/nonametv/xmltv_compare/ /server/www/xmltv/compare/
 
 # Some users seems to download this file from the base url instead, this will fix it.
