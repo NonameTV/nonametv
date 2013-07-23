@@ -1,0 +1,70 @@
+#!/usr/bin/perl -w
+
+use strict;
+
+use FindBin;
+use lib "$FindBin::Bin/../lib";
+
+use NonameTV;
+use NonameTV::Config qw/ReadConfig/;
+use NonameTV::DataStore;
+use NonameTV::Log qw/f/;
+
+#use Getopt::Long;
+#use POSIX qw/strftime/;
+use Template;
+
+# Read configuration
+my $conf = ReadConfig();
+
+# Create Datastore
+my $ds = NonameTV::DataStore->new( $conf->{DataStore} );
+
+my $data = { 
+  movies => [],
+};
+
+# Retrieve a list of all batches that have been aborted due to errors.
+my( $res, $sth ) = $ds->sa->Sql( 
+        "SELECT DISTINCT title, original_title, production_date, directors " .
+        "FROM programs " .
+        "WHERE original_title IS NOT NULL " .
+        "  AND url IS NULL " .
+        "  AND title NOT LIKE \"(P) %\" " .
+        "  AND start_time > now() " .
+        "  AND program_type NOT IN ('series', 'tvshow', 'sports') " .
+        "ORDER BY title;");
+
+while( my $d = $sth->fetchrow_hashref() ) {
+  my @directors = split( ', ', $d->{directors} );
+  $d->{directors} = \@directors;
+  push @{$data->{movies}}, $d;
+}
+
+$sth->finish();
+
+GeneratePage( 'localize-movies', $data );
+
+sub GeneratePage {
+  my( $templatename, $data ) = @_;
+
+  my $config = {};
+
+  $config->{INCLUDE_PATH} = [ "$FindBin::Bin/../templates/" ];
+
+  # if TemplateCountry is defined we unshift it in front of the generic templates
+  if( defined( $NonameTV::Conf->{TemplateCountry} ) ) {
+    unshift( @{$config->{INCLUDE_PATH}}, 
+	     "$FindBin::Bin/../templates/$NonameTV::Conf->{TemplateCountry}" );
+  }
+
+  $config->{PLUGINS} = {
+      linkify => 'NonameTV::TemplateLinkify',
+  };
+
+  # create Template object
+  my $template = Template->new($config);
+
+  $template->process( $templatename, $data )
+    || f $template->error();
+}

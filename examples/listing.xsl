@@ -33,4 +33,11 @@
     </tr>
     <xsl:apply-templates select="*"/>
   </xsl:template>
+
+  <xsl:template match="programme//url">
+    <tr>
+      <td><b><xsl:value-of select="name()"/></b></td>
+      <td><a><xsl:attribute name="href"><xsl:value-of select="text()"/></xsl:attribute><xsl:value-of select="text()"/></a></td>
+    </tr>
+  </xsl:template>
 </xsl:stylesheet>

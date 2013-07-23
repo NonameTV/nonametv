@@ -68,7 +68,7 @@ sub FillCredits( $$$$$ ) {
         if( ( length( $role ) > 1 )||( $role =~ m|^[A-Z]$| ) ){
           $name .= ' (' . norm($role) . ')';
         } else {
-          w( 'Unlikely role \'' . $role . '\' for actor. Fix it at ' . $resultref->{url} . '/cast/edit_cast' );
+          w( 'Unlikely role \'' . $role . '\' for actor. Fix it at ' . $resultref->{url} . '/edit?active_nav_item=cast' );
         }
       }
     }

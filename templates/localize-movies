@@ -1,0 +1,33 @@
+<?XML VErsion="1.0" ENCODIng="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+[% USE date %]
+[% USE linkify %]
+<head>
+  <title>Nonametv movies not found at the movie database</title>
+</head>
+<body>
+  <h1>Movies not found</h1>
+  <p>These movies have not been found at TheMovieDB, but they do have an original title. Maybe its just a missing translation of an already existing movie.</p>
+  <table>
+    <tr>
+      <th>Title</th>
+      <th>Original Title</th>
+      <th>Date of Production / Release</th>
+      <th>Director(s)</th>
+    </tr>
+  [% FOREACH movie = movies %]
+    <tr>
+      <td><a href="http://www.themoviedb.org/search/movie?query=[% movie.title %]">[% movie.title FILTER html_entity %]</a></td>
+      <td><a href="http://www.themoviedb.org/search/movie?query=[% movie.original_title %]">[% movie.original_title FILTER html_entity %]</a></td>
+      <td>[% movie.production_date %]</td>
+      <td>
+      [% FOREACH director = movie.directors %]
+        <a href="http://www.themoviedb.org/search/person?query=[% director %]">[% director FILTER html_entity %]</a>
+      [% END %]
+      </td>
+    </tr>
+  [% END %]
+  </table>
+</body>
+</html>

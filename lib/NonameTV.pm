@@ -317,6 +317,7 @@ sub norm
   $str =~ s/^\s+//;
   $str =~ s/\s+$//;
   $str =~ tr/\n\r\t /    /s;
+  $str =~ s/ +/ /;
   
   return $str;
 }

@@ -204,6 +204,29 @@ sub ImportContent {
         my ($desc) = $program->findvalue ('ProgrammElement/LangText');
         if ($desc) {
           $ce->{description} = $desc;
+          if (my ($original_title) = ($desc =~ m|Originaltitel:\s+\"(.*?)\"|)) {
+            $ce->{original_title} = $original_title;
+          }
+        }
+
+        if (my ($directors) = $program->findvalue ('ProgrammElement/ZusatzInfo/Regie')) {
+          $directors =~ s|u\.a\.||;
+          $directors =~ s|Diverse||;
+          $directors = norm ($directors);
+          if ($directors) {
+            # directors are split by space slash space in the source data
+            $ce->{directors} = join (', ', split (/\s*\/\s*/, $directors));
+          }
+        }
+
+        if (my ($zusatztitel) = $program->findvalue ('ProgrammElement/ZusatzTitel')) {
+          # grab the year of production
+          if (my ($country, $genre, $production_year) = ($zusatztitel =~ m|^(\w+)\s+(\w+)\s+(\d{4})$|)) {
+            $ce->{production_date} = $production_year . '-01-01';
+            if ($genre =~ m|film|i) {
+              $ce->{program_type} = 'movie';
+            }
+          }
         }
 
         my $actors = $program->findnodes ('.//NameDarsteller');
