@@ -43,7 +43,7 @@ Returns the newly created augmenter or dies if creation fails.
 
 =cut
 
-sub CreateAugmenter( @@@ ){
+sub CreateAugmenter( $$$ ){
   my( $name, $ds, $lang ) = @_;
 
   my $conf = ReadConfig();
