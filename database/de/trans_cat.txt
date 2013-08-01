@@ -1,3 +1,4 @@
+Arte_genre,diskussion,Talk,
 Arte_genre,dokumentarfilm,Documentary,movie
 Arte_genre,dokumentarfilmreihe,Documentary,series
 Arte_genre,dokumentation,Documentary,
@@ -6,8 +7,9 @@ Arte_genre,dokumentationsreihe,Documentary,series
 Arte_genre,fernsehfilm,,movie
 Arte_genre,fernsehserie,,series
 Arte_genre,film,,movie
+Arte_genre,kindersendung,Kids,
 Arte_genre,musik,Music,
-Arte_genre,nachrichten,,news
+Arte_genre,nachrichten,News,
 Arte_genre,reportage,Documentary,
 Arte_genre,serie,,series
 Arte_genre,spielfilm,,movie
@@ -31,6 +33,26 @@ DasErste_type,märchenfilm,,movie
 DasErste_type,spielfilm,,movie
 DasErste_type,zeichentrickfilm,,movie
 DasErste_type,zeichtrickfilm,,movie
+DeutscheWelle,agenda,talk,series
+DeutscheWelle,"anne will",talk,series
+DeutscheWelle,"business brief",news,series
+DeutscheWelle,"europe in concert",Music,series
+DeutscheWelle,"günther jauch",Talk,series
+DeutscheWelle,"hart aber fair",Talk,series
+DeutscheWelle,"hin & weg",Food/Travel,series
+DeutscheWelle,"im focus",Documentary,series
+DeutscheWelle,"in focus",Documentary,series
+DeutscheWelle,"insight germany",Talk,series
+DeutscheWelle,journal,news,series
+DeutscheWelle,"kick off!",Sports,series
+DeutscheWelle,"kick off! countdown",Sports,series
+DeutscheWelle,"markus lanz",Talk,series
+DeutscheWelle,"menschen bei maischberger",Talk,series
+DeutscheWelle,popxport,Music,series
+DeutscheWelle,quadriga,Talk,series
+DeutscheWelle,"tomorrow today",science/nature,series
+DeutscheWelle,"wirtschaft kompakt",News,series
+DeutscheWelle,"zimmer frei",talk,series
 DreiSat_category,"chansons und lieder",Music,
 DreiSat_category,jazz,Music,
 DreiSat_category,kinderfiction,Kids,
@@ -267,6 +289,17 @@ Tele5,zeichentrickserie,,series
 Tele5Label,film,,movie
 Tele5Label,kino,,series
 Tele5Label,serie,,series
+Tmdb_genre,12,Action/Adv,
+Tmdb_genre,14,Fantasy,
+Tmdb_genre,18,Drama,
+Tmdb_genre,22,Musical,
+Tmdb_genre,27,Horror,
+Tmdb_genre,28,Action,
+Tmdb_genre,35,Comedy,
+Tmdb_genre,80,Crime,
+Tmdb_genre,878,SciFi,
+Tmdb_genre,9648,Mystery,
+Tmdb_genre,99,Documentary,
 Tvdb,children,Kids,
 Tvdb,comedy,Comedy,
 Tvdb,documentary,Documentary,
