@@ -1,4 +1,4 @@
-package NonameTV::Augmenter::Tmdb;
+package NonameTV::Augmenter::Tmdb3;
 
 use strict;
 use warnings;
@@ -6,7 +6,7 @@ use warnings;
 use Data::Dumper;
 use Encode;
 use utf8;
-use WWW::TheMovieDB::Search;
+use TMDB;
 
 use NonameTV qw/AddCategory norm ParseXml/;
 use NonameTV::Augmenter::Base;
@@ -43,9 +43,14 @@ sub new {
 #    my $cachefile = $conf->{ContentCachePath} . '/' . $self->{Type} . '/tvdb.db';
 #    my $bannerdir = $conf->{ContentCachePath} . '/' . $self->{Type} . '/banner';
 
-    $self->{themoviedb} = new WWW::TheMovieDB::Search;
-    $self->{themoviedb}->key( $self->{ApiKey} );
-    $self->{themoviedb}->lang( $self->{Language} );
+    $self->{themoviedb} = TMDB->new(
+        apikey => $self->{ApiKey},
+        lang   => $self->{Language},
+    );
+
+    $self->{search} = $self->{themoviedb}->search(
+        include_adult => 'false',  # Include adult results. 'true' or 'false'
+    );
 
     # slow down to avoid rate limiting
     $self->{Slow} = 1;
@@ -86,10 +91,21 @@ sub FillHash( $$$ ) {
   if( $self->{Slow} ) {
     sleep (1);
   }
-  my $apiresult = $self->{themoviedb}->Movie_getInfo( $movieId );
-  my $doc = ParseXml( \$apiresult );
+  my $movie = $self->{themoviedb}->movie( id => $movieId );
+#  print Dumper $movie->info;
+#  print Dumper $movie->alternative_titles;
+#  print Dumper $movie->cast;
+#  print Dumper $movie->crew;
+#  print Dumper $movie->images;
+#  print Dumper $movie->keywords;
+#  print Dumper $movie->releases;
+#  print Dumper $movie->trailers;
+#  print Dumper $movie->translations;
+#  print Dumper $movie->lists;
+#  print Dumper $movie->reviews;
+#  print Dumper $movie->changes;
 
-  if (not defined ($doc)) {
+  if (not defined ($movie)) {
     w( $self->{Type} . ' failed to parse result.' );
     return;
   }
@@ -97,61 +113,57 @@ sub FillHash( $$$ ) {
   # FIXME shall we use the alternative name if that's what was in the guide???
   # on one hand the augmenters are here to unify various styles on the other
   # hand matching the other guides means less surprise for the users
-  $resultref->{title} = norm( $doc->findvalue( '/OpenSearchDescription/movies/movie/name' ) );
-  $resultref->{original_title} = norm( $doc->findvalue( '/OpenSearchDescription/movies/movie/original_name' ) );
+  $resultref->{title} = norm( $movie->title );
+  $resultref->{original_title} = norm( $movie->info->{original_title} );
 
   # TODO shall we add the tagline as subtitle? (for german movies the tv title is often made of the movie title plus tagline)
   $resultref->{subtitle} = undef;
 
-  # is it a movie? (makes sense once we match by other attributes then program_type=movie :)
-  my $type = $doc->findvalue( '/OpenSearchDescription/movies/movie/type' );
-  if( $type eq 'movie' ) {
-    $resultref->{program_type} = 'movie';
-  }
+  $resultref->{program_type} = 'movie';
 
-  my $votes = $doc->findvalue( '/OpenSearchDescription/movies/movie/votes' );
+  my $votes = $movie->info->{vote_count};
   if( $votes >= $self->{MinRatingCount} ){
     # ratings range from 0 to 10
-    $resultref->{'star_rating'} = $doc->findvalue( '/OpenSearchDescription/movies/movie/rating' ) . ' / 10';
+    $resultref->{'star_rating'} = $movie->info->{vote_average} . ' / 10';
   }
   
   # MPAA - G, PG, PG-13, R, NC-17 - No rating is: NR or Unrated
-  if(defined($doc->findvalue( '/OpenSearchDescription/movies/movie/certification' ) )) {
-    my $rating = norm( $doc->findvalue( '/OpenSearchDescription/movies/movie/certification' ) );
-    if( $rating ne '0' ) {
-      $resultref->{rating} = $rating;
-    }
-  }
+#  if(defined($doc->findvalue( '/OpenSearchDescription/movies/movie/certification' ) )) {
+#    my $rating = norm( $doc->findvalue( '/OpenSearchDescription/movies/movie/certification' ) );
+#    if( $rating ne '0' ) {
+#      $resultref->{rating} = $rating;
+#    }
+#  }
   
   # No description when adding? Add the description from themoviedb
-  if((!defined ($ceref->{description}) or ($ceref->{description} eq "")) and !$self->{OnlyAugmentFacts}) {
-    my $desc = norm( $doc->findvalue( '/OpenSearchDescription/movies/movie/overview' ) );
-    if( $desc ne 'No overview found.' ) {
-      $resultref->{description} = $desc;
-    }
-  }
+#  if((!defined ($ceref->{description}) or ($ceref->{description} eq "")) and !$self->{OnlyAugmentFacts}) {
+#    my $desc = norm( $doc->findvalue( '/OpenSearchDescription/movies/movie/overview' ) );
+#    if( $desc ne 'No overview found.' ) {
+#      $resultref->{description} = $desc;
+#    }
+#  }
 
-  my @genres = $doc->findnodes( '/OpenSearchDescription/movies/movie/categories/category[@type="genre"]' );
-  foreach my $node ( @genres ) {
-    my $genre_id = $node->findvalue( './@id' );
-    my ( $type, $categ ) = $self->{datastore}->LookupCat( "Tmdb_genre", $genre_id );
-    AddCategory( $resultref, $type, $categ );
-  }
+#  my @genres = $doc->findnodes( '/OpenSearchDescription/movies/movie/categories/category[@type="genre"]' );
+#  foreach my $node ( @genres ) {
+#    my $genre_id = $node->findvalue( './@id' );
+#    my ( $type, $categ ) = $self->{datastore}->LookupCat( "Tmdb_genre", $genre_id );
+#    AddCategory( $resultref, $type, $categ );
+#  }
 
   # TODO themoviedb does not store a year of production only the first screening, that should go to previosly-shown instead
   # $resultref->{production_date} = $doc->findvalue( '/OpenSearchDescription/movies/movie/released' );
 
-  $resultref->{url} = $doc->findvalue( '/OpenSearchDescription/movies/movie/url' );
+  $resultref->{url} = 'http://www.themoviedb.org/movie/' . $movie->{ id };
 
-  $self->FillCredits( $resultref, 'actors', $doc, 'Actor');
+#  $self->FillCredits( $resultref, 'actors', $doc, 'Actor');
 
 #  $self->FillCredits( $resultref, 'adapters', $doc, 'Actors');
 #  $self->FillCredits( $resultref, 'commentators', $doc, 'Actors');
-  $self->FillCredits( $resultref, 'directors', $doc, 'Director');
+#  $self->FillCredits( $resultref, 'directors', $doc, 'Director');
 #  $self->FillCredits( $resultref, 'guests', $doc, 'Actors');
 #  $self->FillCredits( $resultref, 'presenters', $doc, 'Actors');
-  $self->FillCredits( $resultref, 'producers', $doc, 'Producer');
-  $self->FillCredits( $resultref, 'writers', $doc, 'Screenplay');
+#  $self->FillCredits( $resultref, 'producers', $doc, 'Producer');
+#  $self->FillCredits( $resultref, 'writers', $doc, 'Screenplay');
 
 #  print STDERR Dumper( $apiresult );
 }
@@ -186,87 +198,77 @@ sub AugmentProgram( $$$ ){
       sleep (1);
     }
     # TODO fix upstream instead of working around here
-    my $apiresult = $self->{themoviedb}->Movie_search( encode( 'utf-8', $searchTerm ) );
+    my @candidates = $self->{search}->movie( $searchTerm );
+    my @keep = ();
 
-    if( !$apiresult ) {
-      return( undef, $self->{Type} . ' empty result xml, bug upstream site to fix it.' );
-    }
-
-    my $doc = ParseXml( \$apiresult );
-
-    if (not defined ($doc)) {
-      return( undef, $self->{Type} . ' failed to parse result.' );
-    }
-
-    # The data really looks like this...
-    my $ns = $doc->find ('/OpenSearchDescription/opensearch:totalResults');
-    if( $ns->size() == 0 ) {
-      return( undef,  "No valid search result returned" );
-    }
-
-    my $numResult = $doc->findvalue( '/OpenSearchDescription/opensearch:totalResults' );
+    my $numResult = @candidates;
     if( $numResult < 1 ){
       return( undef,  "No matching movie found when searching for: " . $searchTerm );
 #    }elsif( $numResult > 1 ){
 #      return( undef,  "More then one matching movie found when searching for: " . $searchTerm );
     }else{
-#      print STDERR Dumper( $apiresult );
+#      print STDERR Dumper( @candidates );
 
-      my @candidates;
       # filter out movies more then 2 years before/after if we know the year
       if ( $ceref->{production_date} ) {
         my( $produced )=( $ceref->{production_date} =~ m|^(\d{4})\-\d+\-\d+$| );
-        @candidates = $doc->findnodes( '/OpenSearchDescription/movies/movie' );
-        foreach my $candidate ( @candidates ) {
+        while( @candidates ) {
+          my $candidate = shift( @candidates );
           # verify that production and release year are close
-          my $released = $candidate->findvalue( './released' );
+          my $released = $candidate->{ release_date };
           $released =~ s|^(\d{4})\-\d+\-\d+$|$1|;
           if( !$released ){
-            $candidate->unbindNode();
-            my $url = $candidate->findvalue( 'url' );
+#            my $url = $candidate->findvalue( 'url' );
+            my $url = 'http://www.themoviedb.org/movie/' . $candidate->{ id };
             w( "year of release not on record, removing candidate. Add it at $url." );
           } elsif( abs( $released - $produced ) > 2 ){
-            $candidate->unbindNode();
             d( "year of production '$produced' to far away from year of release '$released', removing candidate" );
+          } else {
+            push( @keep, $candidate );
           }
         }
+
+        @candidates = @keep;
+        @keep = ();
       }
 
       # if we have multiple candidate movies strip out all without a matching director
-      @candidates = $doc->findnodes( '/OpenSearchDescription/movies/movie' );
+#      print STDERR "after release date: " . Dumper( @candidates );
       if( ( @candidates > 1 ) and ( $ceref->{directors} ) ){
         my @directors = split( /, /, $ceref->{directors} );
         my $director = $directors[0];
-        foreach my $candidate ( @candidates ) {
+        while( @candidates ) {
+          my $candidate = shift( @candidates );
+          
           # we have to fetch the remaining candidates to peek at the directors
-          my $movieId = $candidate->findvalue( 'id' );
+          my $movieId = $candidate->{id};
           if( $self->{Slow} ) {
             sleep (1);
           }
-          my $apiresult = $self->{themoviedb}->Movie_getInfo( $movieId );
-          my $doc2 = ParseXml( \$apiresult );
-
-          if (not defined ($doc2)) {
-            w( $self->{Type} . ' failed to parse result.' );
-            last;
-          }
+          my $movie = $self->{search}->movie( $movieId );
+#          print STDERR "lookup director:" . Dumper( $movie );
 
           # FIXME case insensitive match helps with names like "Guillermo del Toro"
-          my @nodes = $doc2->findnodes( '/OpenSearchDescription/movies/movie/cast/person[@job=\'Director\' and @name=\'' . $director . '\']' );
-          if( @nodes != 1 ){
-            $candidate->unbindNode();
-            d( "director '$director' not found, removing candidate" );
-          }
+#          my @nodes = $doc2->findnodes( '/OpenSearchDescription/movies/movie/cast/person[@job=\'Director\' and @name=\'' . $director . '\']' );
+#          if( @nodes != 1 ){
+#            $candidate->unbindNode();
+#            d( "director '$director' not found, removing candidate" );
+#          }
+            push( @keep, $candidate );
         }
+
+        @candidates = @keep;
+        @keep = ();
       }
 
-      @candidates = $doc->findnodes( '/OpenSearchDescription/movies/movie' );
+#      print STDERR "after directors:" . Dumper( @candidates );
+#      @candidates = $doc->findnodes( '/OpenSearchDescription/movies/movie' );
       if( @candidates != 1 ){
         d( 'search did not return a single best hit, ignoring' );
       } else {
-        my $movieId = $doc->findvalue( '/OpenSearchDescription/movies/movie/id' );
-        my $movieLanguage = $doc->findvalue( '/OpenSearchDescription/movies/movie/language' );
-        my $movieTranslated = $doc->findvalue( '/OpenSearchDescription/movies/movie/translated' );
+        my $movieId = $candidates[0]->{id};
+#        my $movieLanguage = $doc->findvalue( '/OpenSearchDescription/movies/movie/language' );
+#        my $movieTranslated = $doc->findvalue( '/OpenSearchDescription/movies/movie/translated' );
 
         $self->FillHash( $resultref, $movieId, $ceref );
       }
