@@ -75,7 +75,7 @@ use NonameTV::Log qw/d/;
 # output: programme + error
 #
 
-sub new( @@ ){
+sub new( $$ ){
   my $class = ref( $_[0] ) || $_[0];
 
   my $self = { }; 
@@ -86,7 +86,7 @@ sub new( @@ ){
   return $self;
 }
 
-sub ReadLastUpdate( @ ){
+sub ReadLastUpdate( $ ){
   my $self = shift;
 
   my $ds = $self->{datastore};
@@ -103,7 +103,7 @@ sub ReadLastUpdate( @ ){
   return $last_update;
 }
 
-sub WriteLastUpdate( @@ ){
+sub WriteLastUpdate( $$ ){
   my $self = shift;
   my( $update_started ) = @_;
 
@@ -125,7 +125,7 @@ sub cmp_rules_by_score( ){
   }
 }
 
-sub sprint_rule( @ ){
+sub sprint_rule( $ ){
   my ($rule_ref) = @_;
   my $result = '';
 
@@ -157,7 +157,7 @@ sub sprint_rule( @ ){
   return( $result );
 }
 
-sub sprint_augment( @@ ){
+sub sprint_augment( $$ ){
   my ($programme_ref, $augment_ref) = @_;
   my $result = '';
 
@@ -187,7 +187,7 @@ sub sprint_augment( @@ ){
   return( $result );
 }
 
-sub AugmentBatch( @@ ) {
+sub AugmentBatch( $$ ) {
   my( $self, $batchid )=@_;
 
   ###

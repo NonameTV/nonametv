@@ -21,18 +21,40 @@ my $conf = ReadConfig();
 my $ds = NonameTV::DataStore->new( $conf->{DataStore} );
 
 my $data = { 
+  movies_localize => [],
   movies => [],
 };
 
-# Retrieve a list of all batches that have been aborted due to errors.
+# Retrieve a list of all movies that have an original title but no tmdb url
 my( $res, $sth ) = $ds->sa->Sql( 
         "SELECT DISTINCT title, original_title, production_date, directors " .
         "FROM programs " .
         "WHERE original_title IS NOT NULL " .
-        "  AND url IS NULL " .
+        "  AND (url IS NULL OR url NOT LIKE '%themoviedb%') " .
         "  AND title NOT LIKE \"(P) %\" " .
         "  AND start_time > now() " .
         "  AND program_type NOT IN ('series', 'tvshow', 'sports') " .
+        "ORDER BY title;");
+
+while( my $d = $sth->fetchrow_hashref() ) {
+  my @directors = split( ', ', $d->{directors} );
+  $d->{directors} = \@directors;
+  push @{$data->{movies_localize}}, $d;
+}
+
+$sth->finish();
+
+# Retrieve a list of all batches that have been aborted due to errors.
+( $res, $sth ) = $ds->sa->Sql( 
+        "SELECT DISTINCT title, subtitle, original_title, production_date, directors " .
+        "FROM programs " .
+        "WHERE original_title IS NULL " .
+        "  AND (url IS NULL OR url NOT LIKE '%themoviedb%') " .
+        "  AND title NOT LIKE \"(P) %\" " .
+        "  AND start_time > now() " .
+        "  AND program_type IN ('movie') " .
+        "  AND subtitle IS NULL " .
+        "  AND directors IS NOT NULL " .
         "ORDER BY title;");
 
 while( my $d = $sth->fetchrow_hashref() ) {

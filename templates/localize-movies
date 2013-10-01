@@ -16,7 +16,7 @@
       <th>Date of Production / Release</th>
       <th>Director(s)</th>
     </tr>
-  [% FOREACH movie = movies %]
+  [% FOREACH movie = movies_localize %]
     <tr>
       <td><a href="http://www.themoviedb.org/search/movie?query=[% movie.title %]">[% movie.title FILTER html_entity %]</a></td>
       <td><a href="http://www.themoviedb.org/search/movie?query=[% movie.original_title %]">[% movie.original_title FILTER html_entity %]</a></td>
@@ -29,5 +29,26 @@
     </tr>
   [% END %]
   </table>
+
+  <p>These movies have not been found at TheMovieDB.</p>
+  <table>
+    <tr>
+      <th>Title</th>
+      <th>Subtitle</th>
+      <th>Date of Production / Release</th>
+      <th>Director(s)</th>
+    </tr>
+  [% FOREACH movie = movies %]
+    <tr>
+      <td><a href="http://www.themoviedb.org/search/movie?query=[% movie.title %]">[% movie.title FILTER html_entity %]</a></td>
+      <td>[% movie.subtitle FILTER html_entity %]</a></td>
+      <td>[% movie.production_date %]</td>
+      <td>
+      [% FOREACH director = movie.directors %]
+        <a href="http://www.themoviedb.org/search/person?query=[% director %]">[% director FILTER html_entity %]</a>
+      [% END %]
+      </td>
+    </tr>
+  [% END %]
 </body>
 </html>

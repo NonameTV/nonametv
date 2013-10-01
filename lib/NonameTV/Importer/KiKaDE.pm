@@ -221,7 +221,7 @@ sub ImportContent {
 
         if (my ($zusatztitel) = $program->findvalue ('ProgrammElement/ZusatzTitel')) {
           # grab the year of production
-          if (my ($country, $genre, $production_year) = ($zusatztitel =~ m|^(\w+)\s+(\w+)\s+(\d{4})$|)) {
+          if (my ($country, $genre, $production_year) = ($zusatztitel =~ m|^(\S+)\s+(\S+)\s+(\d{4})$|)) {
             $ce->{production_date} = $production_year . '-01-01';
             if ($genre =~ m|film|i) {
               $ce->{program_type} = 'movie';

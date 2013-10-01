@@ -246,3 +246,75 @@
 86,Tvdb,"Avatar - Herr der Elemente",\N,\N,74852,episodetitle
 86,Fixups,^(Sherlock)\s+-\s+(.*)$,\N,\N,\N,splittitle
 86,Tvdb,Sherlock,\N,\N,176941,episodetitle
+\N,Fixups,"Die Fallers - Die SWR Schwarzwaldserie",\N,\N,"Die Fallers",replacetitle
+58,Fixups,"Löwenzahn Classics",\N,\N,Löwenzahn,replacetitle
+57,Fixups,"^(In Deep)\s+-\s+(.*)$",\N,\N,\N,splittitle
+124,Fixups,"^(The Café):\s+(.*)$",\N,\N,\N,splittitle
+124,Fixups,"^(Fault Lines):\s+(.*)$",\N,\N,\N,splittitle
+124,Fixups,"^(Africa Investigates):\s+(.*)$",\N,\N,\N,splittitle
+124,Fixups,"^(Al Jazeera Correspondent):\s+(.*)$",\N,\N,\N,splittitle
+124,Fixups,"^(Al Jazeera World):\s+(.*)$",\N,\N,\N,splittitle
+124,Fixups,"^(Talk to Al Jazeera):\s+(.*)$",\N,\N,\N,splittitle
+124,Fixups,^(Empire):\s+(.*)$,\N,\N,\N,splittitle
+124,Fixups,^(Playlist):\s+(.*)$,\N,\N,\N,splittitle
+44,Fixups,"^(Pfarrer Braun):\s+(.*)$",\N,\N,\N,splittitle
+57,Fixups,"^(Katie Fforde):\s+(.*)$",\N,\N,\N,splittitle
+102,Fixups,"^(Sport Xtreme):\s+(.*)$",\N,\N,\N,splittitle
+39,Fixups,"^(Jean-Claude Van Damme):\s+(.*)$",\N,\N,\N,splitstartitle
+\N,Fixups,"^(Der Doc und die Hexe)\s+-\s+(.*)$",\N,\N,\N,splittitle
+48,Fixups,"^(Rosamunde Pilcher):\s+(.*)$",\N,\N,\N,splittitle
+86,Tvdb,90210,\N,\N,82716,episodetitle
+86,Tvdb,"Zoey 101",\N,\N,74647,episodetitle
+86,Tvdb,"Two and a Half Men",\N,\N,72227,episodetitle
+86,Tvdb,"The Middle",\N,\N,95021,episodetitle
+86,Tvdb,"The Book of Daniel",\N,\N,75527,episodetitle
+86,Tvdb,Suburgatory,\N,\N,248842,episodetitle
+86,Tvdb,"Samantha Who?",\N,\N,80680,episodetitle
+86,Tvdb,"Hör mal, wer da hämmert",\N,\N,77537,episodetitle
+86,Tvdb,"Horseland, die Pferderanch",\N,\N,109551,episodetitle
+86,Tvdb,Barbapapa,\N,\N,80397,episodetitle
+86,Tvdb,Heidi,\N,\N,82927,episodetitle
+86,Tvdb,"Der Mondbär",\N,\N,81049,episodetitle
+86,Tvdb,"Disneys Austin & Ally",\N,\N,254245,episodetitle
+86,Tvdb,"Disneys Pair of Kings - Die Königsbrüder",\N,\N,194191,episodetitle
+86,Tvdb,"Emilys Liste",\N,\N,75711,episodetitle
+86,Tvdb,"Die fantastische Welt von Gumball",\N,\N,248482,episodetitle
+86,Tvdb,"Desperate Housewives",\N,\N,73800,episodetitle
+86,Tvdb,"Bibi und Tina",\N,\N,85543,episodetitle
+124,Fixups,"^(Viewfinder Latin America):\s+(.*)$",\N,\N,\N,splittitle
+58,Fixups,"^(Wilder Planet):\s(.*)$",\N,\N,\N,splittitle
+58,Fixups,"^(Da wird mir übel)\s+-\s(.*)$",\N,\N,\N,splittitle
+124,Fixups,"^(Football Rebels):\s+(.*)$",\N,\N,\N,splittitle
+124,Fixups,"^(The Family):\s+(.*)$",\N,\N,\N,splittitle
+124,Fixups,"^(The Secret of the Seven Sisters):\s+(.*)$",\N,\N,\N,splittitle
+124,Fixups,"^(The Frost Interview):\s+(.*)$",\N,\N,\N,splittitle
+124,Fixups,"^(Revolution Through Arab Eyes):\s+(.*)$",\N,\N,\N,splittitle
+124,Fixups,^(Frames):\s+(.*)$,\N,\N,\N,splittitle
+39,Tmdb,^.*$,program_type,,\N,title
+39,Fixups,"^Die schlechtesten Filme aller Zeiten:\s+(.*)()$",\N,\N,\N,splittitle
+39,Tvdb,"Battlestar Galactica",\N,\N,73545,episodetitle
+39,Tvdb,"Beastmaster - Herr der Wildnis",\N,\N,73848,episodetitle
+39,Tvdb,"Relic Hunter - Die Schatzjägerin",\N,\N,73810,episodetitle
+\N,Tvdb,"Hubert und Staller",program_type,series,253327,episodetitle
+44,Tvdb,Yakari,\N,\N,84458,episodetitle
+44,Tvdb,"Vier Frauen und ein Todesfall",\N,\N,152091,episodetitle
+44,Tvdb,"Verrückt nach Meer",\N,\N,254636,episodetitle
+44,Tvdb,"Rennschwein Rudi Rüssel",\N,\N,141961,episodetitle
+44,Tvdb,"Mordkommission Istanbul",\N,\N,208341,episodetitle
+44,Tvdb,"Mord in bester Gesellschaft",\N,\N,254720,episodetitle
+44,Tvdb,"Mankells Wallander",\N,\N,82505,episodetitle
+44,Tvdb,"Mama ist unmöglich!",\N,\N,262537,episodetitle
+44,Tvdb,"Kommissar Wallander",\N,\N,83925,episodetitle
+44,Tvdb,"Irene Huss, Kripo Göteborg",\N,\N,111941,episodetitle
+\N,Tvdb,"Heiter bis tödlich - München 7",\N,\N,257160,episodetitle
+\N,Tvdb,"Heiter bis tödlich - Morden im Norden",\N,\N,256328,episodetitle
+\N,Tvdb,"Heiter bis tödlich - Hubert und Staller",\N,\N,253327,episodetitle
+\N,Tvdb,"Heiter bis tödlich - Alles Klara",\N,\N,257885,episodetitle
+44,Tvdb,"Geronimo Stilton",\N,\N,136221,episodetitle
+44,Tvdb,"Ein Fall für B.A.R.Z.",\N,\N,217191,episodetitle
+\N,Tvdb,"Donna Leon",\N,\N,101211,episodetitle
+\N,Tvdb,"Commissario Laurenti",\N,\N,137411,episodetitle
+87,Fixups,^(Columbo)\s+-\s+(.*)$,\N,\N,\N,splittitle
+87,Tvdb,Columbo,\N,\N,70369,episodetitle
+84,Fixups,"^(Ab 18!)\s+-\s+(.*)$",\N,\N,\N,splittitle
+\N,Fixups,"^(planet e.):\s+(.*)$",\N,\N,\N,splittitle

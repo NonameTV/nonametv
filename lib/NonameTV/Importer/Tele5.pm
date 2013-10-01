@@ -376,7 +376,7 @@ sub ImportRTF {
         # year of production and genre/program type
         my ($genre, $production_year) = ($text =~ m |\n\s*(.*)\n\s*Produziert:\s*.*\s(\d+)|);
         if ($production_year) {
-          $ce->{production_date} = $production_year . '-00-00';
+          $ce->{production_date} = $production_year . '-01-01';
         }
         if ($genre) {
           if (!($genre =~ m|^Sendedauer:|)) {
@@ -495,7 +495,9 @@ sub ImportRTF {
         # program_type and category for daily shows
         if ($title eq 'Homeshopping') {
           $ce->{program_type} = 'tvshow';
-        } elsif ($title eq 'Making of eines aktuellen Kinofilms') {
+        } elsif ($title eq 'Dauerwerbesendung') {
+          $ce->{program_type} = 'tvshow';
+        } elsif ($title =~ m|^Making of eines aktuellen Kinofilms$|i) {
           $ce->{program_type} = 'tvshow';
           $ce->{category} = 'Movies';
         } elsif ($title =~ m|^Wir lieben Kino|) {
