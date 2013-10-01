@@ -809,3 +809,8 @@
 473,Tvdb,^.*$,program_type,series,\N,episodeseason
 493,Tvdb,"The Newsroom",program_type,series,256227,episodeseason
 493,Tvdb,"Engelska Antikrundan",program_type,series,83774,episodeseason
+232,PreviouslyShown,^.*$,\N,\N,\N,\N
+233,PreviouslyShown,^.*$,\N,\N,\N,\N
+514,PreviouslyShown,^.*$,\N,\N,\N,\N
+435,PreviouslyShown,^.*$,\N,\N,\N,\N
+528,Tvdb,^.*$,program_type,series,\N,episodeseason
