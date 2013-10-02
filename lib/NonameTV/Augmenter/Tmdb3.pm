@@ -204,35 +204,7 @@ sub AugmentProgram( $$$ ){
     my $numResult = @candidates;
     if( $numResult < 1 ){
       return( undef,  "No matching movie found when searching for: " . $searchTerm );
-#    }elsif( $numResult > 1 ){
-#      return( undef,  "More then one matching movie found when searching for: " . $searchTerm );
     }else{
-#      print STDERR Dumper( @candidates );
-
-      # filter out movies more then 2 years before/after if we know the year
-      if ( $ceref->{production_date} ) {
-        my( $produced )=( $ceref->{production_date} =~ m|^(\d{4})\-\d+\-\d+$| );
-        while( @candidates ) {
-          my $candidate = shift( @candidates );
-          # verify that production and release year are close
-          my $released = $candidate->{ release_date };
-          $released =~ s|^(\d{4})\-\d+\-\d+$|$1|;
-          if( !$released ){
-#            my $url = $candidate->findvalue( 'url' );
-            my $url = 'http://www.themoviedb.org/movie/' . $candidate->{ id };
-            w( "year of release not on record, removing candidate. Add it at $url." );
-          } elsif( abs( $released - $produced ) > 2 ){
-            d( "year of production '$produced' to far away from year of release '$released', removing candidate" );
-          } else {
-            push( @keep, $candidate );
-          }
-        }
-
-        @candidates = @keep;
-        @keep = ();
-      }
-
-#      print STDERR "after released:" . Dumper( @candidates );
 
       # strip out all candidates without any matching director
       if( ( @candidates >= 1 ) and ( $ceref->{directors} ) ){
@@ -282,8 +254,29 @@ sub AugmentProgram( $$$ ){
         @keep = ();
       }
 
-#      print STDERR "after directors:" . Dumper( @candidates );
-#      @candidates = $doc->findnodes( '/OpenSearchDescription/movies/movie' );
+      # filter out movies more then 2 years before/after if we know the year
+      if ( $ceref->{production_date} ) {
+        my( $produced )=( $ceref->{production_date} =~ m|^(\d{4})\-\d+\-\d+$| );
+        while( @candidates ) {
+          my $candidate = shift( @candidates );
+          # verify that production and release year are close
+          my $released = $candidate->{ release_date };
+          $released =~ s|^(\d{4})\-\d+\-\d+$|$1|;
+          if( !$released ){
+#            my $url = $candidate->findvalue( 'url' );
+            my $url = 'http://www.themoviedb.org/movie/' . $candidate->{ id };
+            w( "year of release not on record, removing candidate. Add it at $url." );
+          } elsif( abs( $released - $produced ) > 2 ){
+            d( "year of production '$produced' to far away from year of release '$released', removing candidate" );
+          } else {
+            push( @keep, $candidate );
+          }
+        }
+
+        @candidates = @keep;
+        @keep = ();
+      }
+
       if( @candidates != 1 ){
         w( 'search did not return a single best hit, ignoring' );
       } else {
