@@ -232,11 +232,14 @@ sub AugmentProgram( $$$ ){
         @keep = ();
       }
 
-      # if we have multiple candidate movies strip out all without a matching director
-#      print STDERR "after release date: " . Dumper( @candidates );
-      if( ( @candidates > 1 ) and ( $ceref->{directors} ) ){
+#      print STDERR "after released:" . Dumper( @candidates );
+
+      # strip out all candidates without any matching director
+      if( ( @candidates >= 1 ) and ( $ceref->{directors} ) ){
         my @directors = split( /, /, $ceref->{directors} );
-        my $director = $directors[0];
+        my $match = 0;
+
+        # loop over all remaining movies
         while( @candidates ) {
           my $candidate = shift( @candidates );
           
@@ -245,16 +248,34 @@ sub AugmentProgram( $$$ ){
           if( $self->{Slow} ) {
             sleep (1);
           }
-          my $movie = $self->{search}->movie( $movieId );
-#          print STDERR "lookup director:" . Dumper( $movie );
+          my $movie = $self->{themoviedb}->movie( id => $movieId );
 
           # FIXME case insensitive match helps with names like "Guillermo del Toro"
-#          my @nodes = $doc2->findnodes( '/OpenSearchDescription/movies/movie/cast/person[@job=\'Director\' and @name=\'' . $director . '\']' );
-#          if( @nodes != 1 ){
-#            $candidate->unbindNode();
-#            d( "director '$director' not found, removing candidate" );
-#          }
+
+          my @names = ( );
+          foreach my $crew ( $movie->crew ) {
+            if( $crew->{'job'} eq 'Director' ) {
+              my $person = $self->{themoviedb}->person( id => $crew->{id} );
+
+              # FIXME actually aka() should simply return an array
+              @names =  ( @names, $person->aka()->[0]->[0]);
+              push( @names, $person->name );
+            }
+          }
+
+          my $matches = 0;
+          foreach my $a ( @directors ) {
+            foreach my $b ( @names ) {
+              if( lc $a eq lc $b ) {
+                $matches += 1;
+              }
+            }
+          }
+          if( $matches == 0 ){
+            d( "director '" . $ceref->{directors} ."' not found, removing candidate" );
+          } else {
             push( @keep, $candidate );
+          }
         }
 
         @candidates = @keep;
@@ -264,7 +285,7 @@ sub AugmentProgram( $$$ ){
 #      print STDERR "after directors:" . Dumper( @candidates );
 #      @candidates = $doc->findnodes( '/OpenSearchDescription/movies/movie' );
       if( @candidates != 1 ){
-        d( 'search did not return a single best hit, ignoring' );
+        w( 'search did not return a single best hit, ignoring' );
       } else {
         my $movieId = $candidates[0]->{id};
 #        my $movieLanguage = $doc->findvalue( '/OpenSearchDescription/movies/movie/language' );
