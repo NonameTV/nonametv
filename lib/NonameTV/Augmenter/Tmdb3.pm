@@ -230,15 +230,17 @@ sub AugmentProgram( $$$ ){
               my $person = $self->{themoviedb}->person( id => $crew->{id} );
 
               # FIXME actually aka() should simply return an array
-              @names =  ( @names, $person->aka()->[0]->[0]);
+              @names =  ( @names, @{ $person->aka()->[0] } );
               push( @names, $person->name );
             }
           }
 
+#          w( "looking for '" . join( ', ', @directors ) . "' in '" . join( ', ', @names ) . "'" );
+
           my $matches = 0;
           foreach my $a ( @directors ) {
             foreach my $b ( @names ) {
-              if( lc $a eq lc $b ) {
+              if( lc norm( $a ) eq lc norm( $b ) ) {
                 $matches += 1;
               }
             }

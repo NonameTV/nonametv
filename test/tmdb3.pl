@@ -23,11 +23,19 @@ my $augmenter = CreateAugmenter( 'Tmdb3', $ds, 'de' );
 #	'directors' => 'John Landis',
 #};
 
+#my $ce = {
+#	'title' => 'Mala',
+#	'production_date' => '2013-01-01',
+#	'directors' => 'Israel Adrián Caetano', # <- this is an alternate name of the director
+#};
+
+# many aliases
 my $ce = {
-	'title' => 'Mala',
-	'production_date' => '2013-01-01',
-	'directors' => 'Israel Adrián Caetano', # <- this is an alternate name of the director
+	'title' => 'Das Todesduell der Tigerkralle',
+	'production_date' => '1977-01-01',
+	'directors' => 'Chu Yuan',
 };
+
 
 my $rule = {
 	'augmenter' => 'Tmdb3',
