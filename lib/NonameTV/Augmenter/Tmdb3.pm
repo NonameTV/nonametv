@@ -204,10 +204,58 @@ sub AugmentProgram( $$$ ){
     my $numResult = @candidates;
     if( $numResult < 1 ){
       return( undef,  "No matching movie found when searching for: " . $searchTerm );
-#    }elsif( $numResult > 1 ){
-#      return( undef,  "More then one matching movie found when searching for: " . $searchTerm );
     }else{
-#      print STDERR Dumper( @candidates );
+
+      # strip out all candidates without any matching director
+      if( ( @candidates >= 1 ) and ( $ceref->{directors} ) ){
+        my @directors = split( /, /, $ceref->{directors} );
+        my $match = 0;
+
+        # loop over all remaining movies
+        while( @candidates ) {
+          my $candidate = shift( @candidates );
+          
+          # we have to fetch the remaining candidates to peek at the directors
+          my $movieId = $candidate->{id};
+          if( $self->{Slow} ) {
+            sleep (1);
+          }
+          my $movie = $self->{themoviedb}->movie( id => $movieId );
+
+          my @names = ( );
+          foreach my $crew ( $movie->crew ) {
+            if( $crew->{'job'} eq 'Director' ) {
+              my $person = $self->{themoviedb}->person( id => $crew->{id} );
+
+              # FIXME actually aka() should simply return an array
+              @names =  ( @names, @{ $person->aka()->[0] } );
+              push( @names, $person->name );
+            }
+          }
+
+          my $matches = 0;
+          if( @names == 0 ){
+            my $url = 'http://www.themoviedb.org/movie/' . $candidate->{ id };
+            w( "director not on record, removing candidate. Add it at $url." );
+          } else {
+            foreach my $a ( @directors ) {
+              foreach my $b ( @names ) {
+                if( lc norm( $a ) eq lc norm( $b ) ) {
+                  $matches += 1;
+                }
+              }
+            }
+          }
+          if( $matches == 0 ){
+            d( "director '" . $ceref->{directors} ."' not found, removing candidate" );
+          } else {
+            push( @keep, $candidate );
+          }
+        }
+
+        @candidates = @keep;
+        @keep = ();
+      }
 
       # filter out movies more then 2 years before/after if we know the year
       if ( $ceref->{production_date} ) {
@@ -218,7 +266,6 @@ sub AugmentProgram( $$$ ){
           my $released = $candidate->{ release_date };
           $released =~ s|^(\d{4})\-\d+\-\d+$|$1|;
           if( !$released ){
-#            my $url = $candidate->findvalue( 'url' );
             my $url = 'http://www.themoviedb.org/movie/' . $candidate->{ id };
             w( "year of release not on record, removing candidate. Add it at $url." );
           } elsif( abs( $released - $produced ) > 2 ){
@@ -232,39 +279,8 @@ sub AugmentProgram( $$$ ){
         @keep = ();
       }
 
-      # if we have multiple candidate movies strip out all without a matching director
-#      print STDERR "after release date: " . Dumper( @candidates );
-      if( ( @candidates > 1 ) and ( $ceref->{directors} ) ){
-        my @directors = split( /, /, $ceref->{directors} );
-        my $director = $directors[0];
-        while( @candidates ) {
-          my $candidate = shift( @candidates );
-          
-          # we have to fetch the remaining candidates to peek at the directors
-          my $movieId = $candidate->{id};
-          if( $self->{Slow} ) {
-            sleep (1);
-          }
-          my $movie = $self->{search}->movie( $movieId );
-#          print STDERR "lookup director:" . Dumper( $movie );
-
-          # FIXME case insensitive match helps with names like "Guillermo del Toro"
-#          my @nodes = $doc2->findnodes( '/OpenSearchDescription/movies/movie/cast/person[@job=\'Director\' and @name=\'' . $director . '\']' );
-#          if( @nodes != 1 ){
-#            $candidate->unbindNode();
-#            d( "director '$director' not found, removing candidate" );
-#          }
-            push( @keep, $candidate );
-        }
-
-        @candidates = @keep;
-        @keep = ();
-      }
-
-#      print STDERR "after directors:" . Dumper( @candidates );
-#      @candidates = $doc->findnodes( '/OpenSearchDescription/movies/movie' );
       if( @candidates != 1 ){
-        d( 'search did not return a single best hit, ignoring' );
+        w( 'search did not return a single best hit, ignoring' );
       } else {
         my $movieId = $candidates[0]->{id};
 #        my $movieLanguage = $doc->findvalue( '/OpenSearchDescription/movies/movie/language' );
