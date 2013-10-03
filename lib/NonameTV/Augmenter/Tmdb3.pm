@@ -222,8 +222,6 @@ sub AugmentProgram( $$$ ){
           }
           my $movie = $self->{themoviedb}->movie( id => $movieId );
 
-          # FIXME case insensitive match helps with names like "Guillermo del Toro"
-
           my @names = ( );
           foreach my $crew ( $movie->crew ) {
             if( $crew->{'job'} eq 'Director' ) {
@@ -235,13 +233,16 @@ sub AugmentProgram( $$$ ){
             }
           }
 
-#          w( "looking for '" . join( ', ', @directors ) . "' in '" . join( ', ', @names ) . "'" );
-
           my $matches = 0;
-          foreach my $a ( @directors ) {
-            foreach my $b ( @names ) {
-              if( lc norm( $a ) eq lc norm( $b ) ) {
-                $matches += 1;
+          if( @names == 0 ){
+            my $url = 'http://www.themoviedb.org/movie/' . $candidate->{ id };
+            w( "director not on record, removing candidate. Add it at $url." );
+          } else {
+            foreach my $a ( @directors ) {
+              foreach my $b ( @names ) {
+                if( lc norm( $a ) eq lc norm( $b ) ) {
+                  $matches += 1;
+                }
               }
             }
           }
@@ -265,7 +266,6 @@ sub AugmentProgram( $$$ ){
           my $released = $candidate->{ release_date };
           $released =~ s|^(\d{4})\-\d+\-\d+$|$1|;
           if( !$released ){
-#            my $url = $candidate->findvalue( 'url' );
             my $url = 'http://www.themoviedb.org/movie/' . $candidate->{ id };
             w( "year of release not on record, removing candidate. Add it at $url." );
           } elsif( abs( $released - $produced ) > 2 ){
