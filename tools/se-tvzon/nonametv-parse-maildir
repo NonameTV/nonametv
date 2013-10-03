@@ -241,6 +241,14 @@ sub guess_channel
     elsif( $subject =~ /tv11/i ) {
     	  return "tv11.sbstv.se";
     }
+    elsif( $subject =~ /kanal 11/i ) {
+          return "tv11.sbstv.se";
+    }
+    elsif( $subject =~ /kanal11/i ) {
+          return "tv11.sbstv.se";
+    }
+
+
   }
 
    if( $dir =~ /GlobalListings/ ) {

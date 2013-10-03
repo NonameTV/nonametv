@@ -182,6 +182,8 @@ sub ImportContent {
     $dsh->AddProgramme( $ce );
   }
 
+  $dsh->EndBatch( 1 );
+
   return 1;
 }
 
