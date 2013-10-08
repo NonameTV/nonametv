@@ -279,7 +279,7 @@ sub AugmentProgram( $$$ ){
         @keep = ();
       }
 
-      if( @candidates != 1 ){
+      if( @candidates > 1 ){
         w( 'search did not return a single best hit, ignoring' );
       } else {
         my $movieId = $candidates[0]->{id};
