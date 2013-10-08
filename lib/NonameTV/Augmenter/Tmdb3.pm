@@ -143,12 +143,14 @@ sub FillHash( $$$ ) {
 #    }
 #  }
 
-#  my @genres = $doc->findnodes( '/OpenSearchDescription/movies/movie/categories/category[@type="genre"]' );
-#  foreach my $node ( @genres ) {
-#    my $genre_id = $node->findvalue( './@id' );
-#    my ( $type, $categ ) = $self->{datastore}->LookupCat( "Tmdb_genre", $genre_id );
-#    AddCategory( $resultref, $type, $categ );
-#  }
+  if( exists( $movie->info()->{genres} ) ){
+    my @genres = @{ $movie->info()->{genres} };
+    foreach my $node ( @genres ) {
+      my $genre_id = $node->{id};
+      my ( $type, $categ ) = $self->{datastore}->LookupCat( "Tmdb_genre", $genre_id );
+      AddCategory( $resultref, $type, $categ );
+    }
+  }
 
   # TODO themoviedb does not store a year of production only the first screening, that should go to previosly-shown instead
   # $resultref->{production_date} = $doc->findvalue( '/OpenSearchDescription/movies/movie/released' );
@@ -283,8 +285,6 @@ sub AugmentProgram( $$$ ){
         w( 'search did not return a single best hit, ignoring' );
       } else {
         my $movieId = $candidates[0]->{id};
-#        my $movieLanguage = $doc->findvalue( '/OpenSearchDescription/movies/movie/language' );
-#        my $movieTranslated = $doc->findvalue( '/OpenSearchDescription/movies/movie/translated' );
 
         $self->FillHash( $resultref, $movieId, $ceref );
       }
