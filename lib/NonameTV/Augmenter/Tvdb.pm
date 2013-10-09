@@ -292,6 +292,7 @@ sub AugmentProgram( $$$ ){
         my $episodetitle = $ceref->{subtitle};
 
         $episodetitle =~ s|\s+-\s+Teil\s+(\d+)$| ($1)|;   # _-_Teil_#
+        $episodetitle =~ s|\s+\/\s+Teil\s+(\d+)$| ($1)|;  # _/_Teil_#
         $episodetitle =~ s|,\s+Teil\s+(\d+)$| ($1)|;      # ,_Teil #
         $episodetitle =~ s|\s+Teil\s+(\d+)$| ($1)|;       # _Teil #
         $episodetitle =~ s|\s+\(Teil\s+(\d+)\)$| ($1)|;   # _(Teil_#)
