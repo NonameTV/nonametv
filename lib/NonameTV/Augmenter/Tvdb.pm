@@ -297,6 +297,8 @@ sub AugmentProgram( $$$ ){
         $episodetitle =~ s|\s+\(Teil\s+(\d+)\)$| ($1)|;   # _(Teil_#)
         $episodetitle =~ s|\s+-\s+(\d+)\.\s+Teil$| ($1)|; # _-_#._Teil
 
+        $episodetitle =~ s|\s+\(Part\s+(\d+)\)$| ($1)|;   # _(Part_#) for Comedy Central Germany
+
         my $episode = $self->{tvdb}->getEpisodeByName( $series->{SeriesName}, $episodetitle );
         if( defined( $episode ) ) {
           $self->FillHash( $resultref, $series, $episode );
