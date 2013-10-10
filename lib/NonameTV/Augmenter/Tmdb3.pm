@@ -260,7 +260,7 @@ sub AugmentProgram( $$$ ){
       }
 
       # filter out movies more then 2 years before/after if we know the year
-      if ( $ceref->{production_date} ) {
+      if( $ceref->{production_date} ) {
         my( $produced )=( $ceref->{production_date} =~ m|^(\d{4})\-\d+\-\d+$| );
         while( @candidates ) {
           my $candidate = shift( @candidates );
@@ -281,7 +281,9 @@ sub AugmentProgram( $$$ ){
         @keep = ();
       }
 
-      if( @candidates > 1 ){
+      if( @candidates == 0 ){
+        w( 'search did not return any good hit, ignoring' );
+      } elsif ( @candidates > 1 ){
         w( 'search did not return a single best hit, ignoring' );
       } else {
         my $movieId = $candidates[0]->{id};
