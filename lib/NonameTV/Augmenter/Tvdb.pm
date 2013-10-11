@@ -409,12 +409,19 @@ sub AugmentProgram( $$$ ){
         my $episodetitle = $ceref->{subtitle};
 
         $episodetitle =~ s|\s+-\s+Teil\s+(\d+)$| ($1)|;   # _-_Teil_#
+        $episodetitle =~ s|\s+\/\s+Teil\s+(\d+)$| ($1)|;  # _/_Teil_#
         $episodetitle =~ s|,\s+Teil\s+(\d+)$| ($1)|;      # ,_Teil #
         $episodetitle =~ s|\s+Teil\s+(\d+)$| ($1)|;       # _Teil #
         $episodetitle =~ s|\s+\(Teil\s+(\d+)\)$| ($1)|;   # _(Teil_#)
         $episodetitle =~ s|\s+-\s+(\d+)\.\s+Teil$| ($1)|; # _-_#._Teil
 
+<<<<<<< HEAD
         my $episode = $self->{tvdb}->getEpisodeByName( $series->{SeriesName}, $episodetitle, 0 );
+=======
+        $episodetitle =~ s|\s+\(Part\s+(\d+)\)$| ($1)|;   # _(Part_#) for Comedy Central Germany
+
+        my $episode = $self->{tvdb}->getEpisodeByName( $series->{SeriesName}, $episodetitle );
+>>>>>>> 201235eaf9bad6b339f80e119cc2132ca16a084c
         if( defined( $episode ) ) {
           $self->FillHash( $resultref, $series, $episode, $ceref );
         } else {
