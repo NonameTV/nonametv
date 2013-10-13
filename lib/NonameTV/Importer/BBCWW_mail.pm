@@ -119,7 +119,7 @@ my $ref = ReadData ($file);
             $columns{$oWkS->{Cells}[$iR][$iC]->Value} = $iC;
 
 			$columns{'Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /English Title/ );
-			$columns{'Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Programme Title/ );
+			$columns{'Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Programme Title/ );
 			$columns{'Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Programme \(Swedish\)/ );
 
           $columns{'Episode Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /English Episode Title/ );
