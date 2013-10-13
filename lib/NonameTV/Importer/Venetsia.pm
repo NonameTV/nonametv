@@ -54,7 +54,7 @@ sub new {
   $self->{datastorehelper} = $dsh;
   
   # use augment
-  #$self->{datastore}->{augment} = 1;
+  $self->{datastore}->{augment} = 1;
 
   return $self;
 }
@@ -124,8 +124,16 @@ sub ImportXML
       
       # Remove Stuff
       $title =~ s/SVT://;
+      $title =~ s/FOX\s+Kids://;
       $title =~ s/\(T\)//;
+      $title =~ s/\(S\)//;
+      $title =~ s/Elokuva://;
+      $title =~ s/\(TXT\)//;
       $title =~ s/\(\d*\)//;
+      $title =~ s/Series\s+\d+//;
+      $title =~ s/YR\d+//;
+      $title =~ s/\s+Y\d+//;
+      $title =~ s/\s+S\d+//;
       
       $title = norm($title);
       
@@ -149,39 +157,69 @@ sub ImportXML
         start_time => $start->hms(":"),
         description => $description,
       };
-      
-  		# Try to extract episode-information from the description.
-  		my( $ep, $eps, $name, $dummy, $episode );
 
-  		# Del 2
-  		( $dummy, $ep ) = ($description =~ /\b(Del|Avsnitt)\s+(\d+)/ );
-  		$episode = sprintf( " . %d .", $ep-1 ) if defined $ep;
+ 	 ## Stuff
+ 	       my @sentences = (split_text( $description ), "");
+ 	       my $season = "0";
+ 	       my $episode = "0";
+ 	       my $eps = "0";
 
-  		# Del 2 av 3
-  		( $dummy, $ep, $eps ) = ($description =~ /\b(Del|Avsnitt)\s+(\d+)\s*av\s*(\d+)/ );
- 		 	$episode = sprintf( " . %d/%d . ", $ep-1, $eps ) 
-    	if defined $eps;
-  
-  		if( defined $episode ) {
-    		if( exists( $ce->{production_date} ) ) {
-      		my( $year ) = ($ce->{production_date} =~ /(\d{4})-/ );
-      		$episode = ($year-1) . $episode;
-    		}
-    		
-    		$ce->{episode} = $episode;
-    		# If this program has an episode-number, it is by definition
-    		# a series (?). Svt often miscategorize series as movie.
-    		$ce->{program_type} = 'series';
-  		}
-     
-     if( $description =~ /Del\s+\d+\.*/ )
-    {
-      # Del 2 av 3: Pilot (episodename)
- 	  	#( $ce->{subtitle} ) = ($description =~ /:\s*(.+)\./);
- 	  
- 	  	# norm
- 	  	#$ce->{subtitle} = norm($ce->{subtitle});
- 		}
+           for( my $i2=0; $i2<scalar(@sentences); $i2++ )
+       	  {
+       	  	if( my( $seasontextnum ) = ($sentences[$i2] =~ /^Kausi (\d+)./ ) )
+     	    {
+     	      $season = $seasontextnum;
+
+     	      #print("Text: $seasontext - Num: $season\n");
+
+     	      # Only remove sentence if it could find a season
+     	      if($season ne "") {
+     	      	$sentences[$i2] = "";
+     	      }
+     	    }
+     	    elsif( my( $episodetextnum ) = ($sentences[$i2] =~ /^Osa (\d+)./ ) )
+            {
+            	$episode = $episodetextnum;
+
+            	#print("Text: $seasontext - Num: $season\n");
+
+            	# Only remove sentence if it could find a season
+            	if($episode ne "") {
+                	$sentences[$i2] = "";
+                }
+            }
+     	 }
+
+     	 my ( $season2 ) = ($description =~ /^(\d+). kausi./ ); # bugfix
+     	 if(defined($season2) and $season > 0) {
+     	 	$season = $season2;
+     	 }
+
+     	 # Episode info in xmltv-format
+               if( ($episode ne "0") and ( $eps ne "0") and ( $season ne "0") )
+               {
+                 $ce->{episode} = sprintf( "%d . %d/%d .", $season-1, $episode-1, $eps );
+               }
+               elsif( ($episode ne "0") and ( $eps ne "0") )
+               {
+                 	$ce->{episode} = sprintf( ". %d/%d .", $episode-1, $eps );
+               }
+               elsif( ($episode ne "0") and ( $season ne "0") )
+               {
+                 $ce->{episode} = sprintf( "%d . %d .", $season-1, $episode-1 );
+               }
+               elsif( $episode ne "0" )
+               {
+               		$ce->{episode} = sprintf( ". %d .", $episode-1 );
+               }
+
+
+     # Remove if season = 0, episode 1, of_episode 1 - it's a one episode only programme
+     if(($episode eq "1") and ( $season eq "0")) {
+     	delete($ce->{episode});
+     }
+
+     $ce->{description} = join_text( @sentences );
      
      progress( "Venetsia: $chd->{xmltvid}: $start - $title" );
      $dsh->AddProgramme( $ce );
@@ -219,5 +257,64 @@ sub create_dt
   
   return $dt;
 }
+
+sub split_text
+{
+  my( $t ) = @_;
+
+  return () if not defined( $t );
+
+  # Remove any trailing whitespace
+  $t =~ s/\s*$//;
+
+  # Replace strange dots.
+  $t =~ tr/\x2e/./;
+
+  # We might have introduced some errors above. Fix them.
+  $t =~ s/([\?\!])\./$1/g;
+
+  # Replace ... with ::.
+  $t =~ s/\.{3,}/::./g;
+
+  # Lines ending with a comma is not the end of a sentence
+#  $t =~ s/,\s*\n+\s*/, /g;
+
+# newlines have already been removed by norm()
+  # Replace newlines followed by a capital with space and make sure that there
+  # is a dot to mark the end of the sentence.
+#  $t =~ s/([\!\?])\s*\n+\s*([A-Z���])/$1 $2/g;
+#  $t =~ s/\.*\s*\n+\s*([A-Z���])/. $1/g;
+
+  # Turn all whitespace into pure spaces and compress multiple whitespace
+  # to a single.
+  $t =~ tr/\n\r\t \xa0/     /s;
+
+  # Mark sentences ending with '.', '!', or '?' for split, but preserve the
+  # ".!?".
+  $t =~ s/([\.\!\?])\s+([A-Z���])/$1;;$2/g;
+
+  my @sent = grep( /\S\S/, split( ";;", $t ) );
+
+  if( scalar( @sent ) > 0 )
+  {
+    # Make sure that the last sentence ends in a proper way.
+    $sent[-1] =~ s/\s+$//;
+    $sent[-1] .= "."
+      unless $sent[-1] =~ /[\.\!\?]$/;
+  }
+
+  return @sent;
+}
+
+# Join a number of sentences into a single paragraph.
+# Performs the inverse of split_text
+sub join_text
+{
+  my $t = join( " ", grep( /\S/, @_ ) );
+  $t =~ s/::/../g;
+
+  return $t;
+}
+
 
 1;
