@@ -227,8 +227,9 @@ EOSQL
   $update_batches->finish();
 }
 
-# Find all dates that should be exported but haven't been exported
-# yet. 
+# Find all dates that should be exported
+# TODO but haven't been exported yet. 
+# TODO don't export past end of last program, once we don't grab there anymore
 sub FindUnexportedDays {
   my $self = shift;
   my( $todo, $last_update ) = @_;
@@ -694,10 +695,25 @@ sub WriteEntry
 
   if( defined( $data->{actors} ) and $data->{actors} =~ /\S/ )
   {
-    $d->{credits}->{actor} = [split( ", ", $data->{actors})];
-    foreach my $actor (@{$d->{credits}->{actor}} ) {
-      w "Bad actor $data->{actors}"
-	  if( $actor =~ /^\s*$/ );
+    # handle "actor (character)"
+    # with variants
+    # "actor (charater, name)"
+    # "actor (character (name))"
+    # "first (nick) lastname"
+    my $actors =  $data->{actors};
+    # move comma in braces out of the way
+    $actors =~ s|(\([^\(]*),([^\(]*\))|$1_$2|g;
+    # split actors
+    my @actors = split( ", ", $data->{actors});
+    foreach my $actor ( @actors ) {
+      if( $actor =~ /^\s*$/ ) {
+        w "Bad actor $data->{actors}";
+      }
+      if( $actor =~ m|^([^\(]*) \((.*)\)$| ){
+        push( @{$d->{credits}->{actor}}, [$1, $2 ]  );
+      } elsif( $actor =~ m|^([^\(]*)$| ){
+        push( @{$d->{credits}->{actor}},  $1  );
+      }
     }
   }
 
