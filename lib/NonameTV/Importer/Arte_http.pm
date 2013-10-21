@@ -176,7 +176,7 @@ sub ImportContent( $$$ ) {
         $ce->{episode} = '. ' . ($folge - 1) . ' .';
       } else {
         if( ( $folge ) = ($subtitle =~ m|^\((\d+)\):\s+.*$| ) ){
-          if( $episodetotal > 0 ) {
+          if( defined( $episodetotal )&&( $episodetotal > 0 ) ) {
             $ce->{episode} = '. ' . ($folge - 1) . '/' . $episodetotal . ' .';
           } else {
             $ce->{episode} = '. ' . ($folge - 1) . ' .';
