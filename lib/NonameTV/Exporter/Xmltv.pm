@@ -535,9 +535,9 @@ sub CloseWriter
   }
 
   if( $self->{KeepXml} ){
-    system("gzip -c -f -n $path$filename.new > $path$filename.new.gz");
+    system("gzip -c -9 -f -n $path$filename.new > $path$filename.new.gz");
   } else {
-    system("gzip -f -n $path$filename.new");
+    system("gzip -9 -f -n $path$filename.new");
   }
 
   if( -f "$path$filename.gz" )
@@ -810,9 +810,9 @@ sub ExportChannelList
   close( $fh );
 
   if( $self->{KeepXml} ){
-    system("gzip -c -f -n $outfile > $outfile.gz");
+    system("gzip -c -9 -f -n $outfile > $outfile.gz");
   } else {
-    system("gzip -f -n $outfile");
+    system("gzip -9 -f -n $outfile");
   }
 }
 
