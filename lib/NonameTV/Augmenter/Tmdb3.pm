@@ -216,42 +216,44 @@ sub AugmentProgram( $$$ ){
         # loop over all remaining movies
         while( @candidates ) {
           my $candidate = shift( @candidates );
-          
-          # we have to fetch the remaining candidates to peek at the directors
-          my $movieId = $candidate->{id};
-          if( $self->{Slow} ) {
-            sleep (1);
-          }
-          my $movie = $self->{themoviedb}->movie( id => $movieId );
 
-          my @names = ( );
-          foreach my $crew ( $movie->crew ) {
-            if( $crew->{'job'} eq 'Director' ) {
-              my $person = $self->{themoviedb}->person( id => $crew->{id} );
-
-              # FIXME actually aka() should simply return an array
-              @names =  ( @names, @{ $person->aka()->[0] } );
-              push( @names, $person->name );
+          if( defined( $candidate->{id} ) ) {
+            # we have to fetch the remaining candidates to peek at the directors
+            my $movieId = $candidate->{id};
+            if( $self->{Slow} ) {
+              sleep (1);
             }
-          }
+            my $movie = $self->{themoviedb}->movie( id => $movieId );
 
-          my $matches = 0;
-          if( @names == 0 ){
-            my $url = 'http://www.themoviedb.org/movie/' . $candidate->{ id };
-            w( "director not on record, removing candidate. Add it at $url." );
-          } else {
-            foreach my $a ( @directors ) {
-              foreach my $b ( @names ) {
-                if( lc norm( $a ) eq lc norm( $b ) ) {
-                  $matches += 1;
+            my @names = ( );
+            foreach my $crew ( $movie->crew ) {
+              if( $crew->{'job'} eq 'Director' ) {
+                my $person = $self->{themoviedb}->person( id => $crew->{id} );
+
+                # FIXME actually aka() should simply return an array
+                @names =  ( @names, @{ $person->aka()->[0] } );
+                push( @names, $person->name );
+              }
+            }
+
+            my $matches = 0;
+            if( @names == 0 ){
+              my $url = 'http://www.themoviedb.org/movie/' . $candidate->{ id };
+              w( "director not on record, removing candidate. Add it at $url." );
+            } else {
+              foreach my $a ( @directors ) {
+                foreach my $b ( @names ) {
+                  if( lc norm( $a ) eq lc norm( $b ) ) {
+                    $matches += 1;
+                  }
                 }
               }
             }
-          }
-          if( $matches == 0 ){
-            d( "director '" . $ceref->{directors} ."' not found, removing candidate" );
-          } else {
-            push( @keep, $candidate );
+            if( $matches == 0 ){
+              d( "director '" . $ceref->{directors} ."' not found, removing candidate" );
+            } else {
+              push( @keep, $candidate );
+            }
           }
         }
 
