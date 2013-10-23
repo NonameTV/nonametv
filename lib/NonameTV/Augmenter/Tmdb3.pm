@@ -114,7 +114,14 @@ sub FillHash( $$$ ) {
   # on one hand the augmenters are here to unify various styles on the other
   # hand matching the other guides means less surprise for the users
   $resultref->{title} = norm( $movie->title );
-  $resultref->{original_title} = norm( $movie->info->{original_title} );
+  if( defined( $movie->info ) ){
+    if( defined( $movie->info->{original_title} ) ){
+      $resultref->{original_title} = norm( $movie->info->{original_title} );
+    }else{
+      my $url = 'http://www.themoviedb.org/movie/' . $movie->{id};
+      w( "original title not on file, add it at $url." );
+    }
+  }
 
   # TODO shall we add the tagline as subtitle? (for german movies the tv title is often made of the movie title plus tagline)
   $resultref->{subtitle} = undef;
@@ -229,10 +236,24 @@ sub AugmentProgram( $$$ ){
             foreach my $crew ( $movie->crew ) {
               if( $crew->{'job'} eq 'Director' ) {
                 my $person = $self->{themoviedb}->person( id => $crew->{id} );
-
-                # FIXME actually aka() should simply return an array
-                @names =  ( @names, @{ $person->aka()->[0] } );
-                push( @names, $person->name );
+                if( defined( $person ) ){
+                  if( defined( $person->aka() ) ){
+                    if( defined( $person->aka()->[0] ) ){
+                      # FIXME actually aka() should simply return an array
+                      @names =  ( @names, @{ $person->aka()->[0] } );
+                      push( @names, $person->name );
+                    }else{
+                      my $url = 'http://www.themoviedb.org/person/' . $crew->{id};
+                    w( "got a person but could not get the aliases (with [0]), see $url." );
+                    }
+                  }else{
+                    my $url = 'http://www.themoviedb.org/person/' . $crew->{id};
+                    w( "got a person but could not get the aliases, see $url." );
+                  }
+                }else{
+                  my $url = 'http://www.themoviedb.org/person/' . $crew->{id};
+                  w( "got a reference to a person but could not get the person, see $url." );
+                }
               }
             }
 
@@ -254,6 +275,8 @@ sub AugmentProgram( $$$ ){
             } else {
               push( @keep, $candidate );
             }
+          }else{
+            w( "got a movie result without id as candidate! " . Dumper( $candidate ) );
           }
         }
 
