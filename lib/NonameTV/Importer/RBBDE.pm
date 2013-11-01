@@ -39,6 +39,7 @@ sub new {
 
     $self->{datastorehelper} = NonameTV::DataStore::Helper->new( $self->{datastore} );
 
+    $self->{datastore}->{SILENCE_END_START_OVERLAP}=1;
 #    $self->{datastore}->{augment} = 1;
 
     return $self;
@@ -105,17 +106,19 @@ sub ImportContent( $$$ ) {
     return 0;
   }
 
+  my $latest = DateTime->new( year => 1900 );
+
   foreach my $program ($programs->get_nodelist) {
     $xpc->setContextNode( $program );
     my $ce = ();
     $ce->{channel_id} = $chd->{id};
-    my $vpsstart = $xpc->findvalue( 'ZEITINFORMATIONEN/VPS_LABEL/VPS_DATUM' ) . 'T' . $xpc->findvalue( 'ZEITINFORMATIONEN/VPS_LABEL/VPS_ZEIT' ) . ':00';
-    if( $vpsstart eq 'T:00' ){
-      $vpsstart = $self->parseTimestamp( $xpc->findvalue( 'ZEITINFORMATIONEN/SENDESTART' ) );
-    }
-    $ce->{start_time} = $self->parseTimestamp( $vpsstart );
-#   FIXME time going backwards at midnight sucks, can we not all just dump ISO8601 timestamps in explicit time zones?
-#    $ce->{end_time} = $self->parseTimestamp( $xpc->findvalue( 'ZEITINFORMATIONEN/SENDESTOP' ) );
+#    my $vpsstart = $xpc->findvalue( 'ZEITINFORMATIONEN/VPS_LABEL/VPS_DATUM' ) . 'T' . $xpc->findvalue( 'ZEITINFORMATIONEN/VPS_LABEL/VPS_ZEIT' ) . ':00';
+#    if( $vpsstart eq 'T:00' ){
+#      $vpsstart = $self->parseTimestamp( $xpc->findvalue( 'ZEITINFORMATIONEN/SENDESTART' ) );
+#    }
+#    $ce->{start_time} = $self->parseTimestamp( $vpsstart );
+    $ce->{start_time} = $self->parseTimestamp( $xpc->findvalue( 'ZEITINFORMATIONEN/SENDESTART' ), \$latest );
+    $ce->{end_time} = $self->parseTimestamp( $xpc->findvalue( 'ZEITINFORMATIONEN/SENDESTOP' ), \$latest );
 
     my $title = $xpc->findvalue( 'SENDUNGSINFORMATIONEN/TITELINFORMATIONEN/SENDUNGSTITELTEXT' );
     $ce->{title} = norm( $title );
@@ -156,9 +159,9 @@ sub ImportContent( $$$ ) {
 }
 
 
-sub parseTimestamp( $ ){
+sub parseTimestamp( $$ ){
   my $self = shift;
-  my ($timestamp) = @_;
+  my ($timestamp, $latest) = @_;
 
   if( $timestamp ){
     # 2011-11-12T20:15:00 in local time
@@ -176,6 +179,17 @@ sub parseTimestamp( $ ){
       time_zone => 'Europe/Berlin',
     );
     $dt->set_time_zone( 'UTC' );
+
+    if( defined( $$latest ) ){
+      if( DateTime->compare( $$latest, $dt ) > 0 ){
+        if( $$latest->delta_ms( $dt )->delta_minutes() >= 6*60 ){
+          # time went backwards more then 6 hours, add a day
+          # this is because the period from 6am to 6am is sent with the same date
+          $dt->add( days => 1 );
+        }
+      }
+    }
+    $$latest = $dt->clone();
 
     return( $dt->ymd( '-' ) . ' ' . $dt->hms( ':' ) );
   } else {
