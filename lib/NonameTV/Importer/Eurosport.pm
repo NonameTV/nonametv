@@ -17,13 +17,12 @@ use XML::LibXML;
 use NonameTV qw/ParseXml norm/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/f/;
-use Data::Dumper;
 
 use NonameTV::Config qw/ReadConfig/;
 
-use NonameTV::Importer::BaseFile;
+use NonameTV::Importer::BaseOne;
 
-use base 'NonameTV::Importer::BaseFile';
+use base 'NonameTV::Importer::BaseOne';
 
 sub new {
   my $proto = shift;
@@ -34,35 +33,24 @@ sub new {
 
   defined( $self->{FtpRoot} ) or die "You must specify FtpRoot";
   defined( $self->{Filename} ) or die "You must specify Filename";
-
+  
   my $conf = ReadConfig();
-
-  $self->{FileStore} = $conf->{FileStore};
 
   return $self;
 }
 
-sub UpdateFiles
-{
-  my( $self ) = @_;
+sub Object2Url {
+  my $self = shift;
+  my( $objectname, $chd ) = @_;
 
-foreach my $chd ( @{$self->ListChannels()} ) {
+  # Note: HTTP::Cache::Transparent caches the file and only downloads
+  # it if it has changed. This works since LWP interprets the 
+  # if-modified-since header and handles it locally.
+
   my $dir = $chd->{grabber_info};
   my $url = $self->{FtpRoot} . $dir . '/' . $self->{Filename};
 
-  #my( $content, $code ) = MyGet( $url );
-  #print $url;
-  #ftp_get( $url, $self->{FileStore} . '/' .  $chd->{xmltvid} . '/' . $self->{Filename} );
-
-}
-
-  return;
-}
-
-sub ftp_get {
-  my( $url, $file ) = @_;
-
-  qx[curl -S -s -z "$file" -o "$file" "$url"];
+  return( $url, undef );
 }
 
 sub ContentExtension {
@@ -73,34 +61,25 @@ sub FilteredExtension {
   return 'xml';
 }
 
-sub ImportContentFile {
+sub ImportContent {
   my $self = shift;
-  my( $file, $chd ) = @_;
+  my( $batch_id, $cref, $chd ) = @_;
 
   my $xmltvid=$chd->{xmltvid};
 
   my $channel_id = $chd->{id};
   my $ds = $self->{datastore};
 
-#print $file;
-
-my $cref=`cat $file`;
-
-  my $doc;
-    my $xml = XML::LibXML->new;
-    eval { $doc = $xml->parse_string($cref); };
-
-    if( not defined( $doc ) ) {
-      error( "SvtXML: $file: Failed to parse xml" );
-      return;
-    }
-
-    # Find all paragraphs.
-    #my $ns = $doc->find( "//BroadcastDate_GMT" );
-
+  my $doc = ParseXml( $cref );
+  
+  if( not defined( $doc ) ) {
+    f "Failed to parse";
+    return 0;
+  }
+  
   # Find all paragraphs.
   my $ns = $doc->find( "//BroadcastDate_GMT" );
-
+  
   if( $ns->size() == 0 ) {
     f "No BroadcastDates found";
     return 0;
@@ -108,14 +87,10 @@ my $cref=`cat $file`;
 
   foreach my $sched_date ($ns->get_nodelist) {
     my( $date ) = norm( $sched_date->findvalue( '@Day' ) );
-    print Dumper($date);
     my $dt = create_dt( $date );
-
-    #print Dumper($dt);
 
     my $ns2 = $sched_date->find('Emission');
     foreach my $emission ($ns2->get_nodelist) {
-
       my $start_time = $emission->findvalue( 'StartTimeGMT' );
       my $end_time = $emission->findvalue( 'EndTimeGMT' );
 
@@ -126,12 +101,8 @@ my $cref=`cat $file`;
         $end_dt->add( days => 1 );
       }
 
-
-
       my $title = norm( $emission->findvalue( 'Title' ) );
       my $desc = norm( $emission->findvalue( 'Feature' ) );
-
-	  my $type = norm( $emission->findvalue( 'BroadcastType' ) );
 
       my $ce = {
         channel_id => $channel_id,
@@ -141,31 +112,8 @@ my $cref=`cat $file`;
         description => $desc,
       };
 
-      # Find live-info and rerun
-	  if( $type eq "DIREKT" )
-	  {
-	    $ce->{live} = "1";
-	  }
-	  else
-	  {
-	    $ce->{live} = "0";
-	  }
-
-	  if( $type eq "Repris" )
-	  {
-	    $ce->{rerun} = "1";
-	  }
-	  else
-	  {
-	    $ce->{rerun} = "0";
-	  }
-
-	print Dumper($ce);
-
-      #$ds->AddProgramme( $ce );
-
-      progress("Eurosport: $chd->{xmltvid}: $start_dt - $title");
-
+      $ds->AddProgramme( $ce );
+      
     }
   }
 
