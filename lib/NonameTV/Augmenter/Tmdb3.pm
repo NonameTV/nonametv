@@ -114,7 +114,14 @@ sub FillHash( $$$ ) {
   # on one hand the augmenters are here to unify various styles on the other
   # hand matching the other guides means less surprise for the users
   $resultref->{title} = norm( $movie->title );
-  $resultref->{original_title} = norm( $movie->info->{original_title} );
+  if( defined( $movie->info ) ){
+    if( defined( $movie->info->{original_title} ) ){
+      $resultref->{original_title} = norm( $movie->info->{original_title} );
+    }else{
+      my $url = 'http://www.themoviedb.org/movie/' . $movie->{id};
+      w( "original title not on file, add it at $url." );
+    }
+  }
 
   # TODO shall we add the tagline as subtitle? (for german movies the tv title is often made of the movie title plus tagline)
   $resultref->{subtitle} = undef;
@@ -216,42 +223,60 @@ sub AugmentProgram( $$$ ){
         # loop over all remaining movies
         while( @candidates ) {
           my $candidate = shift( @candidates );
-          
-          # we have to fetch the remaining candidates to peek at the directors
-          my $movieId = $candidate->{id};
-          if( $self->{Slow} ) {
-            sleep (1);
-          }
-          my $movie = $self->{themoviedb}->movie( id => $movieId );
 
-          my @names = ( );
-          foreach my $crew ( $movie->crew ) {
-            if( $crew->{'job'} eq 'Director' ) {
-              my $person = $self->{themoviedb}->person( id => $crew->{id} );
-
-              # FIXME actually aka() should simply return an array
-              @names =  ( @names, @{ $person->aka()->[0] } );
-              push( @names, $person->name );
+          if( defined( $candidate->{id} ) ) {
+            # we have to fetch the remaining candidates to peek at the directors
+            my $movieId = $candidate->{id};
+            if( $self->{Slow} ) {
+              sleep (1);
             }
-          }
+            my $movie = $self->{themoviedb}->movie( id => $movieId );
 
-          my $matches = 0;
-          if( @names == 0 ){
-            my $url = 'http://www.themoviedb.org/movie/' . $candidate->{ id };
-            w( "director not on record, removing candidate. Add it at $url." );
-          } else {
-            foreach my $a ( @directors ) {
-              foreach my $b ( @names ) {
-                if( lc norm( $a ) eq lc norm( $b ) ) {
-                  $matches += 1;
+            my @names = ( );
+            foreach my $crew ( $movie->crew ) {
+              if( $crew->{'job'} eq 'Director' ) {
+                my $person = $self->{themoviedb}->person( id => $crew->{id} );
+                if( defined( $person ) ){
+                  if( defined( $person->aka() ) ){
+                    if( defined( $person->aka()->[0] ) ){
+                      # FIXME actually aka() should simply return an array
+                      @names =  ( @names, @{ $person->aka()->[0] } );
+                      push( @names, $person->name );
+                    }else{
+                      my $url = 'http://www.themoviedb.org/person/' . $crew->{id};
+                    w( "got a person but could not get the aliases (with [0]), see $url." );
+                    }
+                  }else{
+                    my $url = 'http://www.themoviedb.org/person/' . $crew->{id};
+                    w( "got a person but could not get the aliases, see $url." );
+                  }
+                }else{
+                  my $url = 'http://www.themoviedb.org/person/' . $crew->{id};
+                  w( "got a reference to a person but could not get the person, see $url." );
                 }
               }
             }
-          }
-          if( $matches == 0 ){
-            d( "director '" . $ceref->{directors} ."' not found, removing candidate" );
-          } else {
-            push( @keep, $candidate );
+
+            my $matches = 0;
+            if( @names == 0 ){
+              my $url = 'http://www.themoviedb.org/movie/' . $candidate->{ id };
+              w( "director not on record, removing candidate. Add it at $url." );
+            } else {
+              foreach my $a ( @directors ) {
+                foreach my $b ( @names ) {
+                  if( lc norm( $a ) eq lc norm( $b ) ) {
+                    $matches += 1;
+                  }
+                }
+              }
+            }
+            if( $matches == 0 ){
+              d( "director '" . $ceref->{directors} ."' not found, removing candidate" );
+            } else {
+              push( @keep, $candidate );
+            }
+          }else{
+            w( "got a movie result without id as candidate! " . Dumper( $candidate ) );
           }
         }
 
@@ -282,9 +307,9 @@ sub AugmentProgram( $$$ ){
       }
 
       if( @candidates == 0 ){
-        w( 'search did not return any good hit, ignoring' );
+        w( 'search for "' . $ceref->{title} . '" did not return any good hit, ignoring' );
       } elsif ( @candidates > 1 ){
-        w( 'search did not return a single best hit, ignoring' );
+        w( 'search for "' . $ceref->{title} . '" did not return a single best hit, ignoring' );
       } else {
         my $movieId = $candidates[0]->{id};
 
