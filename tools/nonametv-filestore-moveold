@@ -151,6 +151,7 @@ foreach my $fsf (@fsfiles)
 
     if( $oktomove ){
       move( "$filestore/$fsf/$cff", "$filestore/$fsf/old/$cff" );
+      $ds->sa->Delete( 'files', { id => $channel_id, filename => $cff } );
       print "moved to old\n";
     } else {
       print "leaving\n";
