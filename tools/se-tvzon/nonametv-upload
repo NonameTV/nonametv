@@ -10,11 +10,11 @@ then
   V=true
 fi
 $V && echo "Local rsync"
-rsync -c --delete -r $NROOT/xmltv_staging/ $NROOT/xmltv/
-tools/se-tvzon/nonametv-xmltv-gendatalist
+#rsync -c --delete -r $NROOT/xmltv_staging/ $NROOT/xmltv/
+#tools/se-tvzon/nonametv-xmltv-gendatalist
 rsync -c --delete -r $NROOT/json_extra_staging/ $NROOT/json_extra/
 #tools/se-tvzon/nonametv-xmltv-extra-gendatalist
-rsync -c --delete -r $NROOT/xmltv_staging_iso/ $NROOT/xmltv_iso/
+#rsync -c --delete -r $NROOT/xmltv_staging_iso/ $NROOT/xmltv_iso/
 rsync -c --delete -r $NROOT/json_staging/ $NROOT/json/
 tools/se-tvzon/nonametv-json-gendatalist
 
@@ -22,7 +22,7 @@ $V && echo "tvzon"
 #sitecopy --update $SC_OPT tvzon
 
 rsync -c --delete -r $NROOT/json_extra/ /server/www/xmltv/json_extra/
-rsync -c --delete -r $NROOT/xmltv/ /server/www/xmltv/xmltv/
-rsync -c --delete -r $NROOT/xmltv_iso/ /server/www/xmltv/xmltv_iso/
+#rsync -c --delete -r $NROOT/xmltv/ /server/www/xmltv/xmltv/
+#rsync -c --delete -r $NROOT/xmltv_iso/ /server/www/xmltv/xmltv_iso/
 rsync -c --delete -r $NROOT/json/ /server/www/xmltv/json/
 rsync -c --delete -r $NROOT/datalist.xml.gz /server/www/xmltv/datalist.xml.gz

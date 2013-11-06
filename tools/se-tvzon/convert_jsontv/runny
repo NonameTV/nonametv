@@ -1,0 +1,27 @@
+#!/bin/sh
+NROOT=/var/local/nonametv
+
+# Python
+/home/jnylen/projects/nonametv/tools/se-tvzon/convert_jsontv/env/bin/python /home/jnylen/projects/nonametv/tools/se-tvzon/convert_jsontv/convert.py
+
+# Move to right folder.
+rsync -c --delete -r /tmp/xmltv_convert/xml/ /var/local/nonametv/xmltv_staging/
+
+#  Perl
+tools/nonametv-export Xmltv --export-channels --channel-group TV
+tools/nonametv-export Xmltv --export-channels --channel-group RADIO
+tools/nonametv-export Xmltv --export-channels --channel-group DEV
+
+tools/se-tvzon/nonametv-xmltv-genhtml $NROOT/xmltv_staging
+#tools/nonametv-localize-movies > $NROOT/xmltv_staging/00movies.html
+rsync examples/displayfile.html $NROOT/xmltv_staging
+rsync examples/listing.xsl $NROOT/xmltv_staging
+
+
+# upload
+rsync -c --delete -r $NROOT/xmltv_staging/ $NROOT/xmltv/
+tools/se-tvzon/nonametv-xmltv-gendatalist
+
+rsync -c --delete -r $NROOT/xmltv/ /server/www/xmltv/xmltv/
+rsync -c --delete -r $NROOT/datalist.xml.gz /server/www/xmltv/datalist.xml.gz
+

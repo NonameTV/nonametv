@@ -3,7 +3,7 @@
 use File::Copy;
 use POSIX qw(strftime);
 # How large an empty xmltv-file can be.
-use constant EMPTY_SIZE => 140;
+use constant EMPTY_SIZE => 200;
 
 use strict;
 

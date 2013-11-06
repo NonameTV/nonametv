@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 # How large an empty xmltv-file can be.
-use constant EMPTY_SIZE => 140;
+use constant EMPTY_SIZE => 154;
 
 use strict;
 
