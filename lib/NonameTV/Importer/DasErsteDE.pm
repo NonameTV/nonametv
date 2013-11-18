@@ -10,6 +10,8 @@ Features:
 Episode-info parsed from description.
 
 This mode of access is documented at https://presse.daserste.de/pages/programm/xmldownload.aspx
+and https://presse.daserste.de/pages/senderguide/xmldownload.aspx explains the (new?) optional
+parameter to choose one of the 18 available channels.
 
 =cut
 
@@ -77,12 +79,19 @@ sub Object2Url {
                           day   => $day 
                           );
 
+  my $senderid = $chd->{grabber_info};
+  if( !defined( $senderid )  || ( $senderid eq '' )){
+    # set sender id to the implicit default
+    $senderid = 1;
+  }
+
   my $u = URI->new('https://presse.daserste.de/export/programmablauf.aspx');
   $u->query_form ({
     user => $self->{Username},
     pass => $self->{Password},
     datum => $dt->dmy ("."),
     zeitraum => "tag",
+    sender => $senderid,
     pressetext => "true"});
 
   return( $u->as_string(), undef );
