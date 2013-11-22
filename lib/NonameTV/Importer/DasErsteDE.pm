@@ -118,6 +118,10 @@ sub FilterContent {
   $$cref =~ s|&#(\d+);|chr($1)|eg;
   from_to ($$cref, "windows-1252", "utf-8");
 
+  # remove date of export
+  $$cref =~ s| - Programmablauf Stand \d+.\d+.\d{4} \d{2}:\d{2}:\d{2}||;
+  $$cref =~ s|Programmablauf Stand=".*"|Programmablauf|;
+
   my $doc = ParseXml( $cref );
  
   if( not defined $doc ) {
@@ -198,6 +202,7 @@ sub ImportContent {
     my $startTime = $pgm->findvalue( 'Sendebeginn' );
     my $endTime = $pgm->findvalue( 'Sendeende' );
     my $title = $pgm->findvalue( 'Sendetitel' );
+    $title =~ s| \(\d+/\d+\)$||g;
     $title =~ s| \(\d+\)$||g;
 
     my $ce = {
@@ -243,7 +248,19 @@ sub ImportContent {
       } else {
         $ce->{episode} = ". " . ($episode-1) . " .";
       }
+    }else{
+      # no episode number from the xml elements, see if there is something appended to the title
+      my $episodeNumTitle = $pgm->findvalue( 'Sendetitel' );
+      ($episode, $episodeCount)=($episodeNumTitle =~ m/\s+\((\d+)(?:\/(\d+)|)\)$/);
+      if ($episode) {
+        if ($episodeCount) {
+          $ce->{episode} = ". " . ($episode-1) . "/" . $episodeCount . " .";
+        } else {
+          $ce->{episode} = ". " . ($episode-1) . " .";
+        }
+      }
     }
+
 
     my $subtitle1 = $pgm->findvalue( 'Untertitel1' );
     $subtitle1 = $self->parse_subtitle ($ce, $subtitle1);
@@ -357,6 +374,11 @@ sub parse_subtitle
 
   $subtitle = norm ($subtitle);
 
+  # strip Themenwoche
+  if( $subtitle =~ m/(?:\s*-\s*|)ARD-Themenwoche \".*\"$/ ){
+    $subtitle =~ s/(?:\s*-\s*|)ARD-Themenwoche \".*\"$//;
+  }
+
   # match program type, production county, production year
   if ($subtitle =~ m|^\S+ \S+ \d{4}$|) {
     my ($program_type, $production_countries, $production_year) = ($subtitle =~ m|^(\S+) (\S+) (\d{4})$|);
@@ -413,49 +435,60 @@ sub parse_subtitle
     my ( $type, $categ ) = $self->{datastore}->LookupCat( "DasErste_type", $program_type );
     AddCategory( $sce, $type, $categ );
     $subtitle = undef;
-  } elsif ($subtitle =~ m|^Film von [A-Z]\S+ [A-Z]\S+$|) {
-    my ($producer) = ($subtitle =~ m|^Film von (\S+ \S+)$|);
+  } elsif ($subtitle =~ m/^(?:Ein |)Film von [A-Z]\S+ [A-Z]\S+$/) {
+    my ($producer) = ($subtitle =~ m/^(?:Ein |)Film von (\S+ \S+)$/);
     if ($sce->{producers}) {
       $sce->{producers} = join (", ", $sce->{producers}, $producer);
     } else {
       $sce->{producers} = $producer;
     }
     $subtitle = undef;
-  } elsif ($subtitle =~ m|^Film von [A-Z]\S+ von [A-Z]\S+$|) {
-    my ($producer) = ($subtitle =~ m|^Film von (\S+ von \S+)$|);
+  } elsif ($subtitle =~ m/^(?:Ein |)Film von [A-Z]\S+ von [A-Z]\S+$/) {
+    my ($producer) = ($subtitle =~ m/^(?:Ein |)Film von (\S+ von \S+)$/);
     if ($sce->{producers}) {
       $sce->{producers} = join (", ", $sce->{producers}, $producer);
     } else {
       $sce->{producers} = $producer;
     }
     $subtitle = undef;
-  } elsif ($subtitle =~ m|^Film von [A-Z]\S+ [A-Z]\. [A-Z]\S+$|) {
-    my ($producer) = ($subtitle =~ m|^Film von (\S+ \S+ \S+)$|);
+  } elsif ($subtitle =~ m/^(?:Ein |)Film von [A-Z]\S+ [A-Z]\. [A-Z]\S+$/) {
+    my ($producer) = ($subtitle =~ m/^(?:Ein |)Film von (\S+ \S+ \S+)$/);
     if ($sce->{producers}) {
       $sce->{producers} = join (", ", $sce->{producers}, $producer);
     } else {
       $sce->{producers} = $producer;
     }
     $subtitle = undef;
-  } elsif ($subtitle =~ m|^Film von [A-Z]\S+ [A-Z]\S+ und [A-Z]\S+ [A-Z]\S+$|) {
-    my ($producer1, $producer2) = ($subtitle =~ m|^Film von (\S+ \S+) und (\S+ \S+)$|);
+  } elsif ($subtitle =~ m/^(?:Ein |)Film von [A-Z]\S+ [A-Z]\S+ und [A-Z]\S+ [A-Z]\S+$/) {
+    my ($producer1, $producer2) = ($subtitle =~ m/^(?:Ein |)Film von (\S+ \S+) und (\S+ \S+)$/);
     if ($sce->{producers}) {
       $sce->{producers} = join (", ", $sce->{producers}, $producer1, $producer2);
     } else {
       $sce->{producers} = join (", ", $producer1, $producer2);
     }
     $subtitle = undef;
-  } elsif ($subtitle =~ m|^Film von [A-Z]\S+ [A-Z]\S+, [A-Z]\S+ [A-Z]\S+$|) {
-    my ($producer1, $producer2) = ($subtitle =~ m|^Film von (\S+ \S+), (\S+ \S+)$|);
+  } elsif ($subtitle =~ m/^(?:Ein |)Film von [A-Z]\S+ [A-Z]\S+, [A-Z]\S+ [A-Z]\S+$/) {
+    my ($producer1, $producer2) = ($subtitle =~ m/^(?:Ein |)Film von (\S+ \S+), (\S+ \S+)$/);
     if ($sce->{producers}) {
       $sce->{producers} = join (", ", $sce->{producers}, $producer1, $producer2);
     } else {
       $sce->{producers} = join (", ", $producer1, $producer2);
     }
+    $subtitle = undef;
+  } elsif ($subtitle =~ m!^\((?:BR|HR|MDR|RBB|SWR/HR)\)!) {
+    # begins with original station (no dollar at the end)
     $subtitle = undef;
   } elsif ($subtitle =~ m|^\(Vom \d+\.\d+\.\d{4}\)$|) {
     my ($psd) = ($subtitle =~ m|^Vom (\S+)$|);
     # is a repeat from $previously shown date
+    $subtitle = undef;
+  } elsif ($subtitle =~ m|^\(Pressetext siehe .*\)$|) {
+    my ($psd) = ($subtitle =~ m|^\(Pressetext siehe (.*)\)$|);
+    # is a repeat from $previously shown date
+    $subtitle = undef;
+  } elsif ($subtitle =~ m|^\(Wiederholung von .*\)$|) {
+    my ($psd) = ($subtitle =~ m|^\(Wiederholung von (.*)\)$|);
+    # is a repeat from $previously shown day or time
     $subtitle = undef;
   } elsif ($subtitle =~ m|^\(.*\)$|) {
     my ($title_orig) = ($subtitle =~ m|^\((.*)\)$|);
