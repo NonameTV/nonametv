@@ -264,7 +264,11 @@ sub ImportContent {
 
     my $subtitle1 = $pgm->findvalue( 'Untertitel1' );
     $subtitle1 = $self->parse_subtitle ($ce, $subtitle1);
+    $subtitle1 = $self->parse_subtitle ($ce, $subtitle1);
+    $subtitle1 = $self->parse_subtitle ($ce, $subtitle1);
     my $subtitle2 = $pgm->findvalue( 'Untertitel2' );
+    $subtitle2 = $self->parse_subtitle ($ce, $subtitle2);
+    $subtitle2 = $self->parse_subtitle ($ce, $subtitle2);
     $subtitle2 = $self->parse_subtitle ($ce, $subtitle2);
 
     # take unparsed subtitle
@@ -422,10 +426,25 @@ sub parse_subtitle
     my ( $type, $categ ) = $self->{datastore}->LookupCat( "DasErste_type", $program_type );
     AddCategory( $sce, $type, $categ );
     $subtitle = undef;
+  } elsif ($subtitle =~ m/\s*-*\s*(?:Spielfilm|Fernsehfilm|Kinderspielfilm)[,]{0,1} .*? \d+\s*/) {
+    # Spielfilm USA 2009 (Stolen Lives)
+    # Spielfilm Irland/USA 2009 (ONDINE)
+    # Spielfilm Großbritannien / USA / Italien 2001
+    # Fernsehfilm Österreich / Deutschland 2005
+    # Kinderspielfilm Argentinien / Spanien 2008 (El Ratón)
+    # (Myrin) Spielfilm, Island 2006
+    my ($program_type, $production_countries, $production_year) = ($subtitle =~ m/\s*(Spielfilm|Fernsehfilm|Kinderspielfilm)[,]{0,1} (.*?) (\d+)\s*/);
+    $sce->{production_date} = $production_year . "-01-01";
+    my ( $type, $categ ) = $self->{datastore}->LookupCat( "DasErste_type", $program_type );
+    AddCategory( $sce, $type, $categ );
+    $subtitle =~ s!\s*-*\s*(?:Spielfilm|Fernsehfilm|Kinderspielfilm)[,]{0,1} (.*?) \d+\s*!!;
   } elsif ($subtitle =~ m|^\S+teili\S+ \S+ und \S+erie \S+ \d{4}$|) {
     # 13-teilige Kinder- und Familienserie Deutschland 2009
     my ($program_type, $production_countries, $production_year) = ($subtitle =~ m|^\S+ (\S+ \S+ \S+) (\S+) (\d{4})$|);
-    $sce->{production_date} = $production_year . "-01-01";
+    if( $production_year > 1800) {
+      # no typos like 201 instead of 2010
+      $sce->{production_date} = $production_year . "-01-01";
+    }
     my ( $type, $categ ) = $self->{datastore}->LookupCat( "DasErste_type", $program_type );
     AddCategory( $sce, $type, $categ );
     $subtitle = undef;
@@ -486,8 +505,8 @@ sub parse_subtitle
     my ($psd) = ($subtitle =~ m|^\(Pressetext siehe (.*)\)$|);
     # is a repeat from $previously shown date
     $subtitle = undef;
-  } elsif ($subtitle =~ m|^\(Wiederholung von .*\)$|) {
-    my ($psd) = ($subtitle =~ m|^\(Wiederholung von (.*)\)$|);
+  } elsif ($subtitle =~ m|^\(Wiederholung vo[nm] .*\)$|) {
+    my ($psd) = ($subtitle =~ m|^\(Wiederholung vo[nm] (.*)\)$|);
     # is a repeat from $previously shown day or time
     $subtitle = undef;
   } elsif ($subtitle =~ m|^\(.*\)$|) {
