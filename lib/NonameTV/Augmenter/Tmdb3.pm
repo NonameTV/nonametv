@@ -115,8 +115,9 @@ sub FillHash( $$$ ) {
   # hand matching the other guides means less surprise for the users
   $resultref->{title} = norm( $movie->title );
   if( defined( $movie->info ) ){
-    if( defined( $movie->info->{original_title} ) ){
-      $resultref->{original_title} = norm( $movie->info->{original_title} );
+    my $original_title = $movie->info->{original_title};
+    if( defined( $original_title ) ){
+      $resultref->{original_title} = norm( $original_title );
     }else{
       my $url = 'http://www.themoviedb.org/movie/' . $movie->{id};
       w( "original title not on file, add it at $url." );
@@ -128,10 +129,14 @@ sub FillHash( $$$ ) {
 
   $resultref->{program_type} = 'movie';
 
-  my $votes = $movie->info->{vote_count};
-  if( $votes >= $self->{MinRatingCount} ){
-    # ratings range from 0 to 10
-    $resultref->{'star_rating'} = $movie->info->{vote_average} . ' / 10';
+  if( defined( $movie->info ) ){
+    if( defined( $movie->info->{vote_count} ) ){
+      my $votes = $movie->info->{vote_count};
+      if( $votes >= $self->{MinRatingCount} ){
+        # ratings range from 0 to 10
+        $resultref->{'star_rating'} = $movie->info->{vote_average} . ' / 10';
+      }
+    }
   }
   
   # MPAA - G, PG, PG-13, R, NC-17 - No rating is: NR or Unrated
@@ -240,7 +245,13 @@ sub AugmentProgram( $$$ ){
                   if( defined( $person->aka() ) ){
                     if( defined( $person->aka()->[0] ) ){
                       # FIXME actually aka() should simply return an array
-                      @names =  ( @names, @{ $person->aka()->[0] } );
+                      my $aliases = $person->aka()->[0];
+                      if( defined( $aliases ) ){
+                        @names =  ( @names, @{ $aliases } );
+                      }else{
+                        my $url = 'http://www.themoviedb.org/person/' . $crew->{id};
+                        w( "something is fishy with this persons aliases, see $url." );
+                      }
                       push( @names, $person->name );
                     }else{
                       my $url = 'http://www.themoviedb.org/person/' . $crew->{id};
