@@ -204,6 +204,7 @@ sub ImportContent {
     my $title = $pgm->findvalue( 'Sendetitel' );
     $title =~ s| \(\d+/\d+\)$||g;
     $title =~ s| \(\d+\)$||g;
+    $title =~ s| \(WH von \w{2}\)$||g;
 
     my $ce = {
       start_time  => $startTime,
