@@ -27,7 +27,7 @@ def download_json_files():
     if not os.path.exists('/tmp/xmltv_convert/json'):
         os.makedirs('/tmp/xmltv_convert/json')
 
-    page = urllib2.urlopen('http://xmltv.tvtab.la/json/')
+    page = urllib2.urlopen('http://json.xmltv.se/')
     soup = BeautifulSoup(page)
     soup.prettify()
 
@@ -57,7 +57,10 @@ def create_xml():
     for filename in os.listdir('/tmp/xmltv_convert/json/'):
         if filename != '.' and filename != '..':
             stdout.write("Opening %s, creating XML " % filename)
-            json_data = open('/tmp/xmltv_convert/json/%s' % filename).read()
+            try:
+                json_data = gzip.open('/tmp/xmltv_convert/json/%s' % filename, 'rb').read()
+            except IOError:
+                json_data = open('/tmp/xmltv_convert/json/%s' % filename).read()
             data = json.loads(json_data)
 
             root = ET.Element("tv", { "generator-info-name": "nonametv" })
