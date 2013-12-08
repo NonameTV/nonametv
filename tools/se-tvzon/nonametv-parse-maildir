@@ -290,6 +290,7 @@ sub guess_channel
  }
    if( $dir =~ /France24/ and $filename =~ /\.zip$/i ) {
      return "france24.com" if $filename =~ /ANGL/i;
+     return "france24.com" if $filename =~ /ENGL/i;
  }
 
    if( $dir =~ /TV5Monde/ and $filename =~ /\.xls$/i ) {
