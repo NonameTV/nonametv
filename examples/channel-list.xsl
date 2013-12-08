@@ -10,7 +10,7 @@
     </head>
     <body>
       <h1>Available Channels</h1>
-      <p>The following channels are available from xmltv.tvtab.la:</p>
+      <p>The following channels are available from xmltv.se:</p>
       <div id="channels">
         <ul>
         <xsl:apply-templates>
