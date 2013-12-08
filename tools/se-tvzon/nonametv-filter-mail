@@ -157,5 +157,7 @@ sub MoveMessage {
 				    access => 'rw' );
   }
 
+  print("Moved a mail to $foldername\n");
+
   $msg->moveTo( $folders->{$foldername} );
 }

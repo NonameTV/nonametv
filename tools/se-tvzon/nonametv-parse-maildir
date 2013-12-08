@@ -261,7 +261,7 @@ sub guess_channel
      return "historytv.se" if $filename =~ /his.eur.swe/i;
      #return "hd.historytv.se" if $filename =~ /his.hd.swe/i;
 	# ESPN Classic
-     return "classic.espn.com" if $filename =~ /^espn\s+classic\s+europe/i;
+    # return "classic.espn.com" if $filename =~ /^espn\s+classic\s+europe/i;
 	# Travel Channel
      return "travelchanneltv.se" if $filename =~ /^travel/i;
  }
@@ -368,7 +368,7 @@ sub guess_channel
  }
  
  if( $dir =~ /ESPN/ and $filename =~ /\.xls$/i ) {
-     return "america.espn.com" if $filename =~ /cet/i;
+     #return "america.espn.com" if $filename =~ /cet/i;
  }
  
  if( $dir =~ /Mezzo/ and $filename =~ /\.xls$/i ) {
