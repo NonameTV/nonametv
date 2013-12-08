@@ -39,8 +39,8 @@ sub new {
   my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
   $self->{datastorehelper} = $dsh;
 
-    # use augment - this is made for walking.
-    $self->{datastore}->{augment} = 1;
+  # use augment - this is made for walking.
+  $self->{datastore}->{augment} = 1;
 
   return $self;
 }
@@ -153,8 +153,8 @@ sub ImportXML
       my $ce = {
         channel_id => $chd->{id},
         title => norm($title),
-        start_time => $start->ymd("-")." ".$start->hms(":"),
-        end_time => $end->ymd("-")." ".$end->hms(":"),
+        start_time => $start,
+        end_time => $end,
         description => norm($desc),
       };
 
@@ -198,7 +198,7 @@ sub ImportXML
       
       # Add programme
       
-      $ds->AddProgramme( $ce );
+      $dsh->AddCE( $ce );
     } # next row
 
 	$dsh->EndBatch( 1 );
