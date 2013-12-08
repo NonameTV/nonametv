@@ -413,6 +413,61 @@ $channel_data{ "nickcc.mtvnetworks.de" } =
       ],
   };
 
+$channel_data{ "ch.nickcc.mtvnetworks.de" } =
+  { 
+    "nick.ch" => 
+      [ 
+        {
+          day => 'all',
+        },
+      ],
+    "comedycentral.ch" =>
+      [
+        {
+          day => 'all',
+        },
+      ],
+  };
+
+=pod
+
+RBB branches out at 1930 to Berlin/Brandenburg specific schedules
+
+=cut
+
+$channel_data{ "berl.rbb-online.de" } =
+  { 
+    "rbb.rbb-online.de" => 
+      [ 
+        {
+          day => 'all',
+        },
+      ],
+    "rbbberl.rbb-online.de" =>
+      [
+        {
+          day => 'all',
+        },
+      ],
+  };
+$channel_data{ "bra.rbb-online.de" } =
+  { 
+    "rbb.rbb-online.de" => 
+      [ 
+        {
+          day => 'all',
+        },
+      ],
+    "rbbbra.rbb-online.de" =>
+      [
+        {
+          day => 'all',
+        },
+      ],
+  };
+
+
+
 use DateTime;
 use DateTime::Event::Recurrence;
 

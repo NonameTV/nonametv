@@ -10,6 +10,8 @@ Features:
 Episode-info parsed from description.
 
 This mode of access is documented at https://presse.daserste.de/pages/programm/xmldownload.aspx
+and https://presse.daserste.de/pages/senderguide/xmldownload.aspx explains the (new?) optional
+parameter to choose one of the 18 available channels.
 
 =cut
 
@@ -77,12 +79,19 @@ sub Object2Url {
                           day   => $day 
                           );
 
+  my $senderid = $chd->{grabber_info};
+  if( !defined( $senderid )  || ( $senderid eq '' )){
+    # set sender id to the implicit default
+    $senderid = 1;
+  }
+
   my $u = URI->new('https://presse.daserste.de/export/programmablauf.aspx');
   $u->query_form ({
     user => $self->{Username},
     pass => $self->{Password},
     datum => $dt->dmy ("."),
     zeitraum => "tag",
+    sender => $senderid,
     pressetext => "true"});
 
   return( $u->as_string(), undef );
@@ -108,6 +117,10 @@ sub FilterContent {
   # header says utf-8 but it's really windows-1252 in entities
   $$cref =~ s|&#(\d+);|chr($1)|eg;
   from_to ($$cref, "windows-1252", "utf-8");
+
+  # remove date of export
+  $$cref =~ s| - Programmablauf Stand \d+.\d+.\d{4} \d{2}:\d{2}:\d{2}||;
+  $$cref =~ s|Programmablauf Stand=".*"|Programmablauf|;
 
   my $doc = ParseXml( $cref );
  
@@ -189,7 +202,9 @@ sub ImportContent {
     my $startTime = $pgm->findvalue( 'Sendebeginn' );
     my $endTime = $pgm->findvalue( 'Sendeende' );
     my $title = $pgm->findvalue( 'Sendetitel' );
+    $title =~ s| \(\d+/\d+\)$||g;
     $title =~ s| \(\d+\)$||g;
+    $title =~ s/ \(WH(?: von \w{2}|)\)$//g;
 
     my $ce = {
       start_time  => $startTime,
@@ -234,11 +249,27 @@ sub ImportContent {
       } else {
         $ce->{episode} = ". " . ($episode-1) . " .";
       }
+    }else{
+      # no episode number from the xml elements, see if there is something appended to the title
+      my $episodeNumTitle = $pgm->findvalue( 'Sendetitel' );
+      ($episode, $episodeCount)=($episodeNumTitle =~ m/\s+\((\d+)(?:\/(\d+)|)\)$/);
+      if ($episode) {
+        if ($episodeCount) {
+          $ce->{episode} = ". " . ($episode-1) . "/" . $episodeCount . " .";
+        } else {
+          $ce->{episode} = ". " . ($episode-1) . " .";
+        }
+      }
     }
+
 
     my $subtitle1 = $pgm->findvalue( 'Untertitel1' );
     $subtitle1 = $self->parse_subtitle ($ce, $subtitle1);
+    $subtitle1 = $self->parse_subtitle ($ce, $subtitle1);
+    $subtitle1 = $self->parse_subtitle ($ce, $subtitle1);
     my $subtitle2 = $pgm->findvalue( 'Untertitel2' );
+    $subtitle2 = $self->parse_subtitle ($ce, $subtitle2);
+    $subtitle2 = $self->parse_subtitle ($ce, $subtitle2);
     $subtitle2 = $self->parse_subtitle ($ce, $subtitle2);
 
     # take unparsed subtitle
@@ -348,6 +379,11 @@ sub parse_subtitle
 
   $subtitle = norm ($subtitle);
 
+  # strip Themenwoche
+  if( $subtitle =~ m/(?:\s*-\s*|)ARD-Themenwoche \".*\"$/ ){
+    $subtitle =~ s/(?:\s*-\s*|)ARD-Themenwoche \".*\"$//;
+  }
+
   # match program type, production county, production year
   if ($subtitle =~ m|^\S+ \S+ \d{4}$|) {
     my ($program_type, $production_countries, $production_year) = ($subtitle =~ m|^(\S+) (\S+) (\d{4})$|);
@@ -391,10 +427,25 @@ sub parse_subtitle
     my ( $type, $categ ) = $self->{datastore}->LookupCat( "DasErste_type", $program_type );
     AddCategory( $sce, $type, $categ );
     $subtitle = undef;
+  } elsif ($subtitle =~ m/\s*-*\s*(?:Spielfilm|Fernsehfilm|Kinderspielfilm)[,]{0,1} .*? \d+\s*/) {
+    # Spielfilm USA 2009 (Stolen Lives)
+    # Spielfilm Irland/USA 2009 (ONDINE)
+    # Spielfilm Großbritannien / USA / Italien 2001
+    # Fernsehfilm Österreich / Deutschland 2005
+    # Kinderspielfilm Argentinien / Spanien 2008 (El Ratón)
+    # (Myrin) Spielfilm, Island 2006
+    my ($program_type, $production_countries, $production_year) = ($subtitle =~ m/\s*(Spielfilm|Fernsehfilm|Kinderspielfilm)[,]{0,1} (.*?) (\d+)\s*/);
+    $sce->{production_date} = $production_year . "-01-01";
+    my ( $type, $categ ) = $self->{datastore}->LookupCat( "DasErste_type", $program_type );
+    AddCategory( $sce, $type, $categ );
+    $subtitle =~ s!\s*-*\s*(?:Spielfilm|Fernsehfilm|Kinderspielfilm)[,]{0,1} (.*?) \d+\s*!!;
   } elsif ($subtitle =~ m|^\S+teili\S+ \S+ und \S+erie \S+ \d{4}$|) {
     # 13-teilige Kinder- und Familienserie Deutschland 2009
     my ($program_type, $production_countries, $production_year) = ($subtitle =~ m|^\S+ (\S+ \S+ \S+) (\S+) (\d{4})$|);
-    $sce->{production_date} = $production_year . "-01-01";
+    if( $production_year > 1800) {
+      # no typos like 201 instead of 2010
+      $sce->{production_date} = $production_year . "-01-01";
+    }
     my ( $type, $categ ) = $self->{datastore}->LookupCat( "DasErste_type", $program_type );
     AddCategory( $sce, $type, $categ );
     $subtitle = undef;
@@ -404,49 +455,60 @@ sub parse_subtitle
     my ( $type, $categ ) = $self->{datastore}->LookupCat( "DasErste_type", $program_type );
     AddCategory( $sce, $type, $categ );
     $subtitle = undef;
-  } elsif ($subtitle =~ m|^Film von [A-Z]\S+ [A-Z]\S+$|) {
-    my ($producer) = ($subtitle =~ m|^Film von (\S+ \S+)$|);
+  } elsif ($subtitle =~ m/^(?:Ein |)Film von [A-Z]\S+ [A-Z]\S+$/) {
+    my ($producer) = ($subtitle =~ m/^(?:Ein |)Film von (\S+ \S+)$/);
     if ($sce->{producers}) {
       $sce->{producers} = join (", ", $sce->{producers}, $producer);
     } else {
       $sce->{producers} = $producer;
     }
     $subtitle = undef;
-  } elsif ($subtitle =~ m|^Film von [A-Z]\S+ von [A-Z]\S+$|) {
-    my ($producer) = ($subtitle =~ m|^Film von (\S+ von \S+)$|);
+  } elsif ($subtitle =~ m/^(?:Ein |)Film von [A-Z]\S+ von [A-Z]\S+$/) {
+    my ($producer) = ($subtitle =~ m/^(?:Ein |)Film von (\S+ von \S+)$/);
     if ($sce->{producers}) {
       $sce->{producers} = join (", ", $sce->{producers}, $producer);
     } else {
       $sce->{producers} = $producer;
     }
     $subtitle = undef;
-  } elsif ($subtitle =~ m|^Film von [A-Z]\S+ [A-Z]\. [A-Z]\S+$|) {
-    my ($producer) = ($subtitle =~ m|^Film von (\S+ \S+ \S+)$|);
+  } elsif ($subtitle =~ m/^(?:Ein |)Film von [A-Z]\S+ [A-Z]\. [A-Z]\S+$/) {
+    my ($producer) = ($subtitle =~ m/^(?:Ein |)Film von (\S+ \S+ \S+)$/);
     if ($sce->{producers}) {
       $sce->{producers} = join (", ", $sce->{producers}, $producer);
     } else {
       $sce->{producers} = $producer;
     }
     $subtitle = undef;
-  } elsif ($subtitle =~ m|^Film von [A-Z]\S+ [A-Z]\S+ und [A-Z]\S+ [A-Z]\S+$|) {
-    my ($producer1, $producer2) = ($subtitle =~ m|^Film von (\S+ \S+) und (\S+ \S+)$|);
+  } elsif ($subtitle =~ m/^(?:Ein |)Film von [A-Z]\S+ [A-Z]\S+ und [A-Z]\S+ [A-Z]\S+$/) {
+    my ($producer1, $producer2) = ($subtitle =~ m/^(?:Ein |)Film von (\S+ \S+) und (\S+ \S+)$/);
     if ($sce->{producers}) {
       $sce->{producers} = join (", ", $sce->{producers}, $producer1, $producer2);
     } else {
       $sce->{producers} = join (", ", $producer1, $producer2);
     }
     $subtitle = undef;
-  } elsif ($subtitle =~ m|^Film von [A-Z]\S+ [A-Z]\S+, [A-Z]\S+ [A-Z]\S+$|) {
-    my ($producer1, $producer2) = ($subtitle =~ m|^Film von (\S+ \S+), (\S+ \S+)$|);
+  } elsif ($subtitle =~ m/^(?:Ein |)Film von [A-Z]\S+ [A-Z]\S+, [A-Z]\S+ [A-Z]\S+$/) {
+    my ($producer1, $producer2) = ($subtitle =~ m/^(?:Ein |)Film von (\S+ \S+), (\S+ \S+)$/);
     if ($sce->{producers}) {
       $sce->{producers} = join (", ", $sce->{producers}, $producer1, $producer2);
     } else {
       $sce->{producers} = join (", ", $producer1, $producer2);
     }
+    $subtitle = undef;
+  } elsif ($subtitle =~ m!^\((?:BR|DFF|HR|MDR|SR|SWR|RBB|WDR|SWR/HR)\)!) {
+    # begins with original station (no dollar at the end)
     $subtitle = undef;
   } elsif ($subtitle =~ m|^\(Vom \d+\.\d+\.\d{4}\)$|) {
     my ($psd) = ($subtitle =~ m|^Vom (\S+)$|);
     # is a repeat from $previously shown date
+    $subtitle = undef;
+  } elsif ($subtitle =~ m|^\(Pressetext siehe .*\)$|) {
+    my ($psd) = ($subtitle =~ m|^\(Pressetext siehe (.*)\)$|);
+    # is a repeat from $previously shown date
+    $subtitle = undef;
+  } elsif ($subtitle =~ m|^\(Wiederholung vo[nm] .*\)$|) {
+    my ($psd) = ($subtitle =~ m|^\(Wiederholung vo[nm] (.*)\)$|);
+    # is a repeat from $previously shown day or time
     $subtitle = undef;
   } elsif ($subtitle =~ m|^\(.*\)$|) {
     my ($title_orig) = ($subtitle =~ m|^\((.*)\)$|);

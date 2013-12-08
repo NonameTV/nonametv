@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #!/usr/bin/perl -w
 
 use strict;
@@ -176,3 +177,184 @@ sub isToMove
 
   return 0;
 }
+=======
+#!/usr/bin/perl -w
+
+use strict;
+
+use FindBin;
+use lib "$FindBin::Bin/../lib";
+
+use DateTime;
+use File::Util;
+use File::Copy qw/copy move/;
+
+use NonameTV;
+use NonameTV::DataStore;
+use NonameTV::Config qw/ReadConfig/;
+use NonameTV::Log qw/progress error d p w f/;
+
+use Getopt::Long;
+
+my $opt = { 'verbose' => 0,
+            'all' => 0,
+            'xmltvid' => "",
+            'leavedays' => "",
+          };
+
+my $res = GetOptions( $opt, qw/verbose all xmltvid=s leavedays=s/ );
+
+if( not $opt->{xmltvid} and not $opt->{all} )
+{
+  print << 'EOHELP';
+nonametv-filestore-moveold --xmltvid <xmltvid>
+
+  --xmltvid <xmltvid>
+    Remove old files only for the channel specified
+
+  --all
+    Remove old files for all channels
+
+  --leavedays <days>
+    Leave all files that were touched in less then <days> days
+
+  --verbose
+    Be verbose
+
+The tool is used for filestore directories cleanup. It creates 'old' subdirectory
+in each channel directory inside of filestore and moves there all files
+that were modified before the date given by leavedays argument.
+
+EOHELP
+
+  exit 1;
+}
+
+my( $xmltvid ) = $opt->{xmltvid};
+my( $leavedays ) = $opt->{leavedays};
+
+$leavedays = 90 if not $leavedays;
+
+NonameTV::Log::SetVerbosity( $opt->{verbose} );
+
+# Read configuration
+my $conf = ReadConfig();
+my $ds = NonameTV::DataStore->new( $conf->{DataStore} );
+my $filestore = $conf->{FileStore};
+
+my $now = time();
+my $date = localtime( $now - ( 86400 * $leavedays ) );
+print "Moving all files modified before $date\n";
+my $keepdate = DateTime->today()->add( days => -8 )->ymd();
+print "And moving all files ending before $keepdate\n";
+
+print "Reading directories in $filestore\n";
+
+my(@fsfiles);
+if( $opt->{all} ){
+  my($f) = File::Util->new();
+  # option --no-fsdots excludes "." and ".." from the list
+  @fsfiles = $f->list_dir( $filestore, '--no-fsdots' );
+} elsif( $xmltvid ){
+  push( @fsfiles, $xmltvid );
+}
+
+foreach my $fsf (@fsfiles)
+{
+  print "$fsf\n";
+
+  # check if the directory name is the xmltv name of a valid channel
+  my $xmltvid = $fsf;
+  my $channel_id = $ds->{sa}->Lookup( 'channels', { xmltvid => $xmltvid }, 'id' );
+  if( not $channel_id ){
+    progress( "There is no channel with xmltvid $xmltvid - skipping" );
+    next;
+  }
+
+  # check if there is a directory for this xmltvid
+  if( not File::Util->existent( "$filestore/$fsf" ) ){
+    progress( "The directory for $fsf does not exist. You should create it manually." );
+    next;
+  }
+
+  # skip if the file is not a directory
+  my $fsftype = join(',', File::Util->file_type( "$filestore/$fsf" ) );
+  if( $fsftype !~ /DIRECTORY/ ){
+    progress( "File $fsf is $fsftype - skipping" );
+    next;
+  }
+
+  # check if there is a subdirectory named 'old' inside of the channel directory
+  if( not File::Util->existent( "$filestore/$fsf/old" ) ){
+    progress( "Creating the subdirectory $fsf/old" );
+    File::Util->make_dir( "$filestore/$fsf/old", 0755 );
+  }
+
+  # list files inside of the channel directory and check when they have been touched
+  my( $cf ) = File::Util->new();
+  my( @cffiles ) = $cf->list_dir( "$filestore/$fsf", '--no-fsdots' );
+  foreach my $cff (@cffiles)
+  {
+    next if ( $cff =~ /^old$/ );
+
+    my $cftype = join(',', File::Util->file_type( "$filestore/$fsf/$cff" ) );
+
+    if( $cftype !~ /PLAIN/ ){
+      progress( "File $cff is $fsftype - skipping" );
+      next;
+    }
+
+    if( $cff =~ '00files' ){
+	progress( "00files is very old, skipping or the parse-maildir complains." );
+	next;
+    }
+
+    # file contains program from more then a week ago? move it!
+    my $latestdate = $ds->{sa}->Lookup( 'files', { channelid => $channel_id, filename => $cff }, 'latestdate' );
+    my $oktomove = 0;
+    if( defined( $latestdate ) ) {
+      if( ( $latestdate ne '' )&&( $latestdate ne '1970-01-01' )&&( $latestdate ne '1970-01-01 00:00:00' ) ){
+        print "  -> $cff (" . $latestdate . ") ... ";
+        if( $latestdate lt $keepdate ){
+          $oktomove = 1;
+        }
+      }
+    }
+    # if we don't know, look at the last modified date of the file
+    if( !$oktomove ){
+      my $modified = File::Util->last_modified( "$filestore/$fsf/$cff" );
+
+      print "  -> $cff (" . gmtime( $modified ) . ") ... ";
+
+      $oktomove = isToMove( $modified, $leavedays );
+    }
+
+    if( $oktomove ){
+      move( "$filestore/$fsf/$cff", "$filestore/$fsf/old/$cff" );
+      $ds->sa->Delete( 'files', { id => $channel_id, filename => $cff } );
+      print "moved to old\n";
+    } else {
+      print "leaving\n";
+    }
+
+  }
+}
+
+exit;
+
+sub isToMove
+{
+  my( $modified , $leavedays ) = @_;
+
+  return 0 if not $leavedays;
+
+  my $now = time();
+  my $thedate = $now - ( 86400 * $leavedays );
+
+  if( $modified lt $thedate ){
+    return 1;
+  }
+
+  return 0;
+}
+>>>>>>> 932c4fde8c1950aba07971539720a9f0d51a3ff8
