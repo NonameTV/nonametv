@@ -31,7 +31,7 @@ then
 
   # Make sure we have all xmltv updated. As some seem to go missing (Somehow)
   # (for example if the time on the server is way off)
-  tools/nonametv-export Xmltv --force-export
+  #tools/nonametv-export Xmltv --force-export
   tools/nonametv-export Json --force-export
   
   # Remove old programmes and batches - dont use, fucks up the previouslyshown
@@ -75,8 +75,8 @@ $h tools/se-tvzon/nonametv-import-allhttp $Q --short-grab
 tools/se-tvzon/nonametv-import-allmail $Q
 
 # Remove old
-$d perl -I lib/ tools/nonametv-export Xmltv --remove-old
-$d perl -I lib/ tools/nonametv-export Xmltv2 --remove-old
+#$d perl -I lib/ tools/nonametv-export Xmltv --remove-old
+#$d perl -I lib/ tools/nonametv-export Xmltv2 --remove-old
 $d perl -I lib/ tools/nonametv-export Json_extra --remove-old
 $d perl -I lib/ tools/nonametv-export Json --remove-old
 $d tools/nonametv-icon-update --quiet --unattended
@@ -89,7 +89,7 @@ tools/se-tvzon/nonametv-updatesite $Q
 
 # This shouldn't produce any output, but there seems to be a bug
 # somewhere.
-$d perl -I lib tools/nonametv-export Xmltv --force-export --verbose 
+#$d perl -I lib tools/nonametv-export Xmltv --force-export --verbose
 
 # Update the Combiner-channels as well.
 $d perl -I lib tools/nonametv-import Combiner $Q
