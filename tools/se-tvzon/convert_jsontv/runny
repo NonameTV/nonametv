@@ -27,3 +27,6 @@ rsync -c --delete -r $NROOT/xmltv/datalist.xml.gz $NROOT/datalist.xml.gz
 rsync -c --delete -r $NROOT/xmltv/ /server/www/xmltv/xmltv/
 rsync -c --delete -r $NROOT/datalist.xml.gz /server/www/xmltv/datalist.xml.gz
 
+rsync -c --delete -r $NROOT/xmltv/ saito:/server/xmltv_files/xmltv/
+rsync -c --delete -r $NROOT/datalist.xml.gz saito:/server/xmltv_files/datalist.xml.gz
+
