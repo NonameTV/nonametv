@@ -15,6 +15,7 @@ tools/nonametv-import God $1 $2 $3
 tools/nonametv-import TVChile $1 $2 $3
 tools/nonametv-import Svt $1 $2 $3
 tools/nonametv-import SBSTVSWE $1 $2 $3
+tools/nonametv-import SBSTVSWENO $1 $2 $3
 tools/nonametv-import BBCWW $1 $2 $3
 
 # Porn
