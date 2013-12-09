@@ -69,10 +69,8 @@ print OUT << "EOHEAD";
    "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
+<link rel="stylesheet" type="text/css" href="http://converter.xmltv.se/css/modern.css"/>
 <style type="text/css">
-  * { margin: 0px; padding: 0px; }
-  table { border: 1px solid #CCC; border-collapse:collapse; }
-  td,th { border: 1px solid #CCC; border-collapse:collapse; padding: 2px;}
   .X {  text-align: center; background-color: #90EE90; }
   .E {  text-align: center; background-color: #FF6347; }
   td.today { background-color: #A0FFA0; }
@@ -115,7 +113,7 @@ foreach my $channel (sort keys %channels)
   print OUT << "EOD";
 <tr>
 	<th scope='row'><img src='http://xmltv.se/chanlogos/44x44/$channel.png' /></th>
-  <th scope='row'>$channel</th>
+  <th scope='row'><a href='http://converter.xmltv.se/channel?x=$channel'>$channel</a></th>
 
 EOD
 
@@ -170,7 +168,7 @@ open OUT, "> $dir/00logos.html.new"
 print OUT << "EOHEAD";
 <html>
 <head>
-
+<link rel="stylesheet" type="text/css" href="http://converter.xmltv.se/css/modern.css"/>
 <script language="JavaScript">
 function changeBg(col)
 {
@@ -182,13 +180,13 @@ function changeBg(col)
 </head>
 <body>
 <h1>Logos</h1>
-Background: 
+<p>Background:
 <a href="javascript:changeBg('#ffffff')">White</a>
 <a href="javascript:changeBg('#dddddd')">Light grey</a>
 <a href="javascript:changeBg('#333333')">Dark grey</a>
 <a href="javascript:changeBg('#000000')">Black</a>
 <a href="javascript:changeBg('#0000dd')">Dark blue</a>
-
+</p>
 <table>
   
 EOHEAD
