@@ -9,6 +9,9 @@ from bs4 import BeautifulSoup
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 
+credits_order = ['director', 'actor', 'writer', 'adapter', 'producer',
+                 'composer', 'editor', 'presenter', 'commentator', 'guest']
+
 channels = []
 
 def parse_arguments():
@@ -107,8 +110,8 @@ def create_xml():
                     # Credits COULD be present
                     if programme.has_key("credits"):
                         xml_credits = ET.SubElement(xml_programme, "credits")
-                        for key in programme['credits'].keys():
-                            for value in programme['credits'][key]:
+                        for key in credits_order:
+                            for value in programme['credits'].get(key, []):
                                 xml_credit = ET.SubElement(xml_credits, key)
                                 xml_credit.text = value
 
