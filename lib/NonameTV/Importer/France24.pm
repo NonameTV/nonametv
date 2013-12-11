@@ -78,7 +78,7 @@ sub ImportContentFile {
     my @members = $zip->members();
     foreach my $member (@members) {
       push( @english_files, $member->{fileName} ) 
-	  if $member->{fileName} =~ /ANGL*.*xml$/i;
+	  if $member->{fileName} =~ /NGL*.*xml$/i;
     }
     
     my $numfiles = scalar( @english_files );
