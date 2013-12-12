@@ -138,6 +138,9 @@ foreach my $msg ($infolder->messages) {
   elsif( $fromaddr =~ /\@wildtv.ca/i ) {
   	MoveMessage( $msg, "WildTV" );
   }
+  elsif( $fromaddr =~ /\@tv8norge.no/i ) {
+    	MoveMessage( $msg, "TV8Norge" );
+    }
 
   elsif( $fromaddr =~ /\@euronews.com/i ) {
     	MoveMessage( $msg, "Euronews" );
