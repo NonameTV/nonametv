@@ -212,7 +212,7 @@ sub ImportFlatXLS
 sub ParseDate {
   my ( $text ) = @_;
 
-print ">$text<\n";
+#print ">$text<\n";
 
   my( $year, $day, $month );
 
