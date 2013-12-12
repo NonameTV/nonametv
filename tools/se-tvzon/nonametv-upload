@@ -26,3 +26,12 @@ rsync -c --delete -r $NROOT/json_extra/ /server/www/xmltv/json_extra/
 #rsync -c --delete -r $NROOT/xmltv_iso/ /server/www/xmltv/xmltv_iso/
 rsync -c --delete -r $NROOT/json/ /server/www/xmltv/json/
 rsync -c --delete -r $NROOT/datalist.xml.gz /server/www/xmltv/datalist.xml.gz
+
+$V && echo "saito"
+
+rsync -c --delete -r $NROOT/json_extra/ saito:/server/xmltv_files/json_extra/
+#rsync -c --delete -r $NROOT/xmltv/ /server/www/xmltv/xmltv/
+#rsync -c --delete -r $NROOT/xmltv_iso/ /server/www/xmltv/xmltv_iso/
+rsync -c --delete -r $NROOT/json/ saito:/server/xmltv_files/json/
+rsync -c --delete -r $NROOT/datalist.xml.gz saito:/server/xmltv_files/datalist.xml.gz
+

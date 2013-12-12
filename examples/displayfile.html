@@ -72,7 +72,7 @@ function loadListing()
   
   document.getElementById('heading').innerHTML = file;
 
-  listingUrl = "http://" + document.location.host + "/xmltv/" + file + ".xml.gz" 
+  listingUrl = "http://" + document.location.host + "/" + file + ".xml.gz"
   transformXml( listingUrl, 'listing.xsl', 'listing' );
   return false;
 }
