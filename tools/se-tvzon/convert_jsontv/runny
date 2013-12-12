@@ -21,8 +21,14 @@ rsync examples/listing.xsl $NROOT/xmltv_staging
 
 # upload
 rsync -c --delete -r $NROOT/xmltv_staging/ $NROOT/xmltv/
-tools/se-tvzon/nonametv-xmltv-gendatalist
-rsync -c --delete -r $NROOT/xmltv/datalist.xml.gz $NROOT/datalist.xml.gz
+tools/se-tvzon/nonametv-json-gendatalist
+rsync -c --delete -r $NROOT/datalist.xml.gz $NROOT/xmltv/datalist.xml.gz
+
+tools/se-tvzon/nonametv-xmltv-compare-run
+rsync --delete -r /var/local/nonametv/html/00status.html /server/www/xmltv/
+rsync --delete -r /var/local/nonametv/html/00movies.html /server/www/xmltv/
+rsync --delete -r /var/local/nonametv/html/00movies.html /nonametv/movies.html
+rsync --delete -r /var/local/nonametv/xmltv_compare/ /server/www/xmltv/compare/
 
 rsync -c --delete -r $NROOT/xmltv/ /server/www/xmltv/xmltv/
 rsync -c --delete -r $NROOT/datalist.xml.gz /server/www/xmltv/datalist.xml.gz
