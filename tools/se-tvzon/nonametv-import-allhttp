@@ -3,7 +3,7 @@
 # NONAMETV=nonametv-import
 NONAMETV="tools/nonametv-import"
 
-#$NONAMETV AFN $1 $2 $3
+$NONAMETV AFN $1 $2 $3
 $NONAMETV Axess $1 $2 $3
 $NONAMETV Arte $1 $2 $3
 $NONAMETV BBCWorld $1 $2 $3
@@ -20,6 +20,8 @@ $NONAMETV Eurosport $1 $2 $3
 $NONAMETV Infomedia $1 $2 $3
 #$NONAMETV Kanal5 $1 $2 $3
 #$NONAMETV Kanal9 $1 $2 $3
+$NONAMETV HBOHR $1 $2 $3
+$NONAMETV HBOSI $1 $2 $3
 $NONAMETV KanalGlobal $1 $2 $3
 $NONAMETV MTVde $1 $2 $3
 $NONAMETV Mtve $1 $2 $3

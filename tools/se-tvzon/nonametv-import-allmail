@@ -39,5 +39,7 @@ tools/nonametv-import ESPNAmerica $1 $2 $3
 tools/nonametv-import Euronews $1 $2 $3
 
 tools/nonametv-import Turner $1 $2 $3
+tools/nonametv-import TV8Norge $1 $2 $3
+
 tools/nonametv-import Motors $1 $2 $3
 tools/nonametv-import YaS $1 $2 $3
