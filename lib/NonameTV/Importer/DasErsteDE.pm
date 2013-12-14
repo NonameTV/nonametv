@@ -205,6 +205,8 @@ sub ImportContent {
     $title =~ s| \(\d+/\d+\)$||g;
     $title =~ s| \(\d+\)$||g;
     $title =~ s/ \(WH(?: von \w{2}|)\)$//g;
+    # clean up for HR
+    $title =~ s/\s+Kinemathek-Nacht:.*$//g;
 
     my $ce = {
       start_time  => $startTime,
