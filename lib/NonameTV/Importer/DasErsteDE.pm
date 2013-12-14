@@ -495,7 +495,7 @@ sub parse_subtitle
       $sce->{producers} = join (", ", $producer1, $producer2);
     }
     $subtitle = undef;
-  } elsif ($subtitle =~ m!^\((?:BR|DFF|HR|MDR|SR|SWR|RBB|WDR|SWR/HR)\)!) {
+  } elsif ($subtitle =~ m!^\((?:BR|DFF|HR|MDR|NDR|SR|SWR|RBB|WDR|SWR/HR)\)!) {
     # begins with original station (no dollar at the end)
     $subtitle = undef;
   } elsif ($subtitle =~ m|^\(Vom \d+\.\d+\.\d{4}\)$|) {
