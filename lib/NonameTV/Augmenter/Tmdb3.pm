@@ -239,7 +239,8 @@ sub AugmentProgram( $$$ ){
 
             my @names = ( );
             foreach my $crew ( $movie->crew ) {
-              if( $crew->{'job'} eq 'Director' ) {
+              # tv stations sometimes list the movie as being "by the author" instead of the director, so accept both
+              if( ( $crew->{'job'} eq 'Director' )||( $crew->{'job'} eq 'Author' ) ) {
                 my $person = $self->{themoviedb}->person( id => $crew->{id} );
                 if( defined( $person ) ){
                   if( defined( $person->aka() ) ){
