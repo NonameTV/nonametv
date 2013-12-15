@@ -337,12 +337,19 @@ sub ImportContent {
 
     my $directors = $pgm->findnodes ('.//Regie');
     my @directors_array;
+    # fixup one entry containing two directors joined by " und "
     foreach my $director ($directors->get_nodelist()) {
       my @fixup = split (" und ", $director->string_value());
       @directors_array = (@directors_array, @fixup);
     }
-    if (@directors_array) {
-      $ce->{directors} = join (", ", @directors_array);
+    my @directors_array_2nd;
+    # fixup one entry containing two directors joined by " / "
+    foreach my $director (@directors_array){
+      my @fixup = split (/\s*\/\s*/, $director);
+      @directors_array_2nd = (@directors_array_2nd, @fixup);
+    }
+    if (@directors_array_2nd) {
+      $ce->{directors} = join (", ", @directors_array_2nd);
     }
 
     my $writers= $pgm->findnodes ('.//Buch');
