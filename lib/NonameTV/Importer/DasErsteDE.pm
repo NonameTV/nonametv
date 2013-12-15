@@ -279,7 +279,10 @@ sub ImportContent {
     my $subtitle;
     if ($subtitle1) {
       if ($subtitle2) {
-        $subtitle = $subtitle1 . " " . $subtitle2;
+        $subtitle = $subtitle1 . $subtitle2;
+        $subtitle = $self->parse_subtitle ($ce, $subtitle);
+        $subtitle = $self->parse_subtitle ($ce, $subtitle);
+        $subtitle = $self->parse_subtitle ($ce, $subtitle);
       } else {
         $subtitle = $subtitle1;
       }
@@ -329,6 +332,7 @@ sub ImportContent {
     my $actors = $pgm->findnodes ('.//Rolle');
     my @actors_array;
     foreach my $actor($actors->get_nodelist()) {
+      # TODO handle special roles like "Moderator" and "Kontakt", see br-alpha
       push (@actors_array, $actor->string_value());
     }
     if (@actors_array) {
@@ -563,6 +567,24 @@ sub parse_subtitle
       $sce->{presenters} = $presenter;
     }
     $subtitle = undef;
+  } elsif ($subtitle =~ m|\bDeutsche Erstausstrahlung\b| ) {
+    # Intergalaktische Bruchlandung Folge 1246 Familienserie Deutschland, 2014 Audiodeskription Deutsche Erstausstrahlung
+    $subtitle =~ s|\s*Deutsche Erstausstrahlung\s*||;
+  } elsif ($subtitle =~ m|\bAudiodeskription\b| ) {
+    # Intergalaktische Bruchlandung Folge 1246 Familienserie Deutschland, 2014 Audiodeskription Deutsche Erstausstrahlung
+    $subtitle =~ s|\s*Audiodeskription\s*||;
+  } elsif ($subtitle =~ m|\b\S+erie \S+,? \d{4}\b| ) {
+    # Intergalaktische Bruchlandung Folge 1246 Familienserie Deutschland, 2014 Audiodeskription Deutsche Erstausstrahlung
+    my( $genre )=( $subtitle =~ s|\s*(\S+erie) \S+,? \d{4}\s*|| );
+    my ( $type, $categ )= $self->{datastore}->LookupCat( "DasErste_type", $genre );
+    AddCategory( $sce, $type, $categ );
+  } elsif ($subtitle =~ m|\bFolge \d+\b| ) {
+    # Intergalaktische Bruchlandung Folge 1246 Familienserie Deutschland, 2014 Audiodeskription Deutsche Erstausstrahlung
+    my( $episode )=( $subtitle =~ s|\s*Folge (\d+)\s*|| );
+
+    if( !defined( $sce->{episode} ) ){
+      $sce->{episode} = ". " . ($episode-1) . " .";
+    }
   } else {
     d ("unhandled subtitle: $subtitle");
   }
