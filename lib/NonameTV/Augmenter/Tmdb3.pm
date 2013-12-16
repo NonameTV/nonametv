@@ -159,7 +159,8 @@ sub FillHash( $$$ ) {
     my @genres = @{ $movie->info()->{genres} };
     foreach my $node ( @genres ) {
       my $genre_id = $node->{id};
-      my ( $type, $categ ) = $self->{datastore}->LookupCat( "Tmdb_genre", $genre_id );
+      my $genre_name = $node->{name};
+      my ( $type, $categ ) = $self->{datastore}->LookupCat( "Tmdb_genre", $genre_name );
       AddCategory( $resultref, $type, $categ );
     }
   }
