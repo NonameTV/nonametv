@@ -3,7 +3,6 @@
 # NONAMETV=nonametv-import
 NONAMETV="tools/nonametv-import"
 
-$NONAMETV AFN $1 $2 $3
 $NONAMETV Axess $1 $2 $3
 $NONAMETV Arte $1 $2 $3
 $NONAMETV BBCWorld $1 $2 $3
@@ -18,8 +17,6 @@ $NONAMETV DreiSat $1 $2 $3
 $NONAMETV DasErste $1 $2 $3
 $NONAMETV Eurosport $1 $2 $3
 $NONAMETV Infomedia $1 $2 $3
-#$NONAMETV Kanal5 $1 $2 $3
-#$NONAMETV Kanal9 $1 $2 $3
 $NONAMETV HBOHR $1 $2 $3
 $NONAMETV HBOSI $1 $2 $3
 $NONAMETV KanalGlobal $1 $2 $3
@@ -30,6 +27,7 @@ $NONAMETV NRK $1 $2 $3
 $NONAMETV ORF $1 $2 $3
 $NONAMETV RadioSeven $1 $2 $3
 $NONAMETV RBBde $1 $2 $3
+$NONAMETV RAI $1 $2 $3
 $NONAMETV SBSRadio $1 $2 $3
 $NONAMETV SBSTV $1 $2 $3
 $NONAMETV SverigesRadio $1 $2 $3
@@ -44,7 +42,3 @@ $NONAMETV TVNorge $1 $2 $3
 $NONAMETV ZDF $1 $2 $3
 $NONAMETV ZoneReality $1 $2 $3
 $NONAMETV HRT $1 $2 $3
-
-# This isnt really working, it airs
-# programmes at the same time sometimes.
-#$NONAMETV Unibet $1 $2 $3
