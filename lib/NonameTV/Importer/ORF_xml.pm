@@ -300,9 +300,9 @@ sub ImportContent
 #   	 		$ce->{captions} = 'teletext';
 #		}
 
-		# TODO how does ORF signal HD? just slap quality=hdtv on everthing on channels with xmltvid hd.*
+		# TODO how does ORF signal HD? just slap quality=HDTV on everything on channels with xmltvid hd.*
 		if( $chd->{xmltvid} =~ m|^hd\.| ){
-			$ce->{quality} = 'hdtv';
+			$ce->{quality} = 'HDTV';
 		}
 	
   	  $dsh->AddProgramme( $ce );
