@@ -131,6 +131,7 @@ my %genrewords = (
 	'Serie' => 1,
 	'Sitcom' => 1,
 	'Stop Motion Trick' => 1,
+	'Talk-Show mit Barbara Karlich' => 1,
 	'Telenovela' => 1,
 	'Unterhaltungsserie' => 1,
 	'Zeichentrickserie' => 1,
@@ -235,6 +236,7 @@ sub ImportContent
 		if( $directors ){
 			$desc =~ s|^Regie:\s+.+?$||m;
 			# TODO clean up the list of directors
+                        $directors = norm( $directors );
 			$ce->{directors} = $directors;
 		}
 		my( $running_time )=( $desc =~ m|^(\d+\.\d+)$|m );
