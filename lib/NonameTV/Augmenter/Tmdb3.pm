@@ -319,9 +319,9 @@ sub AugmentProgram( $$$ ){
       }
 
       if( @candidates == 0 ){
-        w( 'search for "' . $ceref->{title} . '" did not return any good hit, ignoring' );
+        w( 'search for "' . $ceref->{title} . '" by "' . $ceref->{directors} . '" did not return any good hit, ignoring' );
       } elsif ( @candidates > 1 ){
-        w( 'search for "' . $ceref->{title} . '" did not return a single best hit, ignoring' );
+        w( 'search for "' . $ceref->{title} . '" by "' . $ceref->{directors} . '" did not return a single best hit, ignoring' );
       } else {
         my $movieId = $candidates[0]->{id};
 
