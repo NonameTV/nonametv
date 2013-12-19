@@ -205,6 +205,8 @@ sub ImportContent {
     $title =~ s| \(\d+/\d+\)$||g;
     $title =~ s| \(\d+\)$||g;
     $title =~ s/ \(WH(?: von \w{2}|)\)$//g;
+    # clean up for HR
+    $title =~ s/\s+Kinemathek-Nacht:.*$//g;
 
     my $ce = {
       start_time  => $startTime,
@@ -277,7 +279,10 @@ sub ImportContent {
     my $subtitle;
     if ($subtitle1) {
       if ($subtitle2) {
-        $subtitle = $subtitle1 . " " . $subtitle2;
+        $subtitle = $subtitle1 . $subtitle2;
+        $subtitle = $self->parse_subtitle ($ce, $subtitle);
+        $subtitle = $self->parse_subtitle ($ce, $subtitle);
+        $subtitle = $self->parse_subtitle ($ce, $subtitle);
       } else {
         $subtitle = $subtitle1;
       }
@@ -327,6 +332,7 @@ sub ImportContent {
     my $actors = $pgm->findnodes ('.//Rolle');
     my @actors_array;
     foreach my $actor($actors->get_nodelist()) {
+      # TODO handle special roles like "Moderator" and "Kontakt", see br-alpha
       push (@actors_array, $actor->string_value());
     }
     if (@actors_array) {
@@ -335,12 +341,19 @@ sub ImportContent {
 
     my $directors = $pgm->findnodes ('.//Regie');
     my @directors_array;
+    # fixup one entry containing two directors joined by " und "
     foreach my $director ($directors->get_nodelist()) {
       my @fixup = split (" und ", $director->string_value());
       @directors_array = (@directors_array, @fixup);
     }
-    if (@directors_array) {
-      $ce->{directors} = join (", ", @directors_array);
+    my @directors_array_2nd;
+    # fixup one entry containing two directors joined by " / "
+    foreach my $director (@directors_array){
+      my @fixup = split (/\s*\/\s*/, $director);
+      @directors_array_2nd = (@directors_array_2nd, @fixup);
+    }
+    if (@directors_array_2nd) {
+      $ce->{directors} = join (", ", @directors_array_2nd);
     }
 
     my $writers= $pgm->findnodes ('.//Buch');
@@ -495,7 +508,7 @@ sub parse_subtitle
       $sce->{producers} = join (", ", $producer1, $producer2);
     }
     $subtitle = undef;
-  } elsif ($subtitle =~ m!^\((?:BR|DFF|HR|MDR|SR|SWR|RBB|WDR|SWR/HR)\)!) {
+  } elsif ($subtitle =~ m!^\((?:BR|DFF|HR|MDR|NDR|SR|SWR|RBB|WDR|SWR/HR)\)!) {
     # begins with original station (no dollar at the end)
     $subtitle = undef;
   } elsif ($subtitle =~ m|^\(Vom \d+\.\d+\.\d{4}\)$|) {
@@ -554,6 +567,24 @@ sub parse_subtitle
       $sce->{presenters} = $presenter;
     }
     $subtitle = undef;
+  } elsif ($subtitle =~ m|\bDeutsche Erstausstrahlung\b| ) {
+    # Intergalaktische Bruchlandung Folge 1246 Familienserie Deutschland, 2014 Audiodeskription Deutsche Erstausstrahlung
+    $subtitle =~ s|\s*Deutsche Erstausstrahlung\s*||;
+  } elsif ($subtitle =~ m|\bAudiodeskription\b| ) {
+    # Intergalaktische Bruchlandung Folge 1246 Familienserie Deutschland, 2014 Audiodeskription Deutsche Erstausstrahlung
+    $subtitle =~ s|\s*Audiodeskription\s*||;
+  } elsif ($subtitle =~ m|\b\S+erie \S+,? \d{4}\b| ) {
+    # Intergalaktische Bruchlandung Folge 1246 Familienserie Deutschland, 2014 Audiodeskription Deutsche Erstausstrahlung
+    my( $genre )=( $subtitle =~ s|\s*(\S+erie) \S+,? \d{4}\s*|| );
+    my ( $type, $categ )= $self->{datastore}->LookupCat( "DasErste_type", $genre );
+    AddCategory( $sce, $type, $categ );
+  } elsif ($subtitle =~ m|\bFolge \d+\b| ) {
+    # Intergalaktische Bruchlandung Folge 1246 Familienserie Deutschland, 2014 Audiodeskription Deutsche Erstausstrahlung
+    my( $episode )=( $subtitle =~ s|\s*Folge (\d+)\s*|| );
+
+    if( !defined( $sce->{episode} ) ){
+      $sce->{episode} = ". " . ($episode-1) . " .";
+    }
   } else {
     d ("unhandled subtitle: $subtitle");
   }

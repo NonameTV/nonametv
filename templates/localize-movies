@@ -4,18 +4,23 @@
 [% USE date %]
 [% USE linkify %]
 <head>
+  <link rel="stylesheet" type="text/css" href="/css/modern.css" />
+  <script type="text/javascript" src="/js/sortable.js"></script>
   <title>Nonametv movies not found at the movie database</title>
 </head>
 <body>
   <h1>Movies not found</h1>
   <p>These movies have not been found at TheMovieDB, but they do have an original title. Maybe its just a missing translation of an already existing movie.</p>
-  <table>
+  <table class="sortable" id="the-table">
+  <thead>
     <tr>
       <th>Title</th>
       <th>Original Title</th>
       <th>Date of Production / Release</th>
       <th>Director(s)</th>
     </tr>
+  </thead>
+  <tbody>
   [% FOREACH movie = movies_localize %]
     <tr>
       <td><a href="http://www.themoviedb.org/search/movie?query=[% movie.title %]">[% movie.title FILTER html_entity %]</a></td>
@@ -28,16 +33,20 @@
       </td>
     </tr>
   [% END %]
+  </tbody>
   </table>
 
   <p>These movies have not been found at TheMovieDB.</p>
-  <table>
+  <table class="sortable" id="the-table">
+  <thead>
     <tr>
       <th>Title</th>
       <th>Subtitle</th>
       <th>Date of Production / Release</th>
       <th>Director(s)</th>
     </tr>
+  </thead>
+  <tbody>
   [% FOREACH movie = movies %]
     <tr>
       <td><a href="http://www.themoviedb.org/search/movie?query=[% movie.title %]">[% movie.title FILTER html_entity %]</a></td>
@@ -50,5 +59,7 @@
       </td>
     </tr>
   [% END %]
+  </tbody>
+  </table>
 </body>
 </html>

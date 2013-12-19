@@ -2,26 +2,23 @@ package NonameTV::Importer::RAI;
 
 use strict;
 use warnings;
+use utf8;
+use Unicode::String;
 
 =pod
 
-Import data from RAI's website.
-
-Channels: RAI UNO, RAI DUE, RAI TRE
-
-Features:
+Import data for RAI in xml-format.
 
 =cut
 
-use utf8;
 
 use DateTime;
 use XML::LibXML;
-use Encode qw/decode encode/;
+use Roman;
 
-use NonameTV qw/MyGet Html2Xml FindParagraphs norm/;
+use NonameTV qw/ParseXml AddCategory norm/;
 use NonameTV::DataStore::Helper;
-use NonameTV::Log qw/progress error/;
+use NonameTV::Log qw/w f p/;
 
 use NonameTV::Importer::BaseDaily;
 
@@ -33,147 +30,266 @@ sub new {
   my $self  = $class->SUPER::new( @_ );
   bless ($self, $class);
 
-  defined( $self->{UrlRoot} ) or die "You must specify UrlRoot";
+  if( defined( $self->{UrlRoot} ) ){
+    w( 'UrlRoot is deprecated' );
+  } else {
+    $self->{UrlRoot} = 'http://www.ufficiostampa.rai.it/work/rss/';
+  }
 
   my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore}, "Europe/Rome" );
   $self->{datastorehelper} = $dsh;
 
+  $self->{datastore}->{augment} = 1;
+
   return $self;
 }
 
-sub Object2Url {
+sub ApproveContent {
   my $self = shift;
-  my( $objectname, $chd ) = @_;
+  my( $cref, $callbackdata ) = @_;
 
-  # the url is in format 'http://www.rai.it/dl/portal/guidatv/14-11-2008.html'
-
-  my( $year, $month, $day ) = ( $objectname =~ /_(\d+)-(\d+)-(\d+)$/ );
-  my $dt = DateTime->new( 
-                          year  => $year,
-                          month => $month,
-                          day   => $day 
-                          );
-
-  my $url = sprintf( "%s%02d-%02d-%04d.html", $self->{UrlRoot}, $dt->day, $dt->month, $dt->year );
-
-  progress( "RAI: $chd->{xmltvid}: Fetching from $url" );
-
-  return( $url, undef );
+  if( $$cref eq '' ) {
+    return "404 not found";
+  }
+  else {
+    return undef;
+  }
 }
 
 sub FilterContent {
-  my $self = shift;
-  my( $cref, $chd ) = @_;
+  my( $self, $cref, $chd ) = @_;
 
-  # do some corrections
-  # on the end of the page, after rai3 chunk there is an error: the div is closed but no div is opened before
-  $$cref =~ s/<\/ul><\/div><\/div>/<\/ul>/g;
-
-  my $doc = Html2Xml( $$cref );
-  
-  if( not defined $doc ) {
-    return (undef, "Html2Xml failed" );
-  } 
-
-  if( not $chd->{grabber_info} ){
-    error( "You must specify grabber_info for $chd->{xmltvid}" );
-    return( undef, undef );
-  }
-
-  progress( "RAI: $chd->{xmltvid}: Filtering on '$chd->{grabber_info}'" );
-
-  my $paragraphs = FindParagraphs( $doc, "//div[\@class='Main clearfix']//div[\@class='$chd->{grabber_info}']//." );
-
-  my $str = join( "\n", @{$paragraphs} );
-
-  # all is in one string -> split it at each time
-  $str =~ s/\s(\d{2}):(\d{2})/\n$1:$2 /g;
-  $str =~ s/(MATTINA)/\n$1/g;
-  $str =~ s/(POMERIGGIO)/\n$1/g;
-  $str =~ s/(SERA)/\n$1/g;
-  $str =~ s/(NOTTE)/\n$1/g;
-  
-  return( \$str, undef );
+  return( $cref, undef );
 }
 
-
 sub ContentExtension {
-  return 'html';
+  return 'xml';
 }
 
 sub FilteredExtension {
-  return 'txt';
+  return 'xml';
 }
 
 sub ImportContent {
   my $self = shift;
   my( $batch_id, $cref, $chd ) = @_;
 
+  #$$cref = Unicode::String::latin1 ($$cref)->utf8 ();
+
   $self->{batch_id} = $batch_id;
 
   my $xmltvid=$chd->{xmltvid};
   my $channel_id = $chd->{id};
-  
-  my( $date ) = ($batch_id =~ /_(.*)/);
+  my $currdate = "x";
 
+  my $ds = $self->{datastore};
   my $dsh = $self->{datastorehelper};
 
-  my @paragraphs = split( /\n/, $$cref );
+  my $doc = ParseXml( $cref );
 
-  if( scalar(@paragraphs) == 0 ) {
-    error( "$batch_id: No paragraphs found." ) ;
+  if( not defined( $doc ) ) {
+    f "Failed to parse XML.";
     return 0;
   }
 
-  progress( "RAI: $chd->{xmltvid}: Date is $date\n" );
-  $dsh->StartDate( $date, "06:00" ); 
+  my $ns = $doc->find( "//programma" );
 
-  foreach my $text (@paragraphs) {
-
-#print ">$text<\n";
-
-    # It should be possible to ignore these strings with a better
-    # FilterContent, because they look slightly different in the html.
-    next if $text =~/^MATTINA$/i;
-    next if $text =~/^POMERIGGIO$/i;
-    next if $text =~/^SERA$/i;
-    next if $text =~/^NOTTE$/i;
-
-    if( $text =~ /^\d{2}:\d{2}\s+.*/ ) {
-
-      my( $time, $title ) = ParseShow( $text );
-
-      progress( "RAI: $chd->{xmltvid}: $time - $title" );
-
-      my $ce = {
-        channel_id => $channel_id,
-        title => $title,
-        start_time => $time,
-      };
-
-      $dsh->AddProgramme( $ce );
-
-    } else {
-      #error( "$batch_id: Unexpected text: '$text'" );
-    }
+  if( $ns->size() == 0 ) {
+    f "No data found";
+    return 0;
   }
-  
+
+  foreach my $b ($ns->get_nodelist) {
+  	# Start and so on
+    my $start = ParseDateTime( $b->findvalue( "giorno" ) );
+
+    if( $start->ymd("-") ne $currdate ){
+		p("Date is ".$start->ymd("-"));
+
+		$dsh->StartDate( $start->ymd("-") , "00:00" );
+		$currdate = $start->ymd("-");
+	}
+
+    my $title = $b->findvalue( "titolo" );
+    my $time = $b->findvalue( "ora" );
+    my $text = $b->findvalue( "trama" );
+
+    # Descr. and genre
+    my $desc = $b->findvalue( "sottotitolo" );
+
+	# Put everything in a array
+    my $ce = {
+      channel_id => $chd->{id},
+      start_time => $time.":00",
+      title => norm($title),
+      description => norm($desc),
+    };
+
+    if( defined( $text ) and ($text =~ /(\d\d\d\d)/) )
+    {
+    	$ce->{production_date} = "$1-01-01";
+    }
+
+    if( $title =~ /^FILM/  ) {
+    	$ce->{title} =~ s/FILM//g; # REMOVE ET
+    	$ce->{program_type} = 'movie';
+    }elsif( $title =~ /^TELEFILM/  ) {
+        $ce->{title} =~ s/TELEFILM//g; # REMOVE ET
+        $ce->{program_type} = 'series';
+    }elsif( $title =~ /^TV MOVIE/  ) {
+        $ce->{title} =~ s/TV MOVIE//g; # REMOVE ET
+        $ce->{program_type} = 'series';
+    }elsif( $title =~ /^MOVIE/  ) {
+        $ce->{title} =~ s/MOVIE//g; # REMOVE ET
+    }
+
+    if( my( $years, $country ) = ($text =~ /(\d\d\d\d)\s+(.*)$/) )
+    {
+    	$text =~ s/$years//g; # REMOVE ET
+    	$text =~ s/$country//g; # REMOVE ET
+    	$text = norm($text);
+    }
+
+    if( my( $directors ) = ($text =~ /^di\s*(.*)\s*con/) )
+    {
+    	$ce->{directors} = norm(parse_person_list( $directors ));
+
+    	$ce->{program_type} = 'movie';
+    }
+
+    if( my( $actors ) = ($text =~ /con\s*(.*)/) )
+    {
+    	$ce->{actors} = norm(parse_person_list( $actors ));
+
+    	#print("$ce->{actors}\n");
+    }
+
+    $ce->{title} =~ s/\^ Visione RAI//g;
+    $ce->{title} = norm($ce->{title});
+
+
+
+	p($time." $ce->{title}");
+
+    $dsh->AddProgramme( $ce );
+  }
+
+  #$dsh->EndBatch( 1 );
+
   return 1;
 }
 
-sub ParseShow
+sub parse_person_list
 {
-  my( $text ) = @_;
+  my( $str ) = @_;
 
-  my( $time, $title ) = ( $text =~ /^(\d{2}:\d{2})\s+(.*)$/ );
+  # Remove all variants of m.fl.
+  $str =~ s/\s*m[\. ]*fl\.*\b//;
 
-  # don't die on wrong encoding
-  eval{ $title = decode( "iso-8859-1", $title ); };
-  if( $@ ne "" ){
-    error( "Failed to decode $@" );
+  # Remove trailing '.'
+  $str =~ s/\.$//;
+
+  $str =~ s/\boch\b/,/;
+  $str =~ s/\bsamt\b/,/;
+
+  my @persons = split( /\s*,\s*/, $str );
+  foreach (@persons)
+  {
+    # The character name is sometimes given . Remove it.
+    # The Cast-entry is sometimes cutoff, which means that the
+    # character name might be missing a trailing ).
+    s/\s*\(.*$//;
+    s/.*\s+-\s+//;
   }
 
-  return( $time, $title );
+  return join( ", ", grep( /\S/, @persons ) );
+}
+
+# The start and end-times are in the format 2007-12-31T01:00:00
+# and are expressed in the local timezone.
+sub ParseDateTime {
+  my( $str ) = @_;
+
+  my( $year, $month, $day, $hour, $minute, $second ) =
+      ($str =~ /^(\d+)-(\d+)-(\d+)T(\d+):(\d+)$/ );
+
+  my $dt = DateTime->new(
+    year => $year,
+    month => $month,
+    day => $day,
+    hour => $hour,
+    minute => $minute,
+      );
+
+  return $dt;
+}
+
+sub Object2Url {
+  my $self = shift;
+  my( $objectname, $chd ) = @_;
+
+
+  my( $date ) = ( $objectname =~ /(\d+-\d+-\d+)$/ );
+  my( $year, $month, $day ) =
+        ($date =~ /^(\d+)-(\d+)-(\d+)$/ );
+
+
+  my $url = sprintf( "%s%s%s%s%spal.xml",
+                     $self->{UrlRoot}, $chd->{grabber_info},
+                     $day, $month, $year);
+
+
+  return( $url, undef );
+}
+
+# Split a string into individual sentences.
+sub split_text
+{
+  my( $t ) = @_;
+
+  return () if not defined( $t );
+
+  # Remove any trailing whitespace
+  $t =~ s/\s*$//;
+
+  # Replace strange dots.
+  $t =~ tr/\x2e/./;
+
+  # We might have introduced some errors above. Fix them.
+  $t =~ s/([\?\!])\./$1/g;
+
+  # Replace ... with ::.
+  $t =~ s/\.{3,}/::./g;
+
+  # Turn all whitespace into pure spaces and compress multiple whitespace
+  # to a single.
+  $t =~ tr/\n\r\t \xa0/     /s;
+
+  # Mark sentences ending with '.', '!', or '?' for split, but preserve the
+  # ".!?".
+  $t =~ s/([\.\!\?])\s+([A-Z���])/$1;;$2/g;
+
+  my @sent = grep( /\S\S/, split( ";;", $t ) );
+
+  if( scalar( @sent ) > 0 )
+  {
+    # Make sure that the last sentence ends in a proper way.
+    $sent[-1] =~ s/\s+$//;
+    $sent[-1] .= "."
+      unless $sent[-1] =~ /[\.\!\?]$/;
+  }
+
+  return @sent;
+}
+
+# Join a number of sentences into a single paragraph.
+# Performs the inverse of split_text
+sub join_text
+{
+  my $t = join( " ", grep( /\S/, @_ ) );
+  $t =~ s/::/../g;
+
+  return $t;
 }
 
 1;

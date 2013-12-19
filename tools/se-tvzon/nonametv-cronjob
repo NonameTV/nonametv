@@ -27,7 +27,7 @@ then
   
   # remove Tvrage cache (they can't be updated automatic..
   # .. as tvrage doesnt provide that sort of system)
-  rm /storage/nonametv/contentcache/Tvrage/tvrage.db
+  rm /nonametv/contentcache/Tvrage/tvrage.db
 
   # Make sure we have all xmltv updated. As some seem to go missing (Somehow)
   # (for example if the time on the server is way off)
@@ -37,6 +37,9 @@ then
   # Remove old programmes and batches - dont use, fucks up the previouslyshown
   # augmenter
   #perl -I lib tools/nonametv-remove-old
+
+  # Generate the docs for the importers etc
+  tools/nonametv-generate-doc /nonametv/docs/
 
   exit
 fi
@@ -107,19 +110,18 @@ $d perl -I lib tools/nonametv-localize-movies > $NROOT/html/00movies.html
 tools/se-tvzon/nonametv-updatesite $Q
 
 # Compare
-#$d tools/se-tvzon/nonametv-xmltv-compare-run
+$d tools/se-tvzon/nonametv-xmltv-compare-run
 
 # Upload to www (daily)
-#$d tools/se-tvzon/nonametv-upload $Q
+$d tools/se-tvzon/nonametv-upload $Q
 
 # Upload to www (at 13.00)
 #$h tools/se-tvzon/nonametv-upload $Q
 
 # Run after, everything
-#tools/se-tvzon/nonametv-xmltv-compare-run
-#$d rsync --delete -r /var/local/nonametv/html/00status.html /server/www/xmltv/
-#$d rsync --delete -r /var/local/nonametv/html/00movies.html /server/www/xmltv/
-#$d rsync --delete -r /var/local/nonametv/xmltv_compare/ /server/www/xmltv/compare/
+$d rsync --delete -r /var/local/nonametv/html/00status.html /server/www/xmltv/
+$d rsync --delete -r /var/local/nonametv/html/00movies.html /server/www/xmltv/
+$d rsync --delete -r /var/local/nonametv/xmltv_compare/ /server/www/xmltv/compare/
 
 # Some users seems to download this file from the base url instead, this will fix it.
 $d rsync --delete -r /var/local/nonametv/xmltv/channels.xml.gz /server/www/xmltv/

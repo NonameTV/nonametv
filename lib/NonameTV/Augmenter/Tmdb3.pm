@@ -159,7 +159,8 @@ sub FillHash( $$$ ) {
     my @genres = @{ $movie->info()->{genres} };
     foreach my $node ( @genres ) {
       my $genre_id = $node->{id};
-      my ( $type, $categ ) = $self->{datastore}->LookupCat( "Tmdb_genre", $genre_id );
+      my $genre_name = $node->{name};
+      my ( $type, $categ ) = $self->{datastore}->LookupCat( "Tmdb_genre", $genre_name );
       AddCategory( $resultref, $type, $categ );
     }
   }
@@ -168,6 +169,9 @@ sub FillHash( $$$ ) {
   # $resultref->{production_date} = $doc->findvalue( '/OpenSearchDescription/movies/movie/released' );
 
   $resultref->{url} = 'http://www.themoviedb.org/movie/' . $movie->{ id };
+
+  $resultref->{extra_id} = $movie->{ imdb_id };
+  $resultref->{extra_id_type} = "themoviedb";
 
 #  $self->FillCredits( $resultref, 'actors', $doc, 'Actor');
 
@@ -239,7 +243,8 @@ sub AugmentProgram( $$$ ){
 
             my @names = ( );
             foreach my $crew ( $movie->crew ) {
-              if( $crew->{'job'} eq 'Director' ) {
+              # tv stations sometimes list the movie as being "by the author" instead of the director, so accept both
+              if( ( $crew->{'job'} eq 'Director' )||( $crew->{'job'} eq 'Author' ) ) {
                 my $person = $self->{themoviedb}->person( id => $crew->{id} );
                 if( defined( $person ) ){
                   if( defined( $person->aka() ) ){

@@ -212,14 +212,17 @@ sub ImportContent
       if( $act->findvalue('./role_played') ) {
       	$role = norm( $act->findvalue('./role_played') );
       }
-      
-    if( (defined $role) and ( $role =~ /Regiss(.*)r/i  ) )
-      {
-        push @directors, $name;
-      }
-      else
-      {
-        push @actors, $name;
+
+      # Don't add if TV4 forgot the real name.
+      if((defined $name) and ($name ne "")) {
+		  if( (defined $role) and ( $role =~ /Regiss(.*)r/i  ) )
+		  {
+			push @directors, $name;
+		  }
+		  else
+		  {
+			push @actors, $name;
+		  }
       }
     }
 
