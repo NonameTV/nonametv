@@ -170,6 +170,9 @@ sub FillHash( $$$ ) {
 
   $resultref->{url} = 'http://www.themoviedb.org/movie/' . $movie->{ id };
 
+  $resultref->{extra_id} = $movie->{ imdb_id };
+  $resultref->{extra_id_type} = "themoviedb";
+
 #  $self->FillCredits( $resultref, 'actors', $doc, 'Actor');
 
 #  $self->FillCredits( $resultref, 'adapters', $doc, 'Actors');
