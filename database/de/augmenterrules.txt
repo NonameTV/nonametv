@@ -318,3 +318,23 @@
 87,Tvdb,Columbo,\N,\N,70369,episodetitle
 84,Fixups,"^(Ab 18!)\s+-\s+(.*)$",\N,\N,\N,splittitle
 \N,Fixups,"^(planet e.):\s+(.*)$",\N,\N,\N,splittitle
+58,Tvdb,"Silent Witness",\N,\N,76355,episodetitle
+84,Fixups,"^(Die Farben der Wüste):\s+(.*)$",\N,\N,\N,splittitle
+124,Fixups,"^(Viewfinder Asia):\s+(.*)$",\N,\N,\N,splittitle
+48,Fixups,^(über:morgen)\s+-\s+(.*)$,\N,\N,\N,splittitle
+48,Fixups,"Erlebnis Österrich",\N,\N,"Erlebnis Österreich",replacetitle
+\N,Fixups,"^(Hubert und Staller)\s+-\s+(.*)$",\N,\N,\N,splittitle
+48,Fixups,"^(Exclusiv - Die Reportage):\s+(.*)$",\N,\N,\N,splittitle
+38,Fixups,"Unter Verdacht",actors,"^.*Senta Berger.*$",series,setprogram_type
+\N,Tvdb,Eisenbahnromantik,subtitle,^.*$,188331,episodetitle
+179,Fixups,"^(Jack London: Abenteuer Südsee)\s+-\s+(.*)$",\N,\N,\N,splittitle
+179,Fixups,"^(Der Große Ritt: Auf den Spuren des Peacemakers)\s+-\s+(.*)$",\N,\N,\N,splittitle
+179,Fixups,"^(Nomads - Adrenalin ohne Grenzen)\s+-\s+(.*)$",\N,\N,\N,splittitle
+179,Fixups,^(Hafenpolizei)\s+-\s+(.*)$,\N,\N,\N,splittitle
+179,Fixups,"^(Hamburg Transit)\s+-\s+(.*)$",\N,\N,\N,splittitle
+179,Fixups,"^(Auf der Flucht)\s+-\s+(.*)$",\N,\N,\N,splittitle
+179,Fixups,"^(Der Denver-Clan)\s+-\s+(.*)$",\N,\N,\N,splittitle
+179,Fixups,"^(Hope - Schutzengel der Wildtiere)\s+-\s+(.*)$",\N,\N,\N,splittitle
+179,Fixups,^(Lassie)\s+-\s+(.*)$,\N,\N,\N,splittitle
+179,Fixups,"^(Echt lecker!)\s+-\s+(.*)$",\N,\N,\N,splittitle
+179,Tvdb,\N,program_type,series,\N,episodetitle

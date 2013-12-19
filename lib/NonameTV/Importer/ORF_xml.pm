@@ -46,8 +46,6 @@ sub new {
 
     my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore}, "Europe/Vienna" );
     $self->{datastorehelper} = $dsh;
-    
-    $self->{datastore}->{augment} = 1;
 
     $self->{datastore}->{augment} = 1;
 
@@ -133,6 +131,7 @@ my %genrewords = (
 	'Serie' => 1,
 	'Sitcom' => 1,
 	'Stop Motion Trick' => 1,
+	'Talk-Show mit Barbara Karlich' => 1,
 	'Telenovela' => 1,
 	'Unterhaltungsserie' => 1,
 	'Zeichentrickserie' => 1,
@@ -231,13 +230,14 @@ sub ImportContent
 			$desc =~ s|^M[Ii]t .+?$||m;
 			$actors =~ s| u\.a\.$||;
 			# TODO clean up the list of actors
-			$ce->{actors} = norm($actors);
+			$ce->{actors} = $actors;
 		}
 		my( $directors )=( $desc =~ m|^Regie:\s+(.+?)$|m );
 		if( $directors ){
 			$desc =~ s|^Regie:\s+.+?$||m;
 			# TODO clean up the list of directors
-			$ce->{directors} = norm($directors);
+                        $directors = norm( $directors );
+			$ce->{directors} = $directors;
 		}
 		my( $running_time )=( $desc =~ m|^(\d+\.\d+)$|m );
 		if( $running_time ){
@@ -249,7 +249,7 @@ sub ImportContent
 			$desc =~ s|^ca. \d+\'$||m;
 			# TODO do we want to add running time?
 		}
-	      #$ce->{description} = norm($desc) if $desc;
+	      $ce->{description} = norm($desc) if $desc;
 
 		my $subtitle =  $sc->findvalue( './subtitel' );
 		if( $subtitle =~ m/^(?:Folge|Kapitel|Teil)\s+\d+\s+-\s+.+$/ ){
@@ -300,9 +300,9 @@ sub ImportContent
 #   	 		$ce->{captions} = 'teletext';
 #		}
 
-		# TODO how does ORF signal HD? just slap quality=hdtv on everthing on channels with xmltvid hd.*
+		# TODO how does ORF signal HD? just slap quality=HDTV on everything on channels with xmltvid hd.*
 		if( $chd->{xmltvid} =~ m|^hd\.| ){
-			$ce->{quality} = 'hdtv';
+			$ce->{quality} = 'HDTV';
 		}
 	
   	  $dsh->AddProgramme( $ce );
