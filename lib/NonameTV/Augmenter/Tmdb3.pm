@@ -204,6 +204,8 @@ sub AugmentProgram( $$$ ){
       return( undef,  "Year and directors unknown, not searching at themoviedb.org!" );
     }
 
+    # escape ampersand, shouldn't the API do that?
+    $searchTerm =~ s|&|%26|g;
     # filter characters that confuse the search api
     # FIXME check again now that we encode umlauts & co.
     $searchTerm =~ s|[-#\?\N{U+00BF}\(\)]||g;
