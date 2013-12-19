@@ -814,3 +814,4 @@
 514,PreviouslyShown,^.*$,\N,\N,\N,\N
 435,PreviouslyShown,^.*$,\N,\N,\N,\N
 528,Tvdb,^.*$,program_type,series,\N,episodeseason
+625,Tvdb,^.*$,program_type,series,\N,episodetitle

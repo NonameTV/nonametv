@@ -612,6 +612,30 @@ OUTTV,"tysk komediserie",Comedy,series
 OUTTV,"utnämnd till världens första reseprogram för",Travel,
 OUTTV,"utnämnt till världens första reseprogram för",Travel,
 OUTTV,"utnämt till världens första reseprogram för ",Travel,
+RTL2,abenteuer,Adventure,
+RTL2,action,Action,
+RTL2,animationsfilm,Animation,
+RTL2,bollywood,Bollywood,
+RTL2,comedy,Comedy,
+RTL2,crime,Crime,
+RTL2,doku-soap,Soap,
+RTL2,dokumentarfilm,Documentary,
+RTL2,dokumentation,Documentary,
+RTL2,drama,Drama,
+RTL2,familienfilm,Family,
+RTL2,fantasy,Fantasy,
+RTL2,fantasy/thriller,Fantasy/Thriller,
+RTL2,komödie,Comedy,
+RTL2,krimi,Crime,
+RTL2,magazin,Magazine,tvshow
+RTL2,musik-event,Music,tvshow
+RTL2,mystery,Mystery,
+RTL2,reality,Reality,
+RTL2,reportage,\N,tvshow
+RTL2,"romantic comedy",Romance,
+RTL2,"science fiction",Sci-fi,
+RTL2,thriller,Thriller,
+RTL2,western,Western,
 SBSTV,"- fodboldmagasin.",Football,magazine
 SBSTV,"- pokerturnering",Poker,sports
 SBSTV,"amr. action",Action,
@@ -773,6 +797,24 @@ Tele5,thriller-serie,Crime/Mystery,
 Tele5,vampirfilm,Vampire,movie
 Tele5,western,Action/Adv,
 Tele5,westernparodie,Action/Adv,
+Tmdb_genre,action,Action,movie
+Tmdb_genre,adventure,Adventure,movie
+Tmdb_genre,comedy,Comedy,movie
+Tmdb_genre,crime,Crime,movie
+Tmdb_genre,drama,Drama,movie
+Tmdb_genre,family,Family,movie
+Tmdb_genre,fantasy,Fantasy,movie
+Tmdb_genre,foreign,Foreign,movie
+Tmdb_genre,history,History,movie
+Tmdb_genre,horror,Horror,movie
+Tmdb_genre,indie,Indie,movie
+Tmdb_genre,music,Music,movie
+Tmdb_genre,mystery,Mystery,movie
+Tmdb_genre,romance,Romance,movie
+Tmdb_genre,suspense,Suspense,movie
+Tmdb_genre,thriller,Thriller,movie
+Tmdb_genre,war,War,movie
+Tmdb_genre,western,Western,movie
 TV2Denmark,børn,Children's,series
 TV2Denmark,dokumentar/aktualitet,Documentary,series
 TV2Denmark,film,Movies,movie

@@ -1,3 +1,0 @@
-DEV,"Dev. kanaler",255,display_name,0
-RADIO,Radiostationer,100,display_name,0
-TV,TV-kanaler,1,display_name,0
