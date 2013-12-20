@@ -586,6 +586,8 @@ sub parse_subtitle
     if( !defined( $sce->{episode} ) ){
       $sce->{episode} = ". " . ($episode-1) . " .";
     }
+  } elsif ($subtitle =~ m|\s*\(Länge: .*?\)\s*|) {
+    $subtitle =~ s|\s*\(Länge: .*?\)\s*||;
   } else {
     d ("unhandled subtitle: $subtitle");
   }
