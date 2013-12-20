@@ -30,7 +30,7 @@ def download_json_files():
     if not os.path.exists('/tmp/xmltv_convert/json'):
         os.makedirs('/tmp/xmltv_convert/json')
 
-    page = urllib2.urlopen('http://xmltv.tvtab.la/json/')
+    page = urllib2.urlopen('http://json.xmltv.se/')
     soup = BeautifulSoup(page)
     soup.prettify()
 
@@ -138,7 +138,7 @@ def create_xml():
                             episode_num = ET.SubElement(xml_programme, "episode-num", { "system": key })
                             episode_num.text = programme['episodeNum'][key].replace("\n", "")
 
-					# Video COULD be present
+                    # Video COULD be present
                     if programme.has_key("video"):
                         if programme['video'].has_key("aspect"):
                             xml_video = ET.SubElement(xml_programme, "video")
@@ -147,7 +147,7 @@ def create_xml():
 
                     # A rating COULD be present
                     if programme.has_key("rating"):
-                    	if programme['rating'].has_key("mpaa"):
+                        if programme['rating'].has_key("mpaa"):
                             rating = ET.SubElement(xml_programme, "rating", { "system": "MPAA" })
                             rating_value = ET.SubElement(rating, "value")
                             rating_value.text = programme['rating']['mpaa']
@@ -165,12 +165,12 @@ def create_xml():
                         xml_display_name.text = data['jsontv']['channels'][key]['displayName'][lang]
 
                     xml_base_url = ET.SubElement(xml_channel, "base-url")
-                    xml_base_url.text = "http://xmltv.tvtab.la/xmltv/"
+                    xml_base_url.text = "http://server.local/xmltv/"
 
                     if data['jsontv']['channels'][key].has_key('icon'):
                         xml_icon = ET.SubElement(xml_channel, "icon", { "src": data['jsontv']['channels'][key]['icon'] })
 
-            outfile = gzip.open('/tmp/xmltv_convert/xml/%s' % filename.replace('.js', '.xml.gz'), 'w+')
+            outfile = gzip.GzipFile('/tmp/xmltv_convert/xml/%s' % filename.replace('.js', '.xml.gz'), 'w+', 9, None, long(1))
             text = ET.tostring(root, encoding="utf-8")
             doc = minidom.parseString(text)
             dt = minidom.getDOMImplementation('').createDocumentType('tv', None, 'xmltv.dtd')
