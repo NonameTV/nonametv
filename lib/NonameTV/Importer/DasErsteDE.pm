@@ -588,6 +588,18 @@ sub parse_subtitle
     }
   } elsif ($subtitle =~ m|\s*\(Länge: .*?\)\s*|) {
     $subtitle =~ s|\s*\(Länge: .*?\)\s*||;
+  # match program type, production year (Tatort on HR: Kriminalfilm 1978)
+  } elsif ($subtitle =~ m|^(Kiminalfilm)\s+\d{4}$|) {
+    my ($program_type, $production_year) = ($subtitle =~ m|^(Kriminalfilm)\s+(\d{4})$|);
+    $sce->{production_date} = $production_year . "-01-01";
+    my ( $type, $categ ) = $self->{datastore}->LookupCat( "DasErste_type", $program_type );
+    AddCategory( $sce, $type, $categ );
+    $subtitle = undef;
+  # match country of production, production year (Tatort on HR: Deutschland 1978)
+  } elsif ($subtitle =~ m|^(Deuschland)\s+\d{4}$|) {
+    my ($program_country, $production_year) = ($subtitle =~ m|^(Deutschland)\s+(\d{4})$|);
+    $sce->{production_date} = $production_year . "-01-01";
+    $subtitle = undef;
   } else {
     d ("unhandled subtitle: $subtitle");
   }
