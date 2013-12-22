@@ -396,6 +396,44 @@ sub guess_channel
      return "kunskapskanalen.svt.se" if $filename =~ /svtk/i;   # SVT_SCHEDULE_SVTK_20130311_20130425.xml
      return "svtworld.svt.se" if $filename =~ /svte/i; 			# SVT_SCHEDULE_SVTE_20130311_20130425.xml
      return "svt24.svt.se" if $filename =~ /_24_/i; 			# SVT_SCHEDULE_24_20130311_20130425.xml
+
+     # Venetsia
+     return "1.radio.yle.fi" if $filename =~ /^r01/i;			# r01_20131208.xml
+     return "ava.mtv.fi" if $filename =~ /^ava/i;				# ava_20131208.xml
+     return "fakta.mtv.fi" if $filename =~ /^mtf/i;				# mtf_20131208.xml
+     return "faktaxl.mtv.fi" if $filename =~ /^mtd/i;			# mtd_20131208.xml
+     return "fem.yle.fi" if $filename =~ /^fsd/i;				# fsd_20131208.xml
+     return "fox.fi" if $filename =~ /^stv/i;					# stv_20131208.xml
+     return "jim.nelonen.fi" if $filename =~ /^nep/i;			# nep_20131208.xml
+     return "juniori.mtv.fi" if $filename =~ /^jun/i;			# jun_20131208.xml
+     return "klassinen.radio.yle.fi" if $filename =~ /^r17/i;	# r17_20131208.xml
+     return "komedia.mtv.fi" if $filename =~ /^mko/i;			# mko_20131208.xml
+     return "kutonen.fi" if $filename =~ /^voi/i;				# voi_20131208.xml
+     return "leffa.mtv.fi" if $filename =~ /^mtl/i;				# mtl_20131208.xml
+     return "liv.nelonen.fi" if $filename =~ /^liv/i;			# liv_20131208.xml
+     return "maailma.nelonen.fi" if $filename =~ /^new/i;		# new_20131208.xml
+     return "max.mtv.fi" if $filename =~ /^mtm/i;				# mtm_20131208.xml
+     return "mtv3.fi" if $filename =~ /^mtv/i;					# mtv_20131208.xml
+     return "nappula.nelonen.fi" if $filename =~ /^nef/i;		# nef_20131208.xml
+     return "nelonen.fi" if $filename =~ /nel/i;				# nel_20131208.xml
+     return "prime.nelonen.fi" if $filename =~ /^nek/i;			# nek_20131208.xml
+     return "pro1.nelonen.fi" if $filename =~ /^utp/i;			# utp_20131208.xml
+     return "pro2.nelonen.fi" if $filename =~ /^ur1/i;			# ur1_20131208.xml
+     return "puhe.radio.yle.fi" if $filename =~ /^r48/i;		# r48_20131208.xml
+     return "radionova.fi" if $filename =~ /^nov/i;				# nov_20131208.xml
+     return "sarja.mtv.fi" if $filename =~ /^sar/i;				# sar_20131208.xml
+     return "sport1.mtv.fi" if $filename =~ /^ms1/i;			# ms1_20131208.xml
+     return "sport2.mtv.fi" if $filename =~ /^ms2/i;			# ms2_20131208.xml
+     return "sub.fi" if $filename =~ /^tvt/i;					# tvt_20131208.xml
+     return "suomi.radio.yle.fi" if $filename =~ /^r03/i;		# r03_20131208.xml
+     return "teema.yle.fi" if $filename =~ /^yte/i;				# yte_20131208.xml
+     return "tv1.yle.fi" if $filename =~ /^tv1/i;				# tv1_20131208.xml
+     return "tv2.yle.fi" if $filename =~ /^tv2/i;				# tv2_20131208.xml
+     return "tv5.fi" if $filename =~ /^tv5/i;					# tv5_20131208.xml
+     return "tvfinland.yle.fi" if $filename =~ /^tvf/i;			# tvf_20131208.xml
+     return "vega.radio.yle.fi" if $filename =~ /^r04/i;		# r04_20131208.xml
+     return "x.radio.yle.fi" if $filename =~ /^r02/i;			# r02_20131208.xml
+     return "x3m.radio.yle.fi" if $filename =~ /^r44/i;			# r44_20131208.xml
  }
 
  if( $dir =~ /BBC/ and $filename =~ /\.xls$/i ) {
