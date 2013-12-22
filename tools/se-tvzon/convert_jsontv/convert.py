@@ -165,7 +165,7 @@ def create_xml():
                         xml_display_name.text = data['jsontv']['channels'][key]['displayName'][lang]
 
                     xml_base_url = ET.SubElement(xml_channel, "base-url")
-                    xml_base_url.text = "http://server.local/xmltv/"
+                    xml_base_url.text = "http://xmltv.xmltv.se/"
 
                     if data['jsontv']['channels'][key].has_key('icon'):
                         xml_icon = ET.SubElement(xml_channel, "icon", { "src": data['jsontv']['channels'][key]['icon'] })

@@ -109,9 +109,6 @@ $d perl -I lib tools/nonametv-localize-movies > $NROOT/html/00movies.html
 # Export
 tools/se-tvzon/nonametv-updatesite $Q
 
-# Compare
-$d tools/se-tvzon/nonametv-xmltv-compare-run
-
 # Upload to www (daily)
 $d tools/se-tvzon/nonametv-upload $Q
 
