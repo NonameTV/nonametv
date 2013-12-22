@@ -37,7 +37,7 @@ sub Object2Url {
     return (undef, 'Grabber info must contain path!');
   }
 
-  my $url = 'http://www.dradio.de/' . $chd->{grabber_info} . '/vorschau/' . $year . $month . $day . '/';
+  my $url = $chd->{grabber_info} . '?day=' . $day .  '.' . $month . '.' . $year;
 
   # Only one url to look at and no error
   return ([$url], undef);
@@ -67,7 +67,7 @@ sub FilterContent {
 
   # save program table
   my $saveddata;
-  my @nodes = $doc->find ('//table[@class="vorschau-tabelle"]')->get_nodelist();
+  my @nodes = $doc->find ('//table[thead/tr/th="Zeit"]')->get_nodelist();
   $saveddata = $nodes[-1];
   $nodes[-1]->unbindNode ();
 
@@ -116,7 +116,7 @@ sub ImportContent {
 
   my $table = $te->table(0, 0);
 
-  for (my $i = 0; $i <= $table->row_count(); $i+=1) {
+  for (my $i = 1; $i <= $table->row_count(); $i+=1) {
     my @row = $table->row($i);
 
     my ( $hour, $minute ) = ( $row[0] =~ m|(\d+):(\d+) Uhr| );
