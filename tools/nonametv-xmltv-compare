@@ -116,6 +116,7 @@ print OUT << "EOHEAD";
   .U { background-color: green; }
   .E { background-color: grey; }
 </style>
+<link rel="stylesheet" type="text/css" href="/css/modern.css" />
 </head>
 <body>
 <h1>Changes</h1>
