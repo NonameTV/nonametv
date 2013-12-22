@@ -409,6 +409,7 @@ sub guess_channel
      return "klassinen.radio.yle.fi" if $filename =~ /^r17/i;	# r17_20131208.xml
      return "komedia.mtv.fi" if $filename =~ /^mko/i;			# mko_20131208.xml
      return "kutonen.fi" if $filename =~ /^voi/i;				# voi_20131208.xml
+     return "hd.yle.fi" if $filename =~ /^ylr/i;				# ylr_20131208.xml
      return "leffa.mtv.fi" if $filename =~ /^mtl/i;				# mtl_20131208.xml
      return "liv.nelonen.fi" if $filename =~ /^liv/i;			# liv_20131208.xml
      return "maailma.nelonen.fi" if $filename =~ /^new/i;		# new_20131208.xml
