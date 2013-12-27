@@ -166,7 +166,7 @@ sub AugmentProgram( $$$ ){
         $matchdone=1;
       }
     }
-    if( $ceref->{'title'} && $ceref->{subtitle} && !$ceref->{description} ){
+    if( !$matchdone && $ceref->{'title'} && $ceref->{subtitle} && !$ceref->{description} ){
       # try matching by title/subtitle next
       d( 'matching by title/subtitle' );
       my( $res, $sth ) = $self->{datastore}->sa->Sql( "
@@ -183,11 +183,11 @@ sub AugmentProgram( $$$ ){
       }
     }
     if( !$matchdone && $ceref->{'title'} && !$ceref->{episode} && !$ceref->{subtitle} && !$ceref->{description} ){
-      # try matching just by title number last and only of episode number and subtitle are empty!
+      # try matching just by title number last and only if episode number and subtitle are empty!
       d( 'matching by title' );
       my( $res, $sth ) = $self->{datastore}->sa->Sql( "
           SELECT * from programs
-          WHERE channel_id = ? and title = ? and subtitle is not null and description is not null
+          WHERE channel_id = ? and title = ? and description is not null
           ORDER BY abs( timediff( start_time, ? ) ) asc, start_time asc, end_time desc
           LIMIT 1", 
         [$ceref->{channel_id}, $ceref->{title}, $ceref->{start_time}] );
