@@ -313,6 +313,7 @@ sub guess_channel
      return "europe.playboytv.com" if $filename =~ /^playboy/i;
      return "adultchannel.co.uk" if $filename =~ /^the\s*adult/i;
      return "privatespice.com" if $filename =~ /^private/i;
+     return "brazzerstveurope.com" if $filename =~ /^brazzers/i;
      return "viasat.spice.com" if $filename =~ /^spice\s*viasat/i;
  }
  
