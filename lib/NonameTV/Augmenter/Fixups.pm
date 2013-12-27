@@ -101,9 +101,13 @@ sub AugmentProgram( $$$ ){
     $resultref->{'guests'} = $episodetitle;
   }elsif( $ruleref->{matchby} eq 'splitstartitle' ) {
     # split the name of the starring actor from the title and put it into actors
+    # set type to movie if unknown
     my( $actor, $title )=( $ceref->{title} =~ m|$ruleref->{title}| );
     $resultref->{'title'} = $title;
     $resultref->{'actors'} = join( ', ', $actor, $ceref->{actors} );
+    if( $ceref->{program_type} eq '' ) {
+      $resultref->{program_type} = 'movie';
+    }
   }elsif( $ruleref->{matchby} eq 'replacetitle' ) {
     $resultref->{'title'} = $ruleref->{remoteref};
   }elsif( $ruleref->{matchby} eq 'replacesubtitle' ) {
