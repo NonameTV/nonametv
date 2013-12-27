@@ -641,6 +641,25 @@ sub WriteEntry
       $d->{'episode-num'} = [[ norm($data->{episode}), 'xmltv_ns' ]];
     }
   }
+  if( defined( $data->{url} ) ){
+    my( $inetref, $system );
+    if( $data->{url} =~ m|^http://thetvdb.com/| ){
+      ( $inetref )=( $data->{url} =~ m|seriesid=(\d+)| );
+      $system = 'thetvdb.com';
+      $inetref = 'series/' . $inetref;
+    }elsif( $data->{url} =~ m|^http://www.themoviedb.org/| ){
+      ( $inetref )=( $data->{url} =~ m|movie/(\d+)| );
+      $system = 'themoviedb.org';
+      $inetref = 'movie/' . $inetref;
+    }
+    if( $system ){
+      if( exists( $d->{'episode-num'} ) ){
+        push( @{$d->{'episode-num'}}, [ $inetref, $system ]);
+      }else{
+        $d->{'episode-num'} = [[ $inetref, $system ]];
+      }
+    }
+  }
   
   if( defined( $data->{program_type} ) and ($data->{program_type} =~ /\S/) )
   {

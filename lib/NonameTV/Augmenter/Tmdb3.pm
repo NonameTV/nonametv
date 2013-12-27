@@ -208,6 +208,8 @@ sub AugmentProgram( $$$ ){
       return( undef,  "Year and directors unknown, not searching at themoviedb.org!" );
     }
 
+    # escape ampersand, shouldn't the API do that?
+    $searchTerm =~ s|&|%26|g;
     # filter characters that confuse the search api
     # FIXME check again now that we encode umlauts & co.
     $searchTerm =~ s|[-#\?\N{U+00BF}\(\)]||g;
@@ -244,7 +246,7 @@ sub AugmentProgram( $$$ ){
             my @names = ( );
             foreach my $crew ( $movie->crew ) {
               # tv stations sometimes list the movie as being "by the author" instead of the director, so accept both
-              if( ( $crew->{'job'} eq 'Director' )||( $crew->{'job'} eq 'Author' ) ) {
+              if( ( $crew->{'job'} eq 'Director' )||( $crew->{'job'} eq 'Author' )||( $crew->{'job'} eq 'Screenplay' ) ) {
                 my $person = $self->{themoviedb}->person( id => $crew->{id} );
                 if( defined( $person ) ){
                   if( defined( $person->aka() ) ){
@@ -323,9 +325,9 @@ sub AugmentProgram( $$$ ){
       }
 
       if( @candidates == 0 ){
-        w( 'search for "' . $ceref->{title} . '" did not return any good hit, ignoring' );
+        w( 'search for "' . $ceref->{title} . '" by "' . $ceref->{directors} . '" did not return any good hit, ignoring' );
       } elsif ( @candidates > 1 ){
-        w( 'search for "' . $ceref->{title} . '" did not return a single best hit, ignoring' );
+        w( 'search for "' . $ceref->{title} . '" by "' . $ceref->{directors} . '" did not return a single best hit, ignoring' );
       } else {
         my $movieId = $candidates[0]->{id};
 

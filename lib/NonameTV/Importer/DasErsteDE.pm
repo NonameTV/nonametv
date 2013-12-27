@@ -390,7 +390,8 @@ sub parse_subtitle
     return undef;
   }
 
-  $subtitle = norm ($subtitle);
+#  this breaks subtitles split over untertitel1/2 with the space exactly on the merge point
+#  $subtitle = norm ($subtitle);
 
   # strip Themenwoche
   if( $subtitle =~ m/(?:\s*-\s*|)ARD-Themenwoche \".*\"$/ ){
@@ -440,18 +441,18 @@ sub parse_subtitle
     my ( $type, $categ ) = $self->{datastore}->LookupCat( "DasErste_type", $program_type );
     AddCategory( $sce, $type, $categ );
     $subtitle = undef;
-  } elsif ($subtitle =~ m/\s*-*\s*(?:Spielfilm|Fernsehfilm|Kinderspielfilm)[,]{0,1} .*? \d+\s*/) {
+  } elsif ($subtitle =~ m/\s*-*\s*\S+film[,]{0,1} .*? \d{4}\s*/) {
     # Spielfilm USA 2009 (Stolen Lives)
     # Spielfilm Irland/USA 2009 (ONDINE)
     # Spielfilm Großbritannien / USA / Italien 2001
     # Fernsehfilm Österreich / Deutschland 2005
     # Kinderspielfilm Argentinien / Spanien 2008 (El Ratón)
     # (Myrin) Spielfilm, Island 2006
-    my ($program_type, $production_countries, $production_year) = ($subtitle =~ m/\s*(Spielfilm|Fernsehfilm|Kinderspielfilm)[,]{0,1} (.*?) (\d+)\s*/);
+    my ($program_type, $production_countries, $production_year) = ($subtitle =~ m/\s*-*\s*(\S+film)[,]{0,1} (.*?) (\d{4})\s*/);
     $sce->{production_date} = $production_year . "-01-01";
     my ( $type, $categ ) = $self->{datastore}->LookupCat( "DasErste_type", $program_type );
     AddCategory( $sce, $type, $categ );
-    $subtitle =~ s!\s*-*\s*(?:Spielfilm|Fernsehfilm|Kinderspielfilm)[,]{0,1} (.*?) \d+\s*!!;
+    $subtitle =~ s!\s*-*\s*\S+film[,]{0,1} (.*?) \d{4}\s*!!;
   } elsif ($subtitle =~ m|^\S+teili\S+ \S+ und \S+erie \S+ \d{4}$|) {
     # 13-teilige Kinder- und Familienserie Deutschland 2009
     my ($program_type, $production_countries, $production_year) = ($subtitle =~ m|^\S+ (\S+ \S+ \S+) (\S+) (\d{4})$|);
@@ -585,6 +586,20 @@ sub parse_subtitle
     if( !defined( $sce->{episode} ) ){
       $sce->{episode} = ". " . ($episode-1) . " .";
     }
+  } elsif ($subtitle =~ m|\s*\(Länge: .*?\)\s*|) {
+    $subtitle =~ s|\s*\(Länge: .*?\)\s*||;
+  # match program type, production year (Tatort on HR: Kriminalfilm 1978)
+  } elsif ($subtitle =~ m|^(Kiminalfilm)\s+\d{4}$|) {
+    my ($program_type, $production_year) = ($subtitle =~ m|^(Kriminalfilm)\s+(\d{4})$|);
+    $sce->{production_date} = $production_year . "-01-01";
+    my ( $type, $categ ) = $self->{datastore}->LookupCat( "DasErste_type", $program_type );
+    AddCategory( $sce, $type, $categ );
+    $subtitle = undef;
+  # match country of production, production year (Tatort on HR: Deutschland 1978)
+  } elsif ($subtitle =~ m|^(Deuschland)\s+\d{4}$|) {
+    my ($program_country, $production_year) = ($subtitle =~ m|^(Deutschland)\s+(\d{4})$|);
+    $sce->{production_date} = $production_year . "-01-01";
+    $subtitle = undef;
   } else {
     d ("unhandled subtitle: $subtitle");
   }
