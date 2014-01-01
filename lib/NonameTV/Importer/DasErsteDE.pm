@@ -204,7 +204,7 @@ sub ImportContent {
     my $title = $pgm->findvalue( 'Sendetitel' );
     $title =~ s| \(\d+/\d+\)$||g;
     $title =~ s| \(\d+\)$||g;
-    $title =~ s/ \(WH(?: von \w{2}|)\)$//g;
+    $title =~ s/ \(WH(?: von \w{2}| von \w{2} der Vorwoche|)\)$//g;
     # clean up for HR
     $title =~ s/\s+Kinemathek-Nacht:.*$//g;
 
