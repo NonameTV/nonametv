@@ -300,6 +300,9 @@ sub AugmentProgram( $$$ ){
 
         $episodetitle =~ s|\s+\(Part\s+(\d+)\)$| ($1)|;   # _(Part_#) for Comedy Central Germany
 
+        # " - - " to " - " for Eisenbahnromantik on SWR, maybe happens when shuffling title/subtitle around
+        $episodetitle =~ s|\s+-\s+-\s+| - |;
+
         my $episode = $self->{tvdb}->getEpisodeByName( $series->{SeriesName}, $episodetitle );
         if( defined( $episode ) ) {
           $self->FillHash( $resultref, $series, $episode );
