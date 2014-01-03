@@ -42,13 +42,13 @@ sub new {
     defined( $self->{Password} ) or die "You must specify Password";
 
     # how many days are available every days of the week?
-    my $DaysOnSite = 5*7 + 4;
+    my $DaysOnSite = 5*7 + 3;
 
     if ($self->{MaxDays} == 32) {
       # default to all data
       $self->{MaxDays} = $DaysOnSite;
     } elsif ($self->{MaxDays} > $DaysOnSite) {
-      w ($self->{Type} . ": limiting MaxDays to availible data");
+      w ($self->{Type} . ": limiting MaxDays to available data");
       $self->{MaxDays} = $DaysOnSite;
     }
 
