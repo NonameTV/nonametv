@@ -72,8 +72,10 @@ sub Object2Url {
 
   my( $year, $month, $day ) = ( $objectname =~ /(\d+)-(\d+)-(\d+)$/ );
  
+  my( $channel, @flags ) = split( /,\s*/, $chd->{grabber_info} );
+
   my $url = $self->{UrlRoot} .
-    $chd->{grabber_info} . '&date=' . $year . $month . $day;
+    $channel . '&date=' . $year . $month . $day;
 
   return( $url, undef );
 }
@@ -83,6 +85,15 @@ sub FilterContent {
   my( $cref, $chd ) = @_;
 
   my( $chid ) = ($chd->{grabber_info} =~ /^(\d+)/);
+  my( $channel, @flags ) = split( /,\s*/, $chd->{grabber_info} );
+
+  my $orf2europe = 0;
+  foreach my $flag (@flags) {
+    if( $flag eq 'orf2europe' ) {
+      $orf2europe = 1;
+    }
+  }
+  
 
   my $doc;
   $$cref =~ s|encoding="LATIN1"|encoding="windows-1252"|;
@@ -99,6 +110,14 @@ sub FilterContent {
   if( $ns->size() == 0 ) {
     # TODO sometimes there seem to be no programs on sportplus
     return (undef, "No data found" );
+  }
+
+  if( $orf2europe == 1 ){
+    my $nodes = $doc->find( "//sendung[o2e='FALSE']/titel" );
+    foreach my $node ($nodes->get_nodelist) {
+      $node->removeChildNodes();
+      $node->appendTextNode( 'end-of-transmission' );
+    }
   }
 
   my $str = $doc->toString( 1 );
