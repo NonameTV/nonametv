@@ -37,7 +37,7 @@ sub Object2Url {
     return (undef, 'Grabber info must contain path!');
   }
 
-  my $url = $chd->{grabber_info} . '?day=' . $day .  '.' . $month . '.' . $year;
+  my $url = $chd->{grabber_info} . '?drbm[date]=' . $day .  '.' . $month . '.' . $year;
 
   # Only one url to look at and no error
   return ([$url], undef);
