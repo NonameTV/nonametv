@@ -92,7 +92,7 @@ sub FilterContent {
 }
 
 sub ContentExtension {
-  return 'html.gz';
+  return 'html';
 }
 
 sub FilteredExtension {
