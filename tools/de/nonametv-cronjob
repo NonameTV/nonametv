@@ -44,7 +44,7 @@ $d perl -I lib tools/nonametv-remove-old # Tele5 wants daily removal of their te
 
 $d tools/de/nonametv-import-allhttp $Q
 $h tools/de/nonametv-import-allhttp $Q --short-grab
-#$d perl -I lib tools/nonametv-import Discovery_xml $Q
+$h perl -I lib tools/nonametv-import ORF $Q
 tools/de/nonametv-import-allmail $Q
 
 $d perl -I lib/ tools/nonametv-export Xmltv --remove-old
