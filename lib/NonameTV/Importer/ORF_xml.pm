@@ -35,6 +35,9 @@ sub new {
     $self->{MinDays} = 0 unless defined $self->{MinDays};
     $self->{MaxDays} = 15 unless defined $self->{MaxDays};
 
+    # consider less then or equal x programmes an error and keep the old data
+    $self->{MinProgrammes} = 15 unless defined $self->{MinProgrammes};
+
     if( defined(  $self->{UrlRoot} ) ) {
       w( "UrlRoot is deprecated. No point in keeping it secret as it\'s login protected now. Set Username and Password instead." );
     } else {
@@ -105,11 +108,11 @@ sub FilterContent {
   }
 
   # Find all "Schedule"-entries.
-  my $ns = $doc->find( "//programmablauf" );
+  my $ns = $doc->find( "//sendung" );
 
-  if( $ns->size() == 0 ) {
+  if( $ns->size() <= $self->{MinProgrammes} ) {
     # TODO sometimes there seem to be no programs on sportplus
-    return (undef, "No data found" );
+    return (undef, 'Aborting because only ' . $ns->size() . ' programmes have been found.' );
   }
 
   if( $orf2europe == 1 ){
