@@ -265,6 +265,12 @@ sub guess_channel
     # return "classic.espn.com" if $filename =~ /^espn\s+classic\s+europe/i;
 	# Travel Channel
      return "travelchanneltv.se" if $filename =~ /^travel/i;
+
+    # E! Entertainment
+    return "se.eonline.com" if $filename =~ /^e\s*swe\b/i;
+    return "dk.eonline.com" if $filename =~ /^e\s*den\b/i;
+    return "no.eonline.com" if $filename =~ /^e\s*nor\b/i;
+    return "nl.eonline.com" if $filename =~ /^e\s*dut\b/i;
  }
 
    if( $dir =~ /Turner/ ) {
@@ -292,6 +298,8 @@ sub guess_channel
    if( $dir =~ /France24/ and $filename =~ /\.zip$/i ) {
      return "france24.com" if $filename =~ /ANGL/i;
      return "france24.com" if $filename =~ /ENGL/i;
+     return "ar.france24.com" if $filename =~ /ARAB/i;
+     return "fr.france24.com" if $filename =~ /FRAN/i;
  }
 
    if( $dir =~ /TV5Monde/ and $filename =~ /\.xls$/i ) {
@@ -346,8 +354,8 @@ sub guess_channel
      return "travelchanneltv.se" if $filename =~ /^epg\s*\b/i;
  }
 
- if( $dir =~ /PokerChannel/ and $filename =~ /\.xls$/i ) {
-     return "pokerchanneleurope.com";
+ if( $dir =~ /PokerChannel/ and $filename =~ /\.xlsx$/i ) {
+     return "ginx.tv" if $filename =~ /epg/i;
  }
  
  if( $dir =~ /LifestyleTV/ and $filename =~ /\.xls|.xlsx$/i ) {
