@@ -1,4 +1,4 @@
-package NonameTV::Importer::FuelTV;
+package NonameTV::Importer::Ginx;
 
 use strict;
 use warnings;
@@ -6,7 +6,7 @@ use warnings;
 
 =pod
 
-Import data from XLS or XLSX files delivered via e-mail.
+Import data from XLSX files delivered via e-mail.
 
 Features:
 
@@ -29,7 +29,7 @@ my $converter = Text::Iconv -> new ("utf-8", "windows-1251");
 use Data::Dumper;
 use File::Temp qw/tempfile/;
 
-use NonameTV qw/norm normUtf8 AddCategory/;
+use NonameTV qw/norm normUtf8 AddCategory MonthNumber/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/progress error/;
 
@@ -46,8 +46,8 @@ sub new {
 
   my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
   $self->{datastorehelper} = $dsh;
-  
-  $self->{datastore}->{augment} = 1;
+
+  #$self->{datastore}->{augment} = 1;
 
   return $self;
 }
@@ -63,10 +63,8 @@ sub ImportContentFile {
   my $dsh = $self->{datastorehelper};
   my $ds = $self->{datastore};
 
-  if( $file =~ /\.xls|.xlsx$/i ){
+  if( $file =~ /\.xlsx$/i ){
     $self->ImportXLS( $file, $chd );
-  }elsif( $file =~ /\.xml$/i ){
-    $self->ImportXML( $file, $chd );
   }
 
 
@@ -79,11 +77,11 @@ sub ImportXML {
   my $dsh = $self->{datastorehelper};
   my $ds = $self->{datastore};
   $self->{fileerror} = 1;
-  
-	# Do something beautiful here later on. 
-	
+
+	# Do something beautiful here later on.
+
 	error("From now on you need to convert XML files to XLS files.");
-	
+
 	return 0;
 }
 
@@ -99,37 +97,39 @@ sub ImportXLS {
   my $ds = $self->{datastore};
 
   # Only process .xls or .xlsx files.
-  progress( "FuelTV: $xmltvid: Processing $file" );
+  progress( "Ginx: $xmltvid: Processing $file" );
 
 	my %columns = ();
   my $date;
   my $currdate = "x";
-  my $coldate = 0;
-  my $coltime = 1;
-  my $coltitle = 2;
-  my $colepisode = 5;
-  my $coldesc = 3;
-  my $colseason = 4;
+  my $coldate = 1;
+  my $coltime = 2;
+  my $coltitle = 6;
+  my $colepisode = 7;
+  my $coldesc = 8;
 
 my $oBook;
 
 if ( $file =~ /\.xlsx$/i ){ progress( "using .xlsx" );  $oBook = Spreadsheet::XLSX -> new ($file, $converter); }
-else { $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );  }   #  staro, za .xls
-#elsif ( $file =~ /\.xml$/i ){ $oBook = Spreadsheet::ParseExcel::Workbook->Parse($file); progress( "using .xml" );    }   #  staro, za .xls
-#print Dumper($oBook);
-my $ref = ReadData ($file);
+else { $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );  }
+
+#my $ref = ReadData ($file);
 
   # main loop
   for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
 
     my $oWkS = $oBook->{Worksheet}[$iSheet];
+    if( $oWkS->{Name} !~ /1/ ){
+      progress( "Ginx: Skipping other sheet: $oWkS->{Name}" );
+      next;
+    }
 
-    progress( "FuelTV: Processing worksheet: $oWkS->{Name}" );
+    progress( "Ginx: Processing worksheet: $oWkS->{Name}" );
 
 	my $foundcolumns = 0;
     # browse through rows
     my $i = 0;
-    for(my $iR = 13 ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
+    for(my $iR = $oWkS->{MinRow} ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
     $i++;
 
       my $oWkC;
@@ -143,7 +143,7 @@ my $ref = ReadData ($file);
 
       if( $date ne $currdate ){
 
-        progress("FuelTV: Date is $date");
+        progress("Ginx: Date is $date");
 
         if( $currdate ne "x" ) {
           $dsh->EndBatch( 1 );
@@ -173,53 +173,43 @@ my $ref = ReadData ($file);
       $oWkC = $oWkS->{Cells}[$iR][$coltitle];
       next if( ! $oWkC );
       my $title = $oWkC->Value if( $oWkC->Value );
-      $title =~ s/&amp;/&/g;
-      $title =~ s/\(.*\)//g;
-      $title =~ s/\[.*\]//g;
 
-      
+      $oWkC = $oWkS->{Cells}[$iR][$coldesc];
+      my $desc = $oWkC->Value if( $oWkC );
+
 
       my $ce = {
-        channel_id => $channel_id,
-        start_time => $time,
-        title => norm($title),
+        channel_id  => $channel_id,
+        start_time  => $time,
+        title 		=> norm($title),
+        description => norm($desc),
       };
-      
-    my( $t, $st ) = ($ce->{title} =~ /(.*)\: (.*)/);
-    if( defined( $st ) )
-    {
-      # This program is part of a series and it has a colon in the title.
-      # Assume that the colon separates the title from the subtitle.
-      $ce->{title} = norm($t);
-      $ce->{subtitle} = norm($st);
-    }
-      
-      # Desc (only works on XLS files)
-      	my $field = "L".$i;
-      	my $desc = $ref->[1]{$field};
-      	$ce->{description} = normUtf8($desc) if( $desc and $desc ne "WITHOUT SYNOPSIS" );
-      	$desc = '';
 
-	# Episode
-	$oWkC = $oWkS->{Cells}[$iR][$colepisode];
-	my $episode = $oWkC->Value if( $oWkC );
-	$oWkC = $oWkS->{Cells}[$iR][$colseason];
-	my $season = $oWkC->Value if( $oWkC );
-      
+	  # Episode
+	  $oWkC = $oWkS->{Cells}[$iR][$colepisode];
+	  my $episode = $oWkC->Value if( $oWkC );
+
       # Try to extract episode-information from the description.
-			if(($season) and ($season ne "")) {
-				# Episode info in xmltv-format
-  			if(($episode) and ($episode ne "") and ($season ne "") )
-   			{
-        	#$ce->{episode} = sprintf( "%d . %d .", $season-1, $episode-1 );
-   			}
-  
-  			if( defined $ce->{episode} ) {
-    			$ce->{program_type} = 'series';
-				}
-			}
-      
-	  progress("FuelTV: $time - $title") if $title;
+		if(($episode) and ($episode ne ""))
+		{
+			$ce->{episode} = sprintf( ". %d .", $episode-1 );
+		}
+
+		if( defined $ce->{episode} ) {
+			$ce->{program_type} = 'series';
+		}
+
+		 my( $t, $st ) = ($ce->{title} =~ /(.*)\: (.*)/);
+         if( defined( $st ) )
+         {
+              # This program is part of a series and it has a colon in the title.
+              # Assume that the colon separates the title from the subtitle.
+              $ce->{title} = $t;
+              $title = $t;
+              $ce->{subtitle} = $st;
+         }
+
+	  progress("Ginx: $time - $title") if $title;
       $dsh->AddProgramme( $ce ) if $title;
     }
 
@@ -233,28 +223,52 @@ my $ref = ReadData ($file);
 sub ParseDate
 {
   my ( $dinfo ) = @_;
-  
-  print Dumper($dinfo);
 
-  my( $month, $day, $year );
-#      progress("Mdatum $dinfo");
-  if( $dinfo =~ /^\d{4}-\d{2}-\d{2}$/ ){ # format   '2010-04-22' 
-    ( $year, $month, $day ) = ( $dinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
-  } elsif( $dinfo =~ /^\d{2}.\d{2}.\d{4}$/ ){ # format '11/18/2011'
-    ( $month, $day, $year ) = ( $dinfo =~ /^(\d+).(\d+).(\d+)$/ );
-  } elsif( $dinfo =~ /^\d{1,2}-\d{1,2}-\d{2}$/ ){ # format '10-18-11' or '1-9-11'
-    ( $month, $day, $year ) = ( $dinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
-  } elsif( $dinfo =~ /^\d{1,2}\/\d{1,2}\/\d{2}$/ ){ # format '10-18-11' or '1-9-11'
-    ( $month, $day, $year ) = ( $dinfo =~ /^(\d+)\/(\d+)\/(\d+)$/ );
+  my( $day, $monthname, $year );
+
+#print ">$dinfo<\n";
+
+  # format '033 03 Jul 2008'
+  if( $dinfo =~ /^\d+\s+\d+\s+\S+\s+\d+$/ ){
+    ( $day, $monthname, $year ) = ( $dinfo =~ /^\d+\s+(\d+)\s+(\S+)\s+(\d+)$/ );
+
+  # format '2014/Jan/19'
+  } elsif( $dinfo =~ /^\d+\/(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\/\d+$/i ){
+        ( $year, $monthname, $day ) = ( $dinfo =~ /^(\d+)\/(\S+)\/(\d+)$/ );
+
+      # format 'Fri 30 Apr 2010'
+  } elsif( $dinfo =~ /^\d+-(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)-\d+$/i ){
+    ( $day, $monthname, $year ) = ( $dinfo =~ /^(\d+)-(\S+)-(\d+)$/ );
+
+  # format 'Fri 30 Apr 2010'
+  } elsif( $dinfo =~ /^\S+\s*\d+\s*(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\s*\d+$/i ){
+    ( $day, $monthname, $year ) = ( $dinfo =~ /^\S+\s*(\d+)\s*(\S+)\s*(\d+)$/ );
   }
 
-  return undef if( ! $year );
+  else {
+    return undef;
+  }
 
-  $year += 2000 if $year < 100;
+  return undef if( ! $year);
 
-  my $date = sprintf( "%04d-%02d-%02d", $year, $month, $day );
-  return $date;
+  $year+= 2000 if $year< 100;
+
+  my $mon = MonthNumber( $monthname, "en" );
+
+  my $dt = DateTime->new( year   => $year,
+                          month  => $mon,
+                          day    => $day,
+                          hour   => 0,
+                          minute => 0,
+                          second => 0,
+                          );
+
+  $dt->set_time_zone( "UTC" );
+
+  return $dt->ymd();
 }
+
+
 
 1;
 

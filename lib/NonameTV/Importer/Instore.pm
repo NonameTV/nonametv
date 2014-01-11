@@ -17,8 +17,10 @@ use DateTime;
 use XML::LibXML;
 use HTTP::Date;
 use Data::Dumper;
+use Math::Round 'nearest';
 
 use NonameTV qw/ParseXml norm AddCategory/;
+use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/w progress error f/;
 
 use NonameTV::Importer::BaseOne;
@@ -34,6 +36,9 @@ sub new {
     $self->{UrlRoot} = "http://login.instorebroadcast.com/previews/outtv/Webadvance/" if !defined( $self->{UrlRoot} );
 
     $self->{datastore}->{augment} = 1;
+
+  	my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
+  	$self->{datastorehelper} = $dsh;
 
     return $self;
 }
@@ -104,6 +109,8 @@ sub ImportContent
 
   my( $batch_id, $cref, $chd ) = @_;
 
+
+  my $dsh = $self->{datastorehelper};
   my $ds = $self->{datastore};
   $ds->{SILENCE_END_START_OVERLAP}=1;
   $ds->{SILENCE_DUPLICATE_SKIP}=1;
@@ -126,6 +133,8 @@ sub ImportContent
     return 0;
   }
 
+  my $currdate = "x";
+
   foreach my $sc ($ns->get_nodelist)
   {
     my $start = $self->create_dt( $sc->findvalue( './date' ) . " " . $sc->findvalue( './time' ) );
@@ -136,9 +145,72 @@ sub ImportContent
       next;
     }
 
-    print($start."\n");
+    # Date
+    my $date = $start->ymd("-");
 
+	if($date ne $currdate ) {
+      	if( $currdate ne "x" ) {
+      	#	$dsh->EndBatch( 1 );
+        }
+
+        my $batchid = $chd->{xmltvid} . "_" . $date;
+        print $batchid."\n";
+
+        #$dsh->StartBatch( $batchid , $chd->{id} );
+        $dsh->StartDate( $date , "06:00" );
+        $currdate = $date;
+
+        progress("OUTTV: Date is: $date");
+    }
+
+    # Data
+    my $title   = norm($sc->findvalue( './title'   ));
+    $title =~ s/&amp;/&/g; # Wrong encoded char
+    my $desc    = norm($sc->findvalue( './text'    ));
+    my $genre   = norm($sc->findvalue( './genre'   ));
+    my $season  = norm($sc->findvalue( './season'  ));
+    my $episode = norm($sc->findvalue( './episode' ));
+    my $year	= norm($sc->findvalue( './year'    ));
+    my $dir		= norm($sc->findvalue( './producer'));
+
+
+	my $ce = {
+        channel_id 		=> $chd->{id},
+        title 			=> $title,
+        start_time 		=> $start,
+        description 	=> $desc,
+        production_date => $year."-01-01",
+    };
+
+    progress( "Instore: $chd->{xmltvid}: $start - $title" );
+
+    my($program_type, $category ) = $ds->LookupCat( 'Instore', $genre );
+	AddCategory( $ce, $program_type, $category );
+
+	# Episode info in xmltv-format
+    if( ($episode ne "0" and $episode ne "") and ( $season ne "0" and $season ne "") )
+    {
+    	$episode = int $episode;
+    	$season  = int $season;
+    	$ce->{episode} = sprintf( "%d . %d .", $season-1, $episode-1 );
+    } elsif( $episode ne "0" and $episode ne "" ) {
+    	$episode = int $episode;
+    	if( defined( $year ) and ($year =~ /(\d\d\d\d)/) ) {
+        	$ce->{episode} = sprintf( "%d . %d .", $1-1, $episode-1 );
+        } else {
+        	$ce->{episode} = sprintf( ". %d .", $episode-1 );
+        }
+    }
+
+    if($dir ne "") {
+    	$ce->{directors} = norm($dir);
+    }
+
+	# Add Programme
+	$dsh->AddCE( $ce );
   }
+
+  #$dsh->EndBatch( 1 );
 
   # Success
   return 1;
@@ -149,6 +221,8 @@ sub create_dt
   my $self = shift;
   my( $str ) = @_;
 
+  my $addhour = 0;
+
 
   my( $date, $time ) = split( ' ', $str );
 
@@ -156,12 +230,21 @@ sub create_dt
   {
     return undef;
   }
-  my( $year, $month, $day ) = split( '\/', $date );
+  my( $day, $month, $year ) = split( '\/', $date );
 
   # Remove the dot and everything after it.
   $time =~ s/\..*$//;
 
   my( $hour, $minute, $second ) = split( ":", $time );
+
+  # round the minutes as its in a very odd format.
+  $minute = nearest(5, $minute);
+
+  # If minute >= 60 add hour instead
+  if($minute >= 60) {
+  	$minute = 0;
+  	$addhour = 1;
+  }
 
 
   my $dt = DateTime->new( year => $year,
@@ -174,7 +257,12 @@ sub create_dt
 
   $dt->set_time_zone( "UTC" );
 
-  print($dt);
+
+  # add hour
+  if($addhour eq 1) {
+ 	 $dt->add(hours => 1);
+ 	 $addhour = 0;
+  }
 
   return $dt;
 }
