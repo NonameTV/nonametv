@@ -138,7 +138,8 @@ my $ref = ReadData ($file);
       $oWkC = $oWkS->{Cells}[$iR][$coldate];
       next if( ! $oWkC );
 
-      $date = ParseDate( $oWkC->Value );
+	  $date = $oWkC->{Val} if( $oWkC->Value );
+      $date = ParseDate( ExcelFmt('yyyy-mm-dd', $date) );
       next if( ! $date );
 
       if( $date ne $currdate ){
@@ -234,7 +235,7 @@ sub ParseDate
 {
   my ( $dinfo ) = @_;
   
-  print Dumper($dinfo);
+#  print Dumper($dinfo);
 
   my( $month, $day, $year );
 #      progress("Mdatum $dinfo");
