@@ -6,7 +6,7 @@ use warnings;
 =pod
 
 Importer for data from C More. 
-One file per channel and week downloaded from their site.
+One file per channel and day downloaded from their site.
 The downloaded file is in xml-format.
 
 =cut
@@ -18,11 +18,11 @@ use HTTP::Date;
 use Compress::Zlib;
 
 use NonameTV qw/ParseXml norm AddCategory/;
-use NonameTV::Log qw/w f/;
+use NonameTV::Log qw/w f p/;
 
-use NonameTV::Importer::BaseWeekly;
+use NonameTV::Importer::BaseDaily;
 
-use base 'NonameTV::Importer::BaseWeekly';
+use base 'NonameTV::Importer::BaseDaily';
 
 sub new {
     my $proto = shift;
@@ -45,14 +45,9 @@ sub Object2Url {
   my $self = shift;
   my( $objectname, $chd ) = @_;
 
-  my( $year, $week ) = ( $objectname =~ /(\d+)-(\d+)$/ );
- 
-  # Find the first day in the given week.
-  # Copied from
-  # http://www.nntp.perl.org/group/perl.datetime/5417?show_headers=1 
-  my $ds = DateTime->new( year=>$year, day => 4 );
-  $ds->add( days => $week * 7 - $ds->day_of_week - 6 );
-  my $url = 'http://press.cmore.se/export/legacyxml/' . $ds->ymd("/") . '/7?channelId=' . $chd->{grabber_info};
+  my( $date ) = ($objectname =~ /_(.*)/);
+
+  my $url = 'http://press.cmore.se/export/xml/' . $date . '/' . $date . '/?channelId=' . $chd->{grabber_info};
 
   return( $url, undef );
 }
@@ -84,12 +79,12 @@ sub FilterContent {
     return (undef, "No channels found" );
   }
   
-  foreach my $ch ($ns->get_nodelist) {
-    my $currid = $ch->findvalue( '@Id' );
-    if( $currid != $chid ) {
-      $ch->unbindNode();
-    }
-  }
+#  foreach my $ch ($ns->get_nodelist) {
+#   my $currid = $ch->findvalue( '@Id' );
+#    if( $currid != $chid ) {
+#      $ch->unbindNode();
+#    }
+#  }
 
   my $str = $doc->toString( 1 );
 
@@ -160,7 +155,7 @@ sub ImportContent
       $next_start = $next_start->add( days => 1 );
     }
 
-    my $length  = $sc->findvalue( './Program/@Length ' );
+    my $length  = $sc->findvalue( './Program/@Duration ' );
     w "$length is not numeric."
       if( $length !~ /^\d*$/ );
 
@@ -190,10 +185,10 @@ sub ImportContent
     }
 
     my $series_title = $sc->findvalue( './Program/@SeriesTitle' );
-    my $org_title = $sc->findvalue( './Program/@OriginalTitle' );
+    my $org_title = $sc->findvalue( './Program/@Title' );
     
-    my $org_desc = $sc->findvalue( './Program/@LongSynopsis' );
-    my $epi_desc = $sc->findvalue( './Program/@EpisodeLongSynopsis' );
+    my $org_desc = $sc->findvalue( './Program/Synopsis/Short' );
+    my $epi_desc = $sc->findvalue( './Program/Synopsis/Long' );
     my $desc  = $epi_desc || $org_desc;
     
     my $genre = norm($sc->findvalue( './Program/@Genre' ));
@@ -216,60 +211,21 @@ sub ImportContent
  
     my $production_year = $sc->findvalue( './Program/@ProductionYear' );
 
-    my $sixteen_nine = $sc->findvalue( './Program/@SixteenNine' );
-    my $soundfive_one = $sc->findvalue( './Program/@SoundFiveOne' );
-	#    my $letterbox = $sc->findvalue( './Program/@Letterbox' );
     
     # Episode info
-    my $epino = $sc->findvalue( './Program/@EpisodeNo' );
-    my $seano = $sc->findvalue( './Program/@SeasonNo' );
+    my $epino = $sc->findvalue( './Program/@EpisodeNumber' );
+    my $seano = $sc->findvalue( './Program/@SeasonNumber' );
     my $of_episode = $sc->findvalue( './Program/@NumberOfEpisodes' );
-    
-    # The director and actor info is in a somewhat strange format. 
-    # Actor is a child of Director and the data seems to contain
-    # all combinations of Actor and Director.
 
-    my %directors;
-    my @directors;
-    my $ns2 = $sc->find( './/Director' );
-  
-    foreach my $dir ($ns2->get_nodelist)
-    {
-      my $names = $dir->findvalue('./@Name');
-
-      # Sometimes they list several directors with newlines between
-      # the names.
-      foreach my $name (split "\n", $names)
-      {
-        $name = norm( $name );
-        if( not defined( $directors{ $name } ) )
-        {
-          $directors{$name} = 1;
-          push @directors, $name;
-        }
-      }
-    }
-    
-    my %actors;
-    my @actors;
-    my $ns3 = $sc->find( './/Actor' );
-  
-    foreach my $act ($ns3->get_nodelist)
-    {
-      my $name = norm( $act->findvalue('./@Name') );
-      if( not defined( $actors{ $name } ) )
-      {
-        $actors{$name} = 1;
-        push @actors, $name;
-      }
-    }
+    # Actors and Directors
+    my $actors = norm( $sc->findvalue( './Program/@Actors' ) );
+    my $direcs = norm( $sc->findvalue( './Program/@Directors' ) );
 
     my $ce = {
       channel_id  => $chd->{id},
       description => norm($desc),
       start_time  => $start->ymd("-") . " " . $start->hms(":"),
       end_time    => $end->ymd("-") . " " . $end->hms(":"),
-      aspect      => $sixteen_nine ? "16:9" : "4:3", 
     };
 
     if( $series_title =~ /\S/ )
@@ -314,21 +270,6 @@ sub ImportContent
       $ce->{production_date} = "$1-01-01";
     }
 
-    if( scalar( @directors ) > 0 )
-    {
-      $ce->{directors} = join ", ", @directors;
-    }
-
-    if( scalar( @actors ) > 0 )
-    {
-      $ce->{actors} = join ", ", @actors;
-    }
-  
-  	if( $soundfive_one eq 1 )
-  	{
-  		$ce->{stereo} = 'surround';
-  	}
-  
     if( $epino ){
         if( $seano ){
           $ce->{episode} = sprintf( "%d . %d .", $seano-1, $epino-1 );
@@ -344,8 +285,19 @@ sub ImportContent
         	}
         }
     }
+
+    # Actors and directors
+    if(defined($actors)) {
+    	$ce->{actors} = $actors;
+    }
+
+    if(defined($direcs)) {
+    	$ce->{directors} = $direcs;
+    }
     
     $self->extract_extra_info( $ce );
+
+    p( "CMore: $chd->{xmltvid}: $start - $title" );
 
     $ds->AddProgramme( $ce );
   }
