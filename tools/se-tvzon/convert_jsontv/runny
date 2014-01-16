@@ -33,4 +33,5 @@ rsync -c --delete -r $NROOT/xmltv/ saito:/server/xmltv_files/xmltv/
 rsync -c --delete -r $NROOT/datalist.xml.gz saito:/server/xmltv_files/datalist.xml.gz
 
 # Compare
-$d tools/se-tvzon/nonametv-xmltv-compare-run
+tools/se-tvzon/nonametv-xmltv-compare-run
+rsync --delete -r /var/local/nonametv/xmltv_compare/ /server/www/xmltv/compare/

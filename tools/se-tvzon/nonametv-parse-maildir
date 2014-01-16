@@ -460,7 +460,7 @@ sub guess_channel
      return "bbclifestyle.com" if $filename =~ /lifestyle\s+scandi/i;
  }
 
- if( $dir =~ /WildTV/ and $filename =~ /\.zip/i ) {
+ if( $dir =~ /WildTV/ and $filename =~ /\.zip|.xml/i ) {
  	return "wildtv.ca";
  }
 
