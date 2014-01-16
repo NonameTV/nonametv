@@ -68,7 +68,8 @@ sub ImportContentFile
 #return if( $chd->{xmltvid} !~ /ngcro/ );
 
   defined( $chd->{sched_lang} ) or die "You must specify the language used for this channel (sched_lang)";
-  if( $chd->{sched_lang} !~ /^en$/ and $chd->{sched_lang} !~ /^se$/ and $chd->{sched_lang} !~ /^hr$/ ){
+  if( $chd->{sched_lang} !~ /^en$/ and $chd->{sched_lang} !~ /^sv$/ and $chd->{sched_lang} !~ /^hr$/ and $chd->{sched_lang} !~ /^no$/
+  	  and $chd->{sched_lang} !~ /^dk$/ and $chd->{sched_lang} !~ /^nl$/ ){
     error( "GlobalListings: $chd->{xmltvid} Unsupported language '$chd->{sched_lang}'" );
     return;
   }
@@ -164,7 +165,7 @@ sub ImportFull
       $type = T_DATE;
       $date = ParseDate( $text, $lang );
       if( not defined $date ) {
-	error( "GlobalListings: $channel_xmltvid: $filename Invalid date $text" );
+			error( "GlobalListings: $channel_xmltvid: $filename Invalid date $text" );
       }
       progress("GlobalListings: $channel_xmltvid: Date is: $date");
     }
@@ -185,7 +186,7 @@ sub ImportFull
     {
       $type = T_HEAD_ENG;
     }
-    elsif( $text =~ /^\s*END\s*$/ or $text =~ /^\s*KRAJ\s*$/ )
+    elsif( $text =~ /^\s*SLUT\s*$/ or $text =~ /^\s*END\s*$/ or $text =~ /^\s*KRAJ\s*$/ )
     {
       $type = T_STOP;
     }
@@ -539,6 +540,8 @@ sub extract_extra_info
     $ce->{title} = "end-of-transmission";
   }
 
+  $ce->{title} =~ s/^PREMI.R\s+//;
+
   return;
 }
 
@@ -576,6 +579,38 @@ sub isDate {
     return 1;
   }
 
+  #
+  # Swedish formats
+  #
+
+  # format 'Tuesday 1 Februari 2014'
+  if( $text =~ /^(måndag|tisdag|onsdag|torsdag|fredag|lördag|söndag)\s*\d+\s*\D+\s*\d+$/i ){
+  	return 1;
+  }
+
+  #
+  # Danish formats
+  #
+  if( $text =~ /^(mandag|tirsdag|onsdag|torsdag|fredag|l.rdag|s.ndag)\s*\d+\s*\D+\s*\d+$/i ){
+  	return 1;
+  }
+
+  #
+  # Norweigan formats
+  #
+
+  if( $text =~ /^(mandag|tirsdag|onsdag|torsdag|fredag|l.rdag|s.ndag)\s*\d+\s*\D+\,*\s*\d+$/i ){
+    return 1;
+  }
+
+  #
+  # Dutch formats (NL)
+  #
+
+  if( $text =~ /^(maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag)\s*\d+\s*\D+\s*\d+$/i ){
+  	return 1;
+  }
+
   return 0;
 }
 
@@ -596,22 +631,42 @@ sub ParseDate
       ( $weekday, $monthname, $day, $year ) = ( $text =~ /^(monday|tuesday|wednesday|thursday|friday|saturday|sunday)\s*(\S+)\s*(\d+),\s*(\d+)$/i );
     }
 
-  } elsif( $lang =~ /^se$/ ){
+  } elsif( $lang =~ /^sv$/ ){
 
       # try 'Tisdag 3 Juni 2008'
       if( $text =~ /^(måndag|tisdag|onsdag|torsdag|fredag|lördag|söndag)\s*\d+\s*\D+\s*\d+$/i ){
         ( $weekday, $day, $monthname, $year ) = ( $text =~ /^(\S+?)\s*(\d+)\s*(\S+?)\s*(\d+)$/ );
       }
 
-  } elsif( $lang =~ /^hr$/ ){
+  } elsif( $lang =~ /^dk$/ ){
+
+      # try 'Tisdag 3 Juni 2008'
+      if( $text =~ /^(mandag|tirsdag|onsdag|torsdag|fredag|l.rdag|s.ndag)\s*\d+\.\s*\D+\s*\d+$/i ){
+      	( $weekday, $day, $monthname, $year ) = ( $text =~ /^(\S+?)\s*(\d+)\.\s*(\S+?)\s*(\d+)$/ );
+      }
+
+   } elsif( $lang =~ /^hr$/ ){
 
       # try 'utorak 1. srpnja 2008.'
       #if( $text =~ /^(ponedjeljak|utorak|srijeda|èvrtak|petak|subota|nedjelja)\,*\s*\d+\.*\s*\D+\,*\s*\d+\.*$/i ){
       if( $text =~ /^(ponedjeljak|utorak|srijeda|četvrtak|petak|subota|nedjelja)\,*\s*\d+\.*\s*\D+\,*\s*\d+\.*$/i ){
         ( $weekday, $day, $monthname, $year ) = ( $text =~ /^(\S+?)\s*(\d+)\.*\s*(\S+?)\,*\s*(\d+)\.*$/ );
+        }
+   } elsif( $lang =~ /^no$/ ){
+
+      # try 'Tisdag 3 Juni, 2008'
+      if( $text =~ /^(mandag|tirsdag|onsdag|torsdag|fredag|l.rdag|s.ndag)\s*\d+\.\s*\D+,\s*\d+$/i ){
+      	( $weekday, $day, $monthname, $year ) = ( $text =~ /^(\S+?)\s*(\d+)\.\s*(\S+?),\s*(\d+)$/ );
       }
 
-  } else {
+   } elsif( $lang =~ /^nl$/ ){
+
+      # try 'Tisdag 3 Juni 2008'
+      if( $text =~ /^(maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag)\s*\d+\s*\D+\s*\d+$/i ){
+      	( $weekday, $day, $monthname, $year ) = ( $text =~ /^(\S+?)\s*(\d+)\s*(\S+?)\s*(\d+)$/ );
+      }
+
+   } else {
     return undef;
   }
   
