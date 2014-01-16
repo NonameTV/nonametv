@@ -172,11 +172,8 @@ sub AugmentProgram( $$$ ){
         $matchdone=1;
       }
     }
-<<<<<<< HEAD
-    if( $ceref->{'title'} && $ceref->{subtitle} && $ceref->{subtitle} ne "" && !$ceref->{description} ){
-=======
-    if( !$matchdone && $ceref->{'title'} && $ceref->{subtitle} && !$ceref->{description} ){
->>>>>>> 6f5cd5d0b3bae22177280feadf945f1ed5684dac
+
+	if( !$matchdone && $ceref->{'title'} && $ceref->{subtitle} && !$ceref->{description} ){
       # try matching by title/subtitle next
       d( 'matching by title/subtitle' );
       my( $res, $sth ) = $self->{datastore}->sa->Sql( "
