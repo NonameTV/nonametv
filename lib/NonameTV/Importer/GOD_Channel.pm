@@ -3,9 +3,10 @@ package NonameTV::Importer::GOD_Channel;
 use strict;
 use warnings;
 
+
 =pod
 
-Import data from Excel files delivered via e-mail.
+Import data from XLS or XLSX files delivered via e-mail.
 
 Features:
 
@@ -15,12 +16,23 @@ use utf8;
 
 use DateTime;
 use Spreadsheet::ParseExcel;
-use File::Temp qw/tempfile/;
-use Data::Dumper;
+use Spreadsheet::Read;
 
-use NonameTV qw/norm MonthNumber/;
-use NonameTV::Log qw/progress error/;
+use Spreadsheet::XLSX;
+use Spreadsheet::XLSX::Utility2007 qw(ExcelFmt ExcelLocaltime LocaltimeExcel);
+use Spreadsheet::Read;
+
+use Text::Iconv;
+my $converter = Text::Iconv -> new ("utf-8", "windows-1251");
+
+
+use Data::Dumper;
+use File::Temp qw/tempfile/;
+
+use NonameTV qw/norm normUtf8 AddCategory/;
 use NonameTV::DataStore::Helper;
+use NonameTV::Log qw/progress error/;
+
 use NonameTV::Importer::BaseFile;
 
 use base 'NonameTV::Importer::BaseFile';
@@ -31,13 +43,51 @@ sub new {
   my $self  = $class->SUPER::new( @_ );
   bless ($self, $class);
 
+
   my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
   $self->{datastorehelper} = $dsh;
   
+  $self->{datastore}->{augment} = 1;
+
   return $self;
 }
 
 sub ImportContentFile {
+  my $self = shift;
+  my( $file, $chd ) = @_;
+
+  $self->{fileerror} = 0;
+
+  my $channel_id = $chd->{id};
+  my $channel_xmltvid = $chd->{xmltvid};
+  my $dsh = $self->{datastorehelper};
+  my $ds = $self->{datastore};
+
+  if( $file =~ /\.xls|.xlsx$/i ){
+    $self->ImportXLS( $file, $chd );
+  }elsif( $file =~ /\.xml$/i ){
+    $self->ImportXML( $file, $chd );
+  }
+
+
+  return;
+}
+
+sub ImportXML {
+	my $self = shift;
+  my( $file, $chd ) = @_;
+  my $dsh = $self->{datastorehelper};
+  my $ds = $self->{datastore};
+  $self->{fileerror} = 1;
+  
+	# Do something beautiful here later on. 
+	
+	error("From now on you need to convert XML files to XLS files.");
+	
+	return 0;
+}
+
+sub ImportXLS {
   my $self = shift;
   my( $file, $chd ) = @_;
 
@@ -48,54 +98,48 @@ sub ImportContentFile {
   my $dsh = $self->{datastorehelper};
   my $ds = $self->{datastore};
 
-  # Only process .xls files.
-  return if( $file !~ /\.xls$/i );
+  # Only process .xls or .xlsx files.
   progress( "GOD_Channel: $xmltvid: Processing $file" );
 
-  my %columns = ();
+	my %columns = ();
   my $date;
   my $currdate = "x";
+  my $coldate = 0;
+  my $coltime = 1;
+  my $coltitle = 2;
+  my $coldesc = 4;
 
-  my $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
+my $oBook;
+
+if ( $file =~ /\.xlsx$/i ){ progress( "using .xlsx" );  $oBook = Spreadsheet::XLSX -> new ($file, $converter); }
+else { $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );  }   #  staro, za .xls
+#elsif ( $file =~ /\.xml$/i ){ $oBook = Spreadsheet::ParseExcel::Workbook->Parse($file); progress( "using .xml" );    }   #  staro, za .xls
+#print Dumper($oBook);
+my $ref = ReadData ($file);
 
   # main loop
   for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
 
     my $oWkS = $oBook->{Worksheet}[$iSheet];
-    
-    if( $oWkS->{Name} !~ /CET/ and $oWkS->{Name} !~ /CEST/ ){
-      progress( "GOD_Channel: Skipping other sheet: $oWkS->{Name}" );
-      next;
-    }
-    
-    progress( "GOD_Channel: $chd->{xmltvid}: Processing worksheet: $oWkS->{Name}" );
 
+    progress( "GOD_Channel: Processing worksheet: $oWkS->{Name}" );
+
+	my $foundcolumns = 0;
     # browse through rows
-    for(my $iR = 6 ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
+    my $i = 0;
+    for(my $iR = 7 ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
+    $i++;
 
-      # get the names of the columns from the 1st row
-      if( not %columns ){
-        for(my $iC = $oWkS->{MinCol} ; defined $oWkS->{MaxCol} && $iC <= $oWkS->{MaxCol} ; $iC++) {
-          #$columns{norm($oWkS->{Cells}[$iR][$iC]->Value)} = $iC;
+      my $oWkC;
 
-          # columns alternate names
-          $columns{'Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Programme Title/i );
-          $columns{'Date'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Date/i );
-          $columns{'Start'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Start/i );
-          $columns{'Synopsis'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Synopsis/i );
-          
-          #print Dumper(%columns);
-        }
-        next;
-      }
+      # date
+      $oWkC = $oWkS->{Cells}[$iR][$coldate];
+      next if( ! $oWkC );
 
-      # date - column 0 ('Date')
-      my $oWkC = $oWkS->{Cells}[$iR][$columns{'Date'}];
-      
-
-      $date = ParseDate( $oWkC->Value );
+	  $date = $oWkC->{Val} if( $oWkC->Value );
+      $date = ParseDate( ExcelFmt('yyyy-mm-dd', $date) );
       next if( ! $date );
-      
+
       if( $date ne $currdate ){
 
         progress("GOD_Channel: Date is $date");
@@ -109,43 +153,66 @@ sub ImportContentFile {
         $dsh->StartDate( $date , "00:00" );
         $currdate = $date;
       }
-      
-      
 
-      # starttime - column ('Start')
-      $oWkC = $oWkS->{Cells}[$iR][$columns{'Start'}];
+      # time
+      $oWkC = $oWkS->{Cells}[$iR][$coltime];
       next if( ! $oWkC );
-      my $starttime = create_dt( $date , $oWkC->Value ) if( $oWkC->Value );
 
-      # title - column ('Title')
-      $oWkC = $oWkS->{Cells}[$iR][$columns{'Title'}+1];
+
+
+      my $time = 0;  # fix for  12:00AM
+      $time=$oWkC->{Val} if( $oWkC->Value );
+
+	  #Convert Excel Time -> localtime
+      $time = ExcelFmt('hh:mm', $time);
+      $time =~ s/_/:/g; # They fail sometimes
+
+
+      # title
+      $oWkC = $oWkS->{Cells}[$iR][$coltitle];
       next if( ! $oWkC );
       my $title = $oWkC->Value if( $oWkC->Value );
-      
-      $title =~ s/-.*//g if $title;
-      
-      my $synopsis = $oWkS->{Cells}[$iR][$columns{'Synopsis'}]->Value if $oWkS->{Cells}[$iR][$columns{'Synopsis'}];
+      $title =~ s/&amp;/&/g;
+      $title =~ s/\(.*\)//g;
+      $title =~ s/\[.*\]//g;
 
-      progress("$xmltvid: $starttime - $title");
+      
 
       my $ce = {
-        channel_id   => $channel_id,
-        start_time   => $starttime,
-        title        => norm($title),
+        channel_id => $channel_id,
+        start_time => $time,
+        title => norm($title),
       };
-
-      $ce->{description} = norm($synopsis) if $synopsis;
-
-	 # print Dumper($ce);
-
-      $dsh->AddProgramme( $ce );
+      
+    my( $t, $st ) = ($ce->{title} =~ /(.*)\: (.*)/);
+    if( defined( $st ) )
+    {
+      # This program is part of a series and it has a colon in the title.
+      # Assume that the colon separates the title from the subtitle.
+      $ce->{title} = norm($t);
+      $ce->{subtitle} = norm($st);
     }
 
-    %columns = ();
+    my( $t1, $p ) = ($ce->{title} =~ /(.*)\- (.*)/);
+    if(defined($p)) {
+    	# This program has an presenter, add it.
+    	$ce->{title} = norm($t1);
+    	$ce->{presenters} = norm($p);
+    }
+      
+      # Desc (only works on XLS files)
+      	my $field = "E".$i;
+      	my $desc = $ref->[1]{$field};
+      	$ce->{description} = normUtf8($desc) if( $desc and $desc ne "WITHOUT SYNOPSIS" );
+      	$desc = '';
+      
+	  progress("GOD_Channel: $time - $title") if $title;
+      $dsh->AddProgramme( $ce ) if $title;
+    }
 
   }
 
-  $ds->EndBatch( 1 );
+  $dsh->EndBatch( 1 );
 
   return;
 }
@@ -153,68 +220,27 @@ sub ImportContentFile {
 sub ParseDate
 {
   my ( $dinfo ) = @_;
-
-  my( $day, $monthname, $year );
-
-print ">$dinfo<\n";
-
-  # format '033 03 Jul 2008'
-  if( $dinfo =~ /^\d+\s+\d+\s+\S+\s+\d+$/ ){
-    ( $day, $monthname, $year ) = ( $dinfo =~ /^\d+\s+(\d+)\s+(\S+)\s+(\d+)$/ );
-
-  # format '05-sep-08'
-  } elsif( $dinfo =~ /^\d+-(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)-\d+$/i ){
-    ( $day, $monthname, $year ) = ( $dinfo =~ /^(\d+)-(\S+)-(\d+)$/ );
-
-  # format 'Fri 30 Apr 2010'
-  } elsif( $dinfo =~ /^\S+\s*\d+\s*(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\s*\d+$/i ){
-    ( $day, $monthname, $year ) = ( $dinfo =~ /^\S+\s*(\d+)\s*(\S+)\s*(\d+)$/ );
-  }
-
-  else {
-    return undef;
-  }
-
-print "DAY: $day\n";
-print "MON: $monthname\n";
-print "YEA: $year\n";
-
-  return undef if( ! $year);
-
-  $year+= 2000 if $year< 100;
-
-  my $mon = MonthNumber( $monthname, "en" );
-
-print "DAY: $day\n";
-print "MON: $mon\n";
-
-  my $dt = DateTime->new( year   => $year,
-                          month  => $mon,
-                          day    => $day,
-                          hour   => 0,
-                          minute => 0,
-                          second => 0,
-                          );
-
-  $dt->set_time_zone( "UTC" );
-
-  return $dt->ymd();
-}
-
-sub create_dt
-{
-  my( $date, $time ) = @_;
-
-  my( $hour, $min ) = ( $time =~ /(\d+).(\d{2})/ );
   
-  # Sometimes.
-  if($hour >= 24) {
-  	$hour = $hour-24;
-  	
-  	#print("Hour: $hour\n");
+#  print Dumper($dinfo);
+
+  my( $month, $day, $year );
+#      progress("Mdatum $dinfo");
+  if( $dinfo =~ /^\d{4}-\d{2}-\d{2}$/ ){ # format   '2010-04-22' 
+    ( $year, $month, $day ) = ( $dinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
+  } elsif( $dinfo =~ /^\d{2}.\d{2}.\d{4}$/ ){ # format '11/18/2011'
+    ( $month, $day, $year ) = ( $dinfo =~ /^(\d+).(\d+).(\d+)$/ );
+  } elsif( $dinfo =~ /^\d{1,2}-\d{1,2}-\d{2}$/ ){ # format '10-18-11' or '1-9-11'
+    ( $month, $day, $year ) = ( $dinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
+  } elsif( $dinfo =~ /^\d{1,2}\/\d{1,2}\/\d{2}$/ ){ # format '10-18-11' or '1-9-11'
+    ( $month, $day, $year ) = ( $dinfo =~ /^(\d+)\/(\d+)\/(\d+)$/ );
   }
 
-  return sprintf( "%02d:%02d:00", $hour, $min );
+  return undef if( ! $year );
+
+  $year += 2000 if $year < 100;
+
+  my $date = sprintf( "%04d-%02d-%02d", $year, $month, $day );
+  return $date;
 }
 
 1;
