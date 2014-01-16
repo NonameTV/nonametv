@@ -139,7 +139,7 @@ sub ImportDocument {
 
     my $type;
     
-    if( $text =~ /^(måndag|tisdag|onsdag|torsdag|fredag|lördag|söndag|monday|tuesday|wednesday|thursday|friday|saturday|sunday)\s*\d+\s*\D+\s*\d+$/i )
+    if( $text =~ /^(måndag|tisdag|onsdag|torsdag|fredag|lördag|söndag|monday|tuesday|wednesday|thursday|friday|saturday|sunday|mandag|tirsdag|lørdag|søndag)\s*\d+\s*\D+\s*\d+$/i )
     {
       $type = T_DATE;
       $date = parse_date( $text );
@@ -583,6 +583,9 @@ sub parse_date
 
   my @months_eng = qw/january february march april may june july
     august september october november december/;
+
+  my @months_den = qw/januar februar marts april maj juni juli
+  	august september oktober november december/;
   
   my %monthnames = ();
   for( my $i = 0; $i < scalar(@months); $i++ ) 
@@ -590,6 +593,9 @@ sub parse_date
 
   for( my $i = 0; $i < scalar(@months_eng); $i++ ) 
   { $monthnames{$months_eng[$i]} = $i+1;}
+
+  for( my $i = 0; $i < scalar(@months_den); $i++ )
+    { $monthnames{$months_den[$i]} = $i+1;}
   
   my( $weekday, $day, $monthname, $year ) = 
       ( $text =~ /^(\S+?)\s*(\d+)\s*(\S+?)\s*(\d+)$/ );
