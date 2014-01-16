@@ -107,9 +107,13 @@ sub AugmentProgram( $$$ ){
     $resultref->{'guests'} = $episodetitle;
   }elsif( $ruleref->{matchby} eq 'splitstartitle' ) {
     # split the name of the starring actor from the title and put it into actors
+    # set type to movie if unknown
     my( $actor, $title )=( $ceref->{title} =~ m|$ruleref->{title}| );
     $resultref->{'title'} = $title;
     $resultref->{'actors'} = join( ', ', $actor, $ceref->{actors} );
+    if( $ceref->{program_type} eq '' ) {
+      $resultref->{program_type} = 'movie';
+    }
   }elsif( $ruleref->{matchby} eq 'replacetitle' ) {
     $resultref->{'title'} = $ruleref->{remoteref};
   }elsif( $ruleref->{matchby} eq 'replacesubtitle' ) {
@@ -168,7 +172,11 @@ sub AugmentProgram( $$$ ){
         $matchdone=1;
       }
     }
+<<<<<<< HEAD
     if( $ceref->{'title'} && $ceref->{subtitle} && $ceref->{subtitle} ne "" && !$ceref->{description} ){
+=======
+    if( !$matchdone && $ceref->{'title'} && $ceref->{subtitle} && !$ceref->{description} ){
+>>>>>>> 6f5cd5d0b3bae22177280feadf945f1ed5684dac
       # try matching by title/subtitle next
       d( 'matching by title/subtitle' );
       my( $res, $sth ) = $self->{datastore}->sa->Sql( "
@@ -185,11 +193,11 @@ sub AugmentProgram( $$$ ){
       }
     }
     if( !$matchdone && $ceref->{'title'} && !$ceref->{episode} && !$ceref->{subtitle} && !$ceref->{description} ){
-      # try matching just by title number last and only of episode number and subtitle are empty!
+      # try matching just by title number last and only if episode number and subtitle are empty!
       d( 'matching by title' );
       my( $res, $sth ) = $self->{datastore}->sa->Sql( "
           SELECT * from programs
-          WHERE channel_id = ? and title = ? and subtitle is not null and description is not null
+          WHERE channel_id = ? and title = ? and description is not null
           ORDER BY abs( timediff( start_time, ? ) ) asc, start_time asc, end_time desc
           LIMIT 1", 
         [$ceref->{channel_id}, $ceref->{title}, $ceref->{start_time}] );

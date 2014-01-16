@@ -42,13 +42,13 @@ sub new {
     defined( $self->{Password} ) or die "You must specify Password";
 
     # how many days are available every days of the week?
-    my $DaysOnSite = 5*7 + 4;
+    my $DaysOnSite = 5*7 + 3;
 
     if ($self->{MaxDays} == 32) {
       # default to all data
       $self->{MaxDays} = $DaysOnSite;
     } elsif ($self->{MaxDays} > $DaysOnSite) {
-      w ($self->{Type} . ": limiting MaxDays to availible data");
+      w ($self->{Type} . ": limiting MaxDays to available data");
       $self->{MaxDays} = $DaysOnSite;
     }
 
@@ -204,9 +204,9 @@ sub ImportContent {
     my $title = $pgm->findvalue( 'Sendetitel' );
     $title =~ s| \(\d+/\d+\)$||g;
     $title =~ s| \(\d+\)$||g;
-    $title =~ s/ \(WH(?: von \w{2}|)\)$//g;
+    $title =~ s/ \(WH(?: von \w{2}| von \w{2} der Vorwoche|)\)$//g;
     # clean up for HR
-    $title =~ s/\s+Kinemathek-Nacht:.*$//g;
+    $title =~ s/\s+Kinemathek(?:-Nacht|):.*$//g;
 
     my $ce = {
       start_time  => $startTime,
