@@ -20,6 +20,7 @@ use utf8;
 
 use DateTime;
 use XML::LibXML;
+use Data::Dumper;
 
 use NonameTV qw/MyGet File2Xml norm MonthNumber/;
 use NonameTV::DataStore::Helper;
@@ -56,6 +57,8 @@ sub new
 
   my $dsu = NonameTV::DataStore::Updater->new( $self->{datastore} );
   $self->{datastoreupdater} = $dsu;
+
+  $self->{datastore}->{augment} = 1;
 
   return $self;
 }
@@ -651,7 +654,8 @@ sub ParseDate
       #if( $text =~ /^(ponedjeljak|utorak|srijeda|èvrtak|petak|subota|nedjelja)\,*\s*\d+\.*\s*\D+\,*\s*\d+\.*$/i ){
       if( $text =~ /^(ponedjeljak|utorak|srijeda|četvrtak|petak|subota|nedjelja)\,*\s*\d+\.*\s*\D+\,*\s*\d+\.*$/i ){
         ( $weekday, $day, $monthname, $year ) = ( $text =~ /^(\S+?)\s*(\d+)\.*\s*(\S+?)\,*\s*(\d+)\.*$/ );
-        }
+      }
+
    } elsif( $lang =~ /^no$/ ){
 
       # try 'Tisdag 3 Juni, 2008'
