@@ -916,6 +916,15 @@ sub MonthNumber {
     @months_6 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
     @months_7 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
     @months_8 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
+  } elsif( $lang =~ /^no$/ ){
+    @months_1 = qw/jan feb mrt apr mei jun jul aug sep okt nov dec/;
+    @months_2 = qw/januar februar mars april mai juni juli august september oktober november desember/;
+    @months_3 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
+    @months_4 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
+    @months_5 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
+    @months_6 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
+    @months_7 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
+    @months_8 = qw/1 2 3 4 5 6 7 8 9 10 11 12/;
   }
 
   my %monthnames = ();
