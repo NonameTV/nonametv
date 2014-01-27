@@ -299,7 +299,8 @@ sub ImportContent {
       # strip part number from multipart episodes
       $candidate =~ s|\s*\(.*?\)$||;
       # strip initial line if it begins with the episode number and title
-      $ce->{description} =~ s|^$candidate.*?\n||s;
+      my $quoted_candidate = quotemeta( $candidate );
+      $ce->{description} =~ s|^$quoted_candidate.*?\n||s;
     }
 
     my $url = $pgm->findvalue( 'Internetlink' );
