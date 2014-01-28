@@ -5,9 +5,8 @@ use warnings;
 
 =pod
 
-Importer for data from phazer.info (Croatia).
-One file per channel and 3-day period downloaded from their site.
-The downloaded file is in xml-format.
+Importer for data from HBO Nordic.
+The data is their XMLTV-data which is downloaded daily (per day).
 
 Features:
 
