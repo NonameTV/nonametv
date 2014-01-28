@@ -81,6 +81,10 @@ sub FilterContent {
   foreach my $node ($doc->find ('//a[@class="link_recorder"]')->get_nodelist) {
     $node->unbindNode ();
   }
+  # <a href="deutschlandradio-recorder-programmieren.1406.de.html?drpl:params=%7CAtelier+neuer+Musik%7C127%7C20140208220500%7C20140208225000%7C0%7C0%7C0%7C0%7C0" title="Sendung mitschneiden - Sie ben&ouml;tigen den kostenlosen dradio-Recorder" class="psradio">aufnehmen</a>
+  foreach my $node ($doc->find ('//a[@class="psradio"]')->get_nodelist) {
+    $node->unbindNode ();
+  }
 
   $cref = $doc->toStringHTML ();
 
@@ -88,7 +92,7 @@ sub FilterContent {
 }
 
 sub ContentExtension {
-  return 'html.gz';
+  return 'html';
 }
 
 sub FilteredExtension {
