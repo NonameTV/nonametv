@@ -184,8 +184,6 @@ sub create_dt
   my $self = shift;
   my( $str ) = @_;
 
-  my $addhour = 0;
-
 
   my( $date, $time ) = split( ' ', $str );
 
@@ -200,15 +198,6 @@ sub create_dt
 
   my( $hour, $minute, $second ) = split( ":", $time );
 
-  # round the minutes as its in a very odd format.
-  $minute = nearest(5, $minute);
-
-  # If minute >= 60 add hour instead
-  if($minute >= 60) {
-  	$minute = 0;
-  	$addhour = 1;
-  }
-
 
   my $dt = DateTime->new( year => $year,
                           month => $month,
@@ -219,13 +208,6 @@ sub create_dt
                           );
 
   $dt->set_time_zone( "UTC" );
-
-
-  # add hour
-  if($addhour eq 1) {
- 	 $dt->add(hours => 1);
- 	 $addhour = 0;
-  }
 
   return $dt;
 }
