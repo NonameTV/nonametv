@@ -21,9 +21,9 @@ use NonameTV qw/ParseXml norm AddCategory/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/w progress error f/;
 
-use NonameTV::Importer::BaseOne;
+use NonameTV::Importer::BaseDaily;
 
-use base 'NonameTV::Importer::BaseOne';
+use base 'NonameTV::Importer::BaseDaily';
 
 sub new {
     my $proto = shift;
@@ -36,6 +36,8 @@ sub new {
   	my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
   	$self->{datastorehelper} = $dsh;
 
+  	$self->{MaxDays} = 8;
+
     return $self;
 }
 
@@ -43,7 +45,9 @@ sub Object2Url {
   my $self = shift;
   my( $objectname, $chd ) = @_;
 
-  my $url = 'http://okv.se/tabla.xml';
+  my( $date ) = ($objectname =~ /_(.*)/);
+
+  my $url = 'http://okv.se/tabla.xml/'.$date;
 
   return( $url, undef );
 }
