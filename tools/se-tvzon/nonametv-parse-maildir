@@ -390,7 +390,8 @@ sub guess_channel
      #return "america.espn.com" if $filename =~ /cet/i;
  }
  
- if( $dir =~ /Mezzo/ and $filename =~ /\.xls$/i ) {
+ if( $dir =~ /Mezzo/ and $filename =~ /\.xlsx$/i ) {
+     return "hd.mezzo.tv" if $filename =~ /hd/i; # import mezzo live hd channel
      return "mezzo.tv" if $filename !~ /hd/i; # dont import mezzo live hd channel
  }
  
