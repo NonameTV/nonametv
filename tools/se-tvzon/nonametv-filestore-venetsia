@@ -1,0 +1,98 @@
+#!/usr/bin/perl -w
+
+use strict;
+
+use FindBin;
+use lib "$FindBin::Bin/../lib";
+
+use DateTime;
+use File::Util;
+use File::Copy qw/copy move/;
+
+use NonameTV;
+use NonameTV::DataStore;
+use NonameTV::Config qw/ReadConfig/;
+use NonameTV::Log qw/progress error d p w f/;
+
+use Getopt::Long;
+
+my $opt = { 'verbose' => 0 };
+
+my $res = GetOptions( $opt, qw/verbose/ );
+
+NonameTV::Log::SetVerbosity( $opt->{verbose} );
+
+# Read configuration
+my $conf = ReadConfig();
+my $ds = NonameTV::DataStore->new( $conf->{DataStore} );
+my $filestore = $conf->{FileStore};
+
+# Channels
+my %channel_data;
+$channel_data{ "r01" } = "1.radio.yle.fi";
+$channel_data{ "ava" } = "ava.mtv.fi";
+$channel_data{ "mtf" } = "fakta.mtv.fi";
+$channel_data{ "mtd" } = "faktaxl.mtv.fi";
+$channel_data{ "fsd" } = "fem.yle.fi";
+$channel_data{ "stv" } = "fox.fi";
+$channel_data{ "nep" } = "jim.nelonen.fi";
+$channel_data{ "jun" } = "juniori.mtv.fi";
+$channel_data{ "r17" } = "klassinen.radio.yle.fi";
+$channel_data{ "mko" } = "komedia.mtv.fi";
+$channel_data{ "voi" } = "kutonen.fi";
+$channel_data{ "ylr" } = "hd.yle.fi";
+$channel_data{ "mtl" } = "leffa.mtv.fi";
+$channel_data{ "liv" } = "liv.nelonen.fi";
+$channel_data{ "new" } = "maailma.nelonen.fi";
+$channel_data{ "mtm" } = "max.mtv.fi";
+$channel_data{ "mtv" } = "mtv3.fi";
+$channel_data{ "nef" } = "nappula.nelonen.fi";
+$channel_data{ "nel" } = "nelonen.fi";
+$channel_data{ "nek" } = "prime.nelonen.fi";
+$channel_data{ "utp" } = "pro1.nelonen.fi";
+$channel_data{ "ur1" } = "pro2.nelonen.fi";
+$channel_data{ "r48" } = "puhe.radio.yle.fi";
+$channel_data{ "nov" } = "radionova.fi";
+$channel_data{ "sar" } = "sarja.mtv.fi";
+$channel_data{ "ms1" } = "sport1.mtv.fi";
+$channel_data{ "ms2" } = "sport2.mtv.fi";
+$channel_data{ "tvt" } = "sub.fi";
+$channel_data{ "r03" } = "suomi.radio.yle.fi";
+$channel_data{ "yte" } = "teema.yle.fi";
+$channel_data{ "tv1" } = "tv1.yle.fi";
+$channel_data{ "tv2" } = "tv2.yle.fi";
+$channel_data{ "tv5" } = "tv5.fi";
+$channel_data{ "tvf" } = "tvfinland.yle.fi";
+$channel_data{ "r04" } = "vega.radio.yle.fi";
+$channel_data{ "r02" } = "x.radio.yle.fi";
+$channel_data{ "r44" } = "x3m.radio.yle.fi";
+
+
+
+  # list files inside of the channel directory and check when they have been touched
+  my( $cf ) = File::Util->new();
+  my( @cffiles ) = $cf->list_dir( "/nonametv/venetsia", '--no-fsdots' );
+  foreach my $cff (@cffiles)
+  {
+
+    my ( $id, $date ) = split(/_/, $cff);
+
+    my $cftype = join(',', File::Util->file_type( "/nonametv/venetsia/$cff" ) );
+    my $fsftype = join(',', File::Util->file_type( "/nonametv/venetsia/$cff" ) );
+    if( $cftype !~ /PLAIN/ ){
+      progress( "File $cff is $fsftype - skipping" );
+      next;
+    }
+
+    if( not exists( $channel_data{$id} ) )
+    {
+        print "Files with name $id hasnt been specified as a channel.\n";
+        unlink "/nonametv/venetsia/$cff";
+    } else {
+      move( "/nonametv/venetsia/$cff", "$filestore/$channel_data{$id}/$cff" );
+      print "$cff moved to $channel_data{$id}\n";
+    }
+
+  }
+
+exit;
