@@ -252,6 +252,7 @@ sub ImportContent
 			$desc =~ s|^M[Ii]t .+?$||m;
 			$actors =~ s| u\.a\.$||;
 			# TODO clean up the list of actors
+                        $actors =~ s|,\s*,|,|g; # remove empty elements from the list
 			$ce->{actors} = $actors;
 		}
 		my( $directors )=( $desc =~ m|^Regie:\s+(.+?)$|m );
