@@ -71,14 +71,14 @@ $channel_data{ "r44" } = "x3m.radio.yle.fi";
 
   # list files inside of the channel directory and check when they have been touched
   my( $cf ) = File::Util->new();
-  my( @cffiles ) = $cf->list_dir( "/nonametv/venetsia", '--no-fsdots' );
+  my( @cffiles ) = $cf->list_dir( "/nonametv/autoupload/venetsia", '--no-fsdots' );
   foreach my $cff (@cffiles)
   {
 
     my ( $id, $date ) = split(/_/, $cff);
 
-    my $cftype = join(',', File::Util->file_type( "/nonametv/venetsia/$cff" ) );
-    my $fsftype = join(',', File::Util->file_type( "/nonametv/venetsia/$cff" ) );
+    my $cftype = join(',', File::Util->file_type( "/nonametv/autoupload/venetsia/$cff" ) );
+    my $fsftype = join(',', File::Util->file_type( "/nonametv/autoupload/venetsia/$cff" ) );
     if( $cftype !~ /PLAIN/ ){
       progress( "File $cff is $fsftype - skipping" );
       next;
@@ -87,9 +87,9 @@ $channel_data{ "r44" } = "x3m.radio.yle.fi";
     if( not exists( $channel_data{$id} ) )
     {
         print "Files with name $id hasnt been specified as a channel.\n";
-        unlink "/nonametv/venetsia/$cff";
+        unlink "/nonametv/autoupload/venetsia/$cff";
     } else {
-      move( "/nonametv/venetsia/$cff", "$filestore/$channel_data{$id}/$cff" );
+      move( "/nonametv/autoupload/venetsia/$cff", "$filestore/$channel_data{$id}/$cff" );
       print "$cff moved to $channel_data{$id}\n";
     }
 
