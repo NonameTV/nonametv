@@ -16,6 +16,7 @@ use utf8;
 use DateTime;
 use Spreadsheet::ParseExcel;
 use Data::Dumper;
+use Spreadsheet::ParseExcel::Utility qw(ExcelFmt ExcelLocaltime LocaltimeExcel);
 
 use NonameTV qw/norm AddCategory MonthNumber/;
 use NonameTV::DataStore::Helper;
@@ -82,12 +83,12 @@ sub ImportFlatXLS
 
       # date (column 1)
       $oWkC = $oWkS->{Cells}[$iR][0];
-      if( $oWkC->Value =~ /^\d{4}\/\d{2}\/\d{2}$/i ){
-	  		if(isDate( $oWkC->Value ) ){
-					$date = ParseDate( $oWkC->Value );
-	  		}
-	  	}
-	  
+      if($oWkC->Value ne "") {
+        $date = ParseDate( $oWkC->Value );
+      }
+
+            print("HEJ\n");
+
 	  	if($date ne $currdate ) {
     		if( $currdate ne "x" ) {
 					$dsh->EndBatch( 1 );
@@ -101,26 +102,29 @@ sub ImportFlatXLS
         progress("OKGoteborg: Date is: $date");
       }
 
+      $oWkC = $oWkS->{Cells}[$iR][4];
+      my $title =  norm( $oWkC->Value );
+
+
+
+
+
       $oWkC = $oWkS->{Cells}[$iR][1];
       next if( ! $oWkC );
       my $time = ParseTime( $oWkC->Value );
-            print Dumper($time);
       next if( ! $time );
-      
-      $oWkC = $oWkS->{Cells}[$iR][2];
-      my $endtime = "";
-      if($oWkC->Value ne "") {
-      	$endtime = ParseTime( $oWkC->Value );
-      }
 
-      $oWkC = $oWkS->{Cells}[$iR][4];
-      my $title =  norm( $oWkC->Value );
-            print Dumper($title);
+
+
+      #$oWkC = $oWkS->{Cells}[$iR][2];
+      #my $endtime = "";
+      #if($oWkC->Value ne "") {
+     	#$endtime = ParseTime( $oWkC->Value );
+      #}
+
+
       if( $time and $title ){
-	  
-	  # empty last day array
-      undef @ces;
-	  
+
         progress("$time - $title");
 
         my $ce = {
@@ -129,11 +133,11 @@ sub ImportFlatXLS
           start_time   => $time,
         };
 		
-				$ce->{end_time} = $endtime if $endtime;
-		
-        #$dsh->AddProgramme( $ce );
-		
-				#push( @ces , $ce );
+		#$ce->{end_time} = $endtime if $endtime ne "";
+        $dsh->AddProgramme( $ce );
+      } else {
+        print Dumper($time);
+        print Dumper($title);
       }
 
     } # next row
@@ -145,24 +149,11 @@ sub ImportFlatXLS
   return;
 }
 
-sub isDate {
-  my ( $text ) = @_;
-
-  # format '2011-04-13'
-  if( $text =~ /^\d{4}\-\d{2}\-\d{2}$/i ){
-    return 1;
-
-  # format '2011/05/12'
-  } elsif( $text =~ /^\d{4}\/\d{2}\/\d{2}$/i ){
-    return 1;
-  }
-	return 0;
-}
 
 sub ParseDate {
   my ( $text ) = @_;
 
-	print Dumper($text);
+  print("$text\n");
 
   my( $year, $day, $month );
 
@@ -173,6 +164,9 @@ sub ParseDate {
   # format '201'
   } elsif( $text =~ /^\d{4}\/\d{2}\/\d{2}$/i ){
     ( $year, $month, $day  ) = ( $text =~ /^(\d{4})\/(\d{2})\/(\d{2})$/i );
+  } else {
+    $text = ExcelFmt('yyyy-mm-dd', $text );
+    return $text;
   }
   
   #my $dt2 = DateTime->now;
@@ -188,12 +182,15 @@ sub ParseDate {
 
 sub ParseTime {
   my( $text ) = @_;
+  print("$text\n");
   
 	if($text ne "") {
   	my( $hour , $min );
 
   	if( $text =~ /^\d+:\d+$/ ){
   	  ( $hour , $min ) = ( $text =~ /^(\d+):(\d+)$/ );
+  	} else {
+        return ExcelFmt('hh:mm', $text);
   	}
 
   	return sprintf( "%02d:%02d", $hour, $min );
