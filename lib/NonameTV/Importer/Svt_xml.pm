@@ -108,7 +108,7 @@ sub ImportXML
   my $column;
 
     # the grabber_data should point exactly to one worksheet
-    my $rows = $doc->findnodes( ".//se:SVTPublicScheduleEvent" );
+    my $rows = $doc->findnodes( ".//sch:SVTPublicScheduleEvent" );
 
     if( $rows->size() == 0 ) {
       error( "SvtXML: $chd->{xmltvid}: No Rows found" ) ;
@@ -116,13 +116,13 @@ sub ImportXML
     }
 
   foreach my $row ($rows->get_nodelist) {
-      my $title = norm2($row->findvalue( './/se:Title/@official' ) );
+      my $title = norm2($row->findvalue( './/sch:Title/@official' ) );
       $title =~ s/¿/‒/g; # Wrong encoded char
       
-      my $time = $row->findvalue( './/se:StartTime/@startcet' );
-      my $endtime = $row->findvalue( './/se:StartTime/@endcet' );
-      my $date = $row->findvalue( './/se:Date/@startcet' );
-      my $enddate = $row->findvalue( './/se:Date/@endcet' );
+      my $time = $row->findvalue( './/sch:StartTime/@startcet' );
+      my $endtime = $row->findvalue( './/sch:StartTime/@endcet' );
+      my $date = $row->findvalue( './/sch:Date/@startcet' );
+      my $enddate = $row->findvalue( './/sch:Date/@endcet' );
       
 	  if($date ne $currdate ) {
         if( $currdate ne "x" ) {
@@ -138,19 +138,19 @@ sub ImportXML
       }
 
 	  # extra info
-	  my $season = $row->findvalue( './/se:TechnicalDetails/@seriesno' );
-	  my $episode = $row->findvalue( './/se:TechnicalDetails/@episodeno' );
-	  my $of_episode = $row->findvalue( './/se:TechnicalDetails/@episodecount' );
-	  my $desc = norm2( $row->findvalue( './/se:LongDescription/@description' ) );
-	  my $year = $row->findvalue( './/se:TechnicalDetails/@productionyear' );
-	  my $hd = $row->findvalue( './/se:TechnicalDetails/@hd' );
-	  my $live = $row->findvalue( './/se:TechnicalDetails/@live' );
+	  my $season = $row->findvalue( './/sch:TechnicalDetails/@seriesno' );
+	  my $episode = $row->findvalue( './/sch:TechnicalDetails/@episodeno' );
+	  my $of_episode = $row->findvalue( './/sch:TechnicalDetails/@episodecount' );
+	  my $desc = norm2( $row->findvalue( './/sch:LongDescription/@description' ) );
+	  my $year = $row->findvalue( './/sch:TechnicalDetails/@productionyear' );
+	  my $hd = $row->findvalue( './/sch:TechnicalDetails/@hd' );
+	  my $live = $row->findvalue( './/sch:TechnicalDetails/@live' );
 	  
 	  my $start = $self->create_dt( $date."T".$time );
 	  my $end = $self->create_dt( $enddate."T".$endtime );
 	  
 	  # Genre description
-	  my $genredesc = norm2( $row->findvalue( './/se:ShortDescription/@description' ) );
+	  my $genredesc = norm2( $row->findvalue( './/sch:ShortDescription/@description' ) );
 	  
 
 
@@ -170,7 +170,7 @@ sub ImportXML
 
   	  AddCategory( $ce, $program_type, $category );
       
-      # Season sutff
+      # Season stuff
 
       my @sentences2 = (split_text( $genredesc ), "");
       
