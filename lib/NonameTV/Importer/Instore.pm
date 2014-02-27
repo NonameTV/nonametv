@@ -164,14 +164,15 @@ sub ImportContent
     }
 
     # Data
-    my $title   = norm($sc->findvalue( './title'   ));
-    $title =~ s/&amp;/&/g; # Wrong encoded char
-    my $desc    = norm($sc->findvalue( './text'    ));
-    my $genre   = norm($sc->findvalue( './genre'   ));
-    my $season  = norm($sc->findvalue( './season'  ));
-    my $episode = norm($sc->findvalue( './episode' ));
-    my $year	= norm($sc->findvalue( './year'    ));
-    my $dir		= norm($sc->findvalue( './producer'));
+    my $title    = norm($sc->findvalue( './title'   ));
+    $title       =~ s/&amp;/&/g; # Wrong encoded char
+    my $desc     = norm($sc->findvalue( './text'    ));
+    my $genre    = norm($sc->findvalue( './genre'   ));
+    my $season   = norm($sc->findvalue( './season'  ));
+    my $episode  = norm($sc->findvalue( './episode' ));
+    my $year	 = norm($sc->findvalue( './jaarvanuitgave'    ));
+    my $dir		 = norm($sc->findvalue( './producer'));
+    my $subtitle = norm($sc->findvalue( './episodetitle'));
 
 
 	my $ce = {
@@ -183,6 +184,8 @@ sub ImportContent
     };
 
     progress( "Instore: $chd->{xmltvid}: $start - $title" );
+
+    $ce->{subtitle} = $subtitle if $subtitle ne "";
 
     my($program_type, $category ) = $ds->LookupCat( 'Instore', $genre );
 	AddCategory( $ce, $program_type, $category );
