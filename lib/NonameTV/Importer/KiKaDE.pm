@@ -59,7 +59,7 @@ sub FilterContent {
   gunzip $gzcref => $cref
     or $cref = $gzcref;
 
-  $$cref =~ s|$||g;
+  $$cref =~ s|$||mg;
   $$cref =~ s|http://www.kika-presse.de/scripts/media/export/dtd/kika_programmWoche.dtd|http://www.kika-presse.de/media/export/dtd/kika_programmWoche.dtd|;
   # misescaped entities
   $$cref =~ s|&amp;#(\d+);|&#$1;|g;

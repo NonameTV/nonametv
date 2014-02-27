@@ -813,7 +813,7 @@ sub ExportChannelList
   my $query = "SELECT * from channels WHERE export=1 ";
   if( $channelgroup )
   {
-    $query .= "AND chgroup=\'$channelgroup\' ";
+    $query .= "AND FIND_IN_SET (\'$channelgroup\', chgroup) ";
   }
   $query .= "ORDER BY display_name";
   my( $res, $sth ) = $ds->sa->Sql( $query );

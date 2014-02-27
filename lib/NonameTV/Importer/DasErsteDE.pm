@@ -206,7 +206,7 @@ sub ImportContent {
     $title =~ s| \(\d+\)$||g;
     $title =~ s/ \(WH(?: von \w{2}| von \w{2} der Vorwoche|)\)$//g;
     # clean up for HR
-    $title =~ s/\s+Kinemathek(?:-Nacht|):.*$//g;
+    $title =~ s/\s+Kinemathek(?:-Nacht|)\s*:.*$//g;
 
     my $ce = {
       start_time  => $startTime,
@@ -510,7 +510,7 @@ sub parse_subtitle
       $sce->{producers} = join (", ", $producer1, $producer2);
     }
     $subtitle = undef;
-  } elsif ($subtitle =~ m!^\((?:BR|DFF|HR|MDR|NDR|SR|SWR|RBB|WDR|SWR/HR)\)!) {
+  } elsif ($subtitle =~ m!^\((?:BR|DFF|HR|MDR|NDR|RB|SR|SWR|RBB|WDR|SWR/HR)\)!) {
     # begins with original station (no dollar at the end)
     $subtitle = undef;
   } elsif ($subtitle =~ m|^\(Vom \d+\.\d+\.\d{4}\)$|) {

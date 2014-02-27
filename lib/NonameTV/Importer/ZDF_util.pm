@@ -442,6 +442,10 @@ sub clean_untertitel
     $subtitle =~ s|\s*\([Vv]om \d+\.\d+\.\d{4}\)$||;
   }
   # strip repeat in ZDFneo style
+  if ($subtitle =~ m|\s*\([Vv]on \d+\.\d{2} Uhr\)$|) {
+    $subtitle =~ s|\s*\([Vv]on \d+\.\d{2} Uhr\)$||;
+  }
+  # strip repeat in ZDFneo style
   if ($subtitle =~ m|\s*\(ZDF \d+\.\d+\.\d{4}\)$|) {
     $subtitle =~ s|\s*\(ZDF \d+\.\d+\.\d{4}\)$||;
   }

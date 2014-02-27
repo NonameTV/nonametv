@@ -252,6 +252,7 @@ sub ImportContent
 			$desc =~ s|^M[Ii]t .+?$||m;
 			$actors =~ s| u\.a\.$||;
 			# TODO clean up the list of actors
+                        $actors =~ s|,\s*,|,|g; # remove empty elements from the list
 			$ce->{actors} = $actors;
 		}
 		my( $directors )=( $desc =~ m|^Regie:\s+(.+?)$|m );
@@ -274,6 +275,11 @@ sub ImportContent
 	      $ce->{description} = norm($desc) if $desc;
 
 		my $subtitle =  $sc->findvalue( './subtitel' );
+                if( $subtitle =~ m|\s+/\s+ENTFALLEN$| ){
+                        $ce->{title} = 'end-of-transmission';
+                        $subtitle =~ s|\s+/\s+ENTFALLEN$||;
+                }
+                $subtitle =~ s|\s+\(Wh\.\)$||;
 		if( $subtitle =~ m/^(?:Folge|Kapitel|Teil)\s+\d+\s+-\s+.+$/ ){
 			my( $episodenum, $episodetitle )=( $subtitle =~ m/^(?:Folge|Kapitel|Teil)\s+(\d+)\s+-\s+(.+)$/ );
 			$ce->{episode} = '. ' . ($episodenum - 1) . ' .';
