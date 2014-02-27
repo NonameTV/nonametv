@@ -60,7 +60,6 @@
 232,Tvdb,Wipeout,program_type,series,149051,episodeseason
 429,Tvdb,^.*$,program_type,series,\N,episodeseason
 234,Tvdb,^.*$,program_type,series,\N,episodeseason
-234,Tvdb,"Queer As Folk UK",program_type,series,75625,episodeseason
 203,Tvdb,^.*$,program_type,series,\N,episodeseason
 204,Tvdb,^.*$,program_type,series,\N,episodeseason
 205,Tvdb,^.*$,program_type,series,\N,episodeseason
@@ -274,8 +273,6 @@
 256,Tvdb,"En plats vid havet",program_type,series,166181,episodeseason
 256,Tvdb,"Drömhem vid havet",program_type,series,206551,episodeseason
 256,Tvdb,"Nightmare in Suburbia",program_type,series,189771,episodeseason
-234,Tvrage,"Gimme Gimme Gimme",program_type,series,3685,episodeseason
-234,Tvrage,"Dante's Cove",program_type,series,2229,episodeseason
 232,Tvrage,"RAW Comedy Club",program_type,series,21721,episodeseason
 232,Tvrage,"Sofias änglar",program_type,series,27497,episodeseason
 429,Tvdb,"Falling Skies",program_type,movie,205281,episodeseason
@@ -637,7 +634,6 @@
 256,Tvdb,Politistationen,program_type,series,127811,episodeseason
 256,Tvrage,"Antiques Roadshow",program_type,series,7762,episodeseason
 254,Tvdb,"Navy NCIS",program_type,series,72108,episodeseason
-234,Tvdb,Blodtörst,program_type,series,80300,episodeseason
 256,Tvdb,"Law and Order: Criminal Intent",program_type,series,71489,episodeseason
 248,Tvdb,"Law and Order: Criminal Intent",program_type,series,71489,episodeseason
 278,Tvdb,Masterminds,program_type,movie,79038,episodetitle
@@ -815,3 +811,20 @@
 435,PreviouslyShown,^.*$,\N,\N,\N,\N
 528,Tvdb,^.*$,program_type,series,\N,episodeseason
 625,Tvdb,^.*$,program_type,series,\N,episodetitle
+629,Tvdb,^.*$,program_type,series,\N,episodeseason
+631,Tvdb,^.*$,\N,\N,\N,episodetitle
+632,Tvdb,^.*$,\N,\N,\N,episodetitle
+633,Tvdb,^.*$,\N,\N,\N,episodetitle
+635,Tvdb,^.*$,\N,\N,\N,episodetitle
+638,Tvdb,^.*$,program_type,series,\N,episodeseason
+641,Tvdb,^.*$,\N,\N,\N,episodetitle
+651,Tvdb,^.*$,program_type,series,\N,episodeseason
+652,Tvdb,^.*$,program_type,series,\N,episodeseason
+653,Tvdb,^.*$,program_type,series,\N,episodeseason
+654,Tvdb,^.*$,program_type,series,\N,episodeseason
+441,Tvdb,^.*$,\N,\N,\N,episodetitle
+442,Tvdb,^.*$,\N,\N,\N,episodetitle
+443,Tvdb,^.*$,\N,\N,\N,episodetitle
+501,Tvdb,^.*$,\N,\N,\N,episodetitle
+441,Tvdb,^.*$,\N,\N,\N,episodeseason
+442,Tvdb,^.*$,\N,\N,\N,episodeseason

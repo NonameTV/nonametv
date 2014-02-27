@@ -11,7 +11,6 @@
 209,"Disney XD",xd.disneychannel.se,TV,DisneyChannel,1,,1,series,Children's,sv,0,http://www.disneyxd.se/,0
 232,"Kanal 5",kanal5.se,TV,SBSTVSWE,1,,1,series,Series,sv,0,http://www.kanal5.se/,0
 233,"Kanal 9",kanal9.se,TV,SBSTVSWENO,1,,1,series,Series,sv,0,http://www.kanal9.se/,0
-234,OUTTV,outtv.se,TV,OUTTV,1,,1,series,Series,sv,0,http://www.outtv.se/,0
 238,"Viasat Explorer",explorer.viasat.se,TV,Viasat,1,viasat_explorer_nordic_se_,1,series,Documentary,sv,0,http://www.viasat.se/,0
 240,"Viasat Fotboll",fotboll.viasat.se,TV,Viasat,1,viasatfotboll_se_,1,sports,Football,sv,0,http://www.viasatsport.se/,0
 241,"Viasat Fotboll HD",fotbollhd.viasat.se,TV,Viasat,1,viasat_fotboll_hd_se_,1,sports,Football,sv,0,http://www.viasatsport.se/,0
@@ -61,17 +60,13 @@
 306,SVT24,svt24.svt.se,TV,Svt,1,,1,tvshow,News,sv,0,http://www.svt24.se/,0
 307,Barnkanalen,svtb.svt.se,TV,Svt,1,,1,,Children's,sv,0,http://svt.se/barn/,0
 308,"SVT World",svtworld.svt.se,TV,Svt,1,,1,series,Series,sv,0,http://svt.se/world/,0
-311,"Extreme Sports",extremesports.com,TV,ExtremeSports,1,,1,sport,sports,en,0,http://www.extreme.com/,0
 312,"Fashion TV",ftv.com,TV,FTV,1,FTV_,1,tvshow,Fashion,en,0,http://www.ftv.com/,0
 313,"Kanal 10",kanal10.se,TV,Kanal10,1,,1,series,Series,sv,0,http://www.kanal10.se/,0
 314,"Motors TV",motorstv.com,TV,Motors,1,,1,sports,Motors,en,0,http://www.motorstv.com/,0
 316,"Nat. Geo. Wild",wild.natgeo.se,TV,NatGeoWild,1,,1,series,Animals,sv,0,http://natgeotv.com/se/wild/,0
-317,"Oppna Kanalen i Goteborg",oppnakanalengoteborg.se,TV,OppnaKanalenGoteborg,1,,1,,,sv,0,http://www.oppnakanalengoteborg.se,0
 321,"History Channel",historytv.se,TV,Discovery,1,,1,series,Documentary,se,0,http://www.historytv.se/,0
-322,"Travel Channel Europe",travelchanneltv.se,TV,TravelChannel,1,TC_Europe,1,series,Food/Travel,sv,0,http://www.travelchanneltv.se/,0
 323,"Blue Hustler",europe.bluehustler.com,TV,HustlerTV,1,,1,movie,Adult,en,0,http://www.bluehustler.com/,0
 324,HustlerTV,europe.hustlertv.com,TV,HustlerTV,1,,1,movie,Adult,en,0,http://www.hustlertveurope.com/,0
-325,"Private Spice",privatespice.com,TV,Playboy,1,,1,movie,Adult,en,0,http://www.privatespice.com/,0
 326,"Lifestyle TV",lifestyletv.se,TV,LifestyleTV,1,,1,,,sv,0,http://www.lifestyletv.se/,0
 327,Boomerang,boomerangtv.se,TV,Turner_doc,1,,1,series,Kids,sv,0,http://boomerangtv.se/,0
 328,"Cartoon Network",cartoonnetwork.se,TV,Turner_doc,1,,1,series,Kids,en,0,http://cartoonnetwork.se/,0
@@ -127,7 +122,6 @@
 436,Nickelodeon,nickelodeon.se,TV,MTVde,1,30,1,series,Children's,sv,0,http://www.nickelodeon.se/,0
 438,"TV4 Sport Xtra",sportxtra.tv4.se,TV,TV4,1,19,1,sports,Sports,sv,0,http://www.tv4sportxtra.se,0
 439,"TV4 Fakta XL",faktaxl.tv4.se,TV,TV4,1,20,1,series,Documentary,sv,0,http://www.tv4faktaxl.se/,0
-440,"Viasat 3D",3d.viasat.tv,TV,Viasat,1,viasat_3d_nordic_se_,1,movie,Movies,sv,0,http://www.viasat.se/content/nyhet-se-film-och-sport-i-3d-p%C3%A5-viasat,0
 441,"6'eren Denmark",6-eren.dk,TV,SBSTV,1,6'eren,1,series,Series,dk,0,http://www.6-eren.dk/,0
 442,"Kanal 4 Denmark",kanal4.dk,TV,SBSTV,1,"Kanal 4",1,series,Series,dk,0,http://www.kanal4.dk/,0
 443,"Kanal 5 Denmark",kanal5.dk,TV,SBSTV,1,"Kanal 5",1,series,Series,dk,0,http://www.kanal5.dk/,0
@@ -163,7 +157,7 @@
 477,"TV2 Danmark",tv2.dk,TV,TV2,1,TV%202%20DANMARK,1,series,Series,dk,0,http://www.tv2.dk,0
 478,"TV2 ZULU",zulu.tv2.dk,TV,TV2,1,TV%202%20ZULU,1,series,Series,dk,0,http://www.tv2.dk/zulu,0
 479,DK4,dk4.dk,TV,DK4,1,,1,series,Series,dk,0,http://www.dk4.dk/,0
-480,Mezzo,mezzo.tv,TV,Mezzo,1,,1,,,sv,0,http://www.mezzo.tv,0
+480,Mezzo,mezzo.tv,TV,Mezzo,1,,1,,,en,0,http://www.mezzo.tv,0
 481,"FUEL TV",fuel.tv,TV,FuelTV,1,,1,,,sv,0,http://www.fuel.tv,0
 483,TV10,tv10.se,TV,Viasat,1,tv10_se_,1,series,Series,sv,0,http://www.tv10.se/,0
 484,"Viasat 4",viasat4.no,TV,ViasatNO,1,viasat_4_no_,1,series,Series,no,0,http://www.viasat4.no/,0
@@ -193,13 +187,13 @@
 512,"MTV Hits",hits.mtv.se,TV,MTVde,1,46,1,tvshow,Music,en,0,http://www.mtv.se/,0
 513,"MTV Rocks",rocks.mtv.se,TV,MTVde,1,39,1,tvshow,Music,en,0,http://www.mtv.se/,0
 514,"Comedy Central",comedycentral.tv,TV,MTVde,1,22,1,series,Comedy,sv,0,http://www.comedycentral.tv/,0
-515,France24,france24.com,TV,France24,1,,1,,,en,0,http://www.france24.com/,0
+515,"France24 (English)",france24.com,TV,France24,1,,1,,,en,0,http://www.france24.com/,0
 516,NRK3,nrk3.nrk.no,TV,NRK,1,p_nrk3=NRK3,1,series,Series,no,0,http://www.nrk.no/,0
 517,"NRK P1",p1.nrk.no,RADIO,NRK,1,p_p1=P1,1,,Music,no,0,http://www.nrk.no,0
 518,"NRK P2",p2.nrk.no,RADIO,NRK,1,p_p2=P2,1,,Music,no,0,http://www.nrk.no,0
 519,"NRK Super TV",supertv.nrk.no,TV,NRK,1,p_super=SUPER,1,series,Series,no,0,http://www.nrk.no/,0
 520,HTV1,htv1.hrt.hr,TV,HRT,1,mreza=2,1,,,hr,0,http://www.hrt.hr,0
-521,"Al Jazeera English",aljazeera.net,TV,Infomedia,1,AJI,1,tvshow,News,en,0,http://www.aljazeera.net/,0
+521,"Al Jazeera English",aljazeera.net,TV,Infomedia,1,AJE,1,tvshow,News,en,0,http://www.aljazeera.net/,0
 525,"SVT1 HD",svt1hd.svt.se,TV,Downconverter,1,svt1.svt.se,1,,,sv,0,http://www.svt.se,0
 526,"SVT2 HD",svt2hd.svt.se,TV,Downconverter,1,svt2.svt.se,1,,,sv,0,http://www.svt.se,0
 527,"History Channel HD",hd.historytv.se,TV,Downconverter,1,"historytv.se, quality=HDTV",1,series,Documentary,se,0,http://www.historytv.se/,0
@@ -208,7 +202,6 @@
 532,"Yle Teema",teema.yle.fi,TV,Venetsia,1,,1,series,Series,sv,0,http://yle.fi/teema/,0
 533,"Yle TV1",tv1.yle.fi,TV,Venetsia,1,,1,series,Series,sv,0,http://yle.fi/tv1/,0
 534,"Yle TV2",tv2.yle.fi,TV,Venetsia,1,,1,series,Series,sv,0,http://yle.fi/tv2/,0
-535,"BBC Radio 1",one.radio.bbc.co.uk,TV,BBCRadio,1,radio1:england,1,,,en,0,http://www.bbc.co.uk/radio1/,0
 536,Nelonen,nelonen.fi,TV,Venetsia,1,,1,series,Series,fi,0,http://nelonen.fi/,0
 539,"National Geographic HD Sverige",hd.natgeo.se,TV,Downconverter,1,natgeo.se,1,series,Documentary,sv,0,http://natgeotv.com/se/hd/,0
 541,"3SAT HD",hd.3sat.de,TV,DreiSat,1,,1,,,de,0,http://www.3sat.de/,0
@@ -267,10 +260,10 @@
 595,"Yle Radio Vega",vega.radio.yle.fi,RADIO,Venetsia,1,,1,music,Music,fi,0,http://yle.fi/radiovega/,0
 596,YLEx,x.radio.yle.fi,RADIO,Venetsia,1,,1,music,Music,fi,0,http://yle.fi/radiox/,0
 597,"Yle Radio X3M",x3m.radio.yle.fi,RADIO,Venetsia,1,,1,music,Music,fi,0,http://yle.fi/x3m/,0
-598,"TV8 Asker & Bærum",ab.tv8norge.no,TV,TV8Norge,1,,1,series,Series,no,0,http://tv8norge.no/,0
+598,"TV8 Asker & Baerum",ab.tv8norge.no,TV,TV8Norge,1,,1,series,Series,no,0,http://tv8norge.no/,0
 599,"TV8 Follo",follo.tv8norge.no,TV,TV8Norge,1,,1,series,Series,no,0,http://tv8norge.no/,0
 600,"TV8 Oslo",oslo.tv8norge.no,TV,TV8Norge,1,,1,series,Series,no,0,http://tv8norge.no/,0
-601,"TV8 Østfold",ostfold.tv8norge.no,TV,TV8Norge,1,,1,series,Series,no,0,http://tv8norge.no/,0
+601,"TV8 Ostfold",ostfold.tv8norge.no,TV,TV8Norge,1,,1,series,Series,no,0,http://tv8norge.no/,0
 602,"TV8 Romerike",romerike.tv8norge.no,TV,TV8Norge,1,,1,series,Series,no,0,http://tv8norge.no/,0
 603,"Cinemax Croatia",cinemax.hr,TV,HBOHR,1,CMAX,1,,,hr,0,http://www.cinemax.hr,0
 604,"Cinemax 2 Croatia",cinemax2.cinemax.hr,TV,HBOHR,1,CMAX2,1,,,hr,0,http://www.cinemax.hr,0
@@ -294,4 +287,32 @@
 622,"RBB gemeinsam",rbb.rbb-online.de,TV,RBBDE,1,RBB,1,,,de,0,http://rbb-online.de/,0
 623,"RBB Berlin Zusatz",rbbberl.rbb-online.de,TV,RBBDE,1,RBBBERL,1,,,de,0,http://rbb-online.de/,0
 624,"RBB Brandenburg Zusatz",rbbbra.rbb-online.de,TV,RBBDE,1,RBBBRA,1,,,de,0,http://rbb-online.de/,0
-625,RTL2,rtl2.de,TV,RTL2,1,,0,series,Series,de,0,,0
+625,RTL2,rtl2.de,TV,RTL2,1,,1,series,Series,de,0,,0
+626,"Brazzers TV Europe",brazzerstveurope.com,TV,Playboy,1,,1,movie,Adult,en,0,http://www.brazzerstveurope.com/,0
+627,"France24 (Arabic)",ar.france24.com,TV,France24,1,,1,,,ar,0,http://www.france24.com/,0
+628,"France24 (French)",fr.france24.com,TV,France24,1,,1,,,fr,0,http://www.france24.com/,0
+629,"CBS Reality",cbsreality.tv,TV,ZoneReality,1,,1,series,Reality,sv,0,http://www.cbsreality.tv/eu/,0
+630,"DR Ultra",ultra.dr.dk,TV,DR,1,DRULTRA,1,series,Series,dk,0,http://www.dr.dk/DULTRA/,0
+631,"E! Entertainment Denmark",dk.eonline.com,TV,TravelChannel,1,,1,series,Entertainment,dk,0,http://www.eonline.com/,0
+632,"E! Entertainment Netherlands",nl.eonline.com,TV,TravelChannel,1,,1,series,Entertainment,nl,0,http://www.eonline.com/,0
+635,"E! Entertainment Sweden",se.eonline.com,TV,TravelChannel,1,,1,series,Entertainment,sv,0,http://www.eonline.com/,0
+636,Ginx,ginx.tv,DEV,Ginx,1,,1,series,Series,en,0,http://www.ginx.tv/,0
+638,OUTTV,outtv.se,TV,OUTTV_web,1,OUTTVSE,1,series,Series,sv,0,http://www.outtv.se/,0
+639,"Travel Channel Europe",travelchanneltv.se,TV,TravelChannel,1,TC_Europe,1,series,Food/Travel,en,0,http://www.travelchanneltv.se/,0
+641,"E! Entertainment Norway",no.eonline.com,TV,TravelChannel,1,,1,series,Entertainment,no,0,http://www.eonline.com/,0
+642,"Viasat OS 1",os1.viasat.se,TV,Viasat,1,viasat_os_1_se_,1,sports,Sports,sv,0,http://www.viasat.se/vinter-os,0
+643,"Viasat OS 2",os2.viasat.se,TV,Viasat,1,viasat_os_2_se_,1,sports,Sports,sv,0,http://www.viasat.se/vinter-os,0
+644,"Viasat OS 3",os3.viasat.se,TV,Viasat,1,viasat_os_3_se_,1,sports,Sports,sv,0,http://www.viasat.se/vinter-os,0
+645,"Viasat OS 4",os4.viasat.se,TV,Viasat,1,viasat_os_4_se_,1,sports,Sports,sv,0,http://www.viasat.se/vinter-os,0
+646,"Viasat OS 5",os5.viasat.se,TV,Viasat,1,viasat_os_5_se_,1,sports,Sports,sv,0,http://www.viasat.se/vinter-os,0
+647,"Viasat OS 6",os6.viasat.se,TV,Viasat,1,viasat_os_6_se_,1,sports,Sports,sv,0,http://www.viasat.se/vinter-os,0
+648,"Viasat OS 7",os7.viasat.se,TV,Viasat,1,viasat_os_7_se_,1,sports,Sports,sv,0,http://www.viasat.se/vinter-os,0
+649,"Viasat Xtra",xtra.viasat.se,TV,Viasat,1,viasat_xtra_se_,1,sports,Sports,sv,0,http://www.viasat.se/,0
+651,"HBO Nordic (Danish)",da.hbonordic.tv,TV,HBONordic,1,da,1,,,da,0,http://www.hbonordic.tv/,0
+652,"HBO Nordic (Finnish",fi.hbonordic.tv,TV,HBONordic,1,fi,1,,,fi,0,http://www.hbonordic.tv/,0
+653,"HBO Nordic (Norweigan)",no.hbonordic.tv,TV,HBONordic,1,no,1,,,no,0,http://www.hbonordic.tv/,0
+654,"HBO Nordic",sv.hbonordic.tv,TV,HBONordic,1,sv,1,,,sv,0,http://www.hbonordic.tv/,0
+655,"Oppna Kanalen Vaxjo",okv.se,TV,OKV,1,,1,series,Series,sv,0,http://www.okv.se/,0
+656,"Mezzo Live HD",hd.mezzo.tv,TV,Mezzo,1,,1,,,en,0,http://www.mezzo.tv,0
+657,"Viasat 14 HD",14.viasat.se,TV,Viasat,1,viasat_14_hd_se_,1,sports,Sports,sv,0,http://www.viasat.se/content/viasat-14-hd,0
+658,"Oppna Kanalen i Goteborg",oppnakanalengoteborg.se,TV,OppnaKanalenGoteborg,1,,1,,,sv,0,http://www.oppnakanalengoteborg.se,0

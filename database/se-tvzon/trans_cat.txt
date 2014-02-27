@@ -387,6 +387,14 @@ ESPNAmerica,"undefined sports",sports,sports
 ESPNAmerica,"undefined sports sports",\N,sports
 ESPNAmerica,"volleyball sports",Volleyball,sports
 ESPNAmerica,"wrestling sports",Wrestling,sports
+HBONordic,action,Action,\N
+HBONordic,comedy,Comedy,\N
+HBONordic,documentary,Documentary,\N
+HBONordic,drama,Drama,\N
+HBONordic,family,Family,\N
+HBONordic,horror,Horror,\N
+HBONordic,romance,Romance,\N
+HBONordic,thriller,Thriller,\N
 HRT,"američi film",\N,movie
 HRT,"američki film",\N,movie
 HRT,"američki film 86'",\N,movie
@@ -409,6 +417,12 @@ HRT,"talk show",Talk,tvshow
 HRT,talk-show,Talk,tvshow
 HRT,telenovela,\N,series
 HRT,"zaslužio si v - humoristična serija",\N,series
+Instore,amusement,Entertainment,series
+Instore,comedy,Comedy,series
+Instore,documentaire,Documentary,series
+Instore,film,\N,movie
+Instore,muziek,Music,series
+Instore,serie/soap,Soap,series
 Kanal5,documentary,Documentary,
 Kanal5,film,,movie
 Kanal5,series,,series
