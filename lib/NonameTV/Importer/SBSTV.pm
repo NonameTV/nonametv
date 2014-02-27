@@ -19,6 +19,7 @@ Channels: Kanal 4, Kanal 5, 6'eren and The Voice TV.
 
 use DateTime;
 use XML::LibXML;
+use Roman;
 
 use NonameTV qw/ParseXml AddCategory norm/;
 use NonameTV::DataStore::Helper;
@@ -147,11 +148,14 @@ sub ImportContent {
     # Descr. and genre
     my $desc = $b->findvalue( "ptekst1" );
     $desc =~ s/:\|apostrofe\|;/'/g;
-    
-   
-    
+
+    # Episode title
+    my $subtitle = $b->findvalue( "pressoriginalepisodetitle" );
+    $subtitle =~ s/:\|apostrofe\|;/'/g;
+
+    # Genre (with prod year)
     my $genre = $b->findvalue( "genre" );
-    $genre =~ s/fra (\d+)//g;
+
 
 	# Put everything in a array	
     my $ce = {
@@ -160,29 +164,109 @@ sub ImportContent {
       title => norm($titles),
       description => norm($desc),
     };
+
+    if($subtitle ne "") {
+          my ( $original_title, $romanseason, $episode ) = ( $subtitle =~ /^(.*)\s+-\s+(.*)\s+-\s+(.*)$/ );
+
+          # Roman season found
+          if(defined($romanseason) and isroman($romanseason)) {
+            my $rsarab = arabic($romanseason);
+
+            #print Dumper($romanseason_arabic, $romanepisode);
+
+            # Put it into episode field
+            if(defined($rsarab)) {
+                $ce->{episode} = sprintf( "%d . %d .", $rsarab-1, $episode-1 );
+                #print("episode: $episode - season $rsarab\n");
+                $subtitle = "";
+            }
+          }
+    }
+
+    $ce->{subtitle} = norm($subtitle) if $subtitle;
     
     progress("$day $start - $titles");
     
-    # Director
+    # Director (only movies)
     my ( $dir ) = ( $desc =~ /Instr.:\s+(.*)./ );
     if(defined($dir) and $dir ne "") {
     	$ce->{directors} = norm($dir);
+    	$ce->{program_type} = 'movie';
     } else {
     	my $instruktion = $b->findvalue( "instruktion" );
     	my ( $instr ) = ( $instruktion =~ /Instr.:\s+(.*)./ );
     	$ce->{directors} = norm($instr);
+    	$ce->{program_type} = 'movie';
     }
-    
+
+    # Year
+    if( ($genre =~ /fr. (\d\d\d\d)\b/i) or
+    ($genre =~ /fra (\d\d\d\d)\.*$/i) )
+    {
+        $ce->{production_date} = "$1-01-01";
+    }
+
+    # Remove year from genre so we can parse it
+    $genre =~ s/fra (\d+)//g;
+
     if( $genre and $genre ne "" ) {
 		my($program_type, $category ) = $ds->LookupCat( 'SBSTV', $genre );
 		AddCategory( $ce, $program_type, $category );
 	}
 
 
+
+    # Actors
+    my $actors = $b->findvalue( "medvirkende" );
+    my @acts;
+    if($actors and $actors ne "") {
+        $actors =~ s/Medv.://g;
+        my @actors_array = split(',', norm($actors));
+
+        foreach my $actor (@actors_array) {
+            # char name is before actor name
+            my( $role, $act ) = ( $actor =~ /(.*):(.*)$/ );
+            my $pushname = norm($act) . "  (" . norm($role) . ")";
+
+
+            push(@acts, $pushname);
+        }
+
+        $ce->{actors} = join( ", ", @acts );
+    }
+
+
+
     $dsh->AddProgramme( $ce );
   }
 
   return 1;
+}
+
+sub parse_person_list
+{
+  my( $str ) = @_;
+
+  # Remove all variants of m.fl.
+  $str =~ s/\s*m[\. ]*fl\.*\b//;
+
+  # Remove trailing '.'
+  $str =~ s/\.$//;
+
+  $str =~ s/\bog\b/,/;
+
+  my @persons = split( /\s*,\s*/, $str );
+  foreach (@persons)
+  {
+    # The character name is sometimes given . Remove it.
+    # The Cast-entry is sometimes cutoff, which means that the
+    # character name might be missing a trailing ).
+    s/\s*\(.*$//;
+    s/.*\s+-\s+//;
+    s/\.//;
+  }
+
+  return join( ", ", grep( /\S/, @persons ) );
 }
 
 
