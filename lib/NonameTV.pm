@@ -106,6 +106,47 @@ sub expand_entities
   return $str;
 }
 
+=item PDF2Xml( $filename )
+
+Convert a PDF-file into a XML::LibXML::Document.
+
+=cut
+
+sub PDF2Xml {
+  my( $filename ) = @_;
+
+  my $xml_main = qx/pdftohtml -xml -stdout "$filename" -/;
+  if( $? )
+  {
+    w "pdftohtml -xml -stdout $filename - failed: $?";
+    return undef;
+  }
+
+  # Remove character that makes LibXML choke.
+  $xml_main =~ s/\&hellip;/.../g;
+
+    my $xml = XML::LibXML->new;
+    $xml->recover(1);
+
+    # Remove character that makes the parser stop.
+    $xml_main =~ s/\x00//g;
+
+    my $doc;
+    eval { $doc = $xml->parse_string($xml_main, {
+      recover => 1,
+      suppress_errors => 1,
+      suppress_warnings => 1,
+    }); };
+
+    if( $@ ne "" ) {
+      my ($package, $filename, $line) = caller;
+      print "parse_string failed: $@ when called from $filename:$line\n";
+      return undef;
+    }
+
+    return $doc;
+}
+
 =item Html2Xml( $content )
 
 Convert the HTML in $content into an XML::LibXML::Document.
