@@ -89,6 +89,7 @@ my @folders = qw(NonameTV-Data.Disney
 		 NonameTV-Data.WildTV
 		 NonameTV-Data.Euronews
 		 NonameTV-Data.TV8Norge
+		 NonameTV-Data.PokerChannel
                  );
 
 # Flag messages AFTER they have been processed. Then I normally
@@ -277,6 +278,9 @@ sub guess_channel
     # Word files
 	return "cartoonnetwork.se" if $filename =~ /^cn\s*nordic\s+\(swe\)\s*\b/i;
 	return "boomerangtv.se" if $filename =~ /^boomerang\s*nordic\s*\(swe\)\s*\b/i;
+
+	return "cartoonnetwork.no" if $filename =~ /^cn\s*nordic\s+\(nor\)\s*\b/i;
+    return "boomerangtv.no" if $filename =~ /^boomerang\s*nordic\s*\(nor\)\s*\b/i;
 	
 	# Excel (XLS)
 	if( $filename =~ /\.xls$/i ) {
@@ -315,6 +319,7 @@ sub guess_channel
 
  if( $dir =~ /Gmail/ and $filename =~ /\.xls$/i ) {
      return "privatespice.com" if $filename =~ /^private/i;
+     return "brazzerstveurope.com" if $filename =~ /^brazzers/i;
  }
  
  if( $dir =~ /Playboy/ and $filename =~ /\.doc$/i ) {
@@ -378,7 +383,7 @@ sub guess_channel
      return "fuel.tv";
  }
  
- if( $dir =~ /GodTV/ and $filename =~ /\.xls$/i ) {
+ if( $dir =~ /GodTV/ and $filename =~ /\.xlsx$/i ) {
      return "god.tv";
  }
  

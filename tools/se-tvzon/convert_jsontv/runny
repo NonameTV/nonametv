@@ -12,6 +12,7 @@ tools/nonametv-export Xmltv --export-channels
 tools/nonametv-export Xmltv --export-channels --channel-group TV
 tools/nonametv-export Xmltv --export-channels --channel-group RADIO
 tools/nonametv-export Xmltv --export-channels --channel-group DEV
+tools/nonametv-export Xmltv --export-channels --channel-group Norway
 
 tools/se-tvzon/nonametv-xmltv-genhtml $NROOT/xmltv_staging
 #tools/nonametv-localize-movies > $NROOT/xmltv_staging/00movies.html
@@ -27,6 +28,7 @@ rsync -c --delete -r $NROOT/xmltv/datalist.xml.gz $NROOT/datalist.xml.gz
 tools/nonametv-localize-movies > /nonametv/movies.html
 
 rsync -c --delete -r $NROOT/xmltv/ /server/www/xmltv/xmltv/
+rsync -c --delete -r $NROOT/xmltv/channels-Norway.xml.gz /server/www/datano/xmltv/channels.xml.gz
 rsync -c --delete -r $NROOT/datalist.xml.gz /server/www/xmltv/datalist.xml.gz
 
 rsync -c --delete -r $NROOT/xmltv/ saito:/server/xmltv_files/xmltv/
