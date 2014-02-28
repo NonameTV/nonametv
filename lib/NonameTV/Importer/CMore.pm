@@ -284,6 +284,8 @@ sub ImportContent
           		$ce->{episode } = $production_year-1 . " " . $ce->{episode};
         	}
         }
+
+        $ce->{program_type} = 'series';
     }
 
     # Actors and directors

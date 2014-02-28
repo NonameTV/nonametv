@@ -55,8 +55,9 @@ sub ApproveContent {
 
   if( $$cref eq '<!--error in request: -->' ) {
     return "404 not found";
-  }
-  else {
+  } elsif( norm($$cref) eq '<?xml version="1.0" encoding="ISO-8859-1"?>') {
+    return "404 not found";
+  } else {
     return undef;
   }
 }
@@ -130,6 +131,7 @@ sub ImportContent {
     my $org_title = $b->findvalue( "originaltitel" );
     $org_title =~ s/:\|apostrofe\|;/'/g;
     my $titles = $org_title || $title;
+    $titles =~ s/Tv-premiere://g if $titles;
   
   
   	# Start and so on
@@ -195,8 +197,10 @@ sub ImportContent {
     } else {
     	my $instruktion = $b->findvalue( "instruktion" );
     	my ( $instr ) = ( $instruktion =~ /Instr.:\s+(.*)./ );
-    	$ce->{directors} = norm($instr);
-    	$ce->{program_type} = 'movie';
+    	if(defined($instr) and $instr and $instr ne "") {
+    	    $ce->{directors} = norm($instr);
+            $ce->{program_type} = 'movie';
+    	}
     }
 
     # Year
@@ -221,6 +225,7 @@ sub ImportContent {
     my @acts;
     if($actors and $actors ne "") {
         $actors =~ s/Medv.://g;
+        $actors =~ s/.$//g;
         my @actors_array = split(',', norm($actors));
 
         foreach my $actor (@actors_array) {
