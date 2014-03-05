@@ -31,7 +31,7 @@ use XML::LibXML;
 use IO::Scalar;
 use Data::Dumper;
 
-use NonameTV qw/norm ParseXml/;
+use NonameTV qw/norm ParseXml AddCategory/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/progress error/;
 use NonameTV::Config qw/ReadConfig/;
@@ -101,6 +101,10 @@ sub ImportXML
 
   my $currdate = "x";
   my $column;
+  my $hours = 3;
+  #if($chd->{grabber_info} != "") {
+  #  $hours = $chd->{grabber_info};
+  #}
 
     # the grabber_data should point exactly to one worksheet
     my $rows = $doc->findnodes( "//ProgramItem" );
@@ -114,11 +118,13 @@ sub ImportXML
       my $time = norm($row->findvalue( './/ProgramInformation/tva:ProgramDescription/tva:ProgramLocationTable/tva:BroadcastEvent/tva:PublishedStartTime' ));
       my $title = norm($row->findvalue( './/ProgramInformation/tva:ProgramDescription/tva:ProgramInformation/tva:BasicDescription/tva:Title' ));
       my $description = norm($row->findvalue( './/ProgramInformation/tva:ProgramDescription/tva:ProgramInformation/tva:BasicDescription/tva:Synopsis' ));
+
+      my $genre = norm($row->findvalue( './/ProgramInformation/tva:ProgramDescription/tva:ProgramInformation/tva:BasicDescription/tva:Genre' ));
       
       my $start = $self->create_dt( $time );
       
       # Add hours specificed for each channel. (TV Finland has 3 hours if you are in Sweden, etc.)
-      $start->add( hours => $chd->{grabber_info} );
+      $start->add( hours => $hours );
       
       my $date = $start->ymd("-");
       
@@ -134,6 +140,10 @@ sub ImportXML
       $title =~ s/YR\d+//;
       $title =~ s/\s+Y\d+//;
       $title =~ s/\s+S\d+//;
+      $title =~ s/Elokuva://;
+      $title =~ s/Elokuvat://;
+      $title =~ s/Film://;
+      $title =~ s/\.$//; # remove ending dot.
       
       $title = norm($title);
       
@@ -187,6 +197,30 @@ sub ImportXML
             	if($episode ne "") {
                 	$sentences[$i2] = "";
                 }
+            } elsif( my( $directors ) = ($sentences[$i2] =~ /^Ohjaus:\s*(.*)/) )
+            {
+                $ce->{directors} = parse_person_list( $directors );
+                $sentences[$i2] = "";
+            } elsif( my( $actors ) = ($sentences[$i2] =~ /^Pääosissa:\s*(.*)/ ) )
+            {
+                $ce->{actors} = parse_person_list( $actors );
+                $sentences[$i2] = "";
+            }
+
+            elsif( my( $directors2 ) = ($sentences[$i2] =~ /^Regi:\s*(.*)/) )
+            {
+                  $ce->{directors} = parse_person_list( $directors2 );
+                  $sentences[$i2] = "";
+            }
+            elsif( my( $actors2 ) = ($sentences[$i2] =~ /^I rollerna:\s*(.*)/ ) )
+            {
+                  $ce->{actors} = parse_person_list( $actors2 );
+                  $sentences[$i2] = "";
+            }
+            elsif( my( $actors3 ) = ($sentences[$i2] =~ /^I huvudrollerna:\s*(.*)/ ) )
+            {
+                  $ce->{actors} = parse_person_list( $actors3 );
+                  $sentences[$i2] = "";
             }
      	 }
 
@@ -214,12 +248,33 @@ sub ImportXML
                }
 
 
+
+
      # Remove if season = 0, episode 1, of_episode 1 - it's a one episode only programme
      if(($episode eq "1") and ( $season eq "0")) {
      	delete($ce->{episode});
      }
 
      $ce->{description} = join_text( @sentences );
+
+     # Genre
+     if($genre ne "") {
+        my($program_type, $category ) = $ds->LookupCat( 'Venetsia', $genre );
+          AddCategory( $ce, $program_type, $category );
+
+          # Help Venetsia debug their genre system
+          if($genre > 13) {
+             my $cml = $chd->{xmltvid};
+             print("--------------------\n");
+             print("$cml: $start - $title\n");
+             print("--------------------\n");
+
+             open (MYFILE, '>>venetsia.txt');
+             print MYFILE "$cml: $start - $title - Genre: $genre\n";
+             close (MYFILE);
+          }
+     }
+
      
      progress( "Venetsia: $chd->{xmltvid}: $start - $title" );
      $dsh->AddProgramme( $ce );
@@ -314,6 +369,32 @@ sub join_text
   $t =~ s/::/../g;
 
   return $t;
+}
+
+sub parse_person_list
+{
+  my( $str ) = @_;
+
+  # Remove all variants of m.fl.
+  $str =~ s/\s*m[\. ]*fl\.*\b//;
+
+  # Remove trailing '.'
+  $str =~ s/\.$//;
+
+  $str =~ s/\boch\b/,/;
+  $str =~ s/\bsamt\b/,/;
+
+  my @persons = split( /\s*,\s*/, $str );
+  foreach (@persons)
+  {
+    # The character name is sometimes given . Remove it.
+    # The Cast-entry is sometimes cutoff, which means that the
+    # character name might be missing a trailing ).
+    s/\s*\(.*$//;
+    s/.*\s+-\s+//;
+  }
+
+  return join( ", ", grep( /\S/, @persons ) );
 }
 
 
