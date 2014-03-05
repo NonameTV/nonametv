@@ -285,7 +285,11 @@ sub guess_channel
 	# Excel (XLS)
 	if( $filename =~ /\.xls$/i ) {
 		return "tcmeurope.com" if $filename =~ /tcm\s+nordic/i;
-		return "cnn.com" if $filename =~ /cnn\s*\(in\s+cet\)/i;
+
+		# CNN
+		if( $filename =~ /cnn/i ) {
+		    return "cnn.com" if $filename =~ /\(in\s+cet\)/i;
+		}
 	}
   }
  
@@ -317,9 +321,17 @@ sub guess_channel
       return "euronews.com";
  }
 
- if( $dir =~ /Gmail/ and $filename =~ /\.xls$/i ) {
-     return "privatespice.com" if $filename =~ /^private/i;
-     return "brazzerstveurope.com" if $filename =~ /^brazzers/i;
+ if( $dir =~ /Gmail/ ) {
+
+     # XLS
+     if($filename =~ /\.xls$/i) {
+        return "privatespice.com" if $filename =~ /^private/i;
+     }
+
+     # Word
+     if($filename =~ /\.doc$/i) {
+        return "brazzerstveurope.com" if $filename =~ /^brazzers/i;
+     }
  }
  
  if( $dir =~ /Playboy/ and $filename =~ /\.doc$/i ) {
@@ -395,9 +407,14 @@ sub guess_channel
      #return "america.espn.com" if $filename =~ /cet/i;
  }
  
- if( $dir =~ /Mezzo/ and $filename =~ /\.xlsx$/i ) {
-     return "hd.mezzo.tv" if $filename =~ /hd/i; # import mezzo live hd channel
-     return "mezzo.tv" if $filename !~ /hd/i; # dont import mezzo live hd channel
+ if( $dir =~ /Mezzo/ ) {
+    if($filename =~ /\.xls$/i) {
+        return "hd.mezzo.tv" if $filename =~ /hd/i; # import mezzo live hd channel
+        return "mezzo.tv" if $filename !~ /hd/i; # dont import mezzo live hd channel
+    } elsif($filename =~ /\.xlsx$/i) {
+        return "hd.mezzo.tv" if $filename =~ /hd/i; # import mezzo live hd channel
+        return "mezzo.tv" if $filename !~ /hd/i; # dont import mezzo live hd channel
+    }
  }
  
  if( $dir =~ /HighTV/ and $filename =~ /\.xls$/i ) {
@@ -457,13 +474,21 @@ sub guess_channel
      return "bbchd.com" if $filename =~ /hd/i;
      return "bbcknowledge.com" if $filename =~ /knowledge/i;
      return "bbclifestyle.com" if $filename =~ /lifestyle/i;
+     return "cbeebies.com" if $filename =~ /cbeebies\s+scandi/i;
  }
 
- if( $dir =~ /EBS/ and $filename =~ /\.xls$/i ) {
-     return "bbcentertainment.com" if $filename =~ /entertainment\s+scandi/i;
-     return "bbchd.com" if $filename =~ /hd\s+scandi/i;
-     return "bbcknowledge.com" if $filename =~ /knowledge\s+scandi/i;
-     return "bbclifestyle.com" if $filename =~ /lifestyle\s+scandi/i;
+ if( $dir =~ /EBS/ ) {
+    if($filename =~ /\.xls$/i) {
+         return "bbcentertainment.com" if $filename =~ /entertainment\s+scandi/i;
+         return "bbchd.com" if $filename =~ /hd\s+scandi/i;
+         return "bbchd.com" if $subject =~ /bbc\s+hd\s+scandi/i;
+         return "bbcknowledge.com" if $filename =~ /knowledge\s+scandi/i;
+         return "bbclifestyle.com" if $filename =~ /lifestyle\s+scandi/i;
+         return "cbeebies.com" if $filename =~ /cbeebies\s+scandi/i;
+    }
+
+
+     return "outdoorchannel.com" if $filename =~ /^OHD/i;
  }
 
  if( $dir =~ /WildTV/ and $filename =~ /\.zip|.xml/i ) {
