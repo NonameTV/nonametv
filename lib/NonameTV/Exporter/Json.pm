@@ -630,6 +630,16 @@ sub WriteEntry
     $d->{rating}->{mpaa} = $entry->{rating};
   }
 
+  if( $entry->{previously_shown} )
+  {
+    $d->{previously_shown} = $entry->{previously_shown};
+  }
+
+  if( $entry->{country} )
+  {
+    $d->{country} = $entry->{country};
+  }
+
   push @{$data}, $d;
 }
 

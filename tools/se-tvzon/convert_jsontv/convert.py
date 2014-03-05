@@ -132,6 +132,11 @@ def create_xml():
                         url = ET.SubElement(xml_programme, "url")
                         url.text = programme['url'][0]
 
+                    # A country or country list can be present
+                    if programme.has_key("country"):
+                        xml_country = ET.SubElement(xml_programme, "country")
+                        xml_country.text = programme["country"]
+
                     # An episode number sequence COULD be present
                     if programme.has_key("episodeNum"):
                         for key in programme['episodeNum'].keys():
@@ -144,6 +149,23 @@ def create_xml():
                             xml_video = ET.SubElement(xml_programme, "video")
                             xml_video_aspect = ET.SubElement(xml_video, "aspect")
                             xml_video_aspect.text = programme['video']['aspect']
+
+                    # A previously shown parameter COULD be present
+                    if programme.has_key("previously_shown"):
+                        previously_shown_info = programme['previously_shown'].split('|')
+
+                        previously_shown_dict = {}
+                        if previously_shown_info[0] and previously_shown_info[0] != '':
+                            previously_shown_dict['channel'] = previously_shown_info[0]
+                        if previously_shown_info[1] and previously_shown_info[1] != '':
+                            starttime = time.strptime(previously_shown_info[1], "%Y-%m-%d %H:%M:%S")
+                            starttime_offset = "+0200" if starttime.tm_isdst else "+0100"
+
+                            previously_shown_dict['start'] = "%s %s" % (time.strftime("%Y%m%d%H%M%S", starttime),
+                                                                                         starttime_offset)
+
+                        if previously_shown_dict.has_key('channel') or previously_shown_dict.has_key('start'):
+                            previously_shown = ET.SubElement(xml_programme, "previously-shown", previously_shown_dict)
 
                     # A rating COULD be present
                     if programme.has_key("rating"):

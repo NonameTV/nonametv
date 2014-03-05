@@ -33,3 +33,7 @@ Fixed order so that it corresponds with the xmltv.dtd.
 1.1.5
 -----
 Fixed setting the gzip time so that the file can be copied with rsync and not copied if the contents aren't different.
+
+1.1.6
+-----
+Added previously-shown and country information to the generated xml files
