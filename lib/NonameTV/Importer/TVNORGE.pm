@@ -129,7 +129,9 @@ sub ImportContent
 	my $title = norm($title_programme) || norm($title_original);
 
     my $start = $sc->findvalue( './starttime' );
+    my $end = $sc->findvalue( './endtime' );
 
+    my $hd = $sc->findvalue( './hd' );
     
     my $desc = undef;
     my $desc_episode = $sc->findvalue( './shortdescription' );
@@ -142,7 +144,7 @@ sub ImportContent
 
 	# TVNorge seems to have the season in the originaltitle, weird.
 	# �r 2
-  my ( $dummy, $season ) = ($title_original =~ /(.r)\s*(\d+)$/ );
+    my ( $dummy, $season ) = ($title_original =~ /(.r)\s*(\d+)$/ );
 
 
 	progress("TVNorge: $chd->{xmltvid}: $start - $title");
@@ -152,6 +154,7 @@ sub ImportContent
       channel_id  => $chd->{id},
       description => norm($desc),
       start_time  => $self->create_dt( $start ),
+      end_time    => $self->create_dt( $end ),
     };
     
     
@@ -159,23 +162,59 @@ sub ImportContent
     {
       $ce->{production_date} = "$1-01-01";
     }
-    
-    
+
     if( $genre ){
-			my($program_type, $category ) = $ds->LookupCat( 'TVNorge', $genre );
-			AddCategory( $ce, $program_type, $category );
+    	my($program_type, $category ) = $ds->LookupCat( 'TVNorge', $genre );
+    	AddCategory( $ce, $program_type, $category );
+    }
+
+    # Director
+    my $director = norm($sc->findvalue( './director' ));
+    if(defined($director) and $director ne "") {
+        $ce->{directors} = $director;
+        $ce->{program_type} = 'movie';
+    }
+
+    # Hosts
+    my $host = norm($sc->findvalue( './hosts' ));
+    if(defined($host) and $host ne "") {
+        $ce->{presenters} = $host;
+    }
+
+    # Actors
+    my @actors;
+    my $acts = $sc->find( './/actors' );
+    foreach my $act ($acts->get_nodelist)
+    {
+        my $name = norm($act);
+
+        if($name ne "")
+        {
+            push @actors, $name;
+        }
+    }
+
+    if( scalar( @actors ) > 0 )
+    {
+        $ce->{actors} = join ", ", @actors;
+    }
+
+	# Episodes
+	if(($season) and ($episode) and ($numepisodes)) {
+		$ce->{episode} = sprintf( "%d . %d/%d . ", $season-1, $episode-1, $numepisodes );
+	} elsif(($season) and ($episode) and (!$numepisodes)) {
+		$ce->{episode} = sprintf( "%d . %d . ", $season-1, $episode-1 );
+	} elsif((!$season) and ($episode) and ($numepisodes)) {
+		$ce->{episode} = sprintf( " . %d/%d . ", $episode-1, $numepisodes );
+	} elsif((!$season) and ($episode) and (!$numepisodes)) {
+		 $ce->{episode} = sprintf( " . %d . ", $episode-1 );
 	}
 
-		# Episodes
-		if(($season) and ($episode) and ($numepisodes)) {
-			$ce->{episode} = sprintf( "%d . %d/%d . ", $season-1, $episode-1, $numepisodes );
-		} elsif(($season) and ($episode) and (!$numepisodes)) {
-			$ce->{episode} = sprintf( "%d . %d . ", $season-1, $episode-1 );
-		} elsif((!$season) and ($episode) and ($numepisodes)) {
-			$ce->{episode} = sprintf( " . %d/%d . ", $episode-1, $numepisodes );
-		} elsif((!$season) and ($episode) and (!$numepisodes)) {
-			 $ce->{episode} = sprintf( " . %d . ", $episode-1 );
-		}
+	# HD
+	if($hd eq "true")
+	{
+	    $ce->{quality} = 'HDTV';
+	}
 
 
     $dsh->AddProgramme( $ce );
