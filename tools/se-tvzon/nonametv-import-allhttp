@@ -16,6 +16,7 @@ $NONAMETV DK4 $1 $2 $3
 $NONAMETV DreiSat $1 $2 $3
 $NONAMETV DasErste $1 $2 $3
 $NONAMETV Eurosport $1 $2 $3
+$NONAMETV EBS $1 $2 $3
 $NONAMETV EurosportNO $1 $2 $3
 $NONAMETV Infomedia $1 $2 $3
 $NONAMETV HBOHR $1 $2 $3
@@ -45,5 +46,4 @@ $NONAMETV TV4 $1 $2 $3
 $NONAMETV TVP $1 $2 $3
 $NONAMETV TVNorge $1 $2 $3
 $NONAMETV ZDF $1 $2 $3
-$NONAMETV ZoneReality $1 $2 $3
 $NONAMETV HRT $1 $2 $3
