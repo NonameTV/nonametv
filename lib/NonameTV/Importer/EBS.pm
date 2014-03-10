@@ -34,6 +34,9 @@ sub new {
   	my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
   	$self->{datastorehelper} = $dsh;
 
+  	# use augment - this is made for walking.
+    $self->{datastore}->{augment} = 1;
+
     return $self;
 }
 
@@ -54,7 +57,7 @@ sub ImportContent
 
   my $dsh = $self->{datastorehelper};
   my $ds = $self->{datastore};
-  $ds->{SILENCE_END_START_OVERLAP}=1;
+  #$ds->{SILENCE_END_START_OVERLAP}=1;
 
 
   my $xml = XML::LibXML->new;
@@ -166,6 +169,7 @@ sub ImportContent
       title        => norm($title),
       start_time   => $start->hms(":"),
       end_time     => $end->hms(":"),
+      episode      => $episode,
     };
 
     if( defined( $subtitle ) and length( $subtitle ) )
@@ -197,7 +201,7 @@ sub ImportContent
   }
 
 
-  $dsh->EndBatch( 1 );
+  #$dsh->EndBatch( 1 );
 
 
   # Success
@@ -224,9 +228,9 @@ sub create_dt
                           day    => $day,
                           hour   => $hour,
                           minute => $minute,
-                          time_zone => 'Europe/Stockholm',
-                          );
 
+                          );
+#                          time_zone => 'Europe/Stockholm',
   $dt->set_time_zone( "UTC" );
 
   return $dt;
