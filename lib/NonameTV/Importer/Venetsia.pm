@@ -124,7 +124,7 @@ sub ImportXML
       my $start = $self->create_dt( $time );
       
       # Add hours specificed for each channel. (TV Finland has 3 hours if you are in Sweden, etc.)
-      $start->add( hours => $hours );
+      #$start->add( hours => $hours );
       
       my $date = $start->ymd("-");
       
@@ -299,16 +299,17 @@ sub create_dt
   
   
 
-  my $dt = DateTime->new( year   => $year,
-                          month  => $month,
-                          day    => $day,
-                          hour   => $hour,
-                          minute => $minute,
+  my $dt = DateTime->new( year      => $year,
+                          month     => $month,
+                          day       => $day,
+                          hour      => $hour,
+                          minute    => $minute,
+                          time_zone => 'Europe/Helsinki'
                           );
   
   $dt->set_time_zone( "UTC" );
   
-  $dt->subtract( hours => $timezone_hour ); # Remove the timezone they add, so it become an UTC time
+  #$dt->subtract( hours => $timezone_hour ); # Remove the timezone they add, so it become an UTC time
   
   return $dt;
 }
