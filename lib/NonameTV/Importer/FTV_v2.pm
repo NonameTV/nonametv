@@ -117,7 +117,10 @@ sub ImportFlatXLS
       # date (column 1)
       $oWkC = $oWkS->{Cells}[$iR][0];
       next if( ! $oWkC );
-		$date = ParseDate( $oWkC->Value );
+      $date = $oWkC->{Val} if( $oWkC->Value );
+      $date = ExcelFmt('yyyy-mm-dd', $date);
+      $date = ParseDate( $date );
+
 		#$date = $oWkC->Value;
       next if( ! $date );
 
