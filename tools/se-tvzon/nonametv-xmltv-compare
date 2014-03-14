@@ -1,0 +1,175 @@
+#!/usr/bin/perl -w
+
+# How large an empty xmltv-file can be.
+use constant EMPTY_SIZE => 154;
+
+use strict;
+
+if( scalar( @ARGV ) != 2 )
+{
+  print << 'EODOC';
+nonametv-xmltv-compare <newdir> <olddir>
+
+Compare the contents of two directories with xmltv output files
+from nonametv.
+
+EODOC
+
+  exit 1;
+}
+
+my( $newdir,$olddir ) = @ARGV;
+
+# Build list of files
+my %files;
+
+foreach my $file (glob("$newdir/*.xml.gz"),glob("$olddir/*.xml.gz") )
+{
+  my( $name ) = ($file =~ m%/([^/]+_\d{4}-\d{2}-\d{2}).xml.gz%);
+  $files{$name} = "?" if defined $name;
+}
+
+# Remove old diff-files.
+unlink( "*.diff" );
+
+foreach my $file (keys %files)
+{
+  if( not -f "$newdir/$file.xml.gz" )
+  {
+    # File has been deleted.
+    $files{$file} = "D";
+    next;
+  }
+
+  if( not -f "$olddir/$file.xml.gz" )
+  {
+    # File is new.
+    $files{$file} = "N";
+    next;
+  }
+
+  if( (-s( "$olddir/$file.xml.gz" ) < EMPTY_SIZE ) and
+      (-s( "$newdir/$file.xml.gz" ) < EMPTY_SIZE ) )
+  {
+    # File is empty.
+    $files{$file} = "E";
+    next;
+  }
+
+  if( -M( "$olddir/$file.xml.gz" ) == -M( "$newdir/$file.xml.gz" ) )
+  {
+    $files{$file} = "S";
+    next;
+  }
+
+  # File has been touched.
+  $files{$file} = "T";
+
+  system( "diff $olddir/$file.xml.gz $newdir/$file.xml.gz > /dev/null" );
+  if( $? == 0 )
+  {
+    next;
+  }
+
+  # The gzipped representation of the file has changed
+  $files{$file} = "Z";
+
+  qx%gzip -c -d $olddir/$file.xml.gz > /tmp/$file.xml.old%;
+  qx%gzip -c -d $newdir/$file.xml.gz > /tmp/$file.xml.new%;
+
+  system( "diff -U 5 /tmp/$file.xml.old /tmp/$file.xml.new > $file.diff" );
+  if( $? == 0 )
+  {
+    unlink "$file.diff";
+    next;
+  }
+
+  unlink "/tmp/$file.xml.old";
+  unlink "/tmp/$file.xml.new";
+
+  # The xml-file has been updated.
+  $files{$file} = "U";
+}
+
+my %channels;
+my %dates;
+
+foreach my $file (keys %files)
+{
+  my( $channel, $date ) = split( "_", $file );
+
+  $channels{$channel} = 1;
+  $dates{$date} = 1;
+}
+
+open OUT, "> 00output.html" 
+  or die "Failed to open output file: $@";
+
+print OUT << "EOHEAD";
+<html>
+<head>
+<style type="text/css">
+  .S { }
+  .M { background-color: blue; }
+  .T { background-color: yellow; }
+  .Z { background-color: red; }
+  .U { background-color: green; }
+  .E { background-color: grey; }
+</style>
+<link rel="stylesheet" type="text/css" href="/css/modern.css" />
+</head>
+<body>
+<h1>Changes</h1>
+<table>
+<thead>
+  <tr>
+    <td>Channel</td>
+EOHEAD
+
+foreach my $date (sort keys %dates)
+{
+  my( $s ) = ($date =~ m/(\d\d-\d\d)$/);
+  print OUT "    <td>$s</td>\n";
+}
+
+print OUT << "EOD";
+  </tr>
+</thead>
+<tbody>
+
+EOD
+
+foreach my $channel (sort keys %channels)
+{
+  print OUT << "EOD";
+<tr>
+  <td>$channel</td>
+
+EOD
+
+  foreach my $date (sort keys %dates)
+  {
+    my $file = "${channel}_$date";
+    $files{$file} = ' ' unless defined $files{$file};
+
+    if( $files{$file} eq 'U' )
+    {
+      print OUT "<td class='$files{$file}'><a href='$file.diff'>$files{$file}</a></td>";
+    }
+    else
+    {
+      print OUT "<td class='$files{$file}'><a href='http://xmltv.xmltv.se/displayfile.html?$file'>$files{$file}</a></td>";
+    }
+  }
+
+  print OUT "</tr>\n";
+}
+
+print OUT << "EOD";
+
+</tbody>
+</table>
+</body>
+</html>
+
+EOD

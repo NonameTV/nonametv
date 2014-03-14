@@ -6,7 +6,7 @@ PROOT=/home/jnylen/projects/nonametv
 rm -rf $NROOT/xmltv_compare
 mkdir $NROOT/xmltv_compare
 cd $NROOT/xmltv_compare
-$PROOT/tools/nonametv-xmltv-compare $NROOT/xmltv_staging $NROOT/xmltv_old
+$PROOT/tools/se-tvzon/nonametv-xmltv-compare $NROOT/xmltv_staging $NROOT/xmltv_old
 
 rm -rf $NROOT/xmltv_old
 mkdir $NROOT/xmltv_old
