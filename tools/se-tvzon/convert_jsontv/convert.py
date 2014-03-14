@@ -1,3 +1,4 @@
+import calendar
 import datetime
 import gzip
 import json
@@ -66,7 +67,7 @@ def create_xml():
                 json_data = open('/tmp/xmltv_convert/json/%s' % filename).read()
             data = json.loads(json_data)
 
-            root = ET.Element("tv", { "generator-info-name": "nonametv" })
+            root = ET.Element("tv", { "generator-info-name": "Taiga XMLTV", "generator-info-url": "http://xmltv.se" })
 
             if filename != "channels.js":
                 for programme in data['jsontv']['programme']:
@@ -158,14 +159,14 @@ def create_xml():
                         if previously_shown_info[0] and previously_shown_info[0] != '':
                             previously_shown_dict['channel'] = previously_shown_info[0]
                         if previously_shown_info[1] and previously_shown_info[1] != '':
-                            starttime = time.strptime(previously_shown_info[1], "%Y-%m-%d %H:%M:%S")
-                            starttime_offset = "+0200" if starttime.tm_isdst else "+0100"
+                            previously_shown = time.localtime(calendar.timegm(time.strptime(previously_shown_info[1], "%Y-%m-%d %H:%M:%S")))
+                            previously_shown_offset = "+0200" if previously_shown.tm_isdst else "+0100"
 
-                            previously_shown_dict['start'] = "%s %s" % (time.strftime("%Y%m%d%H%M%S", starttime),
-                                                                                         starttime_offset)
+                            previously_shown_dict['start'] = "%s %s" % (time.strftime("%Y%m%d%H%M%S", previously_shown),
+                                                                                         previously_shown_offset)
 
                         if previously_shown_dict.has_key('channel') or previously_shown_dict.has_key('start'):
-                            previously_shown = ET.SubElement(xml_programme, "previously-shown", previously_shown_dict)
+                            previously_shown_xml = ET.SubElement(xml_programme, "previously-shown", previously_shown_dict)
 
                     # A rating COULD be present
                     if programme.has_key("rating"):

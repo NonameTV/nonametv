@@ -13,6 +13,8 @@ tools/nonametv-export Xmltv --export-channels --channel-group TV
 tools/nonametv-export Xmltv --export-channels --channel-group RADIO
 tools/nonametv-export Xmltv --export-channels --channel-group DEV
 tools/nonametv-export Xmltv --export-channels --channel-group Norway
+tools/nonametv-export Xmltv --export-channels --channel-group Sweden
+tools/nonametv-export Xmltv --export-channels --channel-group Finland
 
 tools/se-tvzon/nonametv-xmltv-genhtml $NROOT/xmltv_staging
 #tools/nonametv-localize-movies > $NROOT/xmltv_staging/00movies.html

@@ -37,3 +37,7 @@ Fixed setting the gzip time so that the file can be copied with rsync and not co
 1.1.6
 -----
 Added previously-shown and country information to the generated xml files
+
+1.1.7
+-----
+Fixed bug where previously shown got the wrong timezone.
