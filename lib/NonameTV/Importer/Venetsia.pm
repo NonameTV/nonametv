@@ -27,6 +27,7 @@ Radio Channels: Yle Radio Suomi, Yle Puhe, Yle Radio 1, YleX, Yle Klassinen, Yle
 use utf8;
 
 use DateTime;
+use DateTime::TimeZone;
 use XML::LibXML;
 use IO::Scalar;
 use Data::Dumper;
@@ -306,11 +307,20 @@ sub create_dt
                           minute    => $minute,
                           time_zone => 'Europe/Helsinki'
                           );
+
   
   $dt->set_time_zone( "UTC" );
-  
-  #$dt->subtract( hours => $timezone_hour ); # Remove the timezone they add, so it become an UTC time
-  
+
+  my $tz = DateTime::TimeZone->new( name => 'Europe/Helsinki' );
+  my $dst = $tz->is_dst_for_datetime( $dt );
+
+  # DST removal thingy
+  if($dst) {
+    $dt->subtract( hours => 2 ); # Daylight saving time
+  } else {
+    $dt->subtract( hours => 1 ); # Normal time
+  }
+
   return $dt;
 }
 

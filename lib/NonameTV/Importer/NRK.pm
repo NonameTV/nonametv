@@ -30,7 +30,7 @@ sub new {
     
     
     defined( $self->{UrlRoot} ) or die "You must specify UrlRoot";
-    
+
     $self->{datastore}->{augment} = 1;
     
     my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
@@ -162,7 +162,7 @@ sub ImportContent
         }
         
         $ce->{episode} = $episode if $episode;
-        
+
         # Directors
         if( my( $directors ) = ($desc =~ /Regi\:\s*(.*)$/) )
     		{
@@ -189,6 +189,8 @@ sub ImportContent
     		$ce->{program_type} = "movie";
     		$ce->{subtitle} = undef;
     	}
+
+    	$ce->{program_type} = "series" if $episode;
     	
     	# Title cleanup
     	$ce->{title} =~ s/Nattkino://g;
@@ -196,8 +198,8 @@ sub ImportContent
     	$ce->{title} = norm($ce->{title});
         
         $dsh->AddProgramme( $ce );
-    
-    
+
+
     }
     
     return 1;

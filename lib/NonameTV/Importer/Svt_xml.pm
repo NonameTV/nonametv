@@ -138,21 +138,24 @@ sub ImportXML
       }
 
 	  # extra info
-	  my $season = $row->findvalue( './/sch:TechnicalDetails/@seriesno' );
-	  my $episode = $row->findvalue( './/sch:TechnicalDetails/@episodeno' );
+	  my $season     = $row->findvalue( './/sch:TechnicalDetails/@seriesno' );
+	  my $episode    = $row->findvalue( './/sch:TechnicalDetails/@episodeno' );
 	  my $of_episode = $row->findvalue( './/sch:TechnicalDetails/@episodecount' );
-	  my $desc = norm2( $row->findvalue( './/sch:LongDescription/@description' ) );
-	  my $year = $row->findvalue( './/sch:TechnicalDetails/@productionyear' );
-	  my $hd = $row->findvalue( './/sch:TechnicalDetails/@hd' );
-	  my $live = $row->findvalue( './/sch:TechnicalDetails/@live' );
+	  my $desc       = norm2( $row->findvalue( './/sch:LongDescription/@description' ) );
+	  my $year       = $row->findvalue( './/sch:TechnicalDetails/@productionyear' );
+	  my $hd         = $row->findvalue( './/sch:TechnicalDetails/@hd' );
+	  my $live       = $row->findvalue( './/sch:TechnicalDetails/@live' );
+	  my $ws         = $row->findvalue( './/sch:TechnicalDetails/@widescreen' );
+	  my $dol        = $row->findvalue( './/sch:TechnicalDetails/@surround5_1audio' );
 	  
 	  my $start = $self->create_dt( $date."T".$time );
-	  my $end = $self->create_dt( $enddate."T".$endtime );
+	  my $end   = $self->create_dt( $enddate."T".$endtime );
 	  
 	  # Genre description
 	  my $genredesc = norm2( $row->findvalue( './/sch:ShortDescription/@description' ) );
-	  
-
+	  my $genrenum  = $row->findvalue( './/sch:Classification/@content' );
+	  my $genrenum2 = $row->findvalue( './/sch:Classification/@format' );
+	  my $genrenum3 = $row->findvalue( './/sch:Classification/@subject' );
 
       my $ce = {
         channel_id => $chd->{id},
@@ -162,13 +165,24 @@ sub ImportXML
       };
       
       if( defined( $year ) and ($year =~ /(\d\d\d\d)/) )
-    	{
-      		$ce->{production_date} = "$1-01-01";
-    	}
-      
-      my ( $program_type, $category ) = ParseDescCatSwe( $genredesc );
+      {
+        $ce->{production_date} = "$1-01-01";
+      }
 
-  	  AddCategory( $ce, $program_type, $category );
+      # Aspect
+      if($ws eq "true")
+      {
+        $ce->{aspect} = "16:9";
+      }
+
+      # 5.1
+      if($dol eq "true")
+      {
+        $ce->{stereo} = "dolby digital";
+      }
+      
+      #my ( $program_type, $category ) = ParseDescCatSwe( $genredesc );
+  	  #AddCategory( $ce, $program_type, $category );
       
       # Season stuff
 
@@ -239,11 +253,21 @@ sub ImportXML
       		$ce->{actors} = parse_person_list( $actors2 );
       		$sentences[$i] = "";
     	}
+    	elsif( my( $actors3 ) = ($sentences[$i] =~ /^Medverkande:\s*(.*)/ ) )
+        {
+            $ce->{actors} = parse_person_list( $actors3 );
+            $sentences[$i] = "";
+        }
     	elsif( my( $commentators ) = ($sentences[$i] =~ /^Kommentator:\s*(.*)/ ) )
     	{
       		$ce->{commentators} = parse_person_list( $commentators );
       		$sentences[$i] = "";
     	}
+    	elsif( my( $commentators2 ) = ($sentences[$i] =~ /^Kommentatorer:\s*(.*)/ ) )
+        {
+            $ce->{commentators} = parse_person_list( $commentators2 );
+            $sentences[$i] = "";
+        }
     	elsif( my( $presenters ) = ($sentences[$i] =~ /^Programledare:\s*(.*)/ ) )
     	{
       		$ce->{presenters} = parse_person_list( $presenters );
@@ -254,6 +278,11 @@ sub ImportXML
       		$ce->{guests} = parse_person_list( $guestartist );
       		$sentences[$i] = "";
     	}
+    	elsif( my( $guests ) = ($sentences[$i] =~ /^Gäster\s+ikväll:\s*(.*)/ ) )
+        {
+            $ce->{guests} = parse_person_list( $guests );
+            $sentences[$i] = "";
+        }
      }
      
       # Episode info in xmltv-format
@@ -311,10 +340,26 @@ sub ImportXML
 	{
 		$ce->{live} = "0";
 	}
+
+    # back up to a number of genres
+    my( $pty, $cat );
+	if( $genrenum and $genrenum ne "" ) {
+        ( $pty, $cat ) = $ds->LookupCat( 'Svt_num', $genrenum );
+    	AddCategory( $ce, $pty, $cat );
+    }
+
+    if( $genrenum2 and $genrenum2 ne "" ) {
+        ( $pty, $cat ) = $ds->LookupCat( 'Svt_genre', $genrenum2 );
+        AddCategory( $ce, $pty, $cat );
+    }
+
+    if( $genrenum3 and $genrenum3 ne "" ) {
+        ( $pty, $cat ) = $ds->LookupCat( 'Svt_genre2', $genrenum3 );
+        AddCategory( $ce, $pty, $cat );
+    }
       
-     progress( "SvtXML: $chd->{xmltvid}: $time - $title" );
-     #progress( "SvtXML: $chd->{xmltvid}: $time - $ce->{description}" );
-     $dsh->AddCE( $ce );
+    progress( "SvtXML: $chd->{xmltvid}: $time - $title" );
+    $dsh->AddCE( $ce );
 
     } # next row
 

@@ -538,6 +538,17 @@ sub extract_extra_info
   ( $ce->{subtitle} ) = ($ce->{title} =~ /:\s*(.+)$/);
   $ce->{title} =~ s/:\s*(.+)$//;
 
+  # Fox norway
+  if(defined($ce->{subtitle}) and $ce->{subtitle} =~ /\(S(\d+),\s+Ep\s+(\d+)\)$/i)
+  {
+    my( $season, $episode2 ) = ($ce->{subtitle} =~ /\(S(\d+),\s+Ep\s+(\d+)\)$/i);
+    $ce->{subtitle} =~ s/\((.+)\)$//;
+    $ce->{subtitle} = norm($ce->{subtitle});
+
+    $ce->{episode} = sprintf("%d . %d . ", $season-1, $episode2-1) if defined( $episode2 );
+  }
+  # End
+
   if( $ce->{title} =~ /^\bs.ndningsslut\b$/i )
   {
     $ce->{title} = "end-of-transmission";

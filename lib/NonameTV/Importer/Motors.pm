@@ -124,13 +124,14 @@ sub ImportXLS {
       
       $time = $hour.":".$min;
 
-
-			# End
-
       # title - column 2 ('Titre du produit')
       $oWkC = $oWkS->{Cells}[$iR][2];
       next if( ! $oWkC );
       my $title = $oWkC->Value if( $oWkC->Value );
+      $title =~ s/\(Live\)//g; # Dont keep live in the text
+      $title = ucfirst(lc(norm($title))); # make it prettieh
+
+
 
       my ( $subtitle, $description );
 

@@ -128,7 +128,7 @@ sub ImportXLS
         $currdate = $date;
       }
 
-	  	# time
+	  # time
       $oWkC = $oWkS->{Cells}[$iR][$columns{'Time'}];
       next if( ! $oWkC );
       my $time = ParseTime($oWkC->Value) if( $oWkC->Value );
@@ -137,18 +137,17 @@ sub ImportXLS
       $oWkC = $oWkS->{Cells}[$iR][$columns{'Title'}];
       next if( ! $oWkC );
       my $title = $oWkC->Value if( $oWkC->Value );
+      $title = ucfirst(lc($title)); # make it prettieh
       
       # genre (column 6)
-	  	$oWkC = $oWkS->{Cells}[$iR][6];
+	  $oWkC = $oWkS->{Cells}[$iR][6];
       my $genre = $oWkC->Value;
 
-	  	# descr (column 9)
-	  	my $desc = $oWkS->{Cells}[$iR][$columns{'Description'}]->Value if $oWkS->{Cells}[$iR][$columns{'Description'}];
+	  # descr (column 9)
+	  my $desc = $oWkS->{Cells}[$iR][$columns{'Description'}]->Value if $oWkS->{Cells}[$iR][$columns{'Description'}];
 
-      
-
-			# empty last day array
-     	undef @ces;
+	  # empty last day array
+      undef @ces;
 
       my $ce = {
         channel_id => $chd->{channel_id},
@@ -158,19 +157,19 @@ sub ImportXLS
       };
       
       # Get genre
-			my($program_type, $category ) = $ds->LookupCat( 'TV5Monde', $genre );
-			AddCategory( $ce, $program_type, $category );
+	  my($program_type, $category ) = $ds->LookupCat( 'TV5Monde', $genre );
+	  AddCategory( $ce, $program_type, $category );
 
-			# Add
-			progress("TV5Monde: $chd->{xmltvid}: $time - $title");
+	  # Add
+	  progress("TV5Monde: $chd->{xmltvid}: $time - $title");
       $dsh->AddProgramme( $ce );
 
-			push( @ces , $ce );
+	  push( @ces , $ce );
 
     } # next row
   } # next worksheet
 
-	$dsh->EndBatch( 1 );
+  $dsh->EndBatch( 1 );
 
   return 1;
 }
