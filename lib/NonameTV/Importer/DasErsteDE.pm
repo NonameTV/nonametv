@@ -122,6 +122,9 @@ sub FilterContent {
   $$cref =~ s| - Programmablauf Stand \d+.\d+.\d{4} \d{2}:\d{2}:\d{2}||;
   $$cref =~ s|Programmablauf Stand=".*"|Programmablauf|;
 
+  # remove trailing comma from cast
+  $$cref =~ s|,</|</|;
+
   my $doc = ParseXml( $cref );
  
   if( not defined $doc ) {
