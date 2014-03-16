@@ -36,7 +36,7 @@ sub new {
     $self->{MaxDays} = 15 unless defined $self->{MaxDays};
 
     # consider less then or equal x programmes an error and keep the old data
-    $self->{MinProgrammes} = 15 unless defined $self->{MinProgrammes};
+    $self->{MinProgrammes} = 5 unless defined $self->{MinProgrammes};
 
     if( defined(  $self->{UrlRoot} ) ) {
       w( "UrlRoot is deprecated. No point in keeping it secret as it\'s login protected now. Set Username and Password instead." );
