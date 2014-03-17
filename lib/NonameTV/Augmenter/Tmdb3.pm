@@ -209,6 +209,7 @@ sub AugmentProgram( $$$ ){
     # filter characters that confuse the search api
     # FIXME check again now that we encode umlauts & co.
     $searchTerm =~ s|[-#\?\N{U+00BF}\(\)]||g;
+    $searchTerm =~ s|[:]| |g;
 
     if( $self->{Slow} ) {
       sleep (1);
