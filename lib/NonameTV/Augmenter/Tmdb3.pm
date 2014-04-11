@@ -59,25 +59,38 @@ sub new {
 }
 
 
-sub FillCredits( $$$$$ ) {
-  my( $self, $resultref, $credit, $doc, $job )=@_;
+sub FillCast( $$$$ ) {
+  my( $self, $resultref, $credit, $movie )=@_;
 
-  my @nodes = $doc->findnodes( '/OpenSearchDescription/movies/movie/cast/person[@job=\'' . $job . '\']' );
   my @credits = ( );
-  foreach my $node ( @nodes ) {
-    my $name = $node->findvalue( './@name' );
-    if( $job eq 'Actor' ) {
-      my $role = $node->findvalue( './@character' );
-      if( $role ) {
-        # skip roles like '-', but allow roles like G, M, Q (The Guru, James Bond)
-        if( ( length( $role ) > 1 )||( $role =~ m|^[A-Z]$| ) ){
-          $name .= ' (' . $role . ')';
-        } else {
-          w( 'Unlikely role \'' . $role . '\' for actor. Fix it at ' . $resultref->{url} . '/edit?active_nav_item=cast' );
-        }
+  foreach my $castmember ( $movie->cast() ){
+    my $name = $castmember->{'name'};
+    my $role = $castmember->{'character'};
+    if( $role ) {
+      # skip roles like '-', but allow roles like G, M, Q (The Guru, James Bond)
+      if( ( length( $role ) > 1 )||( $role =~ m|^[A-Z]$| ) ){
+        $name .= ' (' . $role . ')';
+      } else {
+        w( 'Unlikely role \'' . $role . '\' for actor. Fix it at ' . $resultref->{url} . '/edit?active_nav_item=cast' );
       }
     }
     push( @credits, $name );
+  }
+  if( @credits ) {
+    $resultref->{$credit} = join( ', ', @credits );
+  }
+}
+
+
+sub FillCrew( $$$$$ ) {
+  my( $self, $resultref, $credit, $movie, $job )=@_;
+
+  my @credits = ( );
+  foreach my $crewmember ( $movie->crew() ){
+    if( $crewmember->{'job'} eq $job ){
+      my $name = $crewmember->{'name'};
+      push( @credits, $name );
+    }
   }
   if( @credits ) {
     $resultref->{$credit} = join( ', ', @credits );
@@ -169,15 +182,15 @@ sub FillHash( $$$ ) {
 
   $resultref->{url} = 'http://www.themoviedb.org/movie/' . $movie->{ id };
 
-#  $self->FillCredits( $resultref, 'actors', $doc, 'Actor');
+  $self->FillCast( $resultref, 'actors', $movie );
 
-#  $self->FillCredits( $resultref, 'adapters', $doc, 'Actors');
-#  $self->FillCredits( $resultref, 'commentators', $doc, 'Actors');
-#  $self->FillCredits( $resultref, 'directors', $doc, 'Director');
-#  $self->FillCredits( $resultref, 'guests', $doc, 'Actors');
-#  $self->FillCredits( $resultref, 'presenters', $doc, 'Actors');
-#  $self->FillCredits( $resultref, 'producers', $doc, 'Producer');
-#  $self->FillCredits( $resultref, 'writers', $doc, 'Screenplay');
+#  $self->FillCrew( $resultref, 'adapters', $movie, 'Actors');
+#  $self->FillCrew( $resultref, 'commentators', $movie, 'Actors');
+  $self->FillCrew( $resultref, 'directors', $movie, 'Director');
+#  $self->FillCrew( $resultref, 'guests', $movie, 'Actors');
+#  $self->FillCrew( $resultref, 'presenters', $movie, 'Actors');
+  $self->FillCrew( $resultref, 'producers', $movie, 'Producer');
+  $self->FillCrew( $resultref, 'writers', $movie, 'Screenplay');
 
 #  print STDERR Dumper( $apiresult );
 }
