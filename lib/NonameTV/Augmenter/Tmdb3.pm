@@ -334,10 +334,20 @@ sub AugmentProgram( $$$ ){
         @keep = ();
       }
 
-      if( @candidates == 0 ){
-        w( 'search for "' . $ceref->{title} . '" by "' . $ceref->{directors} . '" did not return any good hit, ignoring' );
-      } elsif ( @candidates > 1 ){
-        w( 'search for "' . $ceref->{title} . '" by "' . $ceref->{directors} . '" did not return a single best hit, ignoring' );
+      if( ( @candidates == 0 ) || ( @candidates > 1 ) ){
+        my $warning = 'search for "' . $ceref->{title} . '"';
+        if( $ceref->{directors} ){
+          $warning .= ' by "' . $ceref->{directors} . '"';
+        }
+        if( $ceref->{production_date} ){
+          $warning .= ' from ' . $ceref->{production_date} . '';
+        }
+        if( @candidates == 0 ) {
+          $warning .= ' did not return any good hit, ignoring';
+        } else {
+          $warning .= ' did not return a single best hit, ignoring';
+        }
+        w( $warning );
       } else {
         my $movieId = $candidates[0]->{id};
 
