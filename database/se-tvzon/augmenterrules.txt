@@ -860,3 +860,4 @@
 752,TvdbEN,^.*$,program_type,series,\N,episodeseason
 741,TvdbFI,^.*$,program_type,series,\N,episodeseason
 744,TvdbFI,^.*$,program_type,series,\N,episodeseason
+486,Tvdb,"Paradise Hotel",program_type,series,149591,episodeseason

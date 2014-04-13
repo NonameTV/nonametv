@@ -60,13 +60,13 @@
 306,SVT24,svt24.svt.se,TV,Svt,1,,1,tvshow,News,sv,0,http://www.svt24.se/,0
 307,Barnkanalen,svtb.svt.se,TV,Svt,1,,1,,Children's,sv,0,http://svt.se/barn/,0
 308,"SVT World",svtworld.svt.se,TV,Svt,1,,1,series,Series,sv,0,http://svt.se/world/,0
-312,"Fashion TV",ftv.com,TV,FTV,1,FTV_,1,tvshow,Fashion,en,0,http://www.ftv.com/,0
+312,"Fashion TV",ftv.com,"TV,Norway",FTV,1,FTV_,1,tvshow,Fashion,en,0,http://www.ftv.com/,0
 313,"Kanal 10",kanal10.se,TV,Kanal10,1,,1,series,Series,sv,0,http://www.kanal10.se/,0
 314,"Motors TV",motorstv.com,"TV,Norway",Motors,1,,1,sports,Motors,en,0,http://www.motorstv.com/,0
 316,"Nat. Geo. Wild",wild.natgeo.se,TV,NatGeoWild,1,,1,series,Animals,sv,0,http://natgeotv.com/se/wild/,0
 321,"History Channel",historytv.se,TV,Discovery,1,,1,series,Documentary,se,0,http://www.historytv.se/,0
-323,"Blue Hustler",europe.bluehustler.com,"TV,Norway",HustlerTV,1,,1,movie,Adult,en,0,http://www.bluehustler.com/,0
-324,HustlerTV,europe.hustlertv.com,TV,HustlerTV,1,,1,movie,Adult,en,0,http://www.hustlertveurope.com/,0
+323,"Blue Hustler",europe.bluehustler.com,"TV,Norway,Denmark,Sweden,Finland",HustlerTV,1,,1,movie,Adult,en,0,http://www.bluehustler.com/,0
+324,HustlerTV,europe.hustlertv.com,"TV,Norway,Denmark,Sweden,Finland",HustlerTV,1,,1,movie,Adult,en,0,http://www.hustlertveurope.com/,0
 326,"Lifestyle TV",lifestyletv.se,TV,LifestyleTV,1,,1,,,sv,0,http://www.lifestyletv.se/,0
 327,Boomerang,boomerangtv.se,TV,Turner_doc,1,,1,series,Kids,sv,0,http://boomerangtv.se/,0
 328,"Cartoon Network",cartoonnetwork.se,TV,Turner_doc,1,,1,series,Kids,sv,0,http://cartoonnetwork.se/,0
@@ -232,7 +232,7 @@
 567,MTV3,mtv3.fi,TV,Venetsia,1,,1,series,Series,fi,0,http://mtv3.fi/,0
 568,Sub,sub.fi,TV,Venetsia,1,,1,series,Series,fi,0,http://sub.fi/,0
 569,TV5,tv5.fi,TV,Venetsia,1,,1,series,Series,fi,0,http://tv5.fi/,0
-570,"RBB Berlin",berl.rbb-online.de,TV,Combiner,1,,1,,,de,0,\N,0
+570,"RBB Berlin",berl.rbb-online.de,"TV,Norway",Combiner,1,,1,,,de,0,\N,0
 571,"RBB Brandenburg",bra.rbb-online.de,TV,Combiner,1,,1,,,de,0,\N,0
 572,"Yle Radio 1",1.radio.yle.fi,RADIO,Venetsia,1,,1,music,Music,fi,0,http://yle.fi/radio1/,0
 573,AVA,ava.mtv.fi,TV,Venetsia,1,,1,series,Series,fi,0,http://avatv.fi/,0
@@ -299,7 +299,6 @@
 638,OUTTV,outtv.se,TV,OUTTV_web,1,OUTTVSE,1,series,Series,sv,0,http://www.outtv.se/,0
 639,"Travel Channel Europe",travelchanneltv.se,"TV,Norway",TravelChannel,1,TC_Europe,1,series,Food/Travel,en,0,http://www.travelchanneltv.se/,0
 641,"E! Entertainment Norway",no.eonline.com,"TV,Norway",TravelChannel,1,,1,series,Entertainment,no,0,http://www.eonline.com/,0
-649,"Viasat Xtra",xtra.viasat.se,TV,Viasat,1,viasat_xtra_se_,1,sports,Sports,sv,0,http://www.viasat.se/,0
 651,"HBO Nordic (Danish)",da.hbonordic.tv,TV,HBONordic,1,da,1,,,da,0,http://www.hbonordic.tv/,0
 652,"HBO Nordic (Finnish",fi.hbonordic.tv,TV,HBONordic,1,fi,1,,,fi,0,http://www.hbonordic.tv/,0
 653,"HBO Nordic (Norwegian)",no.hbonordic.tv,"TV,Norway",HBONordic,1,no,1,,,no,0,http://www.hbonordic.tv/,0
@@ -413,4 +412,7 @@
 761,"Viasat History (Denmark)",history.viasat.dk,"TV,Denmark",ViasatDK,1,viasat_history_dk_,1,series,Series,dk,0,http://www.viasat.dk/,0
 762,"Viasat Nature/Crime (Denmark)",nature.viasat.dk,"TV,Denmark",ViasatDK,1,viasat_nature_crime_dk_,1,series,Series,dk,0,http://www.viasat.dk/,0
 763,"Viasat Film Nordic (Denmark)",nordic.film.viasat.dk,"TV,Denmark",ViasatDK,1,viasat_film_nordic_dk_,1,movie,Movies,dk,0,http://www.viasat.dk/,0
-764,"Fatstone TV",fatstone.tv,"TV,Norway,Denmark",Fatstone,1,,0,sports,Sports,no,0,http://www.fatstone.tv/,0
+764,"Fatstone TV",fatstone.tv,"TV,Norway,Denmark",Fatstone,1,,1,sports,Sports,no,0,http://www.fatstone.tv/,0
+765,"Viasat Film Comedy",comedy.film.viasat.se,TV,Viasat,1,viasat_film_comedy_se_,1,movie,Movies,sv,0,http://www.viasat.se/viasat-film,0
+766,"NRK3/NRK Super TV",nrk3super.nrk.no,"TV,Norway",Combiner,1,,1,,,no,0,\N,0
+767,"Daring! TV",europe.daringtv.com,"TV,Norway,Denmark,Sweden,Finland",HustlerTV,1,,1,movie,Adult,en,0,http://www.daringtv.com/,0
