@@ -36,7 +36,7 @@ sub new {
 
   $self->{FileStore} = $conf->{FileStore};
 
-  my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
+  my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore}, 'Europe/Stockholm' );
   $self->{datastorehelper} = $dsh;
 
   # use augment - this is made for walking.
@@ -228,16 +228,15 @@ sub create_dt
   my( $hour, $minute, $second ) = split( ":", $time );
 
 
-
   my $dt = DateTime->new( year   => $year,
                           month  => $month,
                           day    => $day,
                           hour   => $hour,
                           minute => $minute,
-						  time_zone => 'Europe/Stockholm',
+                          time_zone => 'Europe/Stockholm',
                           );
  ##
-  $dt->set_time_zone( "UTC" );
+ $dt->set_time_zone( "UTC" );
 
   return $dt;
 }

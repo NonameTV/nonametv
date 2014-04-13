@@ -233,6 +233,8 @@ sub Object2Url {
   my( $year, $month, $day ) =
         ($date =~ /^(\d+)-(\d+)-(\d+)$/ );
 
+  $month =~ s/^0*//;
+
 
   my $url = sprintf( "%s%s%s%s%spal.xml",
                      $self->{UrlRoot}, $chd->{grabber_info},

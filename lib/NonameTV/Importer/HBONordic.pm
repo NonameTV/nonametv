@@ -45,7 +45,24 @@ sub Object2Url {
 
   my( $year, $month, $day ) = ( $objectname =~ /(\d+)-(\d+)-(\d+)$/ );
 
-  my $url = 'http://www.hbonordic.tv/epg/HBON-Schedule-XMLTV-'.$year.'_'.$month.'_'.$day.'T030000Z.xml';
+  my $dt = DateTime->new( year      => $year,
+                            month     => $month,
+                            day       => $day,
+                            hour      => 7,
+                            );
+  #$dt->set_time_zone( "UTC" );
+
+  my $tz = DateTime::TimeZone->new( name => 'Europe/Stockholm' );
+  my $dst = $tz->is_dst_for_datetime( $dt );
+
+  # DST removal thingy
+  my $url;
+
+  if($dst) {
+    $url = 'http://www.hbonordic.tv/epg/HBON-Schedule-XMLTV-'.$year.'_'.$month.'_'.$day.'T020000Z.xml';
+  } else {
+    $url = 'http://www.hbonordic.tv/epg/HBON-Schedule-XMLTV-'.$year.'_'.$month.'_'.$day.'T030000Z.xml';
+  }
 
   return( $url, undef );
 }
@@ -246,10 +263,9 @@ sub create_dt
                           hour   => $hour,
                           minute => $minute,
                           second => $second,
-                          time_zone => 'Europe/Stockholm',
                           );
 
-  $dt->set_time_zone( "UTC" );
+  #$dt->set_time_zone( "UTC" );
 
   return $dt;
 }

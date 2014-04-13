@@ -119,7 +119,7 @@ else { $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );  }
   for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
 
     my $oWkS = $oBook->{Worksheet}[$iSheet];
-    if( $oWkS->{Name} !~ /1/ ){
+    if( $oWkS->{Name} !~ /EPG/ ){
       progress( "Ginx: Skipping other sheet: $oWkS->{Name}" );
       next;
     }
@@ -224,6 +224,8 @@ sub ParseDate
 {
   my ( $dinfo ) = @_;
 
+  $dinfo = ExcelFmt('yyyy-mm-dd', $dinfo);
+
   my( $day, $monthname, $year );
 
 #print ">$dinfo<\n";
@@ -243,6 +245,9 @@ sub ParseDate
   # format 'Fri 30 Apr 2010'
   } elsif( $dinfo =~ /^\S+\s*\d+\s*(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\s*\d+$/i ){
     ( $day, $monthname, $year ) = ( $dinfo =~ /^\S+\s*(\d+)\s*(\S+)\s*(\d+)$/ );
+  } elsif( $dinfo =~ /^\d+-\d+-\d+$/ ) { # format '2011-07-01'
+    ( $year, $monthname, $day ) = ( $dinfo =~ /^(\d+)-(\d+)-(\d+)$/ );
+    $year += 2000 if $year lt 100;
   }
 
   else {
@@ -263,7 +268,7 @@ sub ParseDate
                           second => 0,
                           );
 
-  $dt->set_time_zone( "UTC" );
+  #$dt->set_time_zone( "UTC" );
 
   return $dt->ymd();
 }

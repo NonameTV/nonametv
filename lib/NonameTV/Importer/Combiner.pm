@@ -28,13 +28,13 @@ use warnings;
 my %channel_data;
 
 =pod 
-_Bakgrund:_Discovery Mix är en s k promotion-kanal för Discoverys 5 tv-kanaler: Discovery, Animal Planet, Discovery Civilization, Discovery Sci-Trek och Discovery Travel & Adventure.
+_Bakgrund:_Discovery Mix ï¿½r en s k promotion-kanal fï¿½r Discoverys 5 tv-kanaler: Discovery, Animal Planet, Discovery Civilization, Discovery Sci-Trek och Discovery Travel & Adventure.
 
-Discovery Mix sänder från de olika Discoverykanalernas dagliga program. Discovery Mix plockar det program som visas på respektive kanal vid en fastställd tidpunkt. Det är en 5 minuters paus mellan varje kanalbyte och i två fall pauser på 25 minuter.
+Discovery Mix sï¿½nder frï¿½n de olika Discoverykanalernas dagliga program. Discovery Mix plockar det program som visas pï¿½ respektive kanal vid en faststï¿½lld tidpunkt. Det ï¿½r en 5 minuters paus mellan varje kanalbyte och i tvï¿½ fall pauser pï¿½ 25 minuter.
 
-Kanalen sänds bara hos Com Hem, som sköter bytet mellan inslagen från de olika kanalerna enligt den tidtabell som Discovery lagt upp.
+Kanalen sï¿½nds bara hos Com Hem, som skï¿½ter bytet mellan inslagen frï¿½n de olika kanalerna enligt den tidtabell som Discovery lagt upp.
 
-_Här är tablån för Discovery Mix: _
+_Hï¿½r ï¿½r tablï¿½n fï¿½r Discovery Mix: _
 
 07.00-09.00 Animal Planet
 
@@ -136,9 +136,9 @@ $channel_data{ "nordic.mix.discovery.com" } =
 
 =pod
 
-Barnkanalen och Kunskapskanalen samsänder via DVB-T.
-Vad jag vet är det aldrig några överlapp, så jag
-inkluderar alla program på båda kanalerna.
+Barnkanalen och Kunskapskanalen samsï¿½nder via DVB-T.
+Vad jag vet ï¿½r det aldrig nï¿½gra ï¿½verlapp, sï¿½ jag
+inkluderar alla program pï¿½ bï¿½da kanalerna.
 
 =cut
 
@@ -160,7 +160,7 @@ $channel_data{ "svtb-svt24.svt.se" } =
 
 =pod
 
-Viasat Nature/Crime och Nickelodeon samsänder hos SPA.
+Viasat Nature/Crime och Nickelodeon samsï¿½nder hos SPA.
 
 =cut
 
@@ -428,6 +428,29 @@ $channel_data{ "ch.nickcc.mtvnetworks.de" } =
         },
       ],
   };
+
+=pod
+
+NRK3 and NRK Super TV shares the same slot so the programmes dont overlap.for
+
+=cut
+
+$channel_data{ "nrk3super.nrk.no" } =
+  {
+    "nrk3.nrk.no" =>
+      [
+        {
+          day => 'all',
+        },
+      ],
+    "supertv.nrk.no" =>
+      [
+        {
+          day => 'all',
+        },
+      ],
+  };
+
 
 =pod
 
