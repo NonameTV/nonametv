@@ -122,6 +122,9 @@ sub FilterContent {
   $$cref =~ s| - Programmablauf Stand \d+.\d+.\d{4} \d{2}:\d{2}:\d{2}||;
   $$cref =~ s|Programmablauf Stand=".*"|Programmablauf|;
 
+  # remove trailing comma from cast
+  $$cref =~ s|,</|</|;
+
   my $doc = ParseXml( $cref );
  
   if( not defined $doc ) {
@@ -571,18 +574,18 @@ sub parse_subtitle
     $subtitle = undef;
   } elsif ($subtitle =~ m|\bDeutsche Erstausstrahlung\b| ) {
     # Intergalaktische Bruchlandung Folge 1246 Familienserie Deutschland, 2014 Audiodeskription Deutsche Erstausstrahlung
-    $subtitle =~ s|\s*Deutsche Erstausstrahlung\s*||;
+    $subtitle =~ s|\s*Deutsche Erstausstrahlung\s*| |;
   } elsif ($subtitle =~ m|\bAudiodeskription\b| ) {
     # Intergalaktische Bruchlandung Folge 1246 Familienserie Deutschland, 2014 Audiodeskription Deutsche Erstausstrahlung
-    $subtitle =~ s|\s*Audiodeskription\s*||;
+    $subtitle =~ s|\s*Audiodeskription\s*| |;
   } elsif ($subtitle =~ m|\b\S+erie \S+,? \d{4}\b| ) {
     # Intergalaktische Bruchlandung Folge 1246 Familienserie Deutschland, 2014 Audiodeskription Deutsche Erstausstrahlung
-    my( $genre )=( $subtitle =~ s|\s*(\S+erie) \S+,? \d{4}\s*|| );
+    my( $genre )=( $subtitle =~ s|\s*(\S+erie) \S+,? \d{4}\s*| | );
     my ( $type, $categ )= $self->{datastore}->LookupCat( "DasErste_type", $genre );
     AddCategory( $sce, $type, $categ );
   } elsif ($subtitle =~ m|\bFolge \d+\b| ) {
     # Intergalaktische Bruchlandung Folge 1246 Familienserie Deutschland, 2014 Audiodeskription Deutsche Erstausstrahlung
-    my( $episode )=( $subtitle =~ s|\s*Folge (\d+)\s*|| );
+    my( $episode )=( $subtitle =~ s|\s*Folge (\d+)\s*| | );
 
     if( !defined( $sce->{episode} ) ){
       $sce->{episode} = ". " . ($episode-1) . " .";
@@ -603,6 +606,14 @@ sub parse_subtitle
     $subtitle = undef;
   } else {
     d ("unhandled subtitle: $subtitle");
+  }
+
+  if (defined ($subtitle)) {
+    $subtitle =~ s|^\s+||;
+    $subtitle =~ s|\s+$||;
+    if ($subtitle eq '') {
+      $subtitle = undef;
+    }
   }
 
   return $subtitle;

@@ -223,9 +223,14 @@ sub ImportContent( $$$ ) {
 
     # parse sendung_id to guess if its a series of some kind unless we know it from the genre
     # JT-010252 is a "klammer"
-    # 000000-000-A is a program (seen A and B)
+    # FO-011124- is a programme with times in the evening but put between programs in the morning (huh?)
+    # 000000-000-A is a program (seen A and B and C)
     #        ^^^- is 0 for movie/tvshow and >= 1 for series (episode id starting from 1)
     my $sendung_id = $xpc->findvalue( './@sendung_id' );
+    if( $sendung_id =~ m|^FO-\d{6}-$| ) {
+      # just skip these out of place programmes for now
+      next;
+    }
     if( $sendung_id && !$ce->{program_type}){
       my( $folge )=( $sendung_id =~ m|^\d{6}-(\d{3})-[A-Z]$| );
       if( defined( $folge ) ) {

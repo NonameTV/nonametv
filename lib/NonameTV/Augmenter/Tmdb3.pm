@@ -59,25 +59,38 @@ sub new {
 }
 
 
-sub FillCredits( $$$$$ ) {
-  my( $self, $resultref, $credit, $doc, $job )=@_;
+sub FillCast( $$$$ ) {
+  my( $self, $resultref, $credit, $movie )=@_;
 
-  my @nodes = $doc->findnodes( '/OpenSearchDescription/movies/movie/cast/person[@job=\'' . $job . '\']' );
   my @credits = ( );
-  foreach my $node ( @nodes ) {
-    my $name = $node->findvalue( './@name' );
-    if( $job eq 'Actor' ) {
-      my $role = $node->findvalue( './@character' );
-      if( $role ) {
-        # skip roles like '-', but allow roles like G, M, Q (The Guru, James Bond)
-        if( ( length( $role ) > 1 )||( $role =~ m|^[A-Z]$| ) ){
-          $name .= ' (' . $role . ')';
-        } else {
-          w( 'Unlikely role \'' . $role . '\' for actor. Fix it at ' . $resultref->{url} . '/edit?active_nav_item=cast' );
-        }
+  foreach my $castmember ( $movie->cast() ){
+    my $name = $castmember->{'name'};
+    my $role = $castmember->{'character'};
+    if( $role ) {
+      # skip roles like '-', but allow roles like G, M, Q (The Guru, James Bond)
+      if( ( length( $role ) > 1 )||( $role =~ m|^[A-Z]$| ) ){
+        $name .= ' (' . $role . ')';
+      } else {
+        w( 'Unlikely role \'' . $role . '\' for actor. Fix it at ' . $resultref->{url} . '/edit?active_nav_item=cast' );
       }
     }
     push( @credits, $name );
+  }
+  if( @credits ) {
+    $resultref->{$credit} = join( ', ', @credits );
+  }
+}
+
+
+sub FillCrew( $$$$$ ) {
+  my( $self, $resultref, $credit, $movie, $job )=@_;
+
+  my @credits = ( );
+  foreach my $crewmember ( $movie->crew() ){
+    if( $crewmember->{'job'} eq $job ){
+      my $name = $crewmember->{'name'};
+      push( @credits, $name );
+    }
   }
   if( @credits ) {
     $resultref->{$credit} = join( ', ', @credits );
@@ -159,8 +172,7 @@ sub FillHash( $$$ ) {
     my @genres = @{ $movie->info()->{genres} };
     foreach my $node ( @genres ) {
       my $genre_id = $node->{id};
-      my $genre_name = $node->{name};
-      my ( $type, $categ ) = $self->{datastore}->LookupCat( "Tmdb_genre", $genre_name );
+      my ( $type, $categ ) = $self->{datastore}->LookupCat( "Tmdb_genre", $genre_id );
       AddCategory( $resultref, $type, $categ );
     }
   }
@@ -170,19 +182,15 @@ sub FillHash( $$$ ) {
 
   $resultref->{url} = 'http://www.themoviedb.org/movie/' . $movie->{ id };
 
-  $resultref->{extra_id} = $movie->info()->{ imdb_id };
-  print Dumper($movie->info()->{ imdb_id });
-  $resultref->{extra_id_type} = "themoviedb";
+  $self->FillCast( $resultref, 'actors', $movie );
 
-#  $self->FillCredits( $resultref, 'actors', $doc, 'Actor');
-
-#  $self->FillCredits( $resultref, 'adapters', $doc, 'Actors');
-#  $self->FillCredits( $resultref, 'commentators', $doc, 'Actors');
-#  $self->FillCredits( $resultref, 'directors', $doc, 'Director');
-#  $self->FillCredits( $resultref, 'guests', $doc, 'Actors');
-#  $self->FillCredits( $resultref, 'presenters', $doc, 'Actors');
-#  $self->FillCredits( $resultref, 'producers', $doc, 'Producer');
-#  $self->FillCredits( $resultref, 'writers', $doc, 'Screenplay');
+#  $self->FillCrew( $resultref, 'adapters', $movie, 'Actors');
+#  $self->FillCrew( $resultref, 'commentators', $movie, 'Actors');
+  $self->FillCrew( $resultref, 'directors', $movie, 'Director');
+#  $self->FillCrew( $resultref, 'guests', $movie, 'Actors');
+#  $self->FillCrew( $resultref, 'presenters', $movie, 'Actors');
+  $self->FillCrew( $resultref, 'producers', $movie, 'Producer');
+  $self->FillCrew( $resultref, 'writers', $movie, 'Screenplay');
 
 #  print STDERR Dumper( $apiresult );
 }
@@ -214,6 +222,7 @@ sub AugmentProgram( $$$ ){
     # filter characters that confuse the search api
     # FIXME check again now that we encode umlauts & co.
     $searchTerm =~ s|[-#\?\N{U+00BF}\(\)]||g;
+    $searchTerm =~ s|[:]| |g;
 
     if( $self->{Slow} ) {
       sleep (1);
@@ -325,10 +334,20 @@ sub AugmentProgram( $$$ ){
         @keep = ();
       }
 
-      if( @candidates == 0 ){
-        w( 'search for "' . $ceref->{title} . '" by "' . $ceref->{directors} . '" did not return any good hit, ignoring' );
-      } elsif ( @candidates > 1 ){
-        w( 'search for "' . $ceref->{title} . '" by "' . $ceref->{directors} . '" did not return a single best hit, ignoring' );
+      if( ( @candidates == 0 ) || ( @candidates > 1 ) ){
+        my $warning = 'search for "' . $ceref->{title} . '"';
+        if( $ceref->{directors} ){
+          $warning .= ' by "' . $ceref->{directors} . '"';
+        }
+        if( $ceref->{production_date} ){
+          $warning .= ' from ' . $ceref->{production_date} . '';
+        }
+        if( @candidates == 0 ) {
+          $warning .= ' did not return any good hit, ignoring';
+        } else {
+          $warning .= ' did not return a single best hit, ignoring';
+        }
+        w( $warning );
       } else {
         my $movieId = $candidates[0]->{id};
 
