@@ -58,7 +58,7 @@ $channel_data{ "SVTK" } = "kunskapskanalen.svt.se";
     if( not exists( $channel_data{$id} ) )
     {
         print "Files with name $id hasnt been specified as a channel.\n";
-        unlink "/nonametv/autoupload/svt/$org_cff";
+        #unlink "/nonametv/autoupload/svt/$org_cff";
     } else {
       move( "/nonametv/autoupload/svt/$org_cff", "$filestore/$channel_data{$id}/$org_cff" );
       print "$cff moved to $channel_data{$id}\n";

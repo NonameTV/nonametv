@@ -71,6 +71,8 @@ $d perl -I lib tools/nonametv-update-tvdb sv
 $d perl -I lib tools/nonametv-update-tvdb en
 $d perl -I lib tools/nonametv-update-tvdb de
 $d perl -I lib tools/nonametv-update-tvdb no
+$d perl -I lib tools/nonametv-update-tvdb fi
+
 
 # Import files sent through ftp
 $d tools/se-tvzon/nonametv-filestore-svt $Q

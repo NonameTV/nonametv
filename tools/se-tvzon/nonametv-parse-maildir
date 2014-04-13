@@ -349,6 +349,7 @@ sub guess_channel
  if( $dir =~ /Hustler/ and $filename =~ /\.xls$/i ) {
      return "europe.bluehustler.com" if $filename =~ /^blue.*gmt.*\b/i;
      return "europe.hustlertv.com" if $filename =~ /^hustler.*gmt.*\b/i;
+     return "europe.daringtv.com" if $filename =~ /^daring.*gmt.*\b/i;
  }
  
  if( $dir =~ /MTV/ ) {
