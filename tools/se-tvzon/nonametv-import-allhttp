@@ -34,7 +34,7 @@ $NONAMETV OUTTV_web $1 $2 $3
 $NONAMETV RadioSeven $1 $2 $3
 $NONAMETV RBBDE $1 $2 $3
 $NONAMETV RAI $1 $2 $3
-#$NONAMETV SBSRadio $1 $2 $3 # API Removed awaiting response
+$NONAMETV SBSRadio $1 $2 $3
 $NONAMETV SBSTV $1 $2 $3
 $NONAMETV SverigesRadio $1 $2 $3
 $NONAMETV Viasat $1 $2 $3

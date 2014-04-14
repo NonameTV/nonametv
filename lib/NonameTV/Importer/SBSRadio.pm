@@ -12,11 +12,11 @@ The file downloaded is in JSON format.
 =cut
 
 use DateTime;
-use JSON -support_by_pp;
+use XML::LibXML;
 use HTTP::Date;
 use Data::Dumper;
 
-use NonameTV qw/ParseXml normUtf8 AddCategory/;
+use NonameTV qw/ParseXml norm AddCategory/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/w progress error f/;
 
@@ -32,6 +32,7 @@ sub new {
     
     my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
     $self->{datastorehelper} = $dsh;
+    $self->{NO_DUPLICATE_SKIP} = 1;
 
     return $self;
 }
@@ -43,64 +44,158 @@ sub Object2Url {
   my( $date ) = ($objectname =~ /_(.*)/);
   my( $year, $month, $day ) = split( /-/, $date );
   
-  my $url = $self->{UrlRoot} . $chd->{grabber_info} . "/epg/" . $year . $month . $day . ".json";
+  my $url = $self->{UrlRoot} . "/epg/" . $year . $month . $day . "_".$chd->{grabber_info}."_other_PI.xml";
 
   return( $url, undef );
 }
 
-sub ImportContent
-{
-  my $self = shift;
 
+sub ApproveContent {
+  my $self = shift;
+  my( $cref, $callbackdata ) = @_;
+
+  if( $$cref eq '' ) {
+    return "404 not found";
+  }
+  else {
+    return undef;
+  }
+}
+
+sub FilterContent {
+  my( $self, $cref, $chd ) = @_;
+
+  return( $cref, undef );
+}
+
+sub ContentExtension {
+  return 'xml';
+}
+
+sub FilteredExtension {
+  return 'xml';
+}
+
+sub ImportContent {
+  my $self = shift;
   my( $batch_id, $cref, $chd ) = @_;
-  
-  my $xmltvid = $chd->{xmltvid};
+
+  #$$cref = Unicode::String::latin1 ($$cref)->utf8 ();
+
+  $self->{batch_id} = $batch_id;
+
+  my $xmltvid=$chd->{xmltvid};
   my $channel_id = $chd->{id};
+  my $currdate = "x";
 
   my $ds = $self->{datastore};
   my $dsh = $self->{datastorehelper};
-  
-  my $currdate = "x";
-  
-  my( $date ) = ($batch_id =~ /_(.*)/);
-  $dsh->StartDate( $date , "00:00" );
 
-  my $json = new JSON;
+  my $doc = ParseXml( $cref );
 
-  my $doc  = $json->allow_nonref->utf8->relaxed->escape_slash->loose->allow_singlequote->allow_barekey->decode($$cref);
+  if( not defined( $doc ) ) {
+    f "Failed to parse XML.";
+    return 0;
+  }
 
- 	 foreach my $sc (@{$doc})
-  	{
-		# Date
-		my $date = $sc->{date};
-		
-		my $start_time = $sc->{start};
-		
-		my $end_time = $sc->{end};
-		
-	
-		my $title = $sc->{name};
-		my $desc = $sc->{descr};
-		#my $url = $sc->findvalue( './link' );
+  my $ns = $doc->find( "//programme" );
 
-		progress("SBSRadio: $chd->{xmltvid}: $start_time - $title");
+  if( $ns->size() == 0 ) {
+    f "No data found";
+    return 0;
+  }
 
-  	my $ce = {
-  		channel_id	=> $chd->{id},
-  		title 	  	=> normUtf8($title),
- 	  	start_time  => $start_time,
- 	  	end_time 		=> $end_time,
- 	  	description	=> normUtf8($desc),
- 	  	#url => $url,
-   	};
-	
-  	  $dsh->AddProgramme( $ce );
- 	 }
- 	 
- 	 #$dsh->EndBatch( 1 );
+  # Each Programme
+  foreach my $b ($ns->get_nodelist) {
 
-  # Success
+    # Data
+    my $image = $b->findvalue( "imageUrl" );
+    my $longtitle = $b->findvalue( "longName" );
+    my $shorttitle = $b->findvalue( "mediumName" );
+    my $title = $longtitle || $shorttitle;
+
+  	# Airings
+    my $airings = $b->find( "./location" );
+
+    if( $airings->size() == 0 ) {
+        f "No airings found";
+        return 0;
+    }
+
+    # Each airing
+    foreach my $a ($airings->get_nodelist) {
+
+        # Start and so on
+        my $start = ParseDateTime( $a->findvalue( './/@time' ) );
+        my $time = $start->hms(":");
+
+        my $duration = $a->findvalue( './/@duration' );
+        my( $hours ) = ($duration =~ /^PT(\d+)H$/ );
+
+        # Otherwise it will whine
+        if( $start->ymd("-") ne $currdate ){
+            progress("Date is ".$start->ymd("-"));
+
+            $dsh->StartDate( $start->ymd("-") , "00:00" );
+            $currdate = $start->ymd("-");
+        }
+
+        # Put everything in a array
+        my $ce = {
+            channel_id => $chd->{id},
+            start_time => $time,
+            title => norm($title),
+            poster => norm($image),
+        };
+
+        # endtime
+        if(defined($hours)) {
+           my $end = $start->clone->add( hours => $hours ); # Endtime
+           $ce->{end_time} = $end->hms(":");
+        }
+
+        my $live = $a->findvalue( "./live" );
+
+        # Find live-info
+        if( $live eq "true" )
+        {
+            $ce->{live} = "1";
+        }
+        else
+        {
+            $ce->{live} = "0";
+        }
+
+        progress($time." $ce->{title}");
+
+        $dsh->AddProgramme( $ce );
+
+    }
+
+
+
+  }
+
+  #$dsh->EndBatch( 1 );
+
   return 1;
+}
+
+sub ParseDateTime {
+  my( $str ) = @_;
+
+  my( $year, $month, $day, $hour, $minute, $second ) =
+      ($str =~ /^(\d+)-(\d+)-(\d+)T(\d+):(\d+)/ );
+
+  my $dt = DateTime->new(
+    year => $year,
+    month => $month,
+    day => $day,
+    hour => $hour,
+    minute => $minute,
+      );
+
+  return $dt;
 }
 
 1;
