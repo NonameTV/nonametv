@@ -11,6 +11,7 @@ tools/nonametv-import PokerChannel $1 $2 $3
 tools/nonametv-import History $1 $2 $3
 tools/nonametv-import TravelChannel $1 $2 $3
 tools/nonametv-import God $1 $2 $3
+tools/nonametv-import Gospel $1 $2 $3
 tools/nonametv-import TVChile $1 $2 $3
 tools/nonametv-import Svt $1 $2 $3
 tools/nonametv-import Venetsia $1 $2 $3
@@ -35,6 +36,7 @@ tools/nonametv-import Turner_doc $1 $2 $3
 tools/nonametv-import VH1Classic $1 $2 $3
 
 tools/nonametv-import Euronews $1 $2 $3
+tools/nonametv-import RTL2 $1 $2 $3
 tools/nonametv-import Ginx $1 $2 $3
 
 tools/nonametv-import Turner $1 $2 $3

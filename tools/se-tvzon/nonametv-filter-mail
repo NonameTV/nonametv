@@ -151,12 +151,17 @@ foreach my $msg ($infolder->messages) {
   	MoveMessage( $msg, "WildTV" );
   }
   elsif( $fromaddr =~ /\@tv8norge.no/i ) {
-    	MoveMessage( $msg, "TV8Norge" );
-    }
-
+    MoveMessage( $msg, "TV8Norge" );
+  }
   elsif( $fromaddr =~ /\@euronews.com/i ) {
-    	MoveMessage( $msg, "Euronews" );
-    }
+    MoveMessage( $msg, "Euronews" );
+  }
+  elsif( $fromaddr =~ /\@rtl2.de/i ) {
+    MoveMessage( $msg, "RTL2" );
+  }
+  elsif( $fromaddr =~ /\@gospel.tv/i ) {
+    MoveMessage( $msg, "Gospel" );
+  }
   
   elsif( $fromaddr =~ /\@tvzon.se/i ) {
     MoveMessage( $msg, "Svt" );
