@@ -209,7 +209,10 @@ sub ImportContent {
     $title =~ s| \(\d+\)$||g;
     $title =~ s/ \(WH(?: von \w{2}| von \w{2} der Vorwoche|)\)$//g;
     # clean up for HR
-    $title =~ s/\s+Kinemathek(?:-Nacht|)\s*:.*$//g;
+    $title =~ s/\s+Kinemathek(?:-Nacht|)\s*:.*$//g; # suffix: Kinemathek: person
+    # clean up for RBB
+    $title =~ s/^Debüt im rbb\s*:\s*//gi; # prefix
+    $title =~ s/^SonntagsFilm\s*:\s*//gi; # prefix
 
     my $ce = {
       start_time  => $startTime,
