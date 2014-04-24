@@ -1,5 +1,6 @@
 #!/bin/bash
 
+tools/nonametv-import CNBC $1 $2 $3
 tools/nonametv-import Discovery $1 $2 $3
 tools/nonametv-import DisneyChannel $1 $2 $3
 tools/nonametv-import DisneyChannelNO $1 $2 $3
