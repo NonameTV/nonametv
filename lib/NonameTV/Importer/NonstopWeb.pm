@@ -152,7 +152,7 @@ my $title = norm($title_programme) || norm($title_original);
         # That should be remove later on, but for now you should use Tvdb augmenter for that.
         my $subtitle_episode = $sc->findvalue( './@ProgrammeEpisodeTitle' );
         my $subtitle_default = $sc->findvalue( './@DefaultEpisodeTitle' );
-        my $subtitle = norm($subtitle_default) || norm($subtitle_episode);
+        my $subtitle = norm($subtitle_episode) || norm($subtitle_default);
 				my $aspect = $sc->findvalue( './@ProgrammeVersionTechnicalTypesAspect_Ratio' );
 
 		progress("Nonstop: $chd->{xmltvid}: $start - $title");

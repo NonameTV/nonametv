@@ -124,12 +124,26 @@ sub ImportXLS
   	  	$title =~ s/- Season (.*) EP (.*)\)//g;
   	  	$title =~ s/Season (.*) EP (.*)\)//g;
       }
+
+      ( $season, $ep ) = ($title =~ /\bS(\d+)\s+E(\d+)/ );
+      if(defined($season)) {
+        $episode = sprintf( "%d . %d . ", $season-1, $ep-1 );
+        $title =~ s/- S(.*) E(.*)\)//g;
+        $title =~ s/S(.*) E(.*)\)//g;
+      }
       
       ( $ep ) = ($title =~ /\bEP\s+(\d+)/ );
       if(defined($ep) && !defined($episode)) {
       	$episode = sprintf( " . %d .", $ep-1 );
       	$title =~ s/- EP (.*)\)//g;
   	  	$title =~ s/EP (.*)\)//g;
+      }
+
+      ( $ep ) = ($title =~ /\bPART\s+(\d+)/ );
+      if(defined($ep) && !defined($episode)) {
+        $episode = sprintf( " . %d .", $ep-1 );
+        $title =~ s/- PART (.*)\)//g;
+        $title =~ s/PART (.*)\)//g;
       }
       
       my ($new_title, $episode_title) = split(/-/, $title);

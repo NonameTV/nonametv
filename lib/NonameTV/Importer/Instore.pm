@@ -209,6 +209,19 @@ sub ImportContent
     	$ce->{directors} = norm($dir);
     }
 
+    # Make arrays
+    my @actors;
+
+    # Change $iv if they add more actors in the future
+    for( my $v=1; $v<=6; $v++ ) {
+    	my $actor_name = norm($sc->findvalue( './actor'.$v));
+        if(defined($actor_name) and $actor_name ne "") {
+    		push(@actors, $actor_name);
+    	}
+    }
+
+    $ce->{actors} = join( ", ", grep( /\S/, @actors ) );
+
 	# Add Programme
 	$dsh->AddCE( $ce );
   }

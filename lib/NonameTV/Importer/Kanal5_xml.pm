@@ -101,6 +101,20 @@ sub ImportXML
       my $end = $self->create_dt( $row->findvalue( './/end/TIMEINSTANT/@full' ) );
 
       my $date = $start->ymd("-");
+
+      if($date ne $currdate ) {
+        if( $currdate ne "x" ) {
+            $dsh->EndBatch( 1 );
+        }
+
+        my $batchid = $chd->{xmltvid} . "_" . $date;
+        $dsh->StartBatch( $batchid , $chd->{id} );
+        $dsh->StartDate( $date , "00:00" );
+        $currdate = $date;
+
+        progress("Kanal5_xml: Date is: $date");
+      }
+
       
       my $title = undef;
       
@@ -129,21 +143,7 @@ sub ImportXML
       	error("No title found at $start");
       	next;
       }
-      
-      
-	  if($date ne $currdate ) {
-              if( $currdate ne "x" ) {
-      			$dsh->EndBatch( 1 );
-              }
 
-              my $batchid = $chd->{xmltvid} . "_" . $date;
-              $dsh->StartBatch( $batchid , $chd->{id} );
-              $dsh->StartDate( $date , "06:00" );
-              $currdate = $date;
-
-              progress("Kanal5_xml: Date is: $date");
-            }
-      
 	  # extra info
 	  # description is in shortdescription and shortdescriptionTTV (TTV has more info)
 	  my $desc = $row->findvalue( './/shortdescriptionTTV/TEXT' );
@@ -265,7 +265,7 @@ sub extract_extra_info
   {
     $sentences[$i] =~ tr/\n\r\t /    /s;
 
-    $sentences[$i] =~ s/^I detta (avsnitt|program):\s*//;
+    $sentences[$i] =~ s/^I detta (avsnitt|program)://;
 
     if( extract_episode( $sentences[$i], $ce ) )
     {
