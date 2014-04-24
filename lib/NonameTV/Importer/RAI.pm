@@ -130,6 +130,7 @@ sub ImportContent {
     	$ce->{production_date} = "$1-01-01";
     }
 
+    # Title
     if( $title =~ /^FILM/  ) {
     	$ce->{title} =~ s/FILM//g; # REMOVE ET
     	$ce->{program_type} = 'movie';
@@ -143,6 +144,11 @@ sub ImportContent {
         $ce->{title} =~ s/MOVIE//g; # REMOVE ET
     }
 
+    # Desc
+    if( $desc =~ /^FILM/  ) {
+        $ce->{program_type} = 'movie';
+    }
+
     if( my( $years, $country ) = ($text =~ /(\d\d\d\d)\s+(.*)$/) )
     {
     	$text =~ s/$years//g; # REMOVE ET
@@ -152,9 +158,7 @@ sub ImportContent {
 
     if( my( $directors ) = ($text =~ /^di\s*(.*)\s*con/) )
     {
-    	$ce->{directors} = norm(parse_person_list( $directors ));
-
-    	$ce->{program_type} = 'movie';
+    	$ce->{directors} = norm(parse_person_list( $directors )) if norm($directors) ne "AA VV"; # What is AA VV?
     }
 
     if( my( $actors ) = ($text =~ /con\s*(.*)/) )
@@ -167,7 +171,61 @@ sub ImportContent {
     $ce->{title} =~ s/\^ Visione RAI//g;
     $ce->{title} = norm($ce->{title});
 
+    # season, episode, episode title
+    my($ep, $season, $episode, $dummy);
 
+    # Episode and season (roman)
+    ( $dummy, $ep ) = ($ce->{title} =~ /Ep(\.|)\s*(\d+)$/i );
+    if(defined($ep) && !defined($ce->{episode})) {
+        $ce->{episode} = sprintf( " . %d .", $ep-1 );
+        $ce->{title} =~ s/- Ep(.*)$//gi;
+      	$ce->{title} =~ s/Ep(.*)$//gi;
+      	$ce->{title} =~ s/ serie$//gi;
+      	$ce->{title} = norm($ce->{title});
+
+      	# Season
+      	my ( $original_title, $romanseason ) = ( $ce->{title} =~ /^(.*)\s+(.*)$/ );
+
+        # Roman season found
+        if(defined($romanseason) and isroman($romanseason)) {
+            my $romanseason_arabic = arabic($romanseason);
+
+            # Episode
+          	my( $romanepisode ) = ($ce->{episode} =~ /.\s+(\d*)\s+./ );
+
+          	# Put it into episode field
+          	if(defined($romanseason_arabic) and defined($romanepisode)) {
+          			$ce->{episode} = sprintf( "%d . %d .", $romanseason_arabic-1, $romanepisode );
+
+          			# Set original title
+          			$ce->{title} = norm($original_title);
+          	}
+        }
+    }
+
+    # pt. ep
+    ( $ep ) = ($title =~ /pt\.\s*(\d+)/ );
+    if(defined($ep) && !defined($ce->{episode})) {
+        $ce->{episode} = sprintf( " . %d .", $ep-1 );
+        $ce->{title} =~ s/pt. (.*)$//g;
+        $ce->{title} =~ s/pt.(.*)$//g;
+    }
+
+    # pt. ep
+    ( $ep ) = ($title =~ /pt\s*(\d+)/ );
+    if(defined($ep) && !defined($ce->{episode})) {
+        $ce->{episode} = sprintf( " . %d .", $ep-1 );
+        $ce->{title} =~ s/pt (.*)$//g;
+        $ce->{title} =~ s/pt(.*)$//g;
+    }
+
+    # Genre, in a way
+    my ($genre) = ($ce->{description} =~ /^(.*)\s+-/ );
+    if(defined($genre)) {
+        $ce->{description} =~ s/^(.*) -//gi;
+    }
+
+    $ce->{title} = norm($ce->{title});
 
 	p($time." $ce->{title}");
 
