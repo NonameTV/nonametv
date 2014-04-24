@@ -72,11 +72,13 @@ $d perl -I lib tools/nonametv-update-tvdb en
 $d perl -I lib tools/nonametv-update-tvdb de
 $d perl -I lib tools/nonametv-update-tvdb no
 $d perl -I lib tools/nonametv-update-tvdb fi
+$d perl -I lib tools/nonametv-update-tvdb da
+$d perl -I lib tools/nonametv-update-tvdb hr
+$d perl -I lib tools/nonametv-update-tvdb it
 
 
 # Import files sent through ftp
 $d tools/se-tvzon/nonametv-filestore-svt $Q
-$d tools/se-tvzon/nonametv-filestore-venetsia $Q
 
 # Import everything
 $d tools/se-tvzon/nonametv-import-allhttp $Q

@@ -128,6 +128,8 @@ sub ImportContent
 	my $title_programme = $sc->findvalue( './title' );
 	my $title = norm($title_programme) || norm($title_original);
 
+	$title =~ s/^Premiere: //g;
+
     my $start = $sc->findvalue( './starttime' );
     my $end = $sc->findvalue( './endtime' );
 
@@ -144,7 +146,7 @@ sub ImportContent
 
 	# TVNorge seems to have the season in the originaltitle, weird.
 	# �r 2
-    my ( $dummy, $season ) = ($title_original =~ /(.r)\s*(\d+)$/ );
+    my ( $dummy, $season ) = ($title_original =~ /(.r|sesong)\s*(\d+)$/ );
 
 
 	progress("TVNorge: $chd->{xmltvid}: $start - $title");
@@ -183,13 +185,13 @@ sub ImportContent
 
     # Actors
     my @actors;
-    my $acts = $sc->find( './/actors' );
+    my $acts = $sc->find( './/actor' );
     foreach my $act ($acts->get_nodelist)
     {
-        my $name = norm($act);
+        my $name = $act->to_literal;
 
-        if($name ne "")
-        {
+        # Only push actors with an actual name
+        if($name ne "") {
             push @actors, $name;
         }
     }
