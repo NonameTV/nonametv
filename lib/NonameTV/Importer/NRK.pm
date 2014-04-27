@@ -165,11 +165,13 @@ sub ImportContent
 
         # Directors
         if( my( $directors ) = ($desc =~ /Regi\:\s*(.*)$/) )
-    		{
+    	{
       		$ce->{directors} = parse_person_list( $directors );
       		$desc =~ s/Regi\:(.*)$//;
       		$desc = norm($desc);
-    		}
+
+      		$ce->{program_type} = "movie";
+    	}
         
         # Get actors
         if( my( $actors ) = ($desc =~ /Med\:\s*(.*)$/ ) )
@@ -256,6 +258,7 @@ sub parse_person_list
   
   # Remove all variants of m.fl.
   $str =~ s/\s*m[\. ]*fl\.*\b//;
+  $str =~ s/\s*med\s+fler\.*\b//;
   
   # Remove trailing '.'
   $str =~ s/\.$//;

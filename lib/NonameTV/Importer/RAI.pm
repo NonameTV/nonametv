@@ -180,6 +180,7 @@ sub ImportContent {
         $ce->{episode} = sprintf( " . %d .", $ep-1 );
         $ce->{title} =~ s/- Ep(.*)$//gi;
       	$ce->{title} =~ s/Ep(.*)$//gi;
+      	$ce->{title} = norm($ce->{title});
       	$ce->{title} =~ s/ serie$//gi;
       	$ce->{title} = norm($ce->{title});
 
@@ -222,7 +223,17 @@ sub ImportContent {
     # Genre, in a way
     my ($genre) = ($ce->{description} =~ /^(.*)\s+-/ );
     if(defined($genre)) {
+        $genre = lc($genre);
+        my ( $program_type, $category ) = $self->{datastore}->LookupCat( "RAI", $genre );
+        AddCategory( $ce, $program_type, $category );
+
+        # Remove it
         $ce->{description} =~ s/^(.*) -//gi;
+    }
+
+    # Seems buggy sometimes
+    if(defined($ce->{episode})) {
+        $ce->{program_type} = "series";
     }
 
     $ce->{title} = norm($ce->{title});
