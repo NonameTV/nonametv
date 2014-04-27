@@ -206,7 +206,7 @@ sub ImportFlatXLS
 
 
 	  $oWkC = $oWkS->{Cells}[$iR][$columns{'Synopsis'}];
-      my $desc = $oWkC->Value;
+      my $desc = $oWkC->Value if( $oWkC );
 
       if( $time and $title ){
 
@@ -219,7 +219,6 @@ sub ImportFlatXLS
           channel_id   => $chd->{id},
 		  title		   => norm($title),
           start_time   => $time,
-		  description  => norm($desc),
         };
 
 		## Episode
@@ -253,8 +252,11 @@ sub ImportFlatXLS
 			$ce->{program_type} = "movie";
 		}
 
+		# Desc
+		$ce->{description} = norm($desc) if defined($desc);
+
 		# Find production year from description.
-	    if( $ce->{description} =~ /\((\d\d\d\d)\)/ )
+	    if(defined($desc) and $ce->{description} =~ /\((\d\d\d\d)\)/)
 	    {
 	    	$ce->{description} =~ s/\((\d\d\d\d)\) //;
 	    	$ce->{production_date} = "$1-01-01";
