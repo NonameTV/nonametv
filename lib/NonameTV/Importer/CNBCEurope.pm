@@ -143,13 +143,6 @@ $data =~ s| xmlns="urn:crystal-reports:schemas:report-detail"||;
           $ce->{title} = ucfirst(lc(norm($t)));
           $ce->{subtitle} = ucfirst(lc(norm($st)));
 
-          # Jimmy Fallon
-          if($ce->{title} eq "The tonight show starring jimmy fallon") {
-            $ce->{title} = "The Tonight Show Starring Jimmy Fallon";
-            $ce->{subtitle} =~ s/\b(\w)/\U$1/g;; # Big letter every word, its a name.
-            $ce->{guests} = $ce->{subtitle};
-          }
-
           # Episode
           my($episode);
           ( $episode ) = ($ce->{subtitle} =~ /Episode\s+(\d+)$/ );
@@ -159,6 +152,17 @@ $data =~ s| xmlns="urn:crystal-reports:schemas:report-detail"||;
             $episode+=0; # Remove leading zeros
             $ce->{subtitle} = undef; # Remove subtitle, its a ep number not a subtitle.
             $ce->{episode} = ". " . ($episode-1) . " .";
+          }
+
+          # Jimmy Fallon
+          if($ce->{title} eq "The tonight show starring jimmy fallon") {
+            $ce->{title} = "The Tonight Show Starring Jimmy Fallon";
+
+            # Might get removed if the subtitle is an episode num
+            if(defined($ce->{subtitle})) {
+                $ce->{subtitle} =~ s/\b(\w)/\U$1/g;; # Big letter every word, its a name.
+                $ce->{guests} = $ce->{subtitle};
+            }
           }
         }
 
