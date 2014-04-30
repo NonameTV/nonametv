@@ -247,6 +247,59 @@ $channel_data{ "neokika.zdfmobil.de" } =
       ],
   };
 
+=pod
+
+TV4 Film and TV4 Fakta is airing in different times on Boxer
+TV4 Film:  Friday 21:00 - Monday 08:00
+TV4 Fakta: Monday 08:00 - Friday 21:00
+
+=cut
+
+$channel_data{ "tv4film.boxer.se" } =
+  {
+    "film.tv4.se" =>
+	[
+          {
+             day => 'fr',
+             time => '2100-0100',
+          },
+          {
+             day => 'sa',
+          },
+          {
+             day => 'su',
+          },
+
+          {
+          	 day => 'mo',
+          	 time => '0000-0800',
+          },
+	],
+    };
+
+$channel_data{ "tv4fakta.boxer.se" } =
+  {
+    "fakta.tv4.se" =>
+	[
+        {
+          day => 'mo',
+	  time => '0800-0100',
+        },
+        {
+          day => 'tu',
+        },
+        {
+          day => 'we',
+        },
+        {
+          day => 'th',
+        },
+        {
+          day => 'fr',
+	  time => '0000-2100',
+        },
+	],
+    };
 
 =pod
 
