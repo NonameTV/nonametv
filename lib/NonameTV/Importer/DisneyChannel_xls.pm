@@ -218,6 +218,7 @@ sub ImportFlatXLS
           channel_id   => $chd->{id},
 		  title		   => norm($title),
           start_time   => $time,
+          aspect       => '16:9',
         };
 
 		## Episode
