@@ -212,6 +212,7 @@ sub ImportContent {
     $title =~ s/\s+Kinemathek(?:-Nacht|)\s*:.*$//g; # suffix: Kinemathek: person
     # clean up for RBB
     $title =~ s/^Debüt im rbb\s*:\s*//gi; # prefix
+    $title =~ s/^FilmMatinee\s*:\s*//gi; # prefix
     $title =~ s/^SonntagsFilm\s*:\s*//gi; # prefix
 
     my $ce = {
