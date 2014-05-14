@@ -32,6 +32,7 @@ tools/nonametv-import France24 $1 $2 $3
 tools/nonametv-import LuxeTV $1 $2 $3
 tools/nonametv-import Mezzo $1 $2 $3
 tools/nonametv-import HighTV $1 $2 $3
+tools/nonametv-import HaC $1 $2 $3
 
 # Boomerang and Cartoon network
 tools/nonametv-import Turner_doc $1 $2 $3
