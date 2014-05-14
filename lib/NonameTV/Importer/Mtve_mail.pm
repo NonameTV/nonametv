@@ -101,15 +101,17 @@ sub ImportXLS
           if( $oWkS->{Cells}[$iR][$iC] ){
             $columns{$oWkS->{Cells}[$iR][$iC]->Value} = $iC;
 
-						$columns{'Start'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Start/ );
-						$columns{'End'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /End/ );
-						$columns{'Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Title/ );
-          
+			$columns{'Start'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Start/ );
+			$columns{'End'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /End/ );
+			$columns{'Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Title/ );
+			$columns{'Date'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Date/ );
+            $columns{'Time'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Time/ );
           	
           
           	$columns{'Description'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Description/ );
+          	$columns{'Description'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Synopsis/ );
 
-            $foundcolumns = 1 if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Start/ );
+            $foundcolumns = 1 if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Date/ );
           }
         }
 #foreach my $cl (%columns) {
@@ -120,24 +122,20 @@ sub ImportXLS
         next;
       }
 
-	  my $oWkDate = $oWkS->{Cells}[$iR][$columns{'Start'}];
+	  my $oWkDate = $oWkS->{Cells}[$iR][$columns{'Date'}];
       next if( ! $oWkDate );
-
-      # date & Time - column 1 ('Date')
-      my( $date, $time ) = split( ' ', $oWkDate->Value );
-      
-      $date = ParseDate( $date );
+      $date = ParseDate( $oWkDate->Value );
       next if( ! $date );
 
 	  #Convert Excel Time -> localtime
- 	  $time = ExcelFmt('hh:mm', $time);
-      
-      my $enddate = $oWkS->{Cells}[$iR][$columns{'End'}]->Value;
-      my( $enddate2, $endtime ) = split( ' ', $enddate );
-	  # Convert Excel Time -> localtime
-	  $endtime = ExcelFmt('hh:mm', $endtime);
+      my $oWkTime = $oWkS->{Cells}[$iR][$columns{'Time'}];
+      next if( ! $oWkTime );
+      my $time = ExcelFmt('hh:mm', $oWkTime->Value);
+      next if( ! $date );
 
-	  	# Startdate
+
+
+	  # Startdate
       if( $date ne $currdate ) {
       	if( $currdate ne "x" ) {
 					$dsh->EndBatch( 1 );
@@ -167,23 +165,22 @@ sub ImportXLS
       $title =~ s/Hd/HD/;  #replace hd with HD
       $title =~ s/Mtv/MTV/;  #replace mtv with MTV
 
-	  	# descr (column 7)
-	  	my $desc = $oWkS->{Cells}[$iR][$columns{'Description'}]->Value if $oWkS->{Cells}[$iR][$columns{'Description'}];
+	  # descr (column 7)
+	  my $desc = $oWkS->{Cells}[$iR][$columns{'Description'}]->Value if $oWkS->{Cells}[$iR][$columns{'Description'}];
 
-			# empty last day array
-     	undef @ces;
+	  # empty last day array
+      undef @ces;
 
       my $ce = {
         channel_id => $chd->{channel_id},
         title => norm( $title ),
         start_time => $time,
-        end_time => $endtime,
         description => norm( $desc ),
       };
       
       # Seperate :
       my ( $subtitle ) = ($ce->{title} =~ /:\s*(.+)$/);
-  		$ce->{title} =~ s/:\s*(.+)//;
+  	  $ce->{title} =~ s/:\s*(.+)//;
       
       
       # Uc First it
@@ -206,7 +203,6 @@ sub ParseDate {
   my ( $text ) = @_;
 
   my( $year, $day, $month );
-  #print("text: $text");
 
   # format '2011-04-13'
   if( $text =~ /^\d{4}\-\d{2}\-\d{2}$/i ){
