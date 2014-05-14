@@ -169,6 +169,7 @@ sub ImportXLS {
         channel_id => $channel_id,
         start_time => $time,
         title	   => norm($title),
+        aspect     => '16:9',
       };
 
       $ce->{description} = $desc if defined($desc);
