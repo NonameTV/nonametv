@@ -361,7 +361,7 @@ sub guess_channel
     # excel (XLSX)
     if($filename =~ /\.xlsx$/i) {
     	return "classic.vh1.se" if $filename =~ /vh1.*euro.*classic/i;
-    	return "hd.vh1.se" if $filename =~ /vh1.*euro.*classic/i;
+    	return "hd.mtv.se" if $filename =~ /^mtv.*live.*hd/i;
     }
  }
 

@@ -111,6 +111,7 @@ sub ImportXLS
           	$columns{'Description'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Description/ );
           	$columns{'Description'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Synopsis/ );
 
+
             $foundcolumns = 1 if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Date/ );
           }
         }
@@ -138,7 +139,7 @@ sub ImportXLS
 	  # Startdate
       if( $date ne $currdate ) {
       	if( $currdate ne "x" ) {
-					$dsh->EndBatch( 1 );
+		    $dsh->EndBatch( 1 );
         }
       
       	my $batchid = $chd->{xmltvid} . "_" . $date;
@@ -152,18 +153,11 @@ sub ImportXLS
       my $oWkC = $oWkS->{Cells}[$iR][$columns{'Title'}];
       next if( ! $oWkC );
       my $title = $oWkC->Value if( $oWkC->Value );
-      
-      # Remove *** Premiere *** 
-      $title =~ s/\*\*\* premiere \*\*\* //g; 
-      $title =~ s/\*\*\* premiere\*\*\* //g; 
-      $title =~ s/\*\*\* PREMIERE \*\*\* //g; 
-      
-      # Uppercase the first letter
-      $title = ucfirst($title);
-      
-      # Replace and upstring
-      $title =~ s/Hd/HD/;  #replace hd with HD
-      $title =~ s/Mtv/MTV/;  #replace mtv with MTV
+      $title =~ s/\.\.\.//g;
+      $title =~ s/\.\.//g;
+      $title =~ s/&amp;/&/g;
+      $title =~ s/@/at/g;
+
 
 	  # descr (column 7)
 	  my $desc = $oWkS->{Cells}[$iR][$columns{'Description'}]->Value if $oWkS->{Cells}[$iR][$columns{'Description'}];
@@ -182,19 +176,18 @@ sub ImportXLS
       my ( $subtitle ) = ($ce->{title} =~ /:\s*(.+)$/);
   	  $ce->{title} =~ s/:\s*(.+)//;
       
-      
       # Uc First it
-      ( $ce->{subtitle} ) = (ucfirst($subtitle)) if $subtitle;
+      ( $ce->{subtitle} ) = (norm($subtitle)) if $subtitle;
 
-			progress("Mtve_mail: $chd->{xmltvid}: $time - $title");
+	  progress("Mtve_mail: $chd->{xmltvid}: $time - $title");
       $dsh->AddProgramme( $ce );
 
-			push( @ces , $ce );
+	  push( @ces , $ce );
 
     } # next row
   } # next worksheet
 
-	$dsh->EndBatch( 1 );
+  $dsh->EndBatch( 1 );
 
   return 1;
 }
@@ -214,6 +207,10 @@ sub ParseDate {
   } elsif( $text =~ /^\d{1,2}-\d{1,2}-\d{2}$/ ){ # format '10-18-11' or '1-9-11'
      ( $month, $day, $year ) = ( $text =~ /^(\d+)-(\d+)-(\d+)$/ );
    }
+
+  if(!defined($year)) {
+    return;
+  }
 
   $year += 2000 if $year < 100;
 
