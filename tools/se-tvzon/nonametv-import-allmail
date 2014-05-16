@@ -19,7 +19,6 @@ tools/nonametv-import Svt $1 $2 $3
 tools/nonametv-import Venetsia $1 $2 $3
 tools/nonametv-import SBSTVSWE $1 $2 $3
 tools/nonametv-import BBCWW $1 $2 $3
-tools/nonametv-import BBCWWNO $1 $2 $3
 
 # Porn
 tools/nonametv-import HustlerTV $1 $2 $3
