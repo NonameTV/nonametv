@@ -304,6 +304,8 @@ sub AugmentProgram( $$$ ){
 
         $episodetitle =~ s|\s*-\s+part\s+(\d+)$| ($1)|;   # _(Part_#) for Al Jazeera International
 
+        $episodetitle =~ s|\s+-\s+(\d+)$| ($1)|;          # _-_# for ORF
+
         # " - - " to " - " for Eisenbahnromantik on SWR, maybe happens when shuffling title/subtitle around
         $episodetitle =~ s|\s+-\s+-\s+| - |;
 
