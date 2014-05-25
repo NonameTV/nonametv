@@ -91,6 +91,7 @@ sub new {
 
   $self->{ua}->agent( $self->{useragent} );
   $self->{ua}->env_proxy( );
+  $self->{ua}->ssl_opts( SSL_verify_mode => 'SSL_VERIFY_NONE' );
 
   if( not defined $self->{credentials} ) {
     $self->{credentials} = {};
