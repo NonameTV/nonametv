@@ -238,7 +238,7 @@ sub showInfo {
     } else {
          #&debug(2, "download: $sid\n");
          &verbose(1, "TVRage: Downloading series: $sid\n");
-            my $data = $self->_downloadXml("http://www.tvrage.com/feeds/showinfo.php?sid=". $sid);
+            my $data = $self->_downloadXml("http://services.tvrage.com/feeds/showinfo.php?sid=". $sid);
             #print Dumper( $data );
             return undef unless $data;
 
@@ -270,7 +270,7 @@ sub getEpisodes {
     } else {
          #&debug(2, "download: $sid\n");
          &verbose(1, "TVRage: Downloading episodes: $sid\n");
-            my $data = $self->_downloadXml("http://www.tvrage.com/feeds/episode_list.php?sid=". $sid);
+            my $data = $self->_downloadXml("http://services.tvrage.com/feeds/episode_list.php?sid=". $sid);
             #print Dumper( $data );
             return undef unless $data;
 
