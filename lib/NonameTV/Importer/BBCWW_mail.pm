@@ -150,17 +150,20 @@ sub ImportXLS
 
 			# Norwegian
             if($chd->{sched_lang} eq "no") {
+                $columns{'Title'}    = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Programme \(Norwegian\)/ );
 			    $columns{'Synopsis'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Synopsis \(Norwegian\)/ );
 			}
 
 			# Danish
             if($chd->{sched_lang} eq "dk") {
+                $columns{'Title'}    = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Programme \(Danish\)/ );
 			    $columns{'Synopsis'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Synopsis \(Danish\)/ );
 			}
 
 			# Finnish
             if($chd->{sched_lang} eq "fi") {
-			    $columns{'Synopsis'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Synopsis \(Norwegian\)/ );
+                $columns{'Title'}    = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Programme \(Finnish\)/ );
+			    $columns{'Synopsis'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Synopsis \(Finnish\)/ );
 			}
 
             $foundcolumns = 1 if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Date/ );
@@ -171,8 +174,6 @@ sub ImportXLS
 
         next;
       }
-
-
 
       # date - column 0 ('Date')
       my $oWkC = $oWkS->{Cells}[$iR][$columns{'Date'}];
@@ -229,7 +230,7 @@ sub ImportXLS
 	  $ce->{actors}          = norm($oWkS->{Cells}[$iR][$columns{'Cast'}]->Value)          if defined($columns{'Cast'}) and $oWkS->{Cells}[$iR][$columns{'Cast'}];
 	  $ce->{directors}       = norm($oWkS->{Cells}[$iR][$columns{'Director'}]->Value)      if defined($columns{'Director'}) and $oWkS->{Cells}[$iR][$columns{'Director'}];
 	  $ce->{presenters}      = norm($oWkS->{Cells}[$iR][$columns{'Presenter'}]->Value)     if defined($columns{'Presenter'}) and $oWkS->{Cells}[$iR][$columns{'Presenter'}];
-      $ce->{production_date} = $year."-01-01" if defined($year);
+      $ce->{production_date} = $year."-01-01" if defined($year) and $year ne "" and $year ne "0000";
 
       if( $epino ){
         if( $seano ){

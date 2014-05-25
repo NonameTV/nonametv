@@ -121,6 +121,11 @@ $data =~ s| xmlns="urn:crystal-reports:schemas:report-detail"||;
 
       foreach my $prog ($progs->get_nodelist) {
         my $title = $prog->findvalue( './/Field[@Name="programName1"]/Value' );
+        $title =~ s/16:9//g;
+        $title =~ s/1st hr//g;
+        $title =~ s/2nd hr//g;
+        $title =~ s/3rd hr//g;
+
         my $start = $prog->findvalue( './/Field[@Name="hour1"]/Value' );
 
         my $desc2 = $prog->findvalue( './/Field[@Name="Synopsis1"]/Value' );
