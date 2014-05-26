@@ -614,7 +614,7 @@ sub parse_subtitle
 
   if (defined ($subtitle)) {
     $subtitle =~ s|^\s+||;
-    $subtitle =~ s|\s+$||;
+    $subtitle =~ s|[\s-]+$||;
     if ($subtitle eq '') {
       $subtitle = undef;
     }
