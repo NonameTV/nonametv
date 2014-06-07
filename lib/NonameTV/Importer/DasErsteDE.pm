@@ -361,7 +361,9 @@ sub ImportContent {
       @directors_array_2nd = (@directors_array_2nd, @fixup);
     }
     if (@directors_array_2nd) {
-      $ce->{directors} = join (", ", @directors_array_2nd);
+      my $joinedDirectors = join (', ', @directors_array_2nd);
+      $joinedDirectors =~ s/\s+/ /g; # fix whitespace in names
+      $ce->{directors} = $joinedDirectors;
     }
 
     my $writers= $pgm->findnodes ('.//Buch');
