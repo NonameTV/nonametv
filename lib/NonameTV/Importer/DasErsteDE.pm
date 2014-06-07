@@ -216,6 +216,7 @@ sub ImportContent {
     # clean up for RBB
     $title =~ s/^Debüt im rbb\s*:\s*//gi; # prefix
     $title =~ s/^FilmMatinee\s*:\s*//gi; # prefix
+    $title =~ s/^SommerRomanzen\s*:\s*//gi; # prefix
     $title =~ s/^SonntagsFilm\s*:\s*//gi; # prefix
 
     my $ce = {
