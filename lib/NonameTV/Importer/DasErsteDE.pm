@@ -209,6 +209,7 @@ sub ImportContent {
     $title =~ s| \(\d+\)$||g;
     $title =~ s/ \(WH(?: von \w{2}| von \w{2} der Vorwoche|)\)$//g;
     # clean up for HR
+    $title =~ s/^Kinemathek(?:-Nacht|)\s*:\s*//g; # prefix: Kinemathek:
     $title =~ s/\s+Kinemathek(?:-Nacht|)\s*:.*$//g; # suffix: Kinemathek: person
     # clean up for RBB
     $title =~ s/^Debüt im rbb\s*:\s*//gi; # prefix
