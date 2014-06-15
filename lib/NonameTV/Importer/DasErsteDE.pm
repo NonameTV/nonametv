@@ -610,7 +610,7 @@ sub parse_subtitle
     AddCategory( $sce, $type, $categ );
     $subtitle = undef;
   # match country of production, production year (Tatort on HR: Deutschland 1978)
-  } elsif ($subtitle =~ m|^(Deuschland)\s+\d{4}$|) {
+  } elsif ($subtitle =~ m|^(Deutschland)\s+\d{4}$|) {
     my ($program_country, $production_year) = ($subtitle =~ m|^(Deutschland)\s+(\d{4})$|);
     $sce->{production_date} = $production_year . "-01-01";
     $subtitle = undef;
