@@ -588,6 +588,12 @@ sub parse_subtitle
   } elsif ($subtitle =~ m|\bAudiodeskription\b| ) {
     # Intergalaktische Bruchlandung Folge 1246 Familienserie Deutschland, 2014 Audiodeskription Deutsche Erstausstrahlung
     $subtitle =~ s|\s*Audiodeskription\s*| |;
+  } elsif ($subtitle =~ m|\b\S+erie\s+\S+,? \d{4}\s*-\s*\d{4}\b| ) {
+    # Jugendserie Deutschland 1998 - 2009
+    # seen on RBB
+    my( $genre )=( $subtitle =~ s|\s*(\S+erie)\s+\S+,? \d{4}\s*-\s*\d{4}\s*| | );
+    my ( $type, $categ )= $self->{datastore}->LookupCat( "DasErste_type", $genre );
+    AddCategory( $sce, $type, $categ );
   } elsif ($subtitle =~ m|\b\S+erie\s+\S+,? \d{4}\b| ) {
     # Intergalaktische Bruchlandung Folge 1246 Familienserie Deutschland, 2014 Audiodeskription Deutsche Erstausstrahlung
     my( $genre )=( $subtitle =~ s|\s*(\S+erie)\s+\S+,? \d{4}\s*| | );
