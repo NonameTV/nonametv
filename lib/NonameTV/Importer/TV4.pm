@@ -209,6 +209,7 @@ sub ImportContent
     {
     	my $role = undef;
       my $name = norm( $act->findvalue('./real_name') );
+      my $type = norm( $act->findvalue('./type') );
 
       # Role played
       if( $act->findvalue('./role_played') ) {
@@ -217,7 +218,7 @@ sub ImportContent
 
       # Don't add if TV4 forgot the real name.
       if((defined $name) and ($name ne "")) {
-		  if( (defined $role) and ( $role =~ /Regiss(.*)r/i  ) )
+		  if( $type =~ /Regiss(.*)r/i )
 		  {
 			push @directors, $name;
 		  }

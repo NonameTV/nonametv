@@ -113,7 +113,13 @@ foreach my $dir (@folders) {
 
   foreach my $message ($folder->messages) {
     next if $message->isDeleted();
-    next if $message->label( 'flagged' );
+
+    # Flag for delete
+    if($message->label( 'flagged' )) {
+        $message->delete;
+        print("Message deleted.\n");
+        next; # Skip
+    }
     next unless $message->isMultipart;
 
     # Use Encode::MIME::Header

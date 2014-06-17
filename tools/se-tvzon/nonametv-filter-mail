@@ -168,6 +168,7 @@ foreach my $msg ($infolder->messages) {
   elsif( $fromaddr =~ /\@horseandcountry.tv/i ) {
     MoveMessage( $msg, "HaC" );
   }
+
 }
 
 sub MoveMessage {

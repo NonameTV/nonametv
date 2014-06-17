@@ -31,7 +31,7 @@ sub new {
 
 
     $self->{MinMonths} = 0 unless defined $self->{MinMonths};
-    $self->{MaxMonths} = 4 unless defined $self->{MaxMonths};
+    $self->{MaxMonths} = 2 unless defined $self->{MaxMonths};
 
     defined( $self->{UrlRoot} ) or die "You must specify UrlRoot";
     
@@ -128,8 +128,8 @@ sub ImportContent
   foreach my $sc ($ns->get_nodelist)
   {
     my $title_original = $sc->findvalue( './@SeriesOriginalTitle' );
-my $title_programme = $sc->findvalue( './@ProgrammeSeriesTitle' );
-my $title = norm($title_programme) || norm($title_original);
+    my $title_programme = $sc->findvalue( './@ProgrammeSeriesTitle' );
+    my $title = norm($title_programme) || norm($title_original);
 
     my $start = $self->create_dt( $sc->findvalue( './@SlotLocalStartTime' ) );
     if( not defined $start )
@@ -139,23 +139,21 @@ my $title = norm($title_programme) || norm($title_original);
       next;
     }
     
-    	my $desc = undef;
-    	my $desc_episode = $sc->findvalue( './@ProgrammeEpisodeLongSynopsis' );
-		my $desc_series = $sc->findvalue( './@ProgrammeSeriesLongSynopsis' );
-		$desc = $desc_episode || $desc_series;
+    my $desc = undef;
+    my $desc_episode = $sc->findvalue( './@ProgrammeEpisodeLongSynopsis' );
+	my $desc_series = $sc->findvalue( './@ProgrammeSeriesLongSynopsis' );
+	$desc = $desc_episode || $desc_series;
 
-		my $genre = $sc->findvalue( './@SeriesGenreDescription' );
-		my $production_year = $sc->findvalue( './@ProgrammeSeriesYear' );
+	my $genre = $sc->findvalue( './@SeriesGenreDescription' );
+	my $production_year = $sc->findvalue( './@ProgrammeSeriesYear' );
 		# Subtitle, DefaultEpisodeTitle contains the original episodetitle.
         # I.e. Plastic Buffet for Robot Chicken
         # For some series (mostly on TNT7) defaultepisodetitle contains (Part {episodenum})
         # That should be remove later on, but for now you should use Tvdb augmenter for that.
-        my $subtitle_episode = $sc->findvalue( './@ProgrammeEpisodeTitle' );
-        my $subtitle_default = $sc->findvalue( './@DefaultEpisodeTitle' );
-        my $subtitle = norm($subtitle_episode) || norm($subtitle_default);
-				my $aspect = $sc->findvalue( './@ProgrammeVersionTechnicalTypesAspect_Ratio' );
-
-		progress("Nonstop: $chd->{xmltvid}: $start - $title");
+    my $subtitle_episode = $sc->findvalue( './@ProgrammeEpisodeTitle' );
+    my $subtitle_default = $sc->findvalue( './@DefaultEpisodeTitle' );
+    my $subtitle = norm($subtitle_episode) || norm($subtitle_default);
+    my $aspect = $sc->findvalue( './@ProgrammeVersionTechnicalTypesAspect_Ratio' );
 
     my $ce = {
       title => norm($title),
@@ -164,18 +162,18 @@ my $title = norm($title_programme) || norm($title_original);
       start_time => $start->ymd("-") . " " . $start->hms(":"),
     };
     
-    		my ( $dummy, $season, $episode ) = ($desc =~ /\(S(.*)song\s*(\d+)\s*avsnitt\s*(\d+)\)/ );
+    my ( $dummy, $season, $episode ) = ($desc =~ /\(S(.*)song\s*(\d+)\s*avsnitt\s*(\d+)\)/ );
     
-        if((defined $season) and ($episode > 0) and ($season > 0) )
-        {
-            $ce->{episode} = sprintf( "%d . %d .", $season-1, $episode-1 );
-            $ce->{program_type} = "series";
-        }
-        elsif((defined $episode) and ($episode > 0) )
-        {
-            $ce->{episode} = sprintf( ". %d .", $episode-1 );
-            $ce->{program_type} = "series";
-        }
+    if((defined $season) and ($episode > 0) and ($season > 0) )
+    {
+        $ce->{episode} = sprintf( "%d . %d .", $season-1, $episode-1 );
+        $ce->{program_type} = "series";
+    }
+    elsif((defined $episode) and ($episode > 0) )
+    {
+        $ce->{episode} = sprintf( ". %d .", $episode-1 );
+        $ce->{program_type} = "series";
+    }
         
         $ce->{description} =~ s/\(S(.*)song(.*)\)$//;
         
@@ -257,6 +255,7 @@ my $title = norm($title_programme) || norm($title_original);
 	}
 
     $ds->AddProgramme( $ce );
+    progress("Nonstop: $chd->{xmltvid}: $start - $title");
   }
   
   # Success

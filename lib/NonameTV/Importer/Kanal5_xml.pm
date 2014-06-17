@@ -72,8 +72,8 @@ sub ImportXML
 
   my $dsh = $self->{datastorehelper};
   my $ds = $self->{datastore};
-  $ds->{SILENCE_END_START_OVERLAP}=1;
-  $ds->{SILENCE_DUPLICATE_SKIP}=1;
+  #$ds->{SILENCE_END_START_OVERLAP}=1;
+  #$ds->{SILENCE_DUPLICATE_SKIP}=1;
 
   my $doc;
   #my $cref=`cat $file`;
@@ -109,7 +109,7 @@ sub ImportXML
 
         my $batchid = $chd->{xmltvid} . "_" . $date;
         $dsh->StartBatch( $batchid , $chd->{id} );
-        $dsh->StartDate( $date , "00:00" );
+        $dsh->StartDate( $date , "06:00" );
         $currdate = $date;
 
         progress("Kanal5_xml: Date is: $date");
@@ -153,12 +153,11 @@ sub ImportXML
       my $ce = {
         channel_id => $chd->{id},
         title => norm($title),
-        start_time => $start,
-        end_time => $end,
+        start_time => $start->ymd("-") . " " . $start->hms(":"),
+        end_time   => $end->ymd("-")   . " " . $end->hms(":"),
         description => norm($desc),
       };
 
-      progress( "Kanal5_xml: $chd->{xmltvid}: $start - $title" );
       extract_extra_info( $ds, $ce );
       
       my($program_type, $category ) = $ds->LookupCat( 'Kanal5_xml', $genre );
@@ -197,8 +196,8 @@ sub ImportXML
       }
       
       # Add programme
-      
-      $dsh->AddCE( $ce );
+      $ds->AddProgrammeRaw( $ce );
+      progress( "Kanal5_xml: $chd->{xmltvid}: $start - $title" );
     } # next row
 
 	$dsh->EndBatch( 1 );

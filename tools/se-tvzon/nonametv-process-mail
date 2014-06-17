@@ -3,5 +3,5 @@
 getmail --rcfile=/home/jnylen/.getmail/getmailrc --getmaildir=/home/jnylen/maildir/.Projects/xmltv-data-in
 
 # Parse it
-/home/jnylen/projects/nonametv/tools/se-tvzon/nonametv-filter-mail
+/home/jnylen/projects/nonametv/tools/se-tvzon/nonametv-filter-mail --verbose
 /home/jnylen/projects/nonametv/tools/se-tvzon/nonametv-parse-maildir --verbose
