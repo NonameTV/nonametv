@@ -94,7 +94,7 @@ sub ImportXLS
   foreach my $oWkS (@{$oBook->{Worksheet}}) {
 
 	# main worksheet is "Schedule" if thats not the right one, jump to "Hungary"
-	if( $oWkS->{Name} !~ /Schedule/ and $oWkS->{Name} !~ /Hungary/ ){
+	if( $oWkS->{Name} !~ /Schedule/ and $oWkS->{Name} !~ /Hungary/ and $oWkS->{Name} !~ /English/ ){
           progress( "BBCWW: $chd->{xmltvid}: Skipping worksheet: $oWkS->{Name}" );
           next;
     }

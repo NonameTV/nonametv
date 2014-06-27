@@ -165,16 +165,22 @@ my $ref = ReadData ($file);
         subtitle    => $subtitle,
       };
 
+
+      my ($season, $episode, $eps);
       $oWkC = $oWkS->{Cells}[$iR][$coldesc];
-      $ce->{description} = norm($oWkC->Value) if( $oWkC->Value );
+      if(defined($oWkC) and $oWkC->Value) {
+        $ce->{description} = norm($oWkC->Value);
 
-      my ( $season )            = ($ce->{description} =~ /S(\d+)/ );
-      my ( $episode, $eps )     = ($ce->{description} =~ /Ep\s+(\d+)\/(\d+)/ );
+        # Clean it
+        $ce->{description} =~ s/\(.*\)$//g;
+        $ce->{description} = norm($ce->{description});
+
+        # Episode
+        ( $season )            = ($ce->{description} =~ /S(\d+)/ );
+        ( $episode, $eps )     = ($ce->{description} =~ /Ep\s+(\d+)\/(\d+)/ );
+      }
+
       my ( $dummy, $episode2 )  = ($subtitle =~ /^(Ep|Episode)\s+(\d+)$/ );
-
-      # Clean it
-      $ce->{description} =~ s/\(.*\)$//g;
-      $ce->{description} = norm($ce->{description});
 
       # Episode
       if(defined($episode) and $episode) {

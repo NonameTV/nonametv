@@ -112,12 +112,12 @@ foreach my $dir (@folders) {
                            extract => 'ALWAYS' );
 
   foreach my $message ($folder->messages) {
-    next if $message->isDeleted();
+    #next if $message->isDeleted();
 
     # Flag for delete
     if($message->label( 'flagged' )) {
-        $message->delete;
-        print("Message deleted.\n");
+    #    $message->delete;
+    #    print("Message deleted.\n");
         next; # Skip
     }
     next unless $message->isMultipart;
@@ -369,6 +369,12 @@ sub guess_channel
     	return "classic.vh1.se" if $filename =~ /vh1.*euro.*classic/i;
     	return "hd.mtv.se" if $filename =~ /^mtv.*live.*hd/i;
     }
+
+    # excel (XLS)
+    if($filename =~ /\.xls$/i) {
+        return "classic.vh1.se" if $filename =~ /vh1.*euro.*classic/i;
+        return "hd.mtv.se" if $filename =~ /^mtv.*live.*hd/i;
+    }
  }
 
    if( $dir =~ /YaS/ and $filename =~ /\.xls$/i ) {
@@ -384,7 +390,7 @@ sub guess_channel
  }
 
  if( $dir =~ /PokerChannel/ and $filename =~ /\.xlsx$/i ) {
-     return "ginx.tv" if $filename =~ /epg/i;
+     return "ginx.tv";
  }
 
  if( $dir =~ /Fatstone/ and $filename =~ /\.xlsx$/i ) {
@@ -400,6 +406,7 @@ sub guess_channel
  }
 
  if( $dir =~ /TV8Norge/ and $filename =~ /\.xls|.xlsx$/i ) {
+      return "ostfold.tv8norge.no" if $filename =~ /tv8ostfold/i;
       return "ostfold.tv8norge.no" if $filename =~ /tv8ostfold/i;
       return "romerike.tv8norge.no" if $filename =~ /tv8romerike/i;
       return "oslo.tv8norge.no" if $filename =~ /tv8oslo/i;

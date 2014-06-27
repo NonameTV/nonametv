@@ -321,6 +321,11 @@ sub ImportXML
       if($ce->{title} =~ /^(Aktuellt|Rapport|Regionala nyheter|Sportnytt|Kulturnyheterna|Uutiset|Oddasat|Nyhetstecken|SVT Forum|Sydnytt|Värmlandsnytt|Nordnytt|Mittnytt|Gävledala|Tvärsnytt|Östnytt|Smålandsnytt|Västnytt|ABC)$/i) {
       	delete($ce->{episode});
       }
+
+      # Programmes which end time isn't correct
+      if($ce->{title} =~ /^(Gomorron Sverige)$/i) {
+        delete($ce->{end_time});
+      }
       
       $ce->{description} = join_text( @sentences );
      
