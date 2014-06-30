@@ -22,6 +22,7 @@ program_type
 use DateTime;
 use Date::Parse;
 use Encode;
+use Data::Dumper;
 use Scalar::Util qw(looks_like_number);
 
 use NonameTV qw/MyGet expand_entities AddCategory norm/;
@@ -58,12 +59,16 @@ sub ImportContent
 
   my $ds = $self->{datastore};
   my $dsh = $self->{datastorehelper};
+  $ds->{SILENCE_DUPLICATE_SKIP}=1;
 
   # Decode the string into perl's internal format.
   # see perldoc Encode
 
+  my ( $shit ) = ( $$cref =~ /SENDEDATO/ );
+
 #  my $str = decode( "utf-8", $$cref );
-  my $str = decode( "iso-8859-1", $$cref );
+#  my $str = decode( "iso-8859-1", $$cref );
+   my $str = decode( "utf-16", $$cref );
   
   my @rows = split("\n", $str );
 
@@ -225,8 +230,9 @@ sub FetchDataFromSite
 
   my( $year, $week ) = ( $batch_id =~ /(\d+)-(\d+)$/ );
  
-  my $url = sprintf( "%s_%01d_%s_%02d.xls",
-                     $self->{UrlRoot}, $week, $data->{grabber_info}, 
+  my $url = sprintf( "https://presse.tv2.no/presse/api/Excel?c=%s&w=%01d&y=%02d&format=csv&a=true",
+                     $data->{grabber_info},
+                     $week,
                      $year);
   
   my( $content, $code ) = MyGet( $url );
@@ -246,13 +252,15 @@ sub row_to_hash
   if( scalar( @coldata ) > scalar( @{$columns} ) )
   {
     error( "$batch_id: Too many data columns " .
-           scalar( @coldata ) . " > " . 
+           scalar( @coldata ) . " > " .
            scalar( @{$columns} ) );
   }
 
   for( my $i=0; $i<scalar(@coldata) and $i<scalar(@{$columns}); $i++ )
   {
-    $res{$columns->[$i]} = norm($coldata[$i])
+    my $column = $columns->[$i];
+
+    $res{$column} = norm($coldata[$i])
       if $coldata[$i] =~ /\S/; 
   }
 
