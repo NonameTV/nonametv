@@ -94,7 +94,7 @@ sub ImportContent
         }
         
         # Film
-        if ($title eq "Film") {
+        if ($title eq "Film" || $title eq "Filmsommer") {
             $title = $subtitle;
             $subtitle = "";
         }
@@ -164,21 +164,22 @@ sub ImportContent
         $ce->{episode} = $episode if $episode;
 
         # Directors
-        if( my( $directors ) = ($desc =~ /Regi\:\s*(.*)$/) )
+        if( my( $directors ) = ($ce->{description} =~ /Regi\:\s*(.*)$/) )
     	{
-      		$ce->{directors} = parse_person_list( $directors );
-      		$desc =~ s/Regi\:(.*)$//;
-      		$desc = norm($desc);
+      		$ce->{directors}   = parse_person_list( $directors );
+      		$ce->{description} =~ s/Regi\:(.*)$//;
+      		$ce->{description} = norm($desc);
+
 
       		$ce->{program_type} = "movie";
     	}
         
         # Get actors
-        if( my( $actors ) = ($desc =~ /Med\:\s*(.*)$/ ) )
+        if( my( $actors ) = ($ce->{description} =~ /Med\:\s*(.*)$/ ) )
     	{
-      		$ce->{actors} = parse_person_list( $actors );
-      		#$desc =~ s/Med\:(.*)$//;
-      		#$desc = norm($desc);
+      		$ce->{actors}      = parse_person_list( $actors );
+      		$ce->{description} =~ s/Med\:(.*)$//;
+      		$ce->{description} = norm($desc);
    		}
    		
    		if( ($desc =~ /fr. (\d\d\d\d)\b/i) or
@@ -187,7 +188,7 @@ sub ImportContent
       		$ce->{production_date} = "$1-01-01";
     	}
     	
-    	if ($sc->findvalue( './SERIETITTEL' ) eq "Film") {
+    	if ($sc->findvalue( './SERIETITTEL' ) eq "Film" || $sc->findvalue( './SERIETITTEL' ) eq "Filmsommer") {
     		$ce->{program_type} = "movie";
     		$ce->{subtitle} = undef;
     	}
