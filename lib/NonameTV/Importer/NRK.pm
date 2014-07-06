@@ -74,18 +74,13 @@ sub ImportContent
     
         my $start = $sc->findvalue( './ANNTID' );
         $start =~ s/\./:/;
-               
-        #my $stop = $sc->findvalue( './SLUTTID' );
-        #$stop =~ s/\./:/;
-        
+
         my $title = $sc->findvalue( './SERIETITTEL' );
         my $subtitle = $sc->findvalue( './SENDETITTEL' );
         if ($title eq "") {
             $title = $subtitle;
         }
-        #my $bigtitle = "T$title - S$subtitle";
-        #my $bigtitle = "$title: $subtitle" unless ($title eq $subtitle);
-        #$bigtitle =~ s/^:.//;
+
         if ($title eq $subtitle) {
             $subtitle = "";
         } else {
@@ -101,21 +96,21 @@ sub ImportContent
         
         my $desc = $sc->findvalue( './RUBRIKKTEKST' );
         my( $episode, $ep, $eps, $seas, $dummy );
+
         # Avsnitt 2:6
-  			( $ep, $eps ) = ($desc =~ /\((\d+)\:(\d+)\)/ );
-  			$desc =~ s/\((\d+)\:(\d+)\)//;
-  			$desc = norm($desc);
+  		( $ep, $eps ) = ($desc =~ /\((\d+)\:(\d+)\)/ );
+  		$desc =~ s/\((\d+)\:(\d+)\)//;
+  		$desc = norm($desc);
         
         # Avsnitt 2
-  			( $ep ) = ($desc =~ /\s+\((\d+)\)/ ) if not $ep;
-  			$desc =~ s/\((\d+)\)$//;
-  			$desc = norm($desc);
+  		( $ep ) = ($desc =~ /\s+\((\d+)\)/ ) if not $ep;
+  		$desc =~ s/\((\d+)\)$//;
+  		$desc = norm($desc);
         
         # S�song 2
-  			( $seas ) = ($desc =~ /Sesong\s*(\d+)/ );
-				$desc =~ s/Sesong (\d+)$//;
-				$desc = norm($desc);
-        # my $text = $sc->findvalue( './TEKSTEKODE' );
+  		( $seas ) = ($desc =~ /Sesong\s*(\d+)/ );
+		$desc =~ s/Sesong (\d+)\.//;
+		$desc = norm($desc);
         
         my ( $subtitles ) = ($desc =~ /\((.*)\)$/ );
         if($subtitles) {
@@ -168,7 +163,7 @@ sub ImportContent
     	{
       		$ce->{directors}   = parse_person_list( $directors );
       		$ce->{description} =~ s/Regi\:(.*)$//;
-      		$ce->{description} = norm($desc);
+      		$ce->{description} = norm($ce->{description});
 
 
       		$ce->{program_type} = "movie";
@@ -179,7 +174,7 @@ sub ImportContent
     	{
       		$ce->{actors}      = parse_person_list( $actors );
       		$ce->{description} =~ s/Med\:(.*)$//;
-      		$ce->{description} = norm($desc);
+      		$ce->{description} = norm($ce->{description});
    		}
    		
    		if( ($desc =~ /fr. (\d\d\d\d)\b/i) or
@@ -198,11 +193,12 @@ sub ImportContent
     	# Title cleanup
     	$ce->{title} =~ s/Nattkino://g;
     	$ce->{title} =~ s/Film://g;
+    	$ce->{title} =~ s/Filmsommer://g;
     	$ce->{title} = norm($ce->{title});
         
         $dsh->AddProgramme( $ce );
 
-
+        progress( "NRK: $chd->{xmltvid}: $start - $ce->{title}" );
     }
     
     return 1;

@@ -47,7 +47,8 @@ sub Object2Url {
 
   my( $date ) = ($objectname =~ /_(.*)/);
 
-  my $url = 'http://press.cmore.se/export/xml/' . $date . '/' . $date . '/?channelId=' . $chd->{grabber_info};
+#  my $url = 'http://press.cmore.se/export/xml/' . $date . '/' . $date . '/?channelId=' . $chd->{grabber_info};
+  my $url = $self->{UrlRoot} . 'export/xml/' . $date . '/' . $date . '/?channelId=' . $chd->{grabber_info};
 
   return( $url, undef );
 }
@@ -225,8 +226,9 @@ sub ImportContent
       channel_id  => $chd->{id},
       description => norm($desc),
       start_time  => $start->ymd("-") . " " . $start->hms(":"),
-      end_time    => $end->ymd("-") . " " . $end->hms(":"),
     };
+
+    #      end_time    => $end->ymd("-") . " " . $end->hms(":"),
 
     if( $series_title =~ /\S/ )
     {
