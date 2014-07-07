@@ -15,6 +15,7 @@ use utf8;
 use NonameTV qw/AddCategory ParseXml norm/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/w f progress/;
+use Roman;
 
 use base 'NonameTV::Importer::BaseDaily';
 
@@ -93,9 +94,10 @@ sub ImportContent {
     	
     	
     	# Title
-      my ($title) = norm($programme->findvalue ('./TYTUL_CYKLU'));
+      my $title      = norm($programme->findvalue ('./TYTUL_CYKLU'));
+      my $title_full = norm($programme->findvalue ('TYTUL'));
       if(!$title) {
-      	$title = norm($programme->findvalue ('TYTUL'));
+      	$title = $title_full
       }
 
       my ($year) = $programme->findvalue ('./ROK_PRODUKCJI');
@@ -132,7 +134,7 @@ sub ImportContent {
 
 			# Presenters (It's actually in the correct form)
 			my ($presenters) = $programme->findvalue ('./REZYSER');
-			$ce->{presenters} = norm($presenters) if $presenters;
+			$ce->{directors} = norm($presenters) if $presenters;
 
 			# Genre
       my ($genre) = $programme->findvalue ('./RODZAJ');
@@ -144,7 +146,19 @@ sub ImportContent {
         $ce->{production_date} = $year . '-01-01';
       }
 
-			#progress("TVP: $chd->{xmltvid}: $time - $title");
+      my($ep2, $seasonroman, $seas, $episode);
+      ( $seasonroman, $ep2 ) = ($title_full =~ /\(seria\s+(\S*),\s+odc\.\s+(\d+)\)/ );
+      if( (defined $ep2) and (defined $seasonroman) and isroman($seasonroman) )
+      {
+        my $romanseas = arabic($seasonroman);
+
+        # add it
+        if(defined($romanseas)) {
+            $ce->{episode} = sprintf( "%d . %d .", $romanseas-1, $ep2-1 );
+        }
+      }
+
+      progress("TVP: $chd->{xmltvid}: $time - $title");
       $dsh->AddProgramme( $ce );
     }
   }
