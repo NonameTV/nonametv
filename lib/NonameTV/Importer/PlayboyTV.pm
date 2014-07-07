@@ -67,7 +67,7 @@ sub ImportContentFile
   my $schedlang = $chd->{sched_lang};
   progress( "PlayboyTV: $chd->{xmltvid}: Setting schedules language to '$schedlang'" );
 
-  return if( $file !~ /\.doc$/i );
+  #return if( $file !~ /\.doc$/i );
 
   my $channel_id = $chd->{id};
   my $channel_xmltvid = $chd->{xmltvid};
