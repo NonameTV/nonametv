@@ -17,6 +17,7 @@ use utf8;
 
 use DateTime;
 use XML::LibXML;
+use Roman;
 
 use NonameTV::DataStore::Helper;
 use NonameTV qw/MyGet norm AddCategory/;
@@ -118,16 +119,16 @@ sub ImportContent {
       next if not $starttime;
 
       my $starttimefull = $prg->findvalue( 'start_time_full' );
-      my $duration = $prg->findvalue( 'duration' );
-      my $lead = $prg->findvalue( 'lead' );
-      my $thnimage = $prg->findvalue( 'thn_image' );
-      my $channelid = $prg->findvalue( 'channel_id' );
-
-      progress( "HBO: $channel_xmltvid: $starttime - $title" );
+      my $duration =      $prg->findvalue( 'duration' );
+      my $lead =          $prg->findvalue( 'lead' );
+      my $thnimage =      $prg->findvalue( 'thn_image' );
+      my $channelid =     $prg->findvalue( 'channel_id' );
+      my $category =      $prg->findvalue( 'content_type' );
+      my $genre =         $prg->findvalue( 'primary_genre' );
 
       my $ce = {
         channel_id => $channel_id,
-        title => $title,
+        title => norm($title),
         start_time => $starttime,
       };
 
@@ -135,7 +136,77 @@ sub ImportContent {
       $ce->{description} = $lead if $lead;
       $ce->{url_image_thumbnail} = $thnimage if ( $thnimage =~ /\S/ );
 
+      my( $pty, $cat );
+      # Primary program_type
+      if(defined($category) and $category and $category ne "") {
+        ( $pty, $cat ) = $ds->LookupCat( 'HBO_primary', $category );
+      	AddCategory( $ce, $pty, $cat );
+      }
+
+      # Genre
+      if(defined($genre) and $genre and $genre ne "") {
+        ( $pty, $cat ) = $ds->LookupCat( 'HBO_genre', $genre );
+        AddCategory( $ce, $pty, $cat );
+      }
+
+      # Episode
+      my($ep, $seasonroman, $seas, $episode);
+      ( $seasonroman, $ep ) = ($ce->{title} =~ /(\S*)\.,\s+(\d+).\s+del$/ );
+
+      if( (defined $ep) and (defined $seasonroman) and isroman($seasonroman) )
+      {
+        my $romanseas = arabic($seasonroman);
+
+        # add it
+        if(defined($romanseas)) {
+            $ce->{title} =~ s/(\S*)\.,\s+(\d+).\s+del$//;
+            $ce->{title} = norm($ce->{title});
+            $episode = sprintf( "%d . %d .", $romanseas-1, $ep-1 );
+        }
+      }
+
+      ( $ep ) = ($ce->{title} =~ /,\s+(\d+).\s+del$/ );
+      $ce->{title} =~ s/,\s+(\d+).\s+del$//;
+      $ce->{title} = norm($ce->{title});
+
+      if( (defined $ep) )
+      {
+        # add it
+        $episode = sprintf( " . %d .", $ep-1 );
+      }
+
+      # HBO HR
+      ( $seasonroman, $ep ) = ($ce->{title} =~ /(\S*),\s+ep\.\s+(\d+)$/ );
+
+      if( (defined $ep) and (defined $seasonroman) and isroman($seasonroman) )
+      {
+        my $romanseas = arabic($seasonroman);
+
+        # add it
+        if(defined($romanseas)) {
+            $ce->{title} =~ s/(\S*),\s+ep\.\s+(\d+)$//;
+            $ce->{title} = norm($ce->{title});
+            $episode = sprintf( "%d . %d .", $romanseas-1, $ep-1 );
+        }
+      }
+
+      ( $ep ) = ($ce->{title} =~ /,\s+ep\.\s+(\d+)$/ );
+      $ce->{title} =~ s/,\s+ep\.\s+(\d+)$//;
+      $ce->{title} = norm($ce->{title});
+
+      if( (defined $ep) )
+      {
+        # add it
+        $episode = sprintf( " . %d .", $ep-1 );
+      }
+
+      $ce->{title} =~ s/\.$//; # Remove ending .
+
+      $ce->{episode} = $episode if $episode;
+
       $dsh->AddProgramme( $ce );
+
+      progress( "HBO: $channel_xmltvid: $starttime - $ce->{title}" );
     }
   }
 
