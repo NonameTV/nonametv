@@ -208,8 +208,16 @@ sub ImportContent {
     $title =~ s| \(\d+/\d+\)$||g;
     $title =~ s| \(\d+\)$||g;
     $title =~ s/ \(WH(?: von \w{2}| von \w{2} der Vorwoche|)\)$//g;
+    # clean up for Das Erste
+    $title =~ s/^FilmDebüt im Ersten\s*:\s*//gi; # prefix
     # clean up for HR
-    $title =~ s/\s+Kinemathek(?:-Nacht|)\s*:.*$//g;
+    $title =~ s/^Kinemathek(?:-Nacht|)\s*:\s*//g; # prefix: Kinemathek:
+    $title =~ s/\s+Kinemathek(?:-Nacht|)\s*:.*$//g; # suffix: Kinemathek: person
+    # clean up for RBB
+    $title =~ s/^Debüt im rbb\s*:\s*//gi; # prefix
+    $title =~ s/^FilmMatinee\s*:\s*//gi; # prefix
+    $title =~ s/^SommerRomanzen\s*:\s*//gi; # prefix
+    $title =~ s/^SonntagsFilm\s*:\s*//gi; # prefix
 
     my $ce = {
       start_time  => $startTime,
@@ -357,7 +365,9 @@ sub ImportContent {
       @directors_array_2nd = (@directors_array_2nd, @fixup);
     }
     if (@directors_array_2nd) {
-      $ce->{directors} = join (", ", @directors_array_2nd);
+      my $joinedDirectors = join (', ', @directors_array_2nd);
+      $joinedDirectors =~ s/\s+/ /g; # fix whitespace in names
+      $ce->{directors} = $joinedDirectors;
     }
 
     my $writers= $pgm->findnodes ('.//Buch');
@@ -578,9 +588,15 @@ sub parse_subtitle
   } elsif ($subtitle =~ m|\bAudiodeskription\b| ) {
     # Intergalaktische Bruchlandung Folge 1246 Familienserie Deutschland, 2014 Audiodeskription Deutsche Erstausstrahlung
     $subtitle =~ s|\s*Audiodeskription\s*| |;
-  } elsif ($subtitle =~ m|\b\S+erie \S+,? \d{4}\b| ) {
+  } elsif ($subtitle =~ m|\b\S+erie\s+\S+,? \d{4}\s*-\s*\d{4}\b| ) {
+    # Jugendserie Deutschland 1998 - 2009
+    # seen on RBB
+    my( $genre )=( $subtitle =~ s|\s*(\S+erie)\s+\S+,? \d{4}\s*-\s*\d{4}\s*| | );
+    my ( $type, $categ )= $self->{datastore}->LookupCat( "DasErste_type", $genre );
+    AddCategory( $sce, $type, $categ );
+  } elsif ($subtitle =~ m|\b\S+erie\s+\S+,? \d{4}\b| ) {
     # Intergalaktische Bruchlandung Folge 1246 Familienserie Deutschland, 2014 Audiodeskription Deutsche Erstausstrahlung
-    my( $genre )=( $subtitle =~ s|\s*(\S+erie) \S+,? \d{4}\s*| | );
+    my( $genre )=( $subtitle =~ s|\s*(\S+erie)\s+\S+,? \d{4}\s*| | );
     my ( $type, $categ )= $self->{datastore}->LookupCat( "DasErste_type", $genre );
     AddCategory( $sce, $type, $categ );
   } elsif ($subtitle =~ m|\bFolge \d+\b| ) {
@@ -600,7 +616,7 @@ sub parse_subtitle
     AddCategory( $sce, $type, $categ );
     $subtitle = undef;
   # match country of production, production year (Tatort on HR: Deutschland 1978)
-  } elsif ($subtitle =~ m|^(Deuschland)\s+\d{4}$|) {
+  } elsif ($subtitle =~ m|^(Deutschland)\s+\d{4}$|) {
     my ($program_country, $production_year) = ($subtitle =~ m|^(Deutschland)\s+(\d{4})$|);
     $sce->{production_date} = $production_year . "-01-01";
     $subtitle = undef;
@@ -610,7 +626,7 @@ sub parse_subtitle
 
   if (defined ($subtitle)) {
     $subtitle =~ s|^\s+||;
-    $subtitle =~ s|\s+$||;
+    $subtitle =~ s|[\s-]+$||;
     if ($subtitle eq '') {
       $subtitle = undef;
     }

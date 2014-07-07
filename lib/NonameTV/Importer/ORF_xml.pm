@@ -121,6 +121,10 @@ sub FilterContent {
       $node->removeChildNodes();
       $node->appendTextNode( 'end-of-transmission' );
     }
+    $nodes = $doc->find( "//sendung[o2e='FALSE']/info" );
+    foreach my $node ($nodes->get_nodelist) {
+      $node->removeChildNodes();
+    }
   }
 
   my $str = $doc->toString( 1 );
