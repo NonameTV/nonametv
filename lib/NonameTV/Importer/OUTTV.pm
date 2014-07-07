@@ -44,7 +44,7 @@ sub new {
   bless ($self, $class);
 
 
-  my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
+  my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore}, "Europe/Stockholm" );
   $self->{datastorehelper} = $dsh;
   
   #$self->{datastore}->{augment} = 1;
