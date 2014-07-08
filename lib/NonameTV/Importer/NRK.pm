@@ -111,6 +111,10 @@ sub ImportContent
   		( $seas ) = ($desc =~ /Sesong\s*(\d+)/ );
 		$desc =~ s/Sesong (\d+)\.//;
 		$desc = norm($desc);
+
+		# Age restrict
+		$desc =~ s/\((\d+) .r\)//;
+        $desc = norm($desc);
         
         my ( $subtitles ) = ($desc =~ /\((.*)\)$/ );
         if($subtitles) {
