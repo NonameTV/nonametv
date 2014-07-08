@@ -106,7 +106,7 @@ sub ImportContent
     #
     # genre
     #
-    my $genre = norm($sc->getElementsByTagName( 'category' ));
+    my $genre = $sc->find( './/category' );
 
     #
     # url
@@ -177,14 +177,16 @@ sub ImportContent
     $ce->{title} = norm($ce->{title});
     
 	my( $title_split, $genre_split ) = split( ',', norm($ce->{title}) );
+    $ce->{title} = norm($title_split);
 
 	my($program_type, $category ) = undef;
 
-	if(defined($genre_split)) {
-		($program_type, $category ) = $ds->LookupCat( "HRT", $genre_split );
-		AddCategory( $ce, $program_type, $category );
-		
-		$ce->{title} = norm($title_split);
+	if(defined($genre)) {
+	    foreach my $g ($genre->get_nodelist)
+        {
+		    ($program_type, $category ) = $ds->LookupCat( "HRT", $g->to_literal );
+		    AddCategory( $ce, $program_type, $category );
+		}
 	}
 	
 	if(defined($org_title) and defined($program_type)) {
@@ -201,7 +203,7 @@ sub ImportContent
 				$org_title =~ s/,$//g;
 				
 				$ce->{subtitle} = undef;
-				$ce->{title} = norm($org_title);
+				#$ce->{title} = norm($org_title);
 			}
 		} elsif(defined($program_type) and $program_type eq "movie" and "$org_title" ne "") {
 			$org_title = ucfirst(lc($org_title));
@@ -214,7 +216,7 @@ sub ImportContent
     {
       $ce->{production_date} = "$1-01-01";
     }
-    
+    $ce->{subtitle} = undef;
     progress("HRT: $chd->{xmltvid}: $start - $ce->{title}");
 
     $ds->AddProgramme( $ce );
