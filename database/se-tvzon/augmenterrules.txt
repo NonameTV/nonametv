@@ -3,7 +3,6 @@
 225,Tvdb,^.*$,program_type,series,\N,episodeseason
 254,Tvdb,^.*$,program_type,series,\N,episodeseason
 255,Tvdb,^.*$,program_type,series,\N,episodeseason
-\N,Fixups,"Våra bästa år",program_type,series,"Days of our Lives",replacetitle
 \N,Tvdb,"Jims värld",program_type,series,75926,episodeseason
 \N,Tvdb,"Våra värsta år",program_type,series,76385,episodeseason
 \N,Tvdb,"^.*My Dad Says$",program_type,series,164951,episodeseason
@@ -59,7 +58,6 @@
 \N,Tvdb,"Magi på Waverly Place",program_type,series,80726,episodeseason
 232,Tvdb,Wipeout,program_type,series,149051,episodeseason
 429,Tvdb,^.*$,program_type,series,\N,episodeseason
-234,Tvdb,^.*$,program_type,series,\N,episodeseason
 203,Tvdb,^.*$,program_type,series,\N,episodeseason
 204,Tvdb,^.*$,program_type,series,\N,episodeseason
 205,Tvdb,^.*$,program_type,series,\N,episodeseason
@@ -89,7 +87,6 @@
 \N,Tvdb,"Spanien runt med Gwyneth & Co",program_type,series,84181,episodeseason
 233,Fixups,Galileo,program_type,series,"Galileo (Sverige)",replacetitle
 233,Fixups,"Biggest Loser",program_type,series,"The Biggest Loser",replacetitle
-193,Fixups,"Jims Värld",program_type,series,"According to Jim",replacetitle
 \N,Fixups,"Två och en halv män",program_type,series,"2 1/2 män",replacetitle
 \N,Fixups,"Total Recall",program_type,series,"Total Recall 2070",replacetitle
 232,Tvdb,Frisörakuten,program_type,series,88321,episodeseason
@@ -131,15 +128,6 @@
 358,Tvdb,^.*$,program_type,series,\N,episodetitle
 360,Tvdb,^.*$,program_type,series,\N,episodetitle
 362,Tvdb,^.*$,program_type,series,\N,episodetitle
-304,TvdbEN,^.*$,program_type,series,\N,episodetitle
-304,TvdbEN,^.*Homeland.*$,program_type,series,247897,episodetitle
-304,TvdbEN,"^.*How to make it in America.*$",program_type,series,134231,episodetitle
-304,TvdbEN,"^.*The Trip.*$",program_type,series,202571,episodetitle
-304,TvdbEN,"^.*Starke man.*$",program_type,series,193341,episodetitle
-304,TvdbEN,"^.*Boardwalk empire.*$",program_type,series,84947,episodetitle
-304,TvdbEN,^.*Damages.*$,program_type,series,80367,episodetitle
-305,TvdbEN,^.*Treme.*$,program_type,series,84946,episodetitle
-305,TvdbEN,"^.*The Wire.*$",program_type,series,79126,episodetitle
 \N,Tvdb,"Fab 5",program_type,series,72865,episodeseason
 233,Tvdb,"Gordon's Kitchen Nightmares",program_type,series,80552,episodeseason
 \N,Tvdb,"McLeod's döttrar",program_type,series,76532,episodeseason
@@ -155,13 +143,13 @@
 265,Tvdb,^.*$,program_type,series,\N,episodeseason
 257,Tvdb,"Urban legends",program_type,series,74810,episodeseason
 264,Tvdb,"The defenders",program_type,series,164521,episodeseason
-264,Tvdb,"Hawaii five - 0",program_type,series,164541,episodeseason
+262,Tvdb,"Hawaii five - 0",program_type,series,164541,episodeseason
 264,Tvdb,"RuPauls dragrace",program_type,series,85002,episodeseason
 264,Tvdb,"Big brother",program_type,series,231801,episodeseason
 264,Tvdb,"Annual american music awards",program_type,series,210551,episodeseason
 265,Tvdb,"Hem till gården",program_type,series,77715,episodeseason
-265,Tvdb,"Jordan, rättsläkare",program_type,series,74922,episodeseason
-265,Tvdb,"Extreme makeover weightloss",program_type,series,249085,episodeseason
+262,Tvdb,"Jordan, rättsläkare",program_type,series,74922,episodeseason
+262,Tvdb,"Extreme makeover weightloss",program_type,series,249085,episodeseason
 264,Tvdb,Numbers,program_type,series,73918,episodeseason
 260,Tvdb,IT-supporten,program_type,series,79216,episodeseason
 260,Tvdb,"David Letterman",program_type,series,75088,episodeseason
@@ -770,8 +758,8 @@
 494,PreviouslyShown,^.*$,\N,\N,\N,\N
 493,Tvdb,^.*$,program_type,series,\N,episodeseason
 494,Tvdb,^.*$,program_type,series,\N,episodeseason
-288,Tvdb,^.*$,program_type,series,\N,episodeseason
-289,Tvdb,^.*$,program_type,series,\N,episodeseason
+288,TvdbDK,^.*$,program_type,series,\N,episodeseason
+289,TvdbDK,^.*$,program_type,series,\N,episodeseason
 510,Tvdb,^.*$,program_type,series,\N,episodeseason
 472,Tvdb,^.*$,program_type,series,\N,episodeseason
 473,Tvdb,^.*$,program_type,series,\N,episodeseason
@@ -790,7 +778,7 @@
 635,Tvdb,^.*$,\N,\N,\N,episodetitle
 638,Tvdb,^.*$,program_type,series,\N,episodeseason
 641,Tvdb,^.*$,\N,\N,\N,episodetitle
-651,Tvdb,^.*$,program_type,series,\N,episodeseason
+651,TvdbDK,^.*$,program_type,series,\N,episodeseason
 652,Tvdb,^.*$,program_type,series,\N,episodeseason
 653,TvdbNO,^.*$,program_type,series,\N,episodeseason
 654,Tvdb,^.*$,program_type,series,\N,episodeseason
@@ -861,3 +849,49 @@
 741,TvdbFI,^.*$,program_type,series,\N,episodeseason
 744,TvdbFI,^.*$,program_type,series,\N,episodeseason
 486,Tvdb,"Paradise Hotel",program_type,series,149591,episodeseason
+722,TvdbNO,^.*$,program_type,series,\N,episodeseason
+723,TvdbNO,^.*$,program_type,series,\N,episodeseason
+724,TvdbNO,^.*$,program_type,series,\N,episodeseason
+787,TvdbDK,^.*$,program_type,series,\N,episodeseason
+788,TvdbDK,^.*$,program_type,series,\N,episodeseason
+789,TvdbDK,^.*$,program_type,series,\N,episodeseason
+620,TvdbIT,^.*$,program_type,series,\N,episodeseason
+620,TvdbIT,"Sword Art On Line",program_type,series,259640,episodeseason
+\N,Fixups,"Sword Art On Line",program_type,series,"Sword Art Online",replacetitle
+620,TvdbIT,Scandal,program_type,series,248841,episodeseason
+620,TvdbIT,Heartland,program_type,series,82701,episodeseason
+620,TvdbIT,"Doctor Who",program_type,series,78804,episodeseason
+295,TvdbNO,Musketerene,program_type,series,269159,episodetitle
+295,TvdbNO,"Ripper Street",program_type,series,260485,episodetitle
+295,TvdbNO,"Den vidunderlige kysten",program_type,series,80429,episodetitle
+295,TvdbNO,"Livsfarlege dyr",program_type,series,112801,episodeseason
+295,TvdbNO,"Inspektør Lynley",program_type,series,78774,episodeseason
+296,TvdbNO,"The Tipping Points",program_type,series,275649,episodetitle
+516,TvdbNO,"Ripper Street",program_type,series,260485,episodetitle
+516,TvdbNO,Musketerene,program_type,series,269159,episodetitle
+516,TvdbNO,"Den vidunderlige kysten",program_type,series,80429,episodetitle
+516,TvdbNO,"Livsfarlege dyr",program_type,series,112801,episodeseason
+516,TvdbNO,"Inspektør Lynley",program_type,series,78774,episodeseason
+289,TvdbDK,"The Newsroom",program_type,series,256227,episodeseason
+295,Tvdb,"The Newsroom",program_type,series,256227,episodetitle
+296,Tvdb,"The Newsroom",program_type,series,256227,episodetitle
+791,Tvdb,^.*$,program_type,series,\N,episodetitle
+792,Tvdb,^.*$,program_type,series,\N,episodetitle
+793,Tvdb,^.*$,program_type,series,\N,episodetitle
+794,Tvdb,^.*$,program_type,series,\N,episodetitle
+795,Tvdb,^.*$,program_type,series,\N,episodetitle
+796,Tvdb,^.*$,program_type,series,\N,episodetitle
+797,Tvdb,^.*$,program_type,series,\N,episodetitle
+630,TvdbDK,^.*$,program_type,series,\N,episodeseason
+232,Tvdb,Castle,program_type,series,83462,episodeseason
+287,TvdbNO,Castle,program_type,series,83462,episodeseason
+392,TvdbNO,Castle,program_type,series,83462,episodeseason
+477,Tvdb,Castle,program_type,series,83462,episodetitle
+528,Tvdb,Castle,program_type,series,83462,episodeseason
+\N,Fixups,Brottskod,subtitle,Försvunnen,"Brottskod: Försvunnen",replacetitle
+439,Tvdb,^.*$,program_type,series,\N,episodeseason
+398,TvdbNO,"Hawaii Five-O",program_type,series,164541,episodeseason
+260,Tvdb,"Last man standing",program_type,series,248834,episodeseason
+297,TvdbDE,"Last Man Standing",program_type,series,248834,episodetitle
+398,TvdbNO,"Last Man Standing",program_type,series,248834,episodeseason
+398,TvdbNO,"Mord og mysterier",program_type,movie,76846,episodeseason
