@@ -345,7 +345,12 @@ sub ImportContent {
     my @actors_array;
     foreach my $actor($actors->get_nodelist()) {
       # TODO handle special roles like "Moderator" and "Kontakt", see br-alpha
-      push (@actors_array, $actor->string_value());
+      my $role = $actor->findvalue( '@Name' );
+      if ($role) {
+        push (@actors_array, $actor->string_value() . ' (' . $role . ')');
+      } else {
+        push (@actors_array, $actor->string_value());
+      }
     }
     if (@actors_array) {
       $ce->{actors} = join (", ", @actors_array);
