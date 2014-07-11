@@ -210,6 +210,8 @@ sub ImportContent {
     $title =~ s/ \(WH(?: von \w{2}| von \w{2} der Vorwoche|)\)$//g;
     # clean up for Das Erste
     $title =~ s/^FilmDebüt im Ersten\s*:\s*//gi; # prefix
+    # clean up for EinsFestival
+    $title =~ s/^SommerKino im Ersten\s*:\s*//gi; # prefix
     # clean up for HR
     $title =~ s/^Kinemathek(?:-Nacht|)\s*:\s*//g; # prefix: Kinemathek:
     $title =~ s/\s+Kinemathek(?:-Nacht|)\s*:.*$//g; # suffix: Kinemathek: person
