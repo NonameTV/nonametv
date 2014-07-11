@@ -36,10 +36,11 @@ use base 'NonameTV::Importer::BaseFile';
 # PROGRESS = 3
 # ERROR = 4
 # FATAL = 5
-my $BATCH_LOG_LEVEL = 4;
+my $BATCH_LOG_LEVEL = 1;
 
-my $command_re = "ÄNDRA|RADERA|TILL|INFOGA|EJ ÄNDRAD|" . 
-    "CHANGE|DELETE|TO|INSERT|UNCHANGED" .
+my $command_re = "ÄNDRA|RADERA|TILL|INFOGA|EJ ÄNDRAD|FLYTTA TILL|" .
+    "CHANGE|DELETE|TO|INSERT|UNCHANGED|" .
+    "ENDRE|SLETT|TIL|SETT IN|UENDRET|FLYTT TIL|" .
     "PROMIJENI|BRISI|U|UMETNI|NEPROMIJENJENO";
 
 my $time_re = '\d\d[\.:]\d\d';
@@ -98,6 +99,7 @@ sub ImportContentFile
     return;
   }
 
+  # Norwegian and danish doesnt work and flip out (amd -files have a command that doesnt work yet)
   if( $file =~ /amend/i ) {
     $self->ImportAmendments( $file, $doc, $channel_xmltvid, $channel_id, $schedlang );
   }
@@ -327,7 +329,9 @@ sub ImportAmendments
     my( $time, $command, $title );
 
     if( ($text =~ /^sida \d+ av \d+$/i) or
+        ($text =~ /^side \d+ av \d+$/i) or
         ($text =~ /tablån fortsätter som tidigare/i) or
+        ($text =~ /Programoversikten forblir den samme som tidligere/i) or
         ($text =~ /slut på tablå/i) or
         ($text =~ /^page \d+ of \d+$/i) or
         ($text =~ /schedule resumes as/i)
@@ -335,7 +339,7 @@ sub ImportAmendments
     {
       next;
     }
-    elsif( $text =~ /^SLUT|END|KRAJ$/ )
+    elsif( $text =~ /^SLUT|END|KRAJ|SLUTT$/ )
     {
       last;
     }
@@ -370,6 +374,8 @@ sub ImportAmendments
                        ( \( [^)]* \) )*
                      $/x ) )
     {
+      print Dumper($command, $title);
+
       if( $state != ST_FOUND_DATE )
       {
         die( "GlobalListings: $channel_xmltvid: $filename Wrong state for $text" );
@@ -438,7 +444,9 @@ sub parse_command
   $e->{title} = $title;
   $e->{desc} = "";
 
-  if( $command eq "ÄNDRA" or $command eq "RADERA")
+  print Dumper($command);
+
+  if( $command eq "ÄNDRA" or $command eq "RADERA" or $command eq "ENDRE" or $command eq "SLETT")
   {
     $e->{command} = "DELETEBLIND";
   }
@@ -454,7 +462,8 @@ sub parse_command
     # The titles won't match.
     $e->{command} = "DELETEBLIND";
   }
-  elsif( $command eq "TILL" or $command eq "INFOGA"    # Swedish
+  elsif(    $command eq "TILL" or $command eq "INFOGA"    # Swedish
+         or $command eq "TIL" or $command eq "SETT INN" or $command eq "SETT" # norway
          or $command eq "TO" or $command eq "INSERT"   # English
          or $command eq "U" or $command eq "UMETNI" )  # Croatian
   {
@@ -503,7 +512,7 @@ sub process_command
       start_time => $dt->ymd('-') . " " . $dt->hms(':'),
       title => $e->{title},
     };
-    extract_extra_info( $ce );
+    #extract_extra_info( $ce );
 
     if( $e->{desc} =~ /Programförklaring ej ändrad/ )
     {
@@ -518,7 +527,7 @@ sub process_command
     }
 
     $dsu->AddProgramme( $ce );
-  }    
+  }
   elsif( $e->{command} eq "IGNORE" )
   {}
   else
