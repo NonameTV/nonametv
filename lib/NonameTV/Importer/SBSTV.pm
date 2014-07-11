@@ -130,7 +130,7 @@ sub ImportContent {
     $title =~ s/:\|apostrofe\|;/'/g;
     my $org_title = $b->findvalue( "originaltitel" );
     $org_title =~ s/:\|apostrofe\|;/'/g;
-    my $titles = $org_title || $title;
+    my $titles = $title || $org_title;
     $titles =~ s/Tv-premiere://g if $titles;
   
   
