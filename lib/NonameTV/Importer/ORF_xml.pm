@@ -215,7 +215,9 @@ sub ImportContent
  	      start_time  => $time,
    		};
    	 
-  	  	my $desc = $sc->findvalue( './info' );
+  	  	my @descnodes = $sc->findnodes( './info' );
+                foreach my $node (@descnodes) {
+                my $desc = $node->textContent();
 		# strip repeat
 		$desc =~ s|\(Wh\..+?\)||;
 		my( $genre, $countries, $year )=( $desc =~ m|\((.+?), (\S+) (\d{4})\)| );
@@ -276,7 +278,17 @@ sub ImportContent
 			$desc =~ s|^ca. \d+\'$||m;
 			# TODO do we want to add running time?
 		}
-	      $ce->{description} = norm($desc) if $desc;
+                # just a remark, not a programm description => remove it
+                if( $desc =~ m|^\s*\(.*\)\s*$| ){
+                        $desc = undef;
+                }
+                if( $desc =~ m|^\s*Details folgen!\s*$| ) {
+                        $desc = undef;
+                }
+                if( $desc ){
+                       $ce->{description} = norm($desc);
+                }
+                }
 
 		my $subtitle =  $sc->findvalue( './subtitel' );
                 if( $subtitle =~ m|\s+/\s+ENTFALLEN$| ){
@@ -284,6 +296,7 @@ sub ImportContent
                         $subtitle =~ s|\s+/\s+ENTFALLEN$||;
                 }
                 $subtitle =~ s|\s+\(Wh\.\)$||;
+                $subtitle =~ s|^\s*Titel folgt\s*$||;
 		if( $subtitle =~ m/^(?:Folge|Kapitel|Teil)\s+\d+\s+-\s+.+$/ ){
 			my( $episodenum, $episodetitle )=( $subtitle =~ m/^(?:Folge|Kapitel|Teil)\s+(\d+)\s+-\s+(.+)$/ );
 			$ce->{episode} = '. ' . ($episodenum - 1) . ' .';
