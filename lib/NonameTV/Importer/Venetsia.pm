@@ -136,13 +136,16 @@ sub ImportXML
       $title =~ s/\(S\)//;
       $title =~ s/Elokuva://;
       $title =~ s/\(TXT\)//;
-      $title =~ s/\(\d*\)//;
+      $title =~ s/\(.*\)//;
       $title =~ s/Series\s+\d+//;
       $title =~ s/YR\d+//;
       $title =~ s/\s+Y\d+//;
       $title =~ s/\s+S\d+//;
       $title =~ s/Elokuva://;
       $title =~ s/Elokuvat://;
+      $title =~ s/Kino://;
+      $title =~ s/Bio\s+Klassiker://;
+      $title =~ s/Sommarbio://;
       $title =~ s/Film://;
       $title =~ s/\.$//; # remove ending dot.
       
@@ -181,18 +184,80 @@ sub ImportXML
      	    {
      	      $season = $seasontextnum;
 
-     	      #print("Text: $seasontext - Num: $season\n");
+     	      # Only remove sentence if it could find a season
+     	      if($season ne "") {
+     	      	$sentences[$i2] = "";
+     	      }
+     	    }elsif( my( $seasontextnum9 ) = ($sentences[$i2] =~ /^(\d+) säsongen./ ) )
+     	    {
+     	      $season = $seasontextnum9;
 
      	      # Only remove sentence if it could find a season
      	      if($season ne "") {
      	      	$sentences[$i2] = "";
      	      }
      	    }
-     	    elsif( my( $episodetextnum ) = ($sentences[$i2] =~ /^Osa (\d+)./ ) )
+     	    elsif( my( $dummy4 ) = ($sentences[$i2] =~ /^S(\s*)songsstart./ ) )
+            {
+                $sentences[$i2] = "";
+            }elsif( my( $episodetextnum5, $ofepisode3 ) = ($sentences[$i2] =~ /^(\d+)\/(\d+)./ ) )
+            {
+            	$episode = $episodetextnum5;
+            	$eps = $ofepisode3;
+
+            	# Only remove sentence if it could find a season
+            	if($episode ne "") {
+                	$sentences[$i2] = "";
+                }
+            }elsif( my( $episodetextnum4, $ofepisode2 ) = ($sentences[$i2] =~ /^Del (\d+)\/(\d+)./ ) )
+            {
+            	$episode = $episodetextnum4;
+            	$eps = $ofepisode2;
+
+            	# Only remove sentence if it could find a season
+            	if($episode ne "") {
+                	$sentences[$i2] = "";
+                }
+            }elsif( my( $episodetextnum8, $ofepisode8, $epititle2 ) = ($sentences[$i2] =~ /^Del (\d+) av (\d+)\:(.*)./ ) )
+            {
+            	$episode = $episodetextnum8;
+            	$eps = $ofepisode8;
+            	$ce->{subtitle} = norm($epititle2);
+
+            	# Only remove sentence if it could find a season
+            	if($episode ne "") {
+                	$sentences[$i2] = "";
+                }
+            }elsif( my( $episodetextnum7, $ofepisode7, $epititle ) = ($sentences[$i2] =~ /^Del (\d+)\/(\d+)\:(.*)./ ) )
+            {
+            	$episode = $episodetextnum7;
+            	$eps = $ofepisode7;
+            	$ce->{subtitle} = norm($epititle);
+
+            	# Only remove sentence if it could find a season
+            	if($episode ne "") {
+                	$sentences[$i2] = "";
+                }
+            }elsif( my( $episodetextnum2, $ofepisode ) = ($sentences[$i2] =~ /^Del (\d+) av (\d+)./ ) )
+            {
+            	$episode = $episodetextnum2;
+            	$eps = $ofepisode;
+
+            	# Only remove sentence if it could find a season
+            	if($episode ne "") {
+                	$sentences[$i2] = "";
+                }
+            }elsif( my( $episodetextnum3 ) = ($sentences[$i2] =~ /^Del (\d+)./ ) )
+            {
+            	$episode = $episodetextnum3;
+
+            	# Only remove sentence if it could find a season
+            	if($episode ne "") {
+                	$sentences[$i2] = "";
+                }
+            }elsif( my( $episodetextnum ) = ($sentences[$i2] =~ /^Osa (\d+)./ ) )
             {
             	$episode = $episodetextnum;
-
-            	#print("Text: $seasontext - Num: $season\n");
 
             	# Only remove sentence if it could find a season
             	if($episode ne "") {
@@ -202,12 +267,37 @@ sub ImportXML
             {
                 $ce->{directors} = parse_person_list( $directors );
                 $sentences[$i2] = "";
-            } elsif( my( $actors ) = ($sentences[$i2] =~ /^Pääosissa:\s*(.*)/ ) )
+            } elsif( my( $directors4 ) = ($sentences[$i2] =~ /^O:\s*(.*)/) )
+            {
+                $ce->{directors} = parse_person_list( $directors4 );
+                $sentences[$i2] = "";
+            }elsif( my( $actors5 ) = ($sentences[$i2] =~ /^P:\s*(.*)/ ) )
+            {
+                #$ce->{actors} = parse_person_list( $actors5 ); # not sure if producer or actor
+                $sentences[$i2] = "";
+            }elsif( my( $actors ) = ($sentences[$i2] =~ /^Pääosissa:\s*(.*)/ ) )
             {
                 $ce->{actors} = parse_person_list( $actors );
                 $sentences[$i2] = "";
+            }elsif( my( $directors7 ) = ($sentences[$i2] =~ /^R:\s*(.*)/) )
+            {
+                $ce->{directors} = parse_person_list( $directors7 );
+                $sentences[$i2] = "";
+            }elsif( my( $actors7 ) = ($sentences[$i2] =~ /^S:\s*(.*)/ ) )
+            {
+                $ce->{actors} = parse_person_list( $actors7 );
+                $sentences[$i2] = "";
+            }elsif( my( $actors9 ) = ($sentences[$i2] =~ /^Programledare:\s*(.*)/ ) )
+            {
+                $ce->{presenters} = parse_person_list( $actors9 );
+                $sentences[$i2] = "";
             }
 
+            elsif( my( $directors3 ) = ($sentences[$i2] =~ /^Regi\s*(.*)/) )
+            {
+                  $ce->{directors} = parse_person_list( $directors3 );
+                  $sentences[$i2] = "";
+            }
             elsif( my( $directors2 ) = ($sentences[$i2] =~ /^Regi:\s*(.*)/) )
             {
                   $ce->{directors} = parse_person_list( $directors2 );
@@ -223,11 +313,41 @@ sub ImportXML
                   $ce->{actors} = parse_person_list( $actors3 );
                   $sentences[$i2] = "";
             }
+            elsif( my( $actors6 ) = ($sentences[$i2] =~ /^I huvudrollerna\s*(.*)/ ) )
+            {
+                  $ce->{actors} = parse_person_list( $actors6 );
+                  $sentences[$i2] = "";
+            }
+
+            # Clean it up
+            elsif( my( $rerun ) = ($sentences[$i2] =~ /^\(R\)/ ) )
+            {
+                  $sentences[$i2] = "";
+            }
+            elsif( my( $dunno ) = ($sentences[$i2] =~ /^\(U\)/ ) )
+            {
+                  $sentences[$i2] = "";
+            }
+            elsif( my( $hdtv ) = ($sentences[$i2] =~ /^HD$/ ) )
+            {
+                  $ce->{quality} = "HDTV";
+                  $sentences[$i2] = "";
+            }
      	 }
 
      	 my ( $season2 ) = ($description =~ /^(\d+). kausi./ ); # bugfix
-     	 if(defined($season2) and $season > 0) {
+     	 if(defined($season2) and $season == 0) {
      	 	$season = $season2;
+     	 }
+
+        my ( $season3 ) = ($description =~ /^(\d+). tuotantokausi./ ); # bugfix
+     	 if(defined($season3) and $season == 0) {
+     	 	$season = $season3;
+     	 }
+
+         my ( $episode2 ) = ($description =~ /^(\d+). jakso./ ); # bugfix
+     	 if(defined($episode2) and $episode2 == 0) {
+     	 	$episode = $episode2;
      	 }
 
      	 # Episode info in xmltv-format
@@ -248,13 +368,15 @@ sub ImportXML
                		$ce->{episode} = sprintf( ". %d .", $episode-1 );
                }
 
-
-
+     # Prod year - (Country Year)
+     if($description =~ /(\d\d\d\d)\)/) {
+	  	$ce->{production_date} = "$1-01-01";
+	 }
 
      # Remove if season = 0, episode 1, of_episode 1 - it's a one episode only programme
-     if(($episode eq "1") and ( $season eq "0")) {
-     	delete($ce->{episode});
-     }
+     #if(($episode eq "1") and ( $season eq "0")) {
+     #	delete($ce->{episode});
+     #}
 
      $ce->{description} = join_text( @sentences );
 
@@ -262,18 +384,6 @@ sub ImportXML
      if($genre ne "") {
         my($program_type, $category ) = $ds->LookupCat( 'Venetsia', $genre );
           AddCategory( $ce, $program_type, $category );
-
-          # Help Venetsia debug their genre system
-          if($genre > 13) {
-             my $cml = $chd->{xmltvid};
-             print("--------------------\n");
-             print("$cml: $start - $title\n");
-             print("--------------------\n");
-
-             open (MYFILE, '>>venetsia.txt');
-             print MYFILE "$cml: $start - $title - Genre: $genre\n";
-             close (MYFILE);
-          }
      }
 
      
@@ -309,18 +419,7 @@ sub create_dt
                           );
 
   
-  $dt->set_time_zone( "UTC" );
-
-  my $tz = DateTime::TimeZone->new( name => 'Europe/Helsinki' );
-  my $dst = $tz->is_dst_for_datetime( $dt );
-
-  # DST removal thingy
-  if($dst) {
-    $dt->subtract( hours => 2 ); # Daylight saving time
-  } else {
-    $dt->subtract( hours => 1 ); # Normal time
-  }
-
+  #$dt->set_time_zone( "UTC" );
   return $dt;
 }
 
@@ -393,6 +492,7 @@ sub parse_person_list
   $str =~ s/\.$//;
 
   $str =~ s/\boch\b/,/;
+  $str =~ s/\b&\b/,/;
   $str =~ s/\bsamt\b/,/;
 
   my @persons = split( /\s*,\s*/, $str );
