@@ -237,7 +237,7 @@ sub ImportFull
       {
 	extract_extra_info( $ce );
 
-        progress("GlobalListings: $channel_xmltvid: $start - $title");
+        progress("GlobalListings: $channel_xmltvid: $start - $ce->{title}");
 
         $ce->{quality} = 'HDTV' if( $channel_xmltvid =~ /hd\./ );
 
@@ -531,10 +531,18 @@ sub extract_extra_info
 {
   my( $ce ) = shift;
 
-  my( $episode ) = ($ce->{title} =~ /:\s*Avsnitt\s*(\d+)$/);
-  $ce->{title} =~ s/:\s*Avsnitt\s*(\d+)$//; 
-  $ce->{episode} = sprintf(" . %d . ", $episode-1)
-    if defined( $episode );
+  # Episode num
+  my( $dummerino, $episode ) = ($ce->{title} =~ /:\s*(afsnit|episode|avsnitt)\s*(\d+)$/i);
+  $ce->{title} =~ s/:\s*(afsnit|episode|avsnitt)\s*(\d+)$//i;
+  $ce->{episode} = sprintf(" . %d . ", $episode-1) if defined( $episode );
+
+  ## Space to add known series that has wrong title-setting
+  $ce->{title} =~ s/Storage Wars: New York/Storage Wars New York/i;
+  $ce->{title} =~ s/Premiere ALSO APPEARING THIS MONTH://i;
+  $ce->{title} =~ s/Premiere CONTINUING SERIES://i;
+  $ce->{title} =~ s/^Premiere //i;
+  ## Ending
+
   ( $ce->{subtitle} ) = ($ce->{title} =~ /:\s*(.+)$/);
   $ce->{title} =~ s/:\s*(.+)$//;
 
@@ -555,6 +563,9 @@ sub extract_extra_info
   }
 
   $ce->{title} =~ s/^PREMI.R\s+//;
+
+  $ce->{title} = norm($ce->{title});
+  $ce->{subtitle} = norm($ce->{subtitle}) if defined($ce->{subtitle});
 
   return;
 }
@@ -605,7 +616,7 @@ sub isDate {
   #
   # Danish formats
   #
-  if( $text =~ /^(mandag|tirsdag|onsdag|torsdag|fredag|l.rdag|s.ndag)\s*\d+\s*\D+\s*\d+$/i ){
+  if( $text =~ /^(mandag|tirsdag|onsdag|torsdag|fredag|lørdag|søndag)\s*\d+\s*\D+\s*\d+$/i ){
   	return 1;
   }
 
@@ -655,7 +666,7 @@ sub ParseDate
   } elsif( $lang =~ /^dk$/ ){
 
       # try 'Tisdag 3 Juni 2008'
-      if( $text =~ /^(mandag|tirsdag|onsdag|torsdag|fredag|l.rdag|s.ndag)\s*\d+\.\s*\D+\s*\d+$/i ){
+      if( $text =~ /^(mandag|tirsdag|onsdag|torsdag|fredag|lørdag|søndag)\s*\d+\.\s*\D+\s*\d+$/i ){
       	( $weekday, $day, $monthname, $year ) = ( $text =~ /^(\S+?)\s*(\d+)\.\s*(\S+?)\s*(\d+)$/ );
       }
 
