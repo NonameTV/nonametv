@@ -30,9 +30,6 @@ foreach my $msg ($infolder->messages) {
   if( $fromaddr =~ /\@mtvne.com/i ) {
     MoveMessage( $msg, "MTV" );
   }
-  elsif( $fromaddr =~ /\@bbc.com/i ) {
-    MoveMessage( $msg, "BBC" );
-  }
   elsif( $fromaddr =~ /\@vimn.com/i ) {
     MoveMessage( $msg, "MTV" );
   }
@@ -81,18 +78,12 @@ foreach my $msg ($infolder->messages) {
   elsif( $fromaddr =~ /\@ebs.tv/i ) {
     MoveMessage( $msg, "EBS" );
   }
-  elsif( $fromaddr =~ /\@chellozone.com/i ) {
-    MoveMessage( $msg, "Chellozone" );
-  }
-  elsif( $fromaddr =~ /\@svt.se/i ) {
-    MoveMessage( $msg, "Svt" );
-  }
   elsif( $fromaddr =~ /\@sbstv.se/i ) {
     MoveMessage( $msg, "SBSTV" );
   }
   elsif( $fromaddr =~ /\@sbsdiscovery.se/i ) {
-      MoveMessage( $msg, "SBSTV" );
-    }
+    MoveMessage( $msg, "SBSTV" );
+  }
   elsif( $fromaddr =~ /\@fox.com/i ) {
     MoveMessage( $msg, "FOX" );
   }
@@ -111,9 +102,6 @@ foreach my $msg ($infolder->messages) {
   elsif( $fromaddr =~ /\@turner.com/i ) {
     MoveMessage( $msg, "Turner" );
   }
-  elsif( $fromaddr =~ /\@espnamerica.com/i ) {
-    MoveMessage( $msg, "ESPN" );
-  }
   elsif( $fromaddr =~ /\@mediateket.no/i ) {
     MoveMessage( $msg, "Fatstone" );
   }
@@ -124,8 +112,8 @@ foreach my $msg ($infolder->messages) {
     MoveMessage( $msg, "PokerChannel" );
   }
   elsif( $fromaddr =~ /\@ginx.tv/i ) {
-      MoveMessage( $msg, "PokerChannel" );
-    }
+    MoveMessage( $msg, "PokerChannel" );
+  }
   elsif( $fromaddr =~ /\@lifestyletv.se/i ) {
     MoveMessage( $msg, "LifestyleTV" );
   }

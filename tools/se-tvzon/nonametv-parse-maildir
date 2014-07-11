@@ -70,21 +70,16 @@ my @folders = qw(NonameTV-Data.Disney
 		 NonameTV-Data.FOX
 		 NonameTV-Data.Kanal10
 		 NonameTV-Data.SBSTV
-		 NonameTV-Data.TV5Monde
 		 NonameTV-Data.Motors
-		 NonameTV-Data.Svt
 		 NonameTV-Data.OKGoteborg
 		 NonameTV-Data.LifestyleTV
 		 NonameTV-Data.Gmail
 		 NonameTV-Data.Playboy
 		 NonameTV-Data.Hustler
-		 NonameTV-Data.Chellozone
 		 NonameTV-Data.YaS
-		 NonameTV-Data.ESPN
 		 NonameTV-Data.MTV
 		 NonameTV-Data.Mezzo
 		 NonameTV-Data.HighTV
-		 NonameTV-Data.BBC
 		 NonameTV-Data.EBS
 		 NonameTV-Data.WildTV
 		 NonameTV-Data.Euronews
@@ -112,12 +107,8 @@ foreach my $dir (@folders) {
                            extract => 'ALWAYS' );
 
   foreach my $message ($folder->messages) {
-    #next if $message->isDeleted();
-
     # Flag for delete
     if($message->label( 'flagged' )) {
-    #    $message->delete;
-    #    print("Message deleted.\n");
         next; # Skip
     }
     next unless $message->isMultipart;
@@ -179,6 +170,8 @@ sub process_parts
       d "$name skipped.";
       return 0;
     }
+
+    print "  $name $channel\n";
 
     my $chd = $ds->sa->Lookup( 'channels', {xmltvid => $channel} );
 
@@ -265,30 +258,31 @@ sub guess_channel
 
   }
 
-   if( $dir =~ /GlobalListings/ ) {
-     return "hd.natgeo.se" if $filename =~ /^ng\s*swe\s*hd\b/i;
-     return "natgeo.se" if $filename =~ /^ng\s*swe\b/i;
+  if( $dir =~ /GlobalListings/ ) {
+    return "hd.natgeo.se" if $filename =~ /^ng\s*swe\s*hd\b/i;
+    return "natgeo.se" if $filename =~ /^ng\s*swe\b/i;
+
 	# Nat geo wild sends in XLS format
-     return "wild.natgeo.se" if $filename =~ /^ngwscan\s*\b/i;
+    return "wild.natgeo.se" if $filename =~ /^ngwscan\s*\b/i;
+
 	# History Channel
-     return "historytv.se" if $filename =~ /his.eur.swe/i;
-     #return "hd.historytv.se" if $filename =~ /his.hd.swe/i;
-	# ESPN Classic
-    # return "classic.espn.com" if $filename =~ /^espn\s+classic\s+europe/i;
+    return "historytv.se" if $filename =~ /his.eur.swe/i;
+    return "historytv.no" if $filename =~ /his.eur.nor/i;
+    return "historytv.dk" if $filename =~ /his.eur.dan/i;
+
 	# Travel Channel
-     return "travelchanneltv.se" if $filename =~ /^travel/i;
+    return "travelchanneltv.se" if $filename =~ /^travel/i;
 
     # E! Entertainment
     return "se.eonline.com" if $filename =~ /^e\s*swe\b/i;
-    return "dk.eonline.com" if $filename =~ /^e\s*den\b/i;
+    return "dk.eonline.com" if $filename =~ /^e\s*dan\b/i;
     return "no.eonline.com" if $filename =~ /^e\s*nor\b/i;
-    return "nl.eonline.com" if $filename =~ /^e\s*dut\b/i;
 
     # FOX TV Norway
     return "foxtv.no"       if $filename =~ /^fox\s+norway/i;
  }
 
-   if( $dir =~ /Turner/ ) {
+ if( $dir =~ /Turner/ ) {
     # Word files
 	return "cartoonnetwork.se" if $filename =~ /^cn\s*nordic\s+\(swe\)\s*\b/i;
 	return "boomerangtv.se" if $filename =~ /^boomerang\s*nordic\s*\(swe\)\s*\b/i;
@@ -307,27 +301,22 @@ sub guess_channel
 	}
   }
  
- if( $dir =~ /Chellozone/ and $filename =~ /\.xls$/i ) {
-     return "outdoorchannel.com" if $filename =~ /^UTEM\d*L\d*\b/i;
- }
- 
-   if( $dir =~ /Kanal10/ and $filename =~ /\.doc$/i ) {
+ if( $dir =~ /Kanal10/ and $filename =~ /\.doc$/i ) {
      return "kanal10.se";
  }
-   if( $dir =~ /OKGoteborg/ and $filename =~ /\.xls$/i ) {
+
+ if( $dir =~ /OKGoteborg/ and $filename =~ /\.xls$/i ) {
      return "oppnakanalengoteborg.se";
  }
-   if( $dir =~ /France24/ and $filename =~ /\.zip$/i ) {
+
+ if( $dir =~ /France24/ and $filename =~ /\.zip$/i ) {
      return "france24.com" if $filename =~ /ANGL/i;
      return "france24.com" if $filename =~ /ENGL/i;
      return "ar.france24.com" if $filename =~ /ARAB/i;
      return "fr.france24.com" if $filename =~ /FRAN/i;
  }
 
-   if( $dir =~ /TV5Monde/ and $filename =~ /\.xls$/i ) {
-     return "tv5monde.org";
- }
-   if( $dir =~ /OUTTV/ and $filename =~ /\.xlsx$/i ) {
+ if( $dir =~ /OUTTV/ and $filename =~ /\.xlsx$/i ) {
      return "outtv.se";
  }
 
@@ -377,7 +366,7 @@ sub guess_channel
     }
  }
 
-   if( $dir =~ /YaS/ and $filename =~ /\.xls$/i ) {
+ if( $dir =~ /YaS/ and $filename =~ /\.xls$/i ) {
      return "nauticalchannel.net" if $filename =~ /nc/i;
  }
 
@@ -439,46 +428,25 @@ sub guess_channel
  if( $dir =~ /HighTV/ and $filename =~ /\.xls$/i ) {
      return "hightv.tv" if $filename =~ /epg/i;
  }
- 
- if( $dir =~ /Svt/ and $filename =~ /\.xml$/i ) {
-     return "svt1.svt.se" if $filename =~ /svt1/i; 				# SVT_SCHEDULE_SVT1_20130311_20130425.xml
-     return "svt2.svt.se" if $filename =~ /svt2/i; 				# SVT_SCHEDULE_SVT2_20130311_20130425.xml
-     return "svtb.svt.se" if $filename =~ /svtb/i; 				# SVT_SCHEDULE_SVTB_20130311_20130425.xml
-     return "kunskapskanalen.svt.se" if $filename =~ /svtk/i;   # SVT_SCHEDULE_SVTK_20130311_20130425.xml
-     return "svtworld.svt.se" if $filename =~ /svte/i; 			# SVT_SCHEDULE_SVTE_20130311_20130425.xml
-     return "svt24.svt.se" if $filename =~ /_24_/i; 			# SVT_SCHEDULE_24_20130311_20130425.xml
- }
 
- if( $dir =~ /BBC/ and $filename =~ /\.xls$/i ) {
-     return "bbcentertainment.com" if $filename =~ /entertainment/i;
-     return "bbchd.com" if $filename =~ /hd/i;
-     return "bbcknowledge.com" if $filename =~ /knowledge/i;
-     return "bbclifestyle.com" if $filename =~ /lifestyle/i;
-     return "cbeebies.com" if $filename =~ /cbeebies\s+scandi/i;
- }
-
- if( $dir =~ /EBS/ ) {
-    if($filename =~ /\.xls$/i) {
+ if( $dir =~ /EBS/ and $filename =~ /\.xls$/i ) {
          return "bbcentertainment.com" if $filename =~ /entertainment\s+scandi/i;
          return "bbchd.com" if $filename =~ /hd\s+scandi/i;
          return "bbchd.com" if $subject =~ /bbc\s+hd\s+scandi/i;
          return "bbcknowledge.com" if $filename =~ /knowledge\s+scandi/i;
          return "bbclifestyle.com" if $filename =~ /lifestyle\s+scandi/i;
          return "cbeebies.com" if $filename =~ /cbeebies\s+scandi/i;
-    }
-
-     return "outdoorchannel.com" if $filename =~ /^OHD/i;
  }
 
- if( $dir =~ /WildTV/ and $filename =~ /\.zip|.xml/i ) {
+ if( $dir =~ /WildTV/ and $filename =~ /\.zip|\.xml/i ) {
  	return "wildtv.ca";
  }
 
- if( $dir =~ /RTL2/ and $filename =~ /\.xml/i ) {
+ if( $dir =~ /RTL2/ ) {
   	return "rtl2.de";
  }
 
- if( $dir =~ /Gospel/ and $filename =~ /\.xls|.xlsx/i ) {
+ if( $dir =~ /Gospel/ ) {
    	return "gospel.tv";
  }
 
@@ -486,11 +454,11 @@ sub guess_channel
    	return "europe.cnbc.com";
  }
 
- if( $dir =~ /DWDE/ and $filename =~ /\.xls|.xlsx/i ) {
+ if( $dir =~ /DWDE/ ) {
     return "dw.de";
  }
 
- if( $dir =~ /HaC/ and $filename =~ /\.xls|.xlsx/i ) {
+ if( $dir =~ /HaC/ ) {
      return "horseandcountry.tv";
   }
 
