@@ -772,12 +772,12 @@
 528,Tvdb,^.*$,program_type,series,\N,episodeseason
 625,Tvdb,^.*$,program_type,series,\N,episodetitle
 629,Tvdb,^.*$,program_type,series,\N,episodeseason
-631,Tvdb,^.*$,\N,\N,\N,episodetitle
+631,TvdbEN,^.*$,\N,\N,\N,episodetitle
 632,Tvdb,^.*$,\N,\N,\N,episodetitle
 633,Tvdb,^.*$,\N,\N,\N,episodetitle
 635,Tvdb,^.*$,\N,\N,\N,episodetitle
 638,Tvdb,^.*$,program_type,series,\N,episodeseason
-641,Tvdb,^.*$,\N,\N,\N,episodetitle
+641,TvdbEN,^.*$,\N,\N,\N,episodetitle
 651,TvdbDK,^.*$,program_type,series,\N,episodeseason
 652,Tvdb,^.*$,program_type,series,\N,episodeseason
 653,TvdbNO,^.*$,program_type,series,\N,episodeseason
@@ -786,10 +786,10 @@
 442,Tvdb,^.*$,\N,\N,\N,episodetitle
 443,Tvdb,^.*$,\N,\N,\N,episodetitle
 501,Tvdb,^.*$,\N,\N,\N,episodetitle
-441,Tvdb,^.*$,\N,\N,\N,episodeseason
-442,Tvdb,^.*$,\N,\N,\N,episodeseason
-443,Tvdb,^.*$,\N,\N,\N,episodeseason
-501,Tvdb,^.*$,\N,\N,\N,episodeseason
+441,TvdbDK,^.*$,\N,\N,\N,episodeseason
+442,TvdbDK,^.*$,\N,\N,\N,episodeseason
+443,TvdbDK,^.*$,\N,\N,\N,episodeseason
+501,TvdbDK,^.*$,\N,\N,\N,episodeseason
 471,Tvdb,^.*$,program_type,series,\N,episodeseason
 232,Tvdb,"Human Target",program_type,series,94801,episodeseason
 232,Tvdb,"Livet på BB",program_type,series,142401,episodeseason
@@ -895,3 +895,38 @@
 297,TvdbDE,"Last Man Standing",program_type,series,248834,episodetitle
 398,TvdbNO,"Last Man Standing",program_type,series,248834,episodeseason
 398,TvdbNO,"Mord og mysterier",program_type,movie,76846,episodeseason
+509,TvdbNO,Louie,program_type,series,155201,episodeseason
+260,Tvdb,Louie,program_type,series,155201,episodeseason
+660,TvdbNO,Klondike,program_type,series,274129,episodeseason
+233,Tvdb,Klondike,program_type,series,274129,episodeseason
+828,Tvdb,^.*$,program_type,series,\N,episodeseason
+853,Tvdb,^.*$,program_type,series,\N,episodeseason
+854,Tvdb,^.*$,program_type,series,\N,episodeseason
+855,Tvdb,^.*$,program_type,series,\N,episodeseason
+829,TvdbFI,^.*$,program_type,series,\N,episodeseason
+830,TvdbFI,^.*$,program_type,series,\N,episodeseason
+831,TvdbFI,^.*$,program_type,series,\N,episodeseason
+832,Tvdb,^.*$,program_type,series,\N,episodeseason
+833,TvdbFI,^.*$,program_type,series,\N,episodeseason
+834,Tvdb,^.*$,program_type,series,\N,episodeseason
+835,Tvdb,^.*$,program_type,series,\N,episodeseason
+836,TvdbFI,^.*$,program_type,series,\N,episodeseason
+837,TvdbFI,^.*$,program_type,series,\N,episodeseason
+838,TvdbFI,^.*$,program_type,series,\N,episodeseason
+839,TvdbFI,^.*$,program_type,series,\N,episodeseason
+840,TvdbFI,^.*$,program_type,series,\N,episodeseason
+841,TvdbFI,^.*$,program_type,series,\N,episodeseason
+842,TvdbFI,^.*$,program_type,series,\N,episodeseason
+843,TvdbFI,^.*$,program_type,series,\N,episodeseason
+844,TvdbFI,^.*$,program_type,series,\N,episodeseason
+845,TvdbFI,^.*$,program_type,series,\N,episodeseason
+846,TvdbFI,^.*$,program_type,series,\N,episodeseason
+847,TvdbFI,^.*$,program_type,series,\N,episodeseason
+848,TvdbFI,^.*$,program_type,series,\N,episodeseason
+849,TvdbFI,^.*$,program_type,series,\N,episodeseason
+850,TvdbFI,^.*$,program_type,series,\N,episodeseason
+851,TvdbFI,^.*$,program_type,series,\N,episodeseason
+852,TvdbFI,^.*$,program_type,series,\N,episodeseason
+856,TvdbFI,^.*$,program_type,series,\N,episodeseason
+858,TvdbEN,^.*$,\N,\N,\N,episodetitle
+857,TvdbEN,^.*$,\N,\N,\N,episodetitle

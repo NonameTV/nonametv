@@ -252,7 +252,6 @@
 628,"France24 (French)",fr.france24.com,"TV,Norway",France24,1,,1,,,fr,0,http://www.france24.com/,0
 630,"DR Ultra",ultra.dr.dk,"TV,Denmark",DR,1,DRULTRA,1,series,Series,dk,0,http://www.dr.dk/DULTRA/,0
 631,"E! Entertainment Denmark",dk.eonline.com,"TV,Denmark",TravelChannel,1,,1,series,Entertainment,dk,0,http://www.eonline.com/,0
-632,"E! Entertainment Netherlands",nl.eonline.com,TV,TravelChannel,1,,1,series,Entertainment,nl,0,http://www.eonline.com/,0
 635,"E! Entertainment Sweden",se.eonline.com,"TV,Sweden",TravelChannel,1,,1,series,Entertainment,sv,0,http://www.eonline.com/,0
 636,Ginx,ginx.tv,"TV,Norway",Ginx,1,,1,series,Series,en,0,http://www.ginx.tv/,0
 638,OUTTV,outtv.se,TV,OUTTV_web,1,OUTTVSE,1,series,Series,sv,0,http://www.outtv.se/,0
@@ -428,3 +427,34 @@
 825,"Silver (Danish)",dk.silver.nonstop.tv,"TV,Denmark",Nonstop,1,silver-1/se/dan,1,movie,Movies,dk,0,http://www.nonstop.tv/silver/,0
 826,"TNT (Danish)",tnt-tv.dk,"TV,Denmark",Nonstop,1,tnt/dan,1,series,Series,dk,0,http://www.tnt-tv.dk/,0
 827,"TV8 Buskerud",buskerud.tv8norge.no,"TV,Norway",TV8Norge,1,,1,series,Series,no,0,http://tv8norge.no/,0
+828,"TV Finland",tvfinland.yle.fi,TV,Venetsia,1,,1,series,Series,sv,0,http://yle.fi/tvfinland/svenska.htm,0
+829,AVA,ava.mtv.fi,TV,Venetsia,1,,0,series,Series,fi,0,http://avatv.fi/,0
+830,"MTV Fakta",fakta.mtv.fi,TV,Venetsia,1,,0,series,Series,fi,0,http://mtv.fi/,0
+831,"MTV Fakta XL",faktaxl.mtv.fi,TV,Venetsia,1,,0,series,Series,fi,0,http://mtv.fi/,0
+832,"Yle Fem",fem.yle.fi,TV,Venetsia,1,,0,series,Series,sv,0,http://svenska.yle.fi/fem/,0
+833,FOX,fox.fi,TV,Venetsia,1,,0,series,Series,fi,0,http://fox.fi/,0
+834,"Yle HD",hd.yle.fi,TV,Venetsia,1,,0,series,Series,fi,0,http://yle.fi/hd/,0
+835,JIM,jim.nelonen.fi,TV,Venetsia,1,,0,series,Series,fi,0,http://jimtv.fi/,0
+836,"MTV Juniori",juniori.mtv.fi,TV,Venetsia,1,,0,series,Series,fi,0,http://mtv.fi/,0
+837,"MTV Komedia",komedia.mtv.fi,TV,Venetsia,1,,0,series,Series,fi,0,http://mtv.fi/,0
+838,Kutonen,kutonen.fi,TV,Venetsia,1,,0,series,Series,fi,0,http://sbstv.fi/,0
+839,"MTV Leffa",leffa.mtv.fi,TV,Venetsia,1,,0,series,Series,fi,0,http://mtv.fi/,0
+840,LIV,liv.nelonen.fi,TV,Venetsia,1,,0,series,Series,fi,0,http://livtv.fi/,0
+841,"Nelonen Maailma",maailma.nelonen.fi,TV,Venetsia,1,,0,series,Series,fi,0,http://www.nelonen.fi/channel-category/nelonen-maailma,0
+842,"MTV MAX",max.mtv.fi,TV,Venetsia,1,,0,series,Series,fi,0,http://mtv.fi/max/,0
+843,MTV3,mtv3.fi,TV,Venetsia,1,,0,series,Series,fi,0,http://mtv3.fi/,0
+844,"Nelonen Nappula",nappula.nelonen.fi,TV,Venetsia,1,,0,series,Series,fi,0,http://www.nelonen.fi/,0
+845,Nelonen,nelonen.fi,TV,Venetsia,1,,0,series,Series,fi,0,http://nelonen.fi/,0
+846,"Nelonen Prime",prime.nelonen.fi,TV,Venetsia,1,,0,series,Series,fi,0,http://www.nelonen.fi/,0
+847,"Nelonen Pro 1",pro1.nelonen.fi,TV,Venetsia,1,,0,sports,Sports,fi,0,http://www.nelonen.fi/,0
+848,"Nelonen Pro 2",pro2.nelonen.fi,TV,Venetsia,1,,0,sports,Sports,fi,0,http://www.nelonen.fi/,0
+849,"MTV Sarja",sarja.mtv.fi,TV,Venetsia,1,,0,series,Series,fi,0,http://mtv.fi/,0
+850,"MTV Sport 1",sport1.mtv.fi,TV,Venetsia,1,,0,sports,Sports,fi,0,http://mtv.fi/,0
+851,"MTV Sport 2",sport2.mtv.fi,TV,Venetsia,1,,0,sports,Sports,fi,0,http://mtv.fi/,0
+852,Sub,sub.fi,TV,Venetsia,1,,0,series,Series,fi,0,http://sub.fi/,0
+853,"Yle Teema",teema.yle.fi,TV,Venetsia,1,,0,series,Series,sv,0,http://yle.fi/teema/,0
+854,"Yle TV1",tv1.yle.fi,TV,Venetsia,1,,0,series,Series,sv,0,http://yle.fi/tv1/,0
+855,"Yle TV2",tv2.yle.fi,TV,Venetsia,1,,0,series,Series,sv,0,http://yle.fi/tv2/,0
+856,TV5,tv5.fi,TV,Venetsia,1,,0,series,Series,fi,0,http://tv5.fi/,0
+857,"History Channel Denmark",historytv.dk,"TV,Denmark",TravelChannel,1,,0,series,Documentary,dk,0,http://www.historytv.dk/,0
+858,"History Channel Norway",historytv.no,"TV,Norway",TravelChannel,1,,0,series,Documentary,no,0,http://www.historytv.no.com/,0

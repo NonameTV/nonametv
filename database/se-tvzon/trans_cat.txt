@@ -665,6 +665,16 @@ Nonstop,"talk show","Talk show",series
 Nonstop,thriller,Thriller,movie
 Nonstop,war,War,movie
 Nonstop,western,Western,movie
+OKV,barn,Children's,
+OKV,children,Children's,
+OKV,community,Community,
+OKV,documentary,Documentary,
+OKV,educational,Education,
+OKV,entertainment,Entertainment,
+OKV,music,Music,
+OKV,politics,Politics,
+OKV,religious,Religion,
+OKV,sports,Sports,sports
 ORF,abenteuerfilm,Adventure,movie
 ORF,abenteuerserie,Adventure,series
 ORF,action-drama-serie,Action/Drama,series
