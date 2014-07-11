@@ -203,10 +203,12 @@ sub ImportContent
 				$org_title =~ s/,$//g;
 				
 				$ce->{subtitle} = undef;
-				#$ce->{title} = norm($org_title);
+				$ce->{original_title} = norm($ce->{title});
+				$ce->{title} = norm($org_title);
 			}
-		} elsif(defined($program_type) and $program_type eq "movie" and "$org_title" ne "") {
+		} elsif(defined($program_type) and $program_type eq "movie" and $org_title ne "") {
 			$org_title = ucfirst(lc($org_title));
+			$ce->{original_title} = norm($ce->{title});
 			$ce->{title} = norm($org_title);
 			$ce->{subtitle} = undef;
 		}
