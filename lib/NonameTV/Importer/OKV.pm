@@ -158,19 +158,58 @@ sub ImportContent
     }
 
     # Data
-    my $title   = norm($sc->findvalue( './title'   ));
-    $title =~ s/&amp;/&/g; # Wrong encoded char
-    my $desc    = norm($sc->findvalue( './description'    ));
-
+    my $title    = norm($sc->findvalue( './title'   ));
+    $title       =~ s/&amp;/&/g; # Wrong encoded char
+    my $desc     = norm($sc->findvalue( './description'    ));
+    my $year     = norm($sc->findvalue( './year'    ));
+    my $duration = norm($sc->findvalue( './duration'    ));
+    my $genre    = norm($sc->findvalue( './genre'    ));
+    my $end      = $start->clone()->add( minutes => $duration );
 
 	my $ce = {
         channel_id 		=> $chd->{id},
         title 			=> $title,
         start_time 		=> $start,
         description 	=> $desc,
+        end_time        => $end,
     };
 
+    my ( $dummy, $dummy2, $episode ) = ($title =~ /(,|) (del|avsnitt) (\d+)$/i ); # bugfix
+    if(defined($episode)) {
+        $ce->{episode} = sprintf( ". %d .", $episode-1 );
+    }
+
+    my ( $dummy3, $dummy4, $episode2, $ofepisodes ) = ($title =~ /(,|) (del|avsnitt) (\d+) av (\d+)$/i ); # bugfix
+    if(defined($episode2)) {
+        $ce->{episode} = sprintf( ". %d/%d .", $episode2-1, $ofepisodes );
+    }
+
+    # Clean title
+    $title =~ s/, vecka (\d+)//;
+    $title =~ s/, avsnitt (\d+) av (\d+)//;
+    $title =~ s/, del (\d+) av (\d+)//;
+    $title =~ s/, avsnitt (\d+)//;
+    $title =~ s/, del (\d+)//;
+    $title =~ s/ avsnitt (\d+) av (\d+)//;
+    $title =~ s/ del (\d+) av (\d+)//;
+    $title =~ s/ avsnitt (\d+)//;
+    $title =~ s/ del (\d+)//;
+
+    # norm it and replace it
+    $ce->{title} = norm($title);
+
+    # Genre
+    if($genre ne "") {
+        my($program_type, $category ) = $ds->LookupCat( 'OKV', $genre );
+        AddCategory( $ce, $program_type, $category );
+    }
+
     progress( "OKV: $chd->{xmltvid}: $start - $title" );
+
+    # year
+    if($year =~ /(\d\d\d\d)/) {
+	  $ce->{production_date} = "$1-01-01";
+	}
 
 
 	# Add Programme
