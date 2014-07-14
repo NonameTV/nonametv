@@ -374,7 +374,6 @@ sub ImportAmendments
                        ( \( [^)]* \) )*
                      $/x ) )
     {
-      print Dumper($command, $title);
 
       if( $state != ST_FOUND_DATE )
       {
@@ -444,8 +443,6 @@ sub parse_command
   $e->{title} = $title;
   $e->{desc} = "";
 
-  print Dumper($command);
-
   if( $command eq "ÄNDRA" or $command eq "RADERA" or $command eq "ENDRE" or $command eq "SLETT")
   {
     $e->{command} = "DELETEBLIND";
@@ -512,7 +509,7 @@ sub process_command
       start_time => $dt->ymd('-') . " " . $dt->hms(':'),
       title => $e->{title},
     };
-    #extract_extra_info( $ce );
+    extract_extra_info( $ce );
 
     if( $e->{desc} =~ /Programförklaring ej ändrad/ )
     {

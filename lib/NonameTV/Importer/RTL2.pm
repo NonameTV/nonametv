@@ -107,9 +107,9 @@ sub ImportXML
     }
 
   foreach my $row ($rows->get_nodelist) {
-      my $title = norm($row->findvalue( './/header//otitel' ) );
+      my $title = norm($row->findvalue( './/header//stitel' ) );
 
-      my $org_title = norm($row->findvalue( './/header//stitel' ) );
+      my $org_title = norm($row->findvalue( './/header//otitel' ) );
       my $time = $row->findvalue( './/header//szeit' );
       my $type = $row->findvalue( './@typ' );
       my $rerun = $row->findvalue( './@rerun' );
@@ -137,8 +137,10 @@ sub ImportXML
 	  my $year = $row->findvalue( './/header//produktionsjahr' );
 	  my $hd = $row->findvalue( './/header//label//hd' );
 	  my $genre = $row->findvalue( './/header//pressegenre');
+	  my $aspect = $row->findvalue( './/header//bildformat');
 
-	  my $subtitle = $row->findvalue( './/header//oepistitel' );
+	  my $subtitle = $row->findvalue( './/header//epistitel' );
+	  my $subtitle_org = $row->findvalue( './/header//oepistitel' );
 
       my $ce = {
         channel_id => $chd->{id},
@@ -158,8 +160,6 @@ sub ImportXML
             $ce->{subtitle} = norm($subtitle);
         }
 
-
-
      #print Dumper($ce);
 
      # hd
@@ -169,6 +169,7 @@ sub ImportXML
 
     my @actors;
     my @directors;
+    my @writers;
 
     my $ns2 = $row->find( './/mitwirkende//Darsteller' );
     foreach my $act ($ns2->get_nodelist)
@@ -195,8 +196,14 @@ sub ImportXML
 		if($type eq "Regie") {
 			push @directors, $name;
 		}
+
+		# Writers
+        if($type eq "Drehbuch") {
+			push @writers, $name;
+		}
     }
 
+    # Actors
 	if( scalar( @actors ) > 0 )
 	{
 		$ce->{actors} = join ", ", @actors;
@@ -207,10 +214,17 @@ sub ImportXML
         $ce->{directors} = join ", ", @directors;
     }
 
+    if( scalar( @writers ) > 0 )
+    {
+        $ce->{writers} = join ", ", @writers;
+    }
+
     # Genre
     my ( $program_type, $categ ) = $self->{datastore}->LookupCat( "RTL2", $genre );
     # movie
     if( $type eq "Film") {
+       $ce->{title} = norm($org_title) if $org_title;
+       $ce->{original_title} = norm($title) if $org_title;
        AddCategory( $ce, 'movie', $categ );
     } elsif($type eq "Serie") {
         AddCategory( $ce, 'series', $categ );
@@ -220,11 +234,10 @@ sub ImportXML
         AddCategory( $ce, 'series', $categ );
     }
 
-     progress( "RTL2: $chd->{xmltvid}: $start - $title" );
-     #progress( "SvtXML: $chd->{xmltvid}: $time - $ce->{description}" );
-     $dsh->AddCE( $ce );
+    $ce->{aspect} = norm($aspect) if $aspect;
 
-     #print Dumper($ce);
+     progress( "RTL2: $chd->{xmltvid}: $start - $title" );
+     $dsh->AddCE( $ce );
 
     } # next row
 

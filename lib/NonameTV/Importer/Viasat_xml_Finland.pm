@@ -172,9 +172,8 @@ sub ImportContent {
       my $season = $emission->findvalue( 'season' );
       my $eps = "";
       my $episode2 = "";
-      ( $episode2, $eps ) = ($desc =~ /del\s+(\d+):(\d+)/ );
-      ( $episode2, $eps ) = ($desc =~ /Del\s+(\d+):(\d+)/ );
-      $desc =~ s/Del (\d+):(\d+)//g;
+      ( $episode2, $eps ) = ($desc =~ /Del\s+(\d+):(\d+)/i );
+      $desc =~ s/Del (\d+):(\d+)//gi;
       
       # Extra stuff
       my $prodyear = $emission->findvalue( 'productionYear' );

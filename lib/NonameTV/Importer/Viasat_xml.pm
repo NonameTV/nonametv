@@ -141,8 +141,9 @@ sub ImportContent {
       my $start_time = $emission->findvalue( 'startTime' );
       my $other_name = $emission->findvalue( 'name' );
       my $original_name = $emission->findvalue( 'orgName' );
-      my $name = $original_name || $other_name;
+      my $name = $other_name || $original_name;
       $name =~ s/#//g; # crashes the whole importer
+      $name =~ s/(HD)//g; # remove category_
       
       # # End of airtime
       if( ($name eq "END") )
@@ -170,11 +171,18 @@ sub ImportContent {
       # Season and episode
       my $episode = $emission->findvalue( 'episode' );
       my $season = $emission->findvalue( 'season' );
+
+      # Remove from title
+      if(defined($season) and $season ne "" and $category eq "series") {
+        $name =~ s/- s(.*)son $season$//;
+        $name =~ s/$season$//;
+        $name = norm($name);
+      }
+
       my $eps = "";
       my $episode2 = "";
-      ( $episode2, $eps ) = ($desc =~ /del\s+(\d+):(\d+)/ );
-      ( $episode2, $eps ) = ($desc =~ /Del\s+(\d+):(\d+)/ );
-      $desc =~ s/Del (\d+):(\d+)//g;
+      ( $episode2, $eps ) = ($desc =~ /Del\s+(\d+):(\d+)/i );
+      $desc =~ s/Del (\d+):(\d+)//gi;
       
       # Extra stuff
       my $prodyear = $emission->findvalue( 'productionYear' );
@@ -203,8 +211,8 @@ sub ImportContent {
       $ce->{bline} = $bline if $bline;
       
       # Send back original swedish title
-      if(norm($name) ne norm($other_name)) {
-      	$ce->{original_title} = norm($other_name);
+      if(norm($name) ne norm($original_name)) {
+      	$ce->{original_title} = norm($original_name);
       }
       
       # Actors
