@@ -31,6 +31,7 @@ use DateTime::TimeZone;
 use XML::LibXML;
 use IO::Scalar;
 use Data::Dumper;
+use File::Basename;
 
 use NonameTV qw/norm ParseXml AddCategory/;
 use NonameTV::DataStore::Helper;
@@ -84,6 +85,9 @@ sub ImportXML
   my $self = shift;
   my( $file, $chd ) = @_;
 
+  my $filename = fileparse($file);
+  my ( $id, $filedate ) = split(/_/, $filename);
+
   my $dsh = $self->{datastorehelper};
   my $ds = $self->{datastore};
   $ds->{SILENCE_END_START_OVERLAP}=1;
@@ -115,14 +119,33 @@ sub ImportXML
       return;
     }
 
+  $dsh->StartBatch( $chd->{xmltvid}."_".$filedate , $chd->{id} );
   foreach my $row ($rows->get_nodelist) {
-      my $time = norm($row->findvalue( './/ProgramInformation/tva:ProgramDescription/tva:ProgramLocationTable/tva:BroadcastEvent/tva:PublishedStartTime' ));
-      my $title = norm($row->findvalue( './/ProgramInformation/tva:ProgramDescription/tva:ProgramInformation/tva:BasicDescription/tva:Title' ));
+      my $time        = norm($row->findvalue( './/ProgramInformation/tva:ProgramDescription/tva:ProgramLocationTable/tva:BroadcastEvent/tva:PublishedStartTime' ));
+      my $endtime     = norm($row->findvalue( './/ProgramInformation/tva:ProgramDescription/tva:ProgramLocationTable/tva:BroadcastEvent/tva:PublishedEndTime' ));
+      my $title       = norm($row->findvalue( './/ProgramInformation/tva:ProgramDescription/tva:ProgramInformation/tva:BasicDescription/tva:Title' ));
       my $description = norm($row->findvalue( './/ProgramInformation/tva:ProgramDescription/tva:ProgramInformation/tva:BasicDescription/tva:Synopsis' ));
-
-      my $genre = norm($row->findvalue( './/ProgramInformation/tva:ProgramDescription/tva:ProgramInformation/tva:BasicDescription/tva:Genre' ));
+      my $genre       = norm($row->findvalue( './/ProgramInformation/tva:ProgramDescription/tva:ProgramInformation/tva:BasicDescription/tva:Genre' ));
       
       my $start = $self->create_dt( $time );
+      my $end = $self->create_dt( $endtime );
+
+      # Different timezone (need to be -1 hour)
+      if($chd->{grabber_info} eq "UTC") {
+        #my ( $date, $tz ) = split(/\+/, $time);
+        #my( $timezone_hour, $timezone_minute ) = ($tz =~ /^(\d+):(\d+)$/ );
+        #$timezone_hour =~ s/^0+//;
+
+          # DST removal thingy
+          #$start->subtract( hours => $timezone_hour ); # Daylight saving time
+          #$end->subtract( hours => $timezone_hour ); # Normal time
+      }
+
+      # TV Finland schedule is actually GMT+2 when the Finland timezones is GMT+3 (so add a hour which got removed)
+      if($chd->{xmltvid} eq "tvfinland.yle.fi") {
+        $start->add( hours => 1 );
+        $end->add( hours => 1 );
+      }
       
       # Add hours specificed for each channel. (TV Finland has 3 hours if you are in Sweden, etc.)
       #$start->add( hours => $hours );
@@ -153,11 +176,10 @@ sub ImportXML
       
       if($date ne $currdate ) {
         if( $currdate ne "x" ) {
-					$dsh->EndBatch( 1 );
+		#			$dsh->EndBatch( 1 );
         }
 
-        my $batchid = $chd->{xmltvid} . "_" . $date;
-        $dsh->StartBatch( $batchid , $chd->{id} );
+        #my $batchid = $chd->{xmltvid} . "_" . $date;
         $dsh->StartDate( $date , "06:00" );
         $currdate = $date;
 
@@ -166,17 +188,26 @@ sub ImportXML
 
 
       my $ce = {
-        channel_id => $chd->{id},
-        title => norm($title),
-        start_time => $start->hms(":"),
-        description => $description,
+        channel_id  => $chd->{id},
+        title       => norm($title),
+        start_time  => $start,
+        end_time    => $end,
       };
 
+      if(defined($description) and $description ne "") {
+        $ce->{description} = norm($description);
+      }
+
  	 ## Stuff
- 	       my @sentences = (split_text( $description ), "");
- 	       my $season = "0";
- 	       my $episode = "0";
- 	       my $eps = "0";
+ 	 my @sentences = (split_text( $description ), "");
+ 	 my $season = "0";
+ 	 my $episode = "0";
+ 	 my $eps = "0";
+
+      if( defined($sentences[0]) and $sentences[0] =~ /\bfr.n (\d\d\d\d)\b/ )
+      {
+        $ce->{production_date} = "$1-01-01";
+      }
 
            for( my $i2=0; $i2<scalar(@sentences); $i2++ )
        	  {
@@ -188,7 +219,25 @@ sub ImportXML
      	      if($season ne "") {
      	      	$sentences[$i2] = "";
      	      }
-     	    }elsif( my( $seasontextnum9 ) = ($sentences[$i2] =~ /^(\d+) säsongen./ ) )
+     	    }elsif( my( $seasontextnum12 ) = ($sentences[$i2] =~ /^Säsong (\d+)(\d+)./i ) )
+     	    {
+     	      $season = $seasontextnum12;
+
+     	      # Only remove sentence if it could find a season
+     	      if($season ne "") {
+     	      	$sentences[$i2] = "";
+     	      }
+     	    } elsif( my( $seasontextnum11, $episoder, $ofepisodess ) = ($sentences[$i2] =~ /^Säsong (\d+), del (\d+)\/(\d+)./i ) )
+     	    {
+     	      $season = $seasontextnum11;
+     	      $episode = $episoder;
+              $eps = $ofepisodess;
+
+     	      # Only remove sentence if it could find a season
+     	      if($season ne "") {
+     	      	$sentences[$i2] = "";
+     	      }
+     	    }elsif( my( $seasontextnum9 ) = ($sentences[$i2] =~ /^(\d+) säsongen./i ) )
      	    {
      	      $season = $seasontextnum9;
 
@@ -197,7 +246,7 @@ sub ImportXML
      	      	$sentences[$i2] = "";
      	      }
      	    }
-     	    elsif( my( $dummy4 ) = ($sentences[$i2] =~ /^S(\s*)songsstart./ ) )
+     	    elsif( my( $dummy4 ) = ($sentences[$i2] =~ /^S(\s*)songsstart./i ) )
             {
                 $sentences[$i2] = "";
             }elsif( my( $episodetextnum5, $ofepisode3 ) = ($sentences[$i2] =~ /^(\d+)\/(\d+)./ ) )
@@ -209,7 +258,7 @@ sub ImportXML
             	if($episode ne "") {
                 	$sentences[$i2] = "";
                 }
-            }elsif( my( $episodetextnum4, $ofepisode2 ) = ($sentences[$i2] =~ /^Del (\d+)\/(\d+)./ ) )
+            }elsif( my( $episodetextnum4, $ofepisode2 ) = ($sentences[$i2] =~ /Del (\d+)\/(\d+)./i ) )
             {
             	$episode = $episodetextnum4;
             	$eps = $ofepisode2;
@@ -218,7 +267,7 @@ sub ImportXML
             	if($episode ne "") {
                 	$sentences[$i2] = "";
                 }
-            }elsif( my( $episodetextnum8, $ofepisode8, $epititle2 ) = ($sentences[$i2] =~ /^Del (\d+) av (\d+)\:(.*)./ ) )
+            }elsif( my( $episodetextnum8, $ofepisode8, $epititle2 ) = ($sentences[$i2] =~ /^Del (\d+) av (\d+)\:(.*)./i ) )
             {
             	$episode = $episodetextnum8;
             	$eps = $ofepisode8;
@@ -228,7 +277,16 @@ sub ImportXML
             	if($episode ne "") {
                 	$sentences[$i2] = "";
                 }
-            }elsif( my( $episodetextnum7, $ofepisode7, $epititle ) = ($sentences[$i2] =~ /^Del (\d+)\/(\d+)\:(.*)./ ) )
+            }elsif( my( $episodetextnum11, $ofepisode11) = ($sentences[$i2] =~ /^(\d+)\/(\d+)./ ) )
+            {
+            	$episode = $episodetextnum11;
+            	$eps = $ofepisode11;
+
+            	# Only remove sentence if it could find a season
+            	if($episode ne "") {
+                	$sentences[$i2] = "";
+                }
+            }elsif( my( $episodetextnum7, $ofepisode7, $epititle ) = ($sentences[$i2] =~ /^Del (\d+)\/(\d+)\:(.*)./i ) )
             {
             	$episode = $episodetextnum7;
             	$eps = $ofepisode7;
@@ -238,7 +296,7 @@ sub ImportXML
             	if($episode ne "") {
                 	$sentences[$i2] = "";
                 }
-            }elsif( my( $episodetextnum2, $ofepisode ) = ($sentences[$i2] =~ /^Del (\d+) av (\d+)./ ) )
+            }elsif( my( $episodetextnum2, $ofepisode ) = ($sentences[$i2] =~ /^Del (\d+) av (\d+)./i ) )
             {
             	$episode = $episodetextnum2;
             	$eps = $ofepisode;
@@ -247,7 +305,7 @@ sub ImportXML
             	if($episode ne "") {
                 	$sentences[$i2] = "";
                 }
-            }elsif( my( $episodetextnum3 ) = ($sentences[$i2] =~ /^Del (\d+)./ ) )
+            }elsif( my( $episodetextnum3 ) = ($sentences[$i2] =~ /^Del (\d+)./i ) )
             {
             	$episode = $episodetextnum3;
 
@@ -293,14 +351,19 @@ sub ImportXML
                 $sentences[$i2] = "";
             }
 
+            elsif( my( $directors2 ) = ($sentences[$i2] =~ /^Regi:\s*(.*)/) )
+            {
+                  $ce->{directors} = parse_person_list( $directors2 );
+                  $sentences[$i2] = "";
+            }
             elsif( my( $directors3 ) = ($sentences[$i2] =~ /^Regi\s*(.*)/) )
             {
                   $ce->{directors} = parse_person_list( $directors3 );
                   $sentences[$i2] = "";
             }
-            elsif( my( $directors2 ) = ($sentences[$i2] =~ /^Regi:\s*(.*)/) )
+            elsif( my( $writers2 ) = ($sentences[$i2] =~ /^Manus:\s*(.*)/) )
             {
-                  $ce->{directors} = parse_person_list( $directors2 );
+                  $ce->{writers} = parse_person_list( $writers2 );
                   $sentences[$i2] = "";
             }
             elsif( my( $actors2 ) = ($sentences[$i2] =~ /^I rollerna:\s*(.*)/ ) )
@@ -320,15 +383,15 @@ sub ImportXML
             }
 
             # Clean it up
-            elsif( my( $rerun ) = ($sentences[$i2] =~ /^\(R\)/ ) )
+            elsif( my( $rerun, $dummerinoerino3 ) = ($sentences[$i2] =~ /^\(R\)(|\.)/ ) )
             {
                   $sentences[$i2] = "";
             }
-            elsif( my( $dunno ) = ($sentences[$i2] =~ /^\(U\)/ ) )
+            elsif( my( $dunno, $dummerinoerino2 ) = ($sentences[$i2] =~ /^\(U\)(|\.)/ ) )
             {
                   $sentences[$i2] = "";
             }
-            elsif( my( $hdtv ) = ($sentences[$i2] =~ /^HD$/ ) )
+            elsif( my( $hdtv, $dummerinoerino ) = ($sentences[$i2] =~ /^HD(|\.)$/ ) )
             {
                   $ce->{quality} = "HDTV";
                   $sentences[$i2] = "";
@@ -368,8 +431,21 @@ sub ImportXML
                		$ce->{episode} = sprintf( ". %d .", $episode-1 );
                }
 
+     $ce->{description} = join_text( @sentences );
+     # Extra info
+     my ( $extradesc ) = ($ce->{description} =~ /^\((.*)\)/ ); # bugfix
+
+     if(!defined($extradesc)) {
+        my ( $extradesc2, $tedummy ) = ($ce->{description} =~ /\((.*)\)(|\.)$/ ); # bugfix
+        $extradesc = $extradesc2;
+        $ce->{description} =~ s/\((.*)\)(|\.)$//i;
+     }
+
+     $ce->{description} =~ s/^\((.*)\)//i;
+     $ce->{description} = norm($ce->{description});
+
      # Prod year - (Country Year)
-     if($description =~ /(\d\d\d\d)\)/) {
+     if(defined($extradesc) and $extradesc =~ /(\d\d\d\d)/) {
 	  	$ce->{production_date} = "$1-01-01";
 	 }
 
@@ -378,17 +454,16 @@ sub ImportXML
      #	delete($ce->{episode});
      #}
 
-     $ce->{description} = join_text( @sentences );
+
 
      # Genre
-     if($genre ne "") {
+     if(defined($genre) and $genre ne "") {
         my($program_type, $category ) = $ds->LookupCat( 'Venetsia', $genre );
           AddCategory( $ce, $program_type, $category );
      }
 
-     
+     $ds->AddProgramme( $ce );
      progress( "Venetsia: $chd->{xmltvid}: $start - $title" );
-     $dsh->AddProgramme( $ce );
 
     } # next row
 
@@ -419,7 +494,7 @@ sub create_dt
                           );
 
   
-  #$dt->set_time_zone( "UTC" );
+  $dt->set_time_zone( "UTC" );
   return $dt;
 }
 
@@ -487,6 +562,7 @@ sub parse_person_list
 
   # Remove all variants of m.fl.
   $str =~ s/\s*m[\. ]*fl\.*\b//;
+  $str =~ s/\s*b[\. ]*la\.*\b//;
 
   # Remove trailing '.'
   $str =~ s/\.$//;
