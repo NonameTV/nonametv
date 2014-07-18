@@ -213,6 +213,7 @@ sub ImportContent {
     # clean up for EinsFestival
     $title =~ s/^SommerKino im Ersten\s*:\s*//gi; # prefix
     # clean up for HR
+    $title =~ s/^DonnerstagsFilm\s*:\s*//g; # prefix: DonnerstagsFilm:
     $title =~ s/^Kinemathek(?:-Nacht|)\s*:\s*//g; # prefix: Kinemathek:
     $title =~ s/\s+Kinemathek(?:-Nacht|)\s*:.*$//g; # suffix: Kinemathek: person
     # clean up for RBB
