@@ -259,16 +259,18 @@ sub ImportContent {
             }
 
             my $episodetitle = $episode->findvalue ('FolgenTitel');
-            # strip leading "topic:"
-            $episodetitle =~ s|^Folge\s+-\s+||;
-            $episodetitle =~ s|^Thema:\s+||;
             # remove generic titles
             if( ( $episodetitle eq 'Folge' )||
                 ( $episodetitle eq 'Teil' )||
                 ( $episodetitle eq 'Titel wird nachgereicht.' )||
-                ( $episodetitle eq 'Thema:' ) ){
-              $episodetitle = undef;
+                ( $episodetitle eq 'Thema:' )||
+                ( $episodetitle eq 'Thema: steht noch nicht fest!' ){
+              $episodetitle = '';
+              # FIXME, mark this as generic episode!
             }
+            # strip leading "topic:"
+            $episodetitle =~ s|^Folge\s+-\s+||;
+            $episodetitle =~ s|^Thema:\s+||;
             if( $episodetitle ){
               $ece{subtitle} = $episodetitle;
             }
