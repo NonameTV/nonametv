@@ -107,7 +107,7 @@ my $ref = ReadData ($file);
 
     my $oWkS = $oBook->{Worksheet}[$iSheet];
 
-    progress( "Euronews: Processing worksheet: $oWkS->{Name}" );
+    progress( "HaC: Processing worksheet: $oWkS->{Name}" );
 
 	my $foundcolumns = 0;
     # browse through rows
@@ -171,13 +171,14 @@ my $ref = ReadData ($file);
       if(defined($oWkC) and $oWkC->Value) {
         $ce->{description} = norm($oWkC->Value);
 
-        # Clean it
-        $ce->{description} =~ s/\(.*\)$//g;
-        $ce->{description} = norm($ce->{description});
-
         # Episode
         ( $season )            = ($ce->{description} =~ /S(\d+)/ );
         ( $episode, $eps )     = ($ce->{description} =~ /Ep\s+(\d+)\/(\d+)/ );
+        ( $episode, $eps )     = ($ce->{description} =~ /\((\d+)\/(\d+)\)/ );
+
+        # Clean it
+        $ce->{description} =~ s/\(.*\)$//g;
+        $ce->{description} = norm($ce->{description});
       }
 
       my ( $dummy, $episode2 )  = ($subtitle =~ /^(Ep|Episode)\s+(\d+)$/ );

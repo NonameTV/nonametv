@@ -89,7 +89,7 @@ sub ImportContent
         }
         
         # Film
-        if ($title eq "Film" || $title eq "Filmsommer") {
+        if ($title eq "Film" || $title eq "Filmsommer" || $title eq "Dokusommer") {
             $title = $subtitle;
             $subtitle = "";
         }
@@ -198,6 +198,7 @@ sub ImportContent
     	$ce->{title} =~ s/Nattkino://g;
     	$ce->{title} =~ s/Film://g;
     	$ce->{title} =~ s/Filmsommer://g;
+    	$ce->{title} =~ s/Dokusommer://g;
     	$ce->{title} = norm($ce->{title});
         
         $dsh->AddProgramme( $ce );

@@ -171,8 +171,6 @@ sub process_parts
       return 0;
     }
 
-    print "  $name $channel\n";
-
     my $chd = $ds->sa->Lookup( 'channels', {xmltvid => $channel} );
 
     die "Unknown channel $channel" if not defined $chd;
@@ -260,7 +258,6 @@ sub guess_channel
 
   if( $dir =~ /GlobalListings/ ) {
     return "hd.natgeo.se" if $filename =~ /^ng\s*swe\s*hd\b/i;
-    return "natgeo.se" if $filename =~ /^ng\s*swe\b/i;
 
 	# Nat geo wild sends in XLS format
     return "wild.natgeo.se" if $filename =~ /^ngwscan\s*\b/i;
@@ -349,6 +346,7 @@ sub guess_channel
      return "europe.bluehustler.com" if $filename =~ /^blue.*gmt.*\b/i;
      return "europe.hustlertv.com" if $filename =~ /^hustler.*gmt.*\b/i;
      return "europe.daringtv.com" if $filename =~ /^daring.*gmt.*\b/i;
+     return "europe.daringtv.com" if $filename =~ /^private.*gmt.*\b/i;
  }
  
  if( $dir =~ /MTV/ ) {
@@ -438,15 +436,15 @@ sub guess_channel
          return "cbeebies.com" if $filename =~ /cbeebies\s+scandi/i;
  }
 
- if( $dir =~ /WildTV/ and $filename =~ /\.zip|\.xml/i ) {
+ if( $dir =~ /WildTV/ and $filename =~ /\.zip|.xml/i ) {
  	return "wildtv.ca";
  }
 
- if( $dir =~ /RTL2/ ) {
+ if( $dir =~ /RTL2/ and $filename =~ /\.xml$/i ) {
   	return "rtl2.de";
  }
 
- if( $dir =~ /Gospel/ ) {
+ if( $dir =~ /Gospel/ and $filename =~ /\.xls$/i ) {
    	return "gospel.tv";
  }
 
@@ -454,11 +452,11 @@ sub guess_channel
    	return "europe.cnbc.com";
  }
 
- if( $dir =~ /DWDE/ ) {
+ if( $dir =~ /DWDE/ and $filename =~ /\.xls|.xlsx$/i ) {
     return "dw.de";
  }
 
- if( $dir =~ /HaC/ ) {
+ if( $dir =~ /HaC/ and $filename =~ /\.xls|.xlsx$/i ) {
      return "horseandcountry.tv";
   }
 

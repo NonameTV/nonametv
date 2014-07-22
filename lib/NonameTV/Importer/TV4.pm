@@ -241,6 +241,12 @@ sub ImportContent
 
     $self->extract_extra_info( $ce );
 
+    # only movies got directors
+    if( scalar( @directors ) > 0 and !defined($ce->{episode}) )
+    {
+        $ce->{program_type} = "movie";
+    }
+
     $dsh->AddProgramme( $ce );
   }
 
@@ -311,14 +317,14 @@ sub extract_extra_info
 
 #  if( defined($ce->{program_type}) and ($ce->{program_type} eq 'series') )
 #  {
-    my( $t, $st ) = ($ce->{title} =~ /(.*)\: (.*)/);
-         if( defined( $st ) )
-         {
+#    my( $t, $st ) = ($ce->{title} =~ /(.*)\: (.*)/);
+#         if( defined( $st ) )
+#         {
       # This program is part of a series and it has a colon in the title.
       # Assume that the colon separates the title from the subtitle.
-      $ce->{title} = $t;
-      $ce->{subtitle} = $st;
-    }
+#      $ce->{title} = $t;
+#      $ce->{subtitle} = $st;
+#    }
 #  }
 }
 

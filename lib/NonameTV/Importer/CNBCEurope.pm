@@ -121,10 +121,25 @@ $data =~ s| xmlns="urn:crystal-reports:schemas:report-detail"||;
 
       foreach my $prog ($progs->get_nodelist) {
         my $title = $prog->findvalue( './/Field[@Name="programName1"]/Value' );
-        $title =~ s/16:9//g;
-        $title =~ s/1st hr//g;
-        $title =~ s/2nd hr//g;
-        $title =~ s/3rd hr//g;
+        $title =~ s/16:9//gi;
+
+        $title =~ s/1st hr//gi;
+        $title =~ s/2nd & 3rd hr//gi;
+        $title =~ s/2nd hr//gi;
+        $title =~ s/3rd hr//gi;
+        $title =~ s/1st hour//gi;
+        $title =~ s/2nd hour//gi;
+        $title =~ s/3rd hour//gi;
+        $title =~ s/#(\d+) min//gi;
+        $title =~ s/\(UNSPONSORED\)//gi;
+        $title =~ s/\(f\)//gi;
+        $title =~ s/\(g\)//gi;
+
+        $title = norm($title);
+
+
+        $title =~ s/-$//;
+        #$title =~ s/\: ep (\d+)$//i;
 
         my $start = $prog->findvalue( './/Field[@Name="hour1"]/Value' );
 
@@ -140,7 +155,7 @@ $data =~ s| xmlns="urn:crystal-reports:schemas:report-detail"||;
               };
 
 
-        my( $t, $st ) = ($ce->{title} =~ /(.*)\:(.*)/);
+        my( $t, $st ) = ($ce->{title} =~ /^(.*)\:(.*)/);
         if( defined( $st ) )
         {
           # This program is part of a series and it has a colon in the title.
@@ -150,8 +165,14 @@ $data =~ s| xmlns="urn:crystal-reports:schemas:report-detail"||;
 
           # Episode
           my($episode);
-          ( $episode ) = ($ce->{subtitle} =~ /Episode\s+(\d+)$/ );
-          ( $episode ) = ($ce->{subtitle} =~ /Episode\s+number\s+(\d+)$/ );
+          ( $episode ) = ($ce->{title} =~ /ep\s+(\d+)$/i );
+          ( $episode ) = ($ce->{subtitle} =~ /Episode\s+(\d+)$/i );
+          ( $episode ) = ($ce->{subtitle} =~ /Episode\s+number\s+(\d+)$/i );
+          $ce->{title} =~ s/\: ep (\d+)$//i;
+          if($ce->{title} =~ /^Cnbc originals/i) {
+            $ce->{title} = "CNBC Originals";
+          }
+          $ce->{title} =~ s/-$//;
 
           if($episode) {
             $episode+=0; # Remove leading zeros
@@ -160,14 +181,21 @@ $data =~ s| xmlns="urn:crystal-reports:schemas:report-detail"||;
           }
 
           # Jimmy Fallon
-          if($ce->{title} eq "The tonight show starring jimmy fallon") {
+          if($ce->{title} eq "The tonight show starring jimmy fallon" or $ce->{title} eq "Tonight show starring jimmy fallon") {
             $ce->{title} = "The Tonight Show Starring Jimmy Fallon";
 
             # Might get removed if the subtitle is an episode num
             if(defined($ce->{subtitle})) {
-                $ce->{subtitle} =~ s/\b(\w)/\U$1/g;; # Big letter every word, its a name.
+                $ce->{subtitle} =~ s/\b(\w)/\U$1/g; # Big letter every word, its a name.
                 $ce->{guests} = $ce->{subtitle};
             }
+          } else {
+            $ce->{title} =~ s/\b(\w)/\U$1/g; # Big letter every word, its a name.
+            $ce->{title} =~ s/Cnbc/CNBC/i;
+            $ce->{title} =~ s/Nbc/NBC/i;
+            $ce->{title} =~ s/^Us/US/i;
+            $ce->{title} =~ s/Us Pga$/US PGA/i;
+            $ce->{title} = norm($ce->{title});
           }
         }
 

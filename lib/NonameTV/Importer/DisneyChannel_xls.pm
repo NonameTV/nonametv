@@ -234,22 +234,22 @@ sub ImportFlatXLS
       	if($episode > 0) {
       		$ce->{episode} = ". " . ($episode-1) . " ." if $episode ne "";
 		}
-		
-		if(defined($ce->{episode}) and $season > 0) {
-			$ce->{episode} = $season-1 . $ce->{episode};
-		}
-		## END
-		
+
+        # Genre
 		if( defined($genre) and $genre ne "" ){
 			my ($program_type2, $category2 ) = $ds->LookupCat( 'DisneyChannel_xls', $genre );
 			AddCategory( $ce, $program_type2, $category2 );
 		}
-		
-		# movie
-		if($episode eq 1 and $season eq 0) {
-			$ce->{episode} = undef;
-			$ce->{program_type} = "movie";
+
+        # add one
+		if($episode eq 1 and $season eq 0 and defined($program_type2) and $program_type2 ne "movie") {
+			$season = 1;
 		}
+
+		if(defined($ce->{episode}) and $season > 0) {
+			$ce->{episode} = $season-1 . $ce->{episode};
+		}
+		## END
 
 		# Desc
 		$ce->{description} = norm($desc) if defined($desc);
@@ -260,9 +260,7 @@ sub ImportFlatXLS
 	    	$ce->{description} =~ s/\((\d\d\d\d)\) //;
 	    	$ce->{production_date} = "$1-01-01";
 	    }
-		
-		#print Dumper($ce);
-		
+
         $dsh->AddProgramme( $ce );
 		
 		#push( @ces , $ce );

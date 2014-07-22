@@ -130,25 +130,11 @@ sub ImportXML
       my $start = $self->create_dt( $time );
       my $end = $self->create_dt( $endtime );
 
-      # Different timezone (need to be -1 hour)
-      if($chd->{grabber_info} eq "UTC") {
-        #my ( $date, $tz ) = split(/\+/, $time);
-        #my( $timezone_hour, $timezone_minute ) = ($tz =~ /^(\d+):(\d+)$/ );
-        #$timezone_hour =~ s/^0+//;
-
-          # DST removal thingy
-          #$start->subtract( hours => $timezone_hour ); # Daylight saving time
-          #$end->subtract( hours => $timezone_hour ); # Normal time
-      }
-
       # TV Finland schedule is actually GMT+2 when the Finland timezones is GMT+3 (so add a hour which got removed)
       if($chd->{xmltvid} eq "tvfinland.yle.fi") {
         $start->add( hours => 1 );
         $end->add( hours => 1 );
       }
-      
-      # Add hours specificed for each channel. (TV Finland has 3 hours if you are in Sweden, etc.)
-      #$start->add( hours => $hours );
       
       my $date = $start->ymd("-");
       
@@ -219,7 +205,7 @@ sub ImportXML
      	      if($season ne "") {
      	      	$sentences[$i2] = "";
      	      }
-     	    }elsif( my( $seasontextnum12 ) = ($sentences[$i2] =~ /^Säsong (\d+)(\d+)./i ) )
+     	    }elsif( my( $seasontextnum12 ) = ($sentences[$i2] =~ /^Säsong (\d+)./i ) )
      	    {
      	      $season = $seasontextnum12;
 
@@ -563,6 +549,7 @@ sub parse_person_list
   # Remove all variants of m.fl.
   $str =~ s/\s*m[\. ]*fl\.*\b//;
   $str =~ s/\s*b[\. ]*la\.*\b//;
+  $str =~ s/\s*bl[\. ]*a\.*\b//;
 
   # Remove trailing '.'
   $str =~ s/\.$//;

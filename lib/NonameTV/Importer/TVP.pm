@@ -158,6 +158,8 @@ sub ImportContent {
         }
       }
 
+      ( $seasonroman, $ep2 ) = ($title_full =~ /, seria\s+(\S*),\s+odc\.\s+(\d+)\)/ );
+
       progress("TVP: $chd->{xmltvid}: $time - $title");
       $dsh->AddProgramme( $ce );
     }
