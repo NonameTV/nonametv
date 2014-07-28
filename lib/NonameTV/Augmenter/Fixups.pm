@@ -71,6 +71,10 @@ sub AugmentProgram( $$$ ){
     }
   }elsif( $ruleref->{matchby} eq 'setprogram_type' ) {
     $resultref->{'program_type'} = $ruleref->{remoteref};
+  }elsif( $ruleref->{matchby} eq 'setprogram_type_no_ep' ) {
+    # Sets proram type as remoteref and remove episode
+    $resultref->{'program_type'} = $ruleref->{remoteref};
+    $resultref->{'episode'}      = undef;
   }elsif( $ruleref->{matchby} eq 'setsubtitle' ) {
     $resultref->{'subtitle'} = $ruleref->{remoteref};
   }elsif( $ruleref->{matchby} eq 'splittitle' ) {
@@ -116,6 +120,13 @@ sub AugmentProgram( $$$ ){
     }
   }elsif( $ruleref->{matchby} eq 'replacetitle' ) {
     $resultref->{'title'} = $ruleref->{remoteref};
+  }elsif( $ruleref->{matchby} eq 'subtitle_to_title_type' && $ceref->{'subtitle'} && $ceref->{'subtitle'} ne "") {
+    # Sets subtitle as the title and sets program type = remoteref
+    $resultref->{'title'} = $ceref->{'subtitle'};
+    $resultref->{'title'} =~ s/(\d+)\:(\d+)$//i; # Removed 2:2 in the ending
+    $resultref->{'title'} = norm($resultref->{'title'});
+    $resultref->{'subtitle'} = undef;
+    $resultref->{'program_type'} = $ruleref->{remoteref};
   }elsif( $ruleref->{matchby} eq 'replacesubtitle' ) {
     $resultref->{'subtitle'} = $ruleref->{remoteref};
   }elsif( $ruleref->{matchby} eq 'splitsubtitle' ) {
