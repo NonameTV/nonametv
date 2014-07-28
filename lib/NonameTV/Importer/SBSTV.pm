@@ -20,6 +20,7 @@ Channels: Kanal 4, Kanal 5, 6'eren and The Voice TV.
 use DateTime;
 use XML::LibXML;
 use Roman;
+use Data::Dumper;
 
 use NonameTV qw/ParseXml AddCategory norm/;
 use NonameTV::DataStore::Helper;
@@ -126,6 +127,16 @@ sub ImportContent {
   	}
   
   	my $title = $b->findvalue( "titel" );
+
+  	# Episode and ofepisode
+  	my ($episode2, $ofepisode, $rsarab, $episode);
+  	if($title =~ /\((\d+)\)$/i) {
+  	    ($episode2) = ($title =~ /\((\d+)\)$/i);
+  	} elsif($title =~ /\((\d+):(\d+)\)$/i) {
+  	    ($episode2, $ofepisode) = ($title =~ /\((\d+):(\d+)\)$/i);
+  	}
+
+  	# Clean it up
     $title =~ s/\(.*\)//g;
     $title =~ s/:\|apostrofe\|;/'/g;
     my $org_title = $b->findvalue( "originaltitel" );
@@ -168,21 +179,52 @@ sub ImportContent {
     };
 
     if($subtitle ne "") {
-          my ( $original_title, $romanseason, $episode ) = ( $subtitle =~ /^(.*)\s+-\s+(.*)\s+-\s+(.*)$/ );
+        my ( $original_title, $romanseason, $episode );
 
-          # Roman season found
-          if(defined($romanseason) and isroman($romanseason)) {
-            my $rsarab = arabic($romanseason);
+        # orgname - romanseason - num
+        if($subtitle =~ /^(.*)\s+-\s+(.*)\s+-\s+(\d+)$/) {
+            ( $original_title, $romanseason, $episode ) = ( $subtitle =~ /^(.*)\s+-\s+(.*)\s+-\s+(\d+)$/ );
+            $ce->{episode} = sprintf( " . %d .", $episode-1 );
+        }
 
-            #print Dumper($romanseason_arabic, $romanepisode);
+        # orgname - num
+        if($subtitle =~ /^(.*)\s+-\s+(\d+)$/) {
+            ( $original_title, $episode ) = ( $subtitle =~ /^(.*)\s+-\s+(\d+)$/ );
+            $ce->{episode} = sprintf( " . %d .", $episode-1 );
+            $subtitle = "";
+        }
 
-            # Put it into episode field
-            if(defined($rsarab)) {
-                $ce->{episode} = sprintf( "%d . %d .", $rsarab-1, $episode-1 );
-                #print("episode: $episode - season $rsarab\n");
-                $subtitle = "";
-            }
-          }
+        # orgname - romanseason (num)
+        if($subtitle =~ /^(.*)\s+-\s+(.*)\s+\((\d+)\)$/) {
+            ( $original_title, $romanseason, $episode ) = ( $subtitle =~ /^(.*)\s+-\s+(.*)\s+\((\d+)\)$/ );
+            $ce->{episode} = sprintf( " . %d .", $episode-1 );
+        }
+
+        # Clean it up
+        if(defined($romanseason)) {
+            $romanseason =~ s/\(.*\)//g;
+            $romanseason = norm($romanseason);
+        }
+
+        # Roman season found
+        if(defined($romanseason) and isroman($romanseason)) {
+            $rsarab = arabic($romanseason);
+        }
+    }
+
+    # Episode
+    if(defined($ofepisode)) {
+        $ce->{episode} = sprintf( " . %d/%d .", $episode2-1, $ofepisode );
+    } elsif(defined($episode2)) {
+        $ce->{episode} = sprintf( " . %d .", $episode2-1 );
+    }
+
+    # Season
+    if(defined($rsarab) and defined($ce->{episode})) {
+        my $sea = $rsarab-1;
+        $sea .= $ce->{episode};
+        $ce->{episode} = $sea;
+        $subtitle = "";
     }
 
     $ce->{subtitle} = norm($subtitle) if $subtitle;
@@ -231,7 +273,7 @@ sub ImportContent {
         foreach my $actor (@actors_array) {
             # char name is before actor name
             my( $role, $act ) = ( $actor =~ /(.*):(.*)$/ );
-            my $pushname = norm($act) . "  (" . norm($role) . ")";
+            my $pushname = norm($act) . " (" . norm($role) . ")";
 
 
             push(@acts, $pushname);
@@ -241,6 +283,9 @@ sub ImportContent {
     }
 
 
+    if(defined($ce->{subtitle}) and ($ce->{subtitle} =~ /$ce->{title}/i)) {
+        $ce->{subtitle} = undef;
+    }
 
     $dsh->AddProgramme( $ce );
   }
