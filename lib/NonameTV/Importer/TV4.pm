@@ -242,7 +242,7 @@ sub ImportContent
     $self->extract_extra_info( $ce );
 
     # only movies got directors
-    if( scalar( @directors ) > 0 and !defined($ce->{episode}) )
+    if( scalar( @directors ) > 0 and !defined($ce->{episode}) and scalar( @actors ) > 0 )
     {
         $ce->{program_type} = "movie";
     }

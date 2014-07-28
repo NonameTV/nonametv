@@ -286,11 +286,11 @@ sub ImportXML
      }
      
       # Episode info in xmltv-format
-      if( ($episode ne "0") and ( $of_episode ne "0") and ( $season ne "0") )
+      if( ($episode ne "0" and $episode ne "") and ( $of_episode ne "0" and $of_episode ne "") and ( $season ne "0" and $season ne "") )
       {
         $ce->{episode} = sprintf( "%d . %d/%d .", $season-1, $episode-1, $of_episode );
       }
-      elsif( ($episode ne "0") and ( $of_episode ne "0") )
+      elsif( ($episode ne "0" and $episode ne "") and ( $of_episode ne "0" and $of_episode ne "") )
       {
       	if( defined( $year ) and ($year =~ /(\d\d\d\d)/) ) {
       		$ce->{episode} = sprintf( "%d . %d/%d .", $1-1, $episode-1, $of_episode );
@@ -298,11 +298,11 @@ sub ImportXML
         	$ce->{episode} = sprintf( ". %d/%d .", $episode-1, $of_episode );
         }
       }
-      elsif( ($episode ne "0") and ( $season ne "0") )
+      elsif( ($episode ne "0" and $episode ne "") and ( $season ne "0" and $season ne "") )
       {
         $ce->{episode} = sprintf( "%d . %d .", $season-1, $episode-1 );
       }
-      elsif( $episode ne "0" )
+      elsif( $episode ne "0" and $episode ne "" )
       {
       	if( defined( $year ) and ($year =~ /(\d\d\d\d)/) ) {
       		$ce->{episode} = sprintf( "%d . %d .", $1-1, $episode-1 );
@@ -318,7 +318,7 @@ sub ImportXML
       }
 
       # News programmes shouldn't have episodeinfo
-      if($ce->{title} =~ /^(Aktuellt|Rapport|Regionala nyheter|Sportnytt|Kulturnyheterna|Uutiset|Oddasat|Nyhetstecken|SVT Forum|Sydnytt|Värmlandsnytt|Nordnytt|Mittnytt|Gävledala|Tvärsnytt|Östnytt|Smålandsnytt|Västnytt|ABC)$/i) {
+      if($ce->{title} =~ /^(Aktuellt|24 Vision|Rapport|Regionala nyheter|Sportnytt|Kulturnyheterna|Uutiset|Oddasat|Nyhetstecken|SVT Forum|Sydnytt|Värmlandsnytt|Nordnytt|Mittnytt|Gävledala|Tvärsnytt|Östnytt|Smålandsnytt|Västnytt|ABC)$/i) {
       	delete($ce->{episode});
       }
 

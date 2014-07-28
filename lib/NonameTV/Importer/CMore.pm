@@ -283,7 +283,8 @@ sub ImportContent
           if( defined( $production_year ) and 
             ($production_year =~ /\d{4}/) )
         	{
-          		$ce->{episode } = $production_year-1 . " " . $ce->{episode};
+        	    my( $year ) = ($ce->{production_date} =~ /(\d{4})-/ );
+          		$ce->{episode } = $year-1 . " " . $ce->{episode};
         	}
         }
 
