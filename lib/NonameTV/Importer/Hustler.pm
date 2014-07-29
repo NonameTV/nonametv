@@ -17,6 +17,12 @@ use utf8;
 
 use DateTime;
 use Spreadsheet::ParseExcel;
+use Spreadsheet::XLSX;
+use Spreadsheet::XLSX::Utility2007 qw(ExcelFmt ExcelLocaltime LocaltimeExcel);
+
+use Text::Iconv;
+my $converter = Text::Iconv -> new ("utf-8", "windows-1251");
+
 use Data::Dumper;
 use File::Temp qw/tempfile/;
 
@@ -61,7 +67,7 @@ sub ImportContentFile {
 if( $file =~ /\.pdf$/i ) {return $self->ImportPDF( $file, $channel_id, $xmltvid );}
 
   # Only process .xls files.
-  return if( $file !~ /\.xls$/i );
+  return if( $file !~ /\.xls|.xlsx$/i );
   progress( "Hustler: $xmltvid: Processing $file" );
 
 
@@ -71,7 +77,9 @@ if( $file =~ /\.pdf$/i ) {return $self->ImportPDF( $file, $channel_id, $xmltvid 
   my $currdate = "x";
   my( $coltime, $coltitle, $colgenre, $colduration ) = undef;
 
-  my $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );
+  my $oBook;
+  if ( $file =~ /\.xlsx$/i ){ progress( "using .xlsx" );  $oBook = Spreadsheet::XLSX -> new ($file, $converter); }
+  else { $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );  }   #  staro, za .xls
 
   #print Dumper($oBook->{SheetCount});
 
@@ -110,7 +118,15 @@ if( $file =~ /\.pdf$/i ) {return $self->ImportPDF( $file, $channel_id, $xmltvid 
 
           next if( not $oWkS->{Cells}[$iR][$iC] );
 
-          if( not $coltime and isTime( $oWkS->{Cells}[$iR][$iC]->Value ) ){
+          my $coltimerino;
+
+          if($file =~ /\.xlsx$/i) {
+            $coltimerino = $oWkS->{Cells}[$iR][$iC]->{Val};
+          } else {
+            $coltimerino = $oWkS->{Cells}[$iR][$iC]->Value;
+          }
+
+          if( not $coltime and isTime( $coltimerino ) ){
             $coltime = $iC;
           } elsif( not $colgenre and isGenre( $oWkS->{Cells}[$iR][$iC]->Value ) ){
             $colgenre = $iC;
@@ -156,7 +172,7 @@ if( $file =~ /\.pdf$/i ) {return $self->ImportPDF( $file, $channel_id, $xmltvid 
 
           my $batch_id = $xmltvid . "_" . $date;
           $dsh->StartBatch( $batch_id , $channel_id );
-          $dsh->StartDate( $date , "05:00" );
+          $dsh->StartDate( $date , "04:00" );
           $currdate = $date;
         }
 
@@ -168,8 +184,15 @@ if( $file =~ /\.pdf$/i ) {return $self->ImportPDF( $file, $channel_id, $xmltvid 
       next if( ! $oWkC );
       
       if($oWkC->Value eq "") { next; }
+
+      my $time;
+      if($file =~ /\.xlsx$/i) {
+        $time = ExcelFmt('hh:mm', $oWkC->{Val} ) if( $oWkC->Value );
+      } else {
+        $time = ParseTime( $oWkC->Value ) if( $oWkC->Value );
+      }
       
-      my $time = ParseTime( $oWkC->Value ) if( $oWkC->Value );
+
       next if( ! $time );
 
       # title - column $coltitle
@@ -177,8 +200,9 @@ if( $file =~ /\.pdf$/i ) {return $self->ImportPDF( $file, $channel_id, $xmltvid 
       next if( ! $oWkC );
       my $title = $oWkC->Value if( $oWkC->Value );
       next if( ! $title );
-      
+
       $title =~ s/PREMIERE -//g if $title;
+      $title =~ s/PREMIERE-//g if $title;
       $title =~ s/HUSTLER TV-//g if $title;
       $title =~ s/HUSTLER TV -//g if $title;
       $title =~ s/#//g if $title;
@@ -344,6 +368,12 @@ sub isTime
   # the format is '00:00'
   if( $text =~ /^\d+\:\d+$/ ){
     return 1;
+  } else {
+    $text = ExcelFmt('hh:mm', $text);
+
+    if( $text =~ /^\d+\:\d+$/ ){
+        return 1;
+    }
   }
 
   return 0;
@@ -412,6 +442,8 @@ sub ParseTime
   my ( $tinfo ) = @_;
 
   my( $hour, $minute ) = ( $tinfo =~ /^(\d+)\:(\d+)$/ );
+
+  if(!$hour) { return; }
 
   $hour = 0 if( $hour eq 24 );
 
