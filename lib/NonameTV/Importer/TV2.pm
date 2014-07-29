@@ -88,10 +88,9 @@ sub ImportContent
     $date = $inrow->{'SENDEDATO'};
     if ($date ne $olddate) {
       my $ymd = parseDate(fq( $date ));
-      #print "\n>>>STARTING NEW DATE $ymd <<<\n";
-      
+
+      progress("Date is ".$ymd);
       $dsh->StartDate( $ymd );
-    
     }
     
     $olddate = $date;
@@ -130,7 +129,7 @@ sub ImportContent
     
     #$description = norm( $description );
     #$description = fq( $description );
-    
+
     # Episode info in xmltv-format
     my $ep_nr = norm(fq($inrow->{'EPISODENUMMER'})) || 0;
     my $ep_se = norm(fq($inrow->{'SESONGNUMMER'})) || 0;
@@ -158,12 +157,14 @@ sub ImportContent
       subtitle => $subtitle,
       start_time => $start,
     };
-    
+
     if( $ce->{title} =~ /^Film/ ) {
         $ce->{program_type} = "movie";
         $ce->{title} =~ s/Film://g;
         $ce->{title} = norm($ce->{title});
     }
+
+    progress( "TV2NO: $chd->{xmltvid}: $start - ".$ce->{title} );
     
     my $genre = norm(fq($inrow->{'GENREKOPI'}));
     if(defined($genre) and $genre ne "") {
@@ -223,20 +224,26 @@ sub ImportContent
   return 1;
 }
 
-sub FetchDataFromSite
-{
+sub Object2Url {
   my $self = shift;
   my( $batch_id, $data ) = @_;
 
   my( $year, $week ) = ( $batch_id =~ /(\d+)-(\d+)$/ );
- 
+
   my $url = sprintf( "https://presse.tv2.no/presse/api/Excel?c=%s&w=%01d&y=%02d&format=csv&a=true",
                      $data->{grabber_info},
                      $week,
                      $year);
-  
-  my( $content, $code ) = MyGet( $url );
-  return( $content, $code );
+
+  return( $url, undef );
+}
+
+sub ContentExtension {
+  return 'csv';
+}
+
+sub FilteredExtension {
+  return 'csv';
 }
 
 sub row_to_hash
