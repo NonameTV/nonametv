@@ -105,6 +105,7 @@ sub ImportContent
 
   foreach my $pgm ($rows->get_nodelist)
   {
+    my ( $original_title , $year_series );
   	my $date  = $pgm->findvalue( 'date' );
 
   	## Batch
@@ -128,12 +129,13 @@ sub ImportContent
     my $genre = $pgm->findvalue( 'category' );
     my $cast  = $pgm->findvalue( 'cast' );
     my $year  = $pgm->findvalue( 'year' );
+    my $episode  = $pgm->findvalue( 'episode' );
     
     if(defined($pgm->findvalue( 'original_title' ))){
-  	  my ( $original_title , $year_series ) = ( $pgm->findvalue( 'original_title' ) =~ /^(.*)-(.*)$/ );
+  	  ( $original_title , $year_series ) = ( $pgm->findvalue( 'original_title' ) =~ /^(.*)-(\d+)$/ );
   	  
   	  if(norm($original_title) ne "") {
-  	 	 $title = $original_title;
+  	 	 $title = $original_title; # We can only match episodetitles by original series title.
   	  } else {
   	  	
   	  }
@@ -156,11 +158,18 @@ sub ImportContent
     # Subtitle
     if(defined($pgm->findvalue( 'original_episode_title' ))) {
     	if(norm($pgm->findvalue( 'original_episode_title' )) ne "") {
-    		$ce->{subtitle} = norm($pgm->findvalue( 'original_episode_title' ));
-    		$ce->{subtitle} =~ s/ - part/: Part/g if $title;
+    	    my $subtitle = norm($pgm->findvalue( 'original_episode_title' ));
+    	    $subtitle =~ s/- Part One/\(1\)/i;
+            $subtitle =~ s/- Part Two/\(2\)/i;
+            $subtitle =~ s/, Part One/ \(1\)/i;
+            $subtitle =~ s/, Part Two/ \(2\)/i;
+            $subtitle =~ s/\b, Part (\d+)\b/ \($1\)/i;
+            $subtitle =~ s/\:(\d+)\)$/\)/i;
+            $subtitle =~ s/\.$//i;
+    		$ce->{subtitle} = norm($subtitle);
     	}
     }
-    
+
     if( $genre ){
 			my($program_type, $category ) = $ds->LookupCat( 'TV2Denmark', $genre );
 			AddCategory( $ce, $program_type, $category );
@@ -174,6 +183,15 @@ sub ImportContent
 	if( $directors ) {
 		$ce->{directors} = norm(parse_person_list( $directors ));
 	}
+
+    if( defined($year_series) and defined($episode) and $episode ne "" )
+    {
+      $ce->{episode} = sprintf( "%d . %d .", $year_series-1, $episode-1 );
+    }
+    elsif( defined($episode) and $episode ne "" )
+    {
+      $ce->{episode} = sprintf( ". %d .", $episode-1 );
+    }
     
     $dsh->AddProgramme( $ce );
   }
