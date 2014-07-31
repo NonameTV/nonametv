@@ -92,6 +92,11 @@ sub CheckFileFormat
     return FT_DAILYXLS;
   }
 
+  # List num.num.num.xls
+  if( $file =~ /\d+\.\d+\.\d+\.xls$/i ){
+      return FT_DAILYXLS;
+   }
+
   return FT_UNKNOWN;
 }
 
@@ -207,6 +212,7 @@ sub ImportDailyXLS
     my $date = ParseDate( $oWkS->{Name} );
     if( ! $date ){
       $date = ParseDate( $file );
+    #  print("Date: ".$date);
     }
     progress("WFC DailyXLS: $xmltvid: Date is: $date");
 
@@ -218,39 +224,39 @@ sub ImportDailyXLS
     for(my $iR = $oWkS->{MinRow} ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
 
       # column 0 - progid
-      my $oWkC = $oWkS->{Cells}[$iR][0];
-      next if( ! $oWkC );
-      next if( ! $oWkC->Value );
-      my $progid = $oWkC->Value;
+      #my $oWkC = $oWkS->{Cells}[$iR][0];
+      #next if( ! $oWkC );
+      #next if( ! $oWkC->Value );
+      #my $progid = $oWkC->Value;
 
       # column 1 - title
-      $oWkC = $oWkS->{Cells}[$iR][1];
+      my $oWkC = $oWkS->{Cells}[$iR][0];
       next if( ! $oWkC );
       next if( ! $oWkC->Value );
       my $title = ParseShow( $oWkC->Value );
 
       # column 2 - time
-      $oWkC = $oWkS->{Cells}[$iR][2];
+      $oWkC = $oWkS->{Cells}[$iR][1];
       next if( ! $oWkC );
       next if( ! $oWkC->Value );
       my $time = ParseTime( $oWkC->Value );
       next if( ! $time );
 
       # column 3 - duration
-      $oWkC = $oWkS->{Cells}[$iR][3];
-      next if( ! $oWkC );
-      next if( ! $oWkC->Value );
-      my $duration = $oWkC->Value;
+      #$oWkC = $oWkS->{Cells}[$iR][3];
+      #next if( ! $oWkC );
+      #next if( ! $oWkC->Value );
+      #my $duration = $oWkC->Value;
 
       progress( "WFC DailyXLS: $xmltvid: $time - $title" );
 
       my $ce = {
         channel_id => $channel_id,
-        title => $title,
+        title => norm($title),
         start_time => $time,
       };
 
-      $ce->{title_id} = $progid if $progid;
+      #$ce->{title_id} = $progid if $progid;
 
       $dsh->AddProgramme( $ce );
     }
@@ -388,16 +394,16 @@ sub isDate {
 sub ParseDate {
   my( $text ) = @_;
 
-print ">$text<\n";
+#print ">$text<\n";
 
-  my( $day, $monthname, $year );
+  my( $day, $monthname, $year, $month );
 
-  # format '22 December 2008'
   if( $text =~ /^\d+\s+\S+\s+\d+$/ ){
-    ( $day, $monthname, $year ) = ( $text =~ /^(\d+)\s+(\S+)\s+(\d+)$/ );
-print "1\n";
-  # format '/home/gonix/xmltv-data/wfc.tv.gonix.net/06 September 2009.xls'
-  } elsif( $text =~ /^\/.*\/\d+\s+\S+\s+\d+\.xls$/ ){
+     ( $day, $monthname, $year ) = ( $text =~ /^(\d+)\s+(\S+)\s+(\d+)$/ );
+ print "1\n";
+   # format '/home/gonix/xmltv-data/wfc.tv.gonix.net/06 September 2009.xls'
+   } # format '22 December 2008'
+  elsif( $text =~ /^\/.*\/\d+\s+\S+\s+\d+\.xls$/ ){
     ( $day, $monthname, $year ) = ( $text =~ /^\/.*\/(\d+)\s+(\S+)\s+(\d+)\.xls$/ );
 print "2\n";
 
@@ -407,27 +413,38 @@ print "2\n";
     $year = DateTime->today->year();
 print "3\n";
 
+  } elsif( $text =~ /\d+\.\d+\.\d+\.xls$/ ){
+     ( $day, $month, $year ) = ( $text =~ /(\d+)\.(\d+)\.(\d+)\.xls$/ );
+     $year += 2000;
+#     print "4\n";
+     # format '/home/gonix/xmltv-data/wfc.tv.gonix.net/06 September 2009.xls'
   } else {
     return undef;
   }
 
-  $year += 2000 if $year lt 100;
+  #$year += 2000 if $year lt 100;
 
-  my $month = MonthNumber( $monthname, "en" );
+  if(defined($monthname)) {
+    my $month = MonthNumber( $monthname, "en" );
+  }
 
   return sprintf( '%d-%02d-%02d', $year, $month, $day );
 }
 
 sub ParseTime {
   my( $text ) = @_;
+#  $text =~ s/:$//;
+#  $text =~ s/^'//;
 
-print "ParseTime >$text<\n";
+#print "ParseTime >$text<\n";
 
   # format '01:11:39:09'
   my( $hour, $min, $sec, $frame );
 
   if( $text =~ /^\d+:\d+:\d+:\d+$/ ){
     ( $hour, $min, $sec, $frame ) = ( $text =~ /^(\d+):(\d+):(\d+):(\d+)$/ );
+  } elsif( $text =~ /^\d+:\d+:\d+$/ ){
+    ( $hour, $min, $sec ) = ( $text =~ /^(\d+):(\d+):(\d+)$/ );
   } else {
     return undef;
   }
@@ -450,6 +467,7 @@ sub ParseShow {
   my( $text ) = @_;
 
   my( $title ) = ( $text =~ /^\S+\d+_(.*)$/ );
+  #print(">$text<\n");
 
   return $title;
 }

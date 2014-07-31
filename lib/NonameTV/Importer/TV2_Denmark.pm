@@ -105,7 +105,6 @@ sub ImportContent
 
   foreach my $pgm ($rows->get_nodelist)
   {
-    my ( $original_title , $year_series );
   	my $date  = $pgm->findvalue( 'date' );
 
   	## Batch
@@ -131,24 +130,33 @@ sub ImportContent
     my $year  = $pgm->findvalue( 'year' );
     my $episode  = $pgm->findvalue( 'episode' );
     
-    if(defined($pgm->findvalue( 'original_title' ))){
-  	  ( $original_title , $year_series ) = ( $pgm->findvalue( 'original_title' ) =~ /^(.*)-(\d+)$/ );
-  	  
-  	  if(norm($original_title) ne "") {
-  	 	 $title = $original_title; # We can only match episodetitles by original series title.
-  	  } else {
-  	  	
-  	  }
-  	}
-    
     my $ce = {
       title       => norm($title),
       start_time 	=> $start->hms(":"),
       channel_id  => $chd->{id},
       batch_id		=> $batch_id,
     };
+
+    if(defined($pgm->findvalue( 'original_title' )) and $genre ne "Film"){
+  	  my ( $original_title , $year_series ) = ( $pgm->findvalue( 'original_title' ) =~ /^(.*)-(.*)$/ );
+
+      # Season
+  	  if(defined($year_series) and defined($episode) and $episode ne "") {
+  	    my ( $season ) = ( $year_series =~ /.r (\d+)/ );
+  	    if(defined($season) and $season ne "") {
+  	        $ce->{episode} = sprintf( "%d . %d .", $season-1, $episode-1 );
+  	    }
+  	  }
+
+      # Replace original title
+  	  if(norm($original_title) ne "") {
+  	 	 $ce->{title} = norm($original_title); # We can only match episodetitles by original series title.
+  	  } else {
+
+  	  }
+  	}
     
-    progress( "TV2: $chd->{xmltvid}: $start - $title" );
+    progress( "TV2: $chd->{xmltvid}: $start - ".$ce->{title} );
     
     # Desc
     if(defined($pgm->findvalue( 'description' ))) {
@@ -178,17 +186,60 @@ sub ImportContent
 	if( defined( $year ) and ($year =~ /(\d\d\d\d)/) ) {
 		$ce->{production_date} = "$1-01-01";
 	}
-	
-	my( $dumpy, $directors ) = ($cast =~ /(\s)nstruktion:\s*(.*).$/ );
+
+
+	### Actors and Directors
+    my( $producer ) = (norm($cast) =~ /Producere:\s*(.*)/i );
+	if( $producer ) {
+	    $cast =~ s/Producere:\s*(.*)//i;
+		$ce->{producers} = norm(parse_person_list( $producer ));
+	}
+    my( $dumperinoerino, $creators ) = (norm($cast) =~ /(Serieskabere|Serieskaber):\s*(.*)$/i );
+	if( $creators ) {
+	    $cast =~ s/(Serieskabere|Serieskaber):\s*(.*)//i;
+		$ce->{producers} = norm(parse_person_list( $creators ));
+	}
+
+	my( $directors ) = (norm($cast) =~ /Instruktion:\s*(.*)/i );
 	if( $directors ) {
+	    $cast =~ s/Instruktion:\s*(.*)//i;
 		$ce->{directors} = norm(parse_person_list( $directors ));
 	}
 
-    if( defined($year_series) and defined($episode) and $episode ne "" )
-    {
-      $ce->{episode} = sprintf( "%d . %d .", $year_series-1, $episode-1 );
+    my( $directorandwriter ) = (norm($cast) =~ /Instruktion\s+og\s+manuskript:\s*(.*)/i );
+	if( $directorandwriter ) {
+	    $cast =~ s/Instruktion\s+og\s+manuskript:\s*(.*)//i;
+		$ce->{directors} = norm(parse_person_list( $directorandwriter ));
+		$ce->{writers} = norm(parse_person_list( $directorandwriter ));
+	}
+
+	my( $writers ) = (norm($cast) =~ /Manuskript:\s*(.*).$/ );
+    if( $writers ) {
+        $cast =~ s/Manuskript:\s*(.*)\.//i;
+        $ce->{writers} = norm(parse_person_list( $writers ));
     }
-    elsif( defined($episode) and $episode ne "" )
+
+    my( $actors1 ) = (norm($cast) =~ /Desuden\s+medvirker:\s*(.*)$/i );
+    if( $actors1 ) {
+        $cast =~ s/Desuden\s+medvirker:\s*(.*)//i;
+        #$ce->{actors} = norm(parse_person_list( $actors1 )); # Probably want to include these in actors later on they have a DOT as a ,
+    }
+
+    my( $actors2 ) = (norm($cast) =~ /Vært:\s*(.*)\.$/ );
+    if( $actors2 ) {
+        $cast =~ s/Vært:\s*(.*)//i;
+        $ce->{presenters} = norm(parse_person_list( $actors2 ));
+    }
+
+    my( $actors3 ) = (norm($cast) =~ /Medvirkende:\s*(.*)\.$/ );
+    if( $actors3 ) {
+
+        $ce->{actors} = norm(parse_person_list( $actors3 ));
+    }
+
+    ### End
+
+    if( !defined($ce->{episode}) and defined($episode) and $episode ne "" )
     {
       $ce->{episode} = sprintf( ". %d .", $episode-1 );
     }
@@ -208,21 +259,39 @@ sub parse_person_list
   my( $str ) = @_;
 
   $str =~ s/\bog\b/,/;
+  $str =~ s/ og / , /;
   $str =~ s/\bsamt\b/,/;
 
   my @persons = split( /\s*,\s*/, $str );
-  foreach (@persons)
+  my @pers;
+  foreach my $p (@persons)
   {
-    # The character name is sometimes given . Remove it.
-    # The Cast-entry is sometimes cutoff, which means that the
-    # character name might be missing a trailing ).
-    #s/\s*\(.*$//;
-    #s/.*\s+-\s+//;
+    my ($role, $dummperinerno, $actor) = ($p =~ /(.*)(:|;)(.*)/i);
+
+    if(defined($actor)) {
+        # Probably a actorname in a different order
+        if(norm($actor) =~ /^(Dr\.|Professor)/i) {
+            my $role1 = $role;
+            $role = $actor;
+            $actor = $role1;
+        }
+        $actor =~ s/\.$//i;
+        $actor =~ s/^\.//i;
+        $role =~ s/^\.//i;
+        $role =~ s/\.$//i;
+
+        my $actorandrole = norm($actor) . " (".norm($role).")";
+        push @pers, $actorandrole;
+    } else {
+        $p =~ s/\.$//i;
+        $p =~ s/^\.//i;
+        push @pers, norm($p);
+    }
   }
   
-  Dumper(@persons);
+  #print Dumper(@pers);
 
-  return join( ", ", grep( /\S/, @persons ) );
+  return join( ", ", grep( /\S/, @pers ) );
 }
 
 # The start and end-times are in the format 2007-12-31T01:00:00

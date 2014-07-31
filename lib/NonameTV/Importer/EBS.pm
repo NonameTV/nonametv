@@ -137,7 +137,11 @@ sub ImportContent
     #
     # description
     #
-    $desc = norm($sc->findvalue('.//programmeEPGSynopsis'));
+    my $desc_series = norm($sc->findvalue('.//programmeEPGSynopsis'));
+    my $desc_episode = norm($sc->findvalue('.//episodeEPGSynopsis'));
+
+    $desc = $desc_episode || $desc_series;
+
 
 
     #
