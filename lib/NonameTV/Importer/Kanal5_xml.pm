@@ -57,7 +57,6 @@ sub ImportContentFile {
   my $ds = $self->{datastore};
 
   if( $file =~ /\.xml$/i ){
-  print("$file\n");
     $self->ImportXML( $file, $chd );
   }
 
@@ -117,6 +116,7 @@ sub ImportXML
 
       
       my $title = undef;
+      my $title_org = undef;
       
       # Title,
       # Titles is in a array of titles for English (original), TTV (?), and Swedish, I choose TTV..
@@ -127,6 +127,11 @@ sub ImportXML
       	# predefined is which title you want, these can be: TTV (chosen by Kanal5), SwedishTitle, OriginalTitle.
       	if($t->findvalue( './/type/PSIPRODUCTTITLETYPE/@predefined' ) eq "TTV") {
       		$title = $t->findvalue( './@title' );
+      	}
+
+      	# original title
+        if($t->findvalue( './/type/PSIPRODUCTTITLETYPE/@predefined' ) eq "OriginalTitle") {
+      		$title_org = $t->findvalue( './@title' );
       	}
       	
       }
@@ -193,6 +198,37 @@ sub ImportXML
       if( scalar( @directors ) > 0 and !defined($ce->{directors}) )
       {
         $ce->{directors} = join ", ", @directors;
+      }
+
+      $ce->{original_title} = norm($title_org) if defined($title_org) and $ce->{title} ne norm($title_org) and norm($title_org) ne "";
+
+      # Replace The in the original title.
+      if(defined($ce->{original_title})) {
+        # Move , The to The <name>
+        if($ce->{original_title} =~ /, The/i) {
+            $ce->{original_title} =~ s/, The//i;
+            $ce->{original_title} = norm("The ".$ce->{original_title});
+        }
+
+        # US
+        if($ce->{original_title} =~ /^US\s+/i) {
+            $ce->{original_title} =~ s/^US //i;
+            $ce->{original_title} = $ce->{original_title} . " US";
+        }
+
+        # UK
+        if($ce->{original_title} =~ /^UK\s+/i) {
+            $ce->{original_title} =~ s/^UK //i;
+            $ce->{original_title} = $ce->{original_title} . " UK";
+        }
+
+        # AU
+        if($ce->{original_title} =~ /^AU\s+/i) {
+            $ce->{original_title} =~ s/^AU //i;
+            $ce->{original_title} = $ce->{original_title} . " AU";
+        }
+
+        $ce->{original_title} = norm($ce->{original_title});
       }
       
       # Add programme

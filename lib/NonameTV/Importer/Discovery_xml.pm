@@ -16,7 +16,7 @@ use XML::LibXML;
 
 use NonameTV qw/ParseXml norm/;
 use NonameTV::DataStore::Helper;
-use NonameTV::Log qw/f/;
+use NonameTV::Log qw/w f p/;
 
 use NonameTV::Importer::BaseOne;
 
@@ -76,7 +76,7 @@ sub ImportContent {
     my $end = $b->findvalue( "BROADCAST_END_TIME" );
     my $title_lang = $b->findvalue( "BROADCAST_TITLE" );
     my $title_org = $b->findvalue( "PROGRAMME[1]/PROGRAMME_TITLE_ORIGINAL" );
-    my $title = $title_org || $title_lang;
+    my $title = $title_lang || $title_org;
     
     my $subtitle_lang = $b->findvalue( "BROADCAST_SUBTITLE" );
     my $subtitle_org = $b->findvalue( "PROGRAMME[1]/PROGRAMME_SUBTITLE_ORIGINAL" );
@@ -93,8 +93,11 @@ sub ImportContent {
     };
 
     $ce->{subtitle} = norm($subtitle) if $subtitle ne "";
+    $ce->{original_title} = norm($title_org) if $ce->{title} ne $title_org and $title_org ne "";
 
     $ce->{episode} = ". " . ($episode-1) . " ." if $episode ne "";
+
+    p($start." $ce->{title}");
 
     $ds->AddProgramme( $ce );
   }

@@ -135,6 +135,7 @@ sub ImportContent {
 
 	# Cleanup
 	$title =~ s/Fredagsfilm: //i;
+	$title =~ s/Dokumania: //i;
 
 	# Put everything in a array	
     my $ce = {
@@ -258,7 +259,6 @@ sub ImportContent {
       		my $romanseason_arabic = arabic($romanseason);
 
       		$ce->{title} = norm($original_title);
-      		$ce->{original_title} = norm($title) if $title_alt; # Add original title
 
       		# Series
       		$ce->{program_type} = "series";
@@ -288,6 +288,8 @@ sub ImportContent {
         	$ce->{category} = undef;
         }
     }
+
+    $ce->{original_title} = norm($title_alt) if defined($title_alt) and $ce->{title} ne norm($title_alt) and norm($title_alt) ne ""; # Add original title
 
 	p($start." $ce->{title}");
 

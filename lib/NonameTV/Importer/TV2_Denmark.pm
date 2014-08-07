@@ -129,6 +129,11 @@ sub ImportContent
     my $cast  = $pgm->findvalue( 'cast' );
     my $year  = $pgm->findvalue( 'year' );
     my $episode  = $pgm->findvalue( 'episode' );
+    my ( $original_title , $season ) = ( $pgm->findvalue( 'original_title' ) =~ /^(.*)- .r (\d+)/ );
+
+    if(!defined($original_title)) {
+        $original_title = norm($pgm->findvalue( 'original_title' ));
+    }
     
     my $ce = {
       title       => norm($title),
@@ -138,22 +143,22 @@ sub ImportContent
     };
 
     if(defined($pgm->findvalue( 'original_title' )) and $genre ne "Film"){
-  	  my ( $original_title , $year_series ) = ( $pgm->findvalue( 'original_title' ) =~ /^(.*)-(.*)$/ );
-
       # Season
-  	  if(defined($year_series) and defined($episode) and $episode ne "") {
-  	    my ( $season ) = ( $year_series =~ /.r (\d+)/ );
-  	    if(defined($season) and $season ne "") {
+  	  if(defined($episode) and $episode ne "" and defined($season) and $season ne "") {
   	        $ce->{episode} = sprintf( "%d . %d .", $season-1, $episode-1 );
-  	    }
   	  }
+  	}
 
-      # Replace original title
-  	  if(norm($original_title) ne "") {
-  	 	 $ce->{title} = norm($original_title); # We can only match episodetitles by original series title.
-  	  } else {
+    # Sometimes in title
+  	if($ce->{title} =~ /- .r (\d+)$/) {
+  	    my ( $season2 ) = ( $ce->{title} =~ /- .r (\d+)/ );
 
-  	  }
+  	    $ce->{title} =~ s/- .r (\d+)$//i;
+  	    $ce->{title} = norm($ce->{title});
+
+        if(defined($episode) and $episode ne "" and defined($season2) and $season2 ne "") {
+            $ce->{episode} = sprintf( "%d . %d .", $season2-1, $episode-1 );
+        }
   	}
     
     progress( "TV2: $chd->{xmltvid}: $start - ".$ce->{title} );
@@ -243,6 +248,8 @@ sub ImportContent
     {
       $ce->{episode} = sprintf( ". %d .", $episode-1 );
     }
+
+    $ce->{original_title} = norm($original_title) if defined($original_title) and $ce->{title} ne norm($original_title) and norm($original_title) ne "";
     
     $dsh->AddProgramme( $ce );
   }

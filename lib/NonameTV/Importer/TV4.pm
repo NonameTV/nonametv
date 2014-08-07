@@ -423,6 +423,9 @@ sub extract_episode
   	if(defined($romanseason) and isroman($romanseason)) {
   		my $romanseason_arabic = arabic($romanseason);
 
+        # Fix original title
+        $ce->{title_org} =~ s/$romanseason//;
+
   		# Episode
   		my( $romanepisode ) = ($ce->{episode} =~ /.\s+(\d*)\s+./ );
 
@@ -434,6 +437,16 @@ sub extract_episode
   		}
   	}
   }
+
+  $ce->{original_title} = norm($ce->{title_org});
+
+  # Replace The in the original title.
+  if($ce->{original_title} =~ /, The/i) {
+    $ce->{original_title} =~ s/, The//i;
+    $ce->{original_title} = norm("The ".$ce->{original_title});
+  }
+
+
 
   # remove original title
   delete $ce->{title_org};

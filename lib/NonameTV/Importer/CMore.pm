@@ -302,6 +302,14 @@ sub ImportContent
     
     $self->extract_extra_info( $ce );
 
+    # Org title
+    my $title_org = $sc->findvalue( './Program/@OriginalTitle' );
+    if($ce->{program_type} eq 'series') {
+        $ce->{subtitle} = norm($title_org);
+    } elsif($ce->{program_type} eq 'movie') {
+        $ce->{original_title} = norm($title_org) if $ce->{title} ne $title_org and norm($title_org) ne "";
+    }
+
     p( "CMore: $chd->{xmltvid}: $start - $title" );
 
     $ds->AddProgramme( $ce );

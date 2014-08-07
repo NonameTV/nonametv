@@ -114,6 +114,7 @@ sub ImportContent
     #my $start = $starttime;
 
     my $title = norm( $inrow->{'NORSKTITTEL'} );
+    my $title_org = norm( $inrow->{'ORIGINALTITTEL'} );
     $title = fq($title);
     my $description = fq( norm( $inrow->{'EPISODESYNOPSIS'} ));
     if ($description eq "") {
@@ -122,7 +123,7 @@ sub ImportContent
     
     my $subtitle = fq( norm ($inrow->{'EPISODETITTEL'}));
     if ($subtitle eq "") {
-      $subtitle = fq( norm( $inrow->{'OVERSKRIFT'}))
+        $subtitle = fq( norm( $inrow->{'OVERSKRIFT'}))
     } elsif($subtitle eq "<p />") {
     	$subtitle = undef;
     }
@@ -146,7 +147,7 @@ sub ImportContent
     	my ( $epinr, $of_epi ) = ( $ep_nr =~ /(\d+) av (\d+)/ );
     	
     	if(defined($epinr)) {
-    		$episode = sprintf( "%d . %d .", $ep_se-1, $epinr-1 );
+    		$episode = sprintf( "%d . %d/%d .", $ep_se-1, $epinr-1, $of_epi );
     	}
     }
 
@@ -189,6 +190,8 @@ sub ImportContent
       # Remove all variants of m.fl.
       $cast =~ s/\s*m[\. ]*fl\.*\b//;
 
+      $cast =~ s/ og /, /; # and
+
       # Remove trailing '.'
       $cast =~ s/\.$//;
 
@@ -209,11 +212,24 @@ sub ImportContent
     {
       # Remove all variants of m.fl.
       $director =~ s/\s*m[\. ]*fl\.*\b//;
+
+      $cast =~ s/ og /, /; # and
       
       # Remove trailing '.'
       $director =~ s/\.$//;
       my @directors = split( /\s*,\s*/, $director );
       $ce->{directors} = join( ", ", grep( /\S/, @directors ) );
+    }
+
+    $ce->{original_title} = norm($title_org) if $ce->{title} ne $title_org and norm($title_org) ne "";
+
+    if(defined($ce->{original_title})) {
+        $ce->{original_title} = fq( $ce->{original_title} );
+
+        # Is it the same name?
+        if(($ce->{original_title} eq $ce->{title}) or $ce->{original_title} eq "") {
+            delete $ce->{original_title};
+        }
     }
 
     #$self->extract_extra_info( $ce );

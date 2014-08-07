@@ -162,7 +162,7 @@ sub ImportContent
       start_time => $start->ymd("-") . " " . $start->hms(":"),
     };
     
-    my ( $dummy, $season, $episode ) = ($desc =~ /\(S(.*)song\s*(\d+)\s*avsnitt\s*(\d+)\)/ );
+    my ( $dummy, $season, $dummy2, $episode ) = ($desc =~ /\((S.song|Season)\s*(\d+)\s*(avsnitt|episode)\s*(\d+)\)/i );
     
     if((defined $season) and ($episode > 0) and ($season > 0) )
     {
@@ -253,6 +253,8 @@ sub ImportContent
 		my($program_type, $category ) = $ds->LookupCat( 'Nonstop', $genre );
 		AddCategory( $ce, $program_type, $category );
 	}
+
+	$ce->{original_title} = norm($title_original) if defined($title_original) and $ce->{title} ne norm($title_original) and norm($title_original) ne "";
 
     $ds->AddProgramme( $ce );
     progress("Nonstop: $chd->{xmltvid}: $start - $title");

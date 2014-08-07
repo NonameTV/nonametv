@@ -64,6 +64,22 @@ sub Object2Url {
   return( $url, undef );
 }
 
+sub ApproveContent {
+  my $self = shift;
+  my( $cref, $callbackdata ) = @_;
+
+  if( $$cref =~ '<!--' ) {
+    return "404 not found";
+  }
+  elsif( $$cref eq '' ) {
+    return "404not found";
+  }
+  else {
+    return undef;
+  }
+}
+
+
 sub FilterContent {
   my $self = shift;
   my( $cref, $chd ) = @_;

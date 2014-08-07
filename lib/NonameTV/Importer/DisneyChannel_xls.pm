@@ -49,7 +49,7 @@ sub ImportContentFile {
   $self->{fileerror} = 0;
 
   if( $file =~ /\.xls$/i ){
-    $self->ImportFlatXLS( $file, $chd );
+    $self->ImportFlatXLS( $file, $chd ) if $file =~ /swe*.*xls$/i;
   } elsif( $file =~ /\.zip$/i ) {
   	# When ParseExcel can load a XLS file
   	# from a string Please remove this
@@ -142,6 +142,8 @@ sub ImportFlatXLS
 			$columns{'Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /\(NOT\) Title/ ); # Often SWE Title
 			$columns{'Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /\(SWE\) Title/ );
 
+			$columns{'ORGTitle'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /\(ENG\) Title/ );
+
           	$columns{'Time'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Time/ );
           	$columns{'Date'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Date/ );
           	$columns{'Season'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Season Number/ );
@@ -189,6 +191,7 @@ sub ImportFlatXLS
 
 	  
 	  my $title;
+	  my $title_org;
 	  my $test;
 	  my $season;
 	  my $episode;
@@ -201,9 +204,11 @@ sub ImportFlatXLS
 	  $title =~ s/S(\d+)$//;
 	  
       # Clean it
-	  $title = norm($oWkC->Value);
-	  
-	  
+	  $title = norm($title);
+
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'ORGTitle'}];
+      $title_org = norm($oWkC->Value);
+
 	  $oWkC = $oWkS->{Cells}[$iR][$columns{'Synopsis'}];
       my $desc = $oWkC->Value if( $oWkC );
 
@@ -242,9 +247,9 @@ sub ImportFlatXLS
 		}
 
         # add one
-		if($episode eq 1 and $season eq 0 and defined($program_type2) and $program_type2 ne "movie") {
-			$season = 1;
-		}
+		#if($episode eq 1 and $season eq 0 and defined($program_type2) and $program_type2 ne "movie") {
+		#	$season = 1;
+		#}
 
 		if(defined($ce->{episode}) and $season > 0) {
 			$ce->{episode} = $season-1 . $ce->{episode};
@@ -260,6 +265,8 @@ sub ImportFlatXLS
 	    	$ce->{description} =~ s/\((\d\d\d\d)\) //;
 	    	$ce->{production_date} = "$1-01-01";
 	    }
+
+	    $ce->{original_title} = norm($title_org) if $ce->{title} ne norm($title_org) and norm($title_org) ne "";
 
         $dsh->AddProgramme( $ce );
 		

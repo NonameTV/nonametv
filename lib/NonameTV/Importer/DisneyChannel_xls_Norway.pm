@@ -49,7 +49,7 @@ sub ImportContentFile {
   $self->{fileerror} = 0;
 
   if( $file =~ /nor*.*xls$/i ){
-    $self->ImportFlatXLS( $file, $chd );
+    $self->ImportFlatXLS( $file, $chd ) if $file =~ /nor*.*xls$/i;
   } elsif( $file =~ /\.zip$/i ) {
   	# When ParseExcel can load a XLS file
   	# from a string Please remove this
@@ -143,6 +143,8 @@ sub ImportFlatXLS
 			$columns{'Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /\(NOT\) Title/ ); # Often SWE Title
 			$columns{'Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /\(NOR\) Title/ );
 
+			$columns{'ORGTitle'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /\(ENG\) Title/ );
+
           	$columns{'Time'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Time/ );
           	$columns{'Date'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Date/ );
           	$columns{'Season'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Season Number/ );
@@ -202,8 +204,10 @@ sub ImportFlatXLS
 	  $title =~ s/S(\d+)$//;
 
       # Clean it
-	  $title = norm($oWkC->Value);
+	  $title = norm($title);
 
+      $oWkC = $oWkS->{Cells}[$iR][$columns{'ORGTitle'}];
+      $title_org = norm($oWkC->Value);
 
 	  $oWkC = $oWkS->{Cells}[$iR][$columns{'Synopsis'}];
       my $desc = $oWkC->Value if( $oWkC );
@@ -262,7 +266,7 @@ sub ImportFlatXLS
 	    	$ce->{production_date} = "$1-01-01";
 	    }
 
-		#print Dumper($ce);
+		$ce->{original_title} = norm($title_org) if $ce->{title} ne norm($title_org) and norm($title_org) ne "";
 
         $dsh->AddProgramme( $ce );
 
