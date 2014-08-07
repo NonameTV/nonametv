@@ -192,6 +192,7 @@ sub ImportFlatXLS
 
 
 	  my $title;
+	  my $title_org;
 	  my $test;
 	  my $season;
 	  my $episode;
