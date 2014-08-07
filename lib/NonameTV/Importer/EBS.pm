@@ -49,6 +49,14 @@ sub Object2Url {
   return( $url, undef );
 }
 
+sub ContentExtension {
+  return 'xml';
+}
+
+sub FilteredExtension {
+  return 'xml';
+}
+
 sub ImportContent
 {
   my $self = shift;

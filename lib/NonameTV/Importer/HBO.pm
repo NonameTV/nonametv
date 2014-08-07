@@ -41,8 +41,7 @@ sub new {
   return $self;
 }
 
-sub FetchDataFromSite
-{
+sub Object2Url {
   my $self = shift;
   my( $batch_id, $data ) = @_;
 
@@ -50,10 +49,15 @@ sub FetchDataFromSite
 
   my $url = $self->{UrlRoot} . "?date=" . $date . "&channel=" . $data->{grabber_info};
 
-  progress("HBO: $xmltvid: Fetching data from $url");
+  return( $url, undef );
+}
 
-  my( $content, $code ) = MyGet( $url );
-  return( $content, $code );
+sub ContentExtension {
+  return 'xml';
+}
+
+sub FilteredExtension {
+  return 'xml';
 }
 
 sub ImportContent {
@@ -93,7 +97,7 @@ sub ImportContent {
     error( "HBO: $channel_xmltvid: $xmldata: No schedule nodes found" ) ;
     return;
   }
-  progress( "HBO: $channel_xmltvid: found " . $ntvs->size() . " schedule nodes" );
+  #progress( "HBO: $channel_xmltvid: found " . $ntvs->size() . " schedule nodes" );
 
   # browse through ntvs
   foreach my $ntv ($ntvs->get_nodelist) {
@@ -104,7 +108,7 @@ sub ImportContent {
       error( "HBO: $channel_xmltvid: No programs found" ) ;
       next;
     }
-    progress( "HBO: $channel_xmltvid: found " . $prgs->size() . " programs" );
+    #progress( "HBO: $channel_xmltvid: found " . $prgs->size() . " programs" );
 
     # browse through programs
     foreach my $prg ($prgs->get_nodelist) {

@@ -174,26 +174,50 @@ sub ImportContent
         end_time        => $end,
     };
 
-    my ( $dummy, $dummy2, $episode ) = ($title =~ /(,|) (del|avsnitt) (\d+)$/i ); # bugfix
+    my ( $dummy, $dummy2, $episode ) = ($title =~ /(,|) (del|avsnitt|akt|vecka) (\d+)$/i ); # bugfix
     if(defined($episode)) {
         $ce->{episode} = sprintf( ". %d .", $episode-1 );
     }
 
-    my ( $dummy3, $dummy4, $episode2, $ofepisodes ) = ($title =~ /(,|) (del|avsnitt) (\d+) av (\d+)$/i ); # bugfix
+    my ( $dummy3, $dummy4, $episode2, $ofepisodes ) = ($title =~ /(,|) (del|avsnitt|akt|vecka) (\d+) av (\d+)$/i ); # bugfix
     if(defined($episode2)) {
         $ce->{episode} = sprintf( ". %d/%d .", $episode2-1, $ofepisodes );
+    }
+
+    my ( $dummy5, $dummy6, $episode3, $subtitle ) = ($title =~ /(,|) (del|avsnitt|akt|vecka) (\d+)\: (.*)$/i ); # bugfix
+    if(defined($episode3)) {
+        $ce->{episode} = sprintf( ". %d .", $episode3-1 );
+        $ce->{subtitle} = norm($subtitle);
+    }
+
+    my ( $dummy7, $dummy8, $episode4, $ofepisodes2 ) = ($title =~ /(,|) (del|avsnitt|akt|vecka) (\d+) \(av (\d+)\)$/i ); # bugfix
+    if(defined($episode4)) {
+        $ce->{episode} = sprintf( ". %d/%d .", $episode4-1, $ofepisodes2 );
     }
 
     # Clean title
     $title =~ s/, vecka (\d+)//;
     $title =~ s/, avsnitt (\d+) av (\d+)//;
     $title =~ s/, del (\d+) av (\d+)//;
+    $title =~ s/, avsnitt (\d+)\: (.*)//;
+    $title =~ s/, del (\d+)\: (.*)//;
     $title =~ s/, avsnitt (\d+)//;
     $title =~ s/, del (\d+)//;
+    $title =~ s/, akt (\d+) \(av (\d+)\)//;
+    $title =~ s/, akt (\d+)//;
     $title =~ s/ avsnitt (\d+) av (\d+)//;
     $title =~ s/ del (\d+) av (\d+)//;
+    $title =~ s/ avsnitt (\d+)\: (.*)//;
+    $title =~ s/ del (\d+)\: (.*)//;
     $title =~ s/ avsnitt (\d+)//;
     $title =~ s/ del (\d+)//;
+
+    my ( $subtitle2 ) = ($title =~ /\: (.*)$/i ); # bugfix
+    if(defined($subtitle2)) {
+        $ce->{subtitle} = norm($subtitle2);
+    }
+
+    $title =~ s/\: (.*)$//;
 
     # norm it and replace it
     $ce->{title} = norm($title);
