@@ -120,16 +120,11 @@ sub ImportContent( $$$ ) {
     $ce->{start_time} = $self->parseTimestamp( $xpc->findvalue( 's:termin/@start' ) );
     $ce->{end_time} = $self->parseTimestamp( $xpc->findvalue( 's:termin/@ende' ) );
 
-    my $title = $xpc->findvalue( 's:titel/s:alias[@titelart="originaltitel"]/@aliastitel' );
-    if( !$title ){
-      $title = $xpc->findvalue( 's:titel/s:alias[@titelart="titel"]/@aliastitel' );
-    }
-    if( !$title ){
-      $title = $xpc->findvalue( 's:titel/@termintitel' );
-    }
-    if( $title ){
-      $ce->{title} = $title;
-    }
+    $ce->{title} = norm($xpc->findvalue( 's:titel/@termintitel' ));
+
+    my $title_org;
+    $title_org = $xpc->findvalue( 's:titel/s:alias[@titelart="originaltitel"]/@aliastitel' );
+    $ce->{original_title} = norm($title_org) if $ce->{title} ne norm($title_org) and norm($title_org) ne "";
 
     my $subtitle = $xpc->findvalue( 's:titel/s:alias[@titelart="originaluntertitel"]/@aliastitel' );
     if( !$subtitle ){
@@ -173,7 +168,29 @@ sub ImportContent( $$$ ) {
       $ce->{url} = $url;
     }
 
+    # Episode
+    my $season = $xpc->findvalue( 's:infos/s:folge/@staffel' );
+    my $episode = $xpc->findvalue( 's:infos/s:folge/@folgennummer' );
+    if($season and $episode and $season ne "99") {
+        $ce->{episode} = sprintf( "%d . %d .", $season-1, $episode-1 );
+    } elsif($episode) {
+        $ce->{episode} = sprintf( " . %d .", $episode-1 );
+    }
+
+    #Descr
+    my $desc = $xpc->findvalue( 's:text[@textart="Kurztext"]' );
+    if( ! $desc) {
+        $desc = $xpc->findvalue( 's:text[@textart="Beschreibung"]' );
+    }
+    if( ! $desc) {
+        $desc = $xpc->findvalue( 's:text[@textart="Allgemein"]' );
+    }
+
+    $ce->{description} = norm($desc) if $desc and $desc ne "";
+
     $self->{datastore}->AddProgramme( $ce );
+
+    progress("MTVde: $chd->{xmltvid}: ".$ce->{start_time}." - ".$ce->{title});
 
 #    d( $xpc->getContextNode()->toString() . Dumper ( $ce ) );
 
