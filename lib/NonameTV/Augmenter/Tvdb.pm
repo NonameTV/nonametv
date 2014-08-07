@@ -95,11 +95,14 @@ sub FillHash( $$$$ ) {
 
   my $episodeid = $series->{Seasons}[$episode->{SeasonNumber}][$episode->{EpisodeNumber}];
 
-  $resultref->{title} = normUtf8( norm( $series->{SeriesName} ) );
+  # Dont set if original title
+  if(!defined($ceref->{original_title})) {
+    $resultref->{title} = normUtf8( norm( $series->{SeriesName} ) );
+  }
   
   # Only set original title if its not defined
   # and the title aint like the original title.
-  if(!defined($resultref->{original_title}) and ($resultref->{title} ne norm($ceref->{title}))) {
+  if(!defined($ceref->{original_title}) and ($resultref->{title} ne norm($ceref->{title}))) {
   	$resultref->{original_title} = norm($ceref->{title});
   }
   
@@ -293,6 +296,12 @@ sub AugmentProgram( $$$ ){
           $series = $self->{tvdb}->getSeries( $seriesname, 0 );
         } else {
           $series = $self->{tvdb}->getSeries( $ceref->{title}, 0 );
+
+          # Check against original title if the title cant be found.
+          if(!(defined($series)) and (defined($ceref->{original_title}) and $ceref->{original_title} ne "")) {
+                w("trying original title ".$ceref->{original_title}." instead of ".$ceref->{title});
+                $series = $self->{tvdb}->getSeries( $ceref->{original_title}, 0 );
+          }
         }
         if( defined $series ){
           my $episode = $self->{tvdb}->getEpisodeAbs( $series->{SeriesName}, $episodeabs );
@@ -326,15 +335,19 @@ sub AugmentProgram( $$$ ){
           $series = $self->{tvdb}->getSeries( $seriesname, 0 );
         } else {
           $series = $self->{tvdb}->getSeries( $ceref->{title}, 0 );
+
+          # Check against original title if the title cant be found.
+          if(!(defined($series)) and (defined($ceref->{original_title}) and $ceref->{original_title} ne "")) {
+            w("trying original title ".$ceref->{original_title}." instead of ".$ceref->{title});
+            $series = $self->{tvdb}->getSeries( $ceref->{original_title}, 0 );
+          }
         }
         
         if( (defined $series)){
-        	# Set the title right, even if no season nor episode is found.
-        	# This does so there is not any diffrences in title between
-        	# a series with episode of 100+ when there's only 20 episodes of
-        	# the season, like Simpsons. Simpsons becomes The Simpsons if seriesname
-        	# is found.
-        	$resultref->{title} = normUtf8( norm( $series->{SeriesName} ) );
+        	# Use $ce->{original_title} with the real title if its provided by the data
+        	if(!defined($ceref->{original_title})) {
+        	    #$resultref->{title} = normUtf8( norm( $series->{SeriesName} ) );
+        	}
         	
         	# Find season and episode
         	if(($season ne "") and ($episode ne "")) {
@@ -402,6 +415,12 @@ sub AugmentProgram( $$$ ){
         $series = $self->{tvdb}->getSeries( $seriesname, 0 );
       } else {
         $series = $self->{tvdb}->getSeries( $ceref->{title}, 0 );
+
+        # Check against original title if the title cant be found.
+        if(!(defined($series)) and (defined($ceref->{original_title}) and $ceref->{original_title} ne "")) {
+            w("trying original title ".$ceref->{original_title}." instead of ".$ceref->{title});
+            $series = $self->{tvdb}->getSeries( $ceref->{original_title}, 0 );
+        }
       }
       if( defined $series ){
         $resultref->{title} = normUtf8( norm( $series->{SeriesName} ) );
