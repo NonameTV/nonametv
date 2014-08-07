@@ -218,6 +218,13 @@ sub ImportContent
 	    $ce->{quality} = 'HDTV';
 	}
 
+	# original title
+    if(defined($title_original) and $title_original =~ /, (.r|sesong) (.*)/i) {
+  	    $title_original =~ s/, (.r|sesong) (.*)//i;
+  	}
+
+  	$ce->{original_title} = norm($title_original) if defined($title_original) and $ce->{title} ne norm($title_original) and norm($title_original) ne "";
+
 
     $dsh->AddProgramme( $ce );
   }
