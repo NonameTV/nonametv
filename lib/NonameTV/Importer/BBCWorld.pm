@@ -103,22 +103,25 @@ sub ImportContent
     return 1;
 }
 
-sub FetchDataFromSite
-{
+sub Object2Url {
+  my $self = shift;
+  my( $batch_id, $data ) = @_;
 
-    my $self = shift;
-    my( $batch_id, $data ) = @_;
-    
-    my( $date ) = ($batch_id =~ /_(.*)/);
-    
-    my ($year, $month, $day) = split(/-/, $date);
+  my( $date ) = ($batch_id =~ /_(.*)/);
 
-    my $channeluri = $self->{UrlRoot};
-    $channeluri = $channeluri."StartDate=$day/$month/$year&EndDate=$day/$month/$year";
-    # print "DEBUG: $channeluri\n";
-    my ( $content, $code ) = MyGet ($channeluri );
-    
-    return( $content, $code );
+  my ($year, $month, $day) = split(/-/, $date);
+
+  my $url = $self->{UrlRoot}."StartDate=$day/$month/$year&EndDate=$day/$month/$year";
+
+  return ($url, undef);
+}
+
+sub ContentExtension {
+  return 'csv';
+}
+
+sub FilteredExtension {
+  return 'csv';
 }
 
 sub row_to_hash
