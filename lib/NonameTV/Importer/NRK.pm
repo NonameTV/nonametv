@@ -209,37 +209,41 @@ sub ImportContent
     return 1;
 }
 
-sub FetchDataFromSite
-{
+sub Object2Url {
+  my $self = shift;
+  my( $batch_id, $data ) = @_;
 
-    my $self = shift;
-    my( $batch_id, $data ) = @_;
-    
-    my( $date ) = ($batch_id =~ /_(.*)/);
-    
-    my ($year, $month, $day) = split(/-/, $date);
+  my( $date ) = ($batch_id =~ /_(.*)/);
 
-    my $u = URI->new($self->{UrlRoot});
-    $u->query_form( {
-    		d2_proxy_skip_encoding_all => 'true',
-    		d2_proxy_komponent => '/!potkomp.d2d_pressetjeneste.fkt_pressesoket_flex',
-        p_fom_dag => $day,
-        p_tom_dag => $day,
-        p_fom_mnd => $month,
-        p_tom_mnd => $month,
-        p_fom_ar  => $year,
-        p_tom_ar  => $year,
-        p_format  => "XML",
-        p_type    => "prog",
-        p_knapp   => "Last ned"
-    });
-    my $channeluri = $u->as_string."&".$data->{grabber_info};
-    # print "DEBUG: $channeluri\n";
-    my ( $content, $code ) = MyGet ($channeluri );
-    
-    return( $content, $code );
+  my ($year, $month, $day) = split(/-/, $date);
+
+  my $u = URI->new($self->{UrlRoot});
+      $u->query_form( {
+      		d2_proxy_skip_encoding_all => 'true',
+      		d2_proxy_komponent => '/!potkomp.d2d_pressetjeneste.fkt_pressesoket_flex',
+          p_fom_dag => $day,
+          p_tom_dag => $day,
+          p_fom_mnd => $month,
+          p_tom_mnd => $month,
+          p_fom_ar  => $year,
+          p_tom_ar  => $year,
+          p_format  => "XML",
+          p_type    => "prog",
+          p_knapp   => "Last ned"
+      });
+
+  my $url = $u->as_string."&".$data->{grabber_info};
+
+  return( $url, undef );
 }
 
+sub ContentExtension {
+  return 'xml';
+}
+
+sub FilteredExtension {
+  return 'xml';
+}
 
 sub createDate
 {
