@@ -39,6 +39,14 @@ sub new {
     return $self;
 }
 
+sub ContentExtension {
+  return 'xml';
+}
+
+sub FilteredExtension {
+  return 'xml';
+}
+
 sub Object2Url {
   my $self = shift;
   my( $objectname, $chd ) = @_;
@@ -91,7 +99,7 @@ sub ImportContent
   foreach my $sc ($ns->get_nodelist)
   {
 
-    my($title, $subtitle, $desc) = undef;
+    my($title, $subtitle, $desc, $title_org) = undef;
 
 
     #
@@ -122,6 +130,10 @@ sub ImportContent
         if($t->findvalue( './@lang' ) eq $chd->{grabber_info}) {
             $title = norm($t->textContent());
         }
+
+        if($t->findvalue( './@lang' ) eq "en") {
+            $title_org = norm($t->textContent());
+        }
     }
     if( not defined $title or !length($title) )
     {
@@ -137,7 +149,7 @@ sub ImportContent
     foreach my $s ($sc->getElementsByTagName('sub-title'))
     {
        if($s->findvalue( './@lang' ) eq $chd->{grabber_info}) {
-        $subtitle  = norm($s->textContent());
+            $subtitle  = norm($s->textContent());
        }
     }
 
@@ -228,6 +240,8 @@ sub ImportContent
     } else {
       $ce->{program_type} = 'movie';
     }
+
+    $ce->{original_title} = norm($title_org) if $ce->{title} ne norm($title_org) and norm($title_org) ne "";
 
     $ds->AddProgramme( $ce );
 
