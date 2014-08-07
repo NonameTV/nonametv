@@ -255,6 +255,7 @@ sub ImportFull
       {
 	$ce->{start_time} = $start;
 	$ce->{title} = $title;
+
 	$state = ST_FHEAD;
       }
       elsif( $type == T_DATE )
@@ -572,6 +573,16 @@ sub extract_extra_info
 
   $ce->{title} = norm($ce->{title});
   $ce->{subtitle} = norm($ce->{subtitle}) if defined($ce->{subtitle});
+
+  $ce->{subtitle} =~ s/  / / if defined($ce->{subtitle}); # Sometimes it have 2 spaces, replace with 1
+
+  # FILM before is a movie
+  if($ce->{title} =~ /^FILM\s+/ ) {
+	    $ce->{program_type} = "movie";
+	    $ce->{category} = "Movies";
+        $ce->{title} =~ s/^FILM//;
+        $ce->{title} = norm($ce->{title});
+  }
 
   return;
 }

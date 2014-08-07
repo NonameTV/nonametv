@@ -183,7 +183,7 @@ sub isDate {
   }
 
   # format 'Ponedel'nik, 27 aprelja'
-  if( $text =~ /^\s*(Ponedel'nik|Vtornik|Sreda|Chetverg|Pjatnica|Subbota|Voskresen'e),\s+\d+\s+(aprelja|avgusta)$/i ){
+  if( $text =~ /^\s*(Ponedel'nik|Vtornik|Sreda|Chetverg|Pjatnica|Subbota|Voskresen'e),\s+\d+\s+(.*)$/i ){
     return 1;
   }
 

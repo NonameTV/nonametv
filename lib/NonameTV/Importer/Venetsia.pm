@@ -541,7 +541,7 @@ sub join_text
 
   return $t;
 }
--
+
 sub parse_person_list
 {
   my( $str ) = @_;
