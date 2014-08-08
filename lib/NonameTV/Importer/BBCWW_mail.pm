@@ -120,6 +120,9 @@ sub ImportXLS
 			$columns{'Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Programme Title/ );
 			$columns{'Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Programme \(English\)$/ );
 
+            $columns{'ORGTitle'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /English Title/ );
+			$columns{'ORGTitle'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /^Programme \(English\)$/ );
+
             $columns{'Episode Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /English Episode Title/ );
             $columns{'Episode Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Episode Name \(English\)/ );
             $columns{'Episode Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Episode Title/ );
@@ -239,6 +242,14 @@ sub ImportXLS
           $ce->{episode} = sprintf( ". %d .", $epino-1 );
         }
       }
+
+      # org title
+      if(defined $columns{'ORGTitle'}) {
+        $oWkC = $oWkS->{Cells}[$iR][$columns{'ORGTitle'}];
+        my $title_org = $oWkC->Value if( $oWkC->Value );
+        $ce->{original_title} = norm($title_org) if defined($title_org) and $ce->{title} ne norm($title_org) and norm($title_org) ne "";
+      }
+
 
       $dsh->AddProgramme( $ce );
 

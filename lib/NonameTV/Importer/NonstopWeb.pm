@@ -175,7 +175,7 @@ sub ImportContent
         $ce->{program_type} = "series";
     }
         
-        $ce->{description} =~ s/\(S(.*)song(.*)\)$//;
+        $ce->{description} =~ s/\(S(.|ea)son(g|)(.*)\)$//;
         
         # Year (it should actually get year from augmenter instead (as sometimes it's the wrong year))
         if( defined( $production_year ) and ($production_year =~ /(\d\d\d\d)/) )

@@ -243,6 +243,8 @@ sub ImportContent
     {
         $ce->{program_type} = "movie";
     }
+
+    progress($date." ".$starttime." - ".$ce->{title});
     
     $dsh->AddProgramme( $ce );
   }

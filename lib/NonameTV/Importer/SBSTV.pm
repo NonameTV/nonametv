@@ -143,6 +143,8 @@ sub ImportContent {
     $org_title =~ s/:\|apostrofe\|;/'/g;
     my $titles = $title || $org_title;
     $titles =~ s/Tv-premiere://g if $titles;
+    $titles =~ s/S.sonpremiere://g if $titles;
+    $titles =~ s/S.sonafslutning://g if $titles;
   
   
   	# Start and so on
@@ -286,6 +288,8 @@ sub ImportContent {
     if(defined($ce->{subtitle}) and ($ce->{subtitle} =~ /$ce->{title}/i)) {
         $ce->{subtitle} = undef;
     }
+
+    $ce->{original_title} = norm($org_title) if $ce->{title} ne norm($org_title) and norm($org_title) ne "";
 
     $dsh->AddProgramme( $ce );
   }
