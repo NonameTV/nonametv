@@ -144,8 +144,16 @@ sub talk {
       return $response->{_request}->{_headers};
     } ## end if ( $args->{want_headers...})
   return unless $response->{_content};  # Blank Content
-  return $self->json->decode(
-        Encode::decode( 'utf-8-strict', $response->{_content} ) );  # Real Response
+
+  if($response->{_content} !~ /^</ ) {
+    return $self->json->decode( Encode::decode( 'utf-8-strict', $response->{_content} ) );  # Real Response
+  } else {
+    # Probably want to remove that file from cache when this happened than just return nothing.
+    # This is what happens when you do too many api requests
+    warn "DEBUG: Not an actual JSON.";
+    return;
+  }
+
 } ## end sub talk
 
 ## ====================
