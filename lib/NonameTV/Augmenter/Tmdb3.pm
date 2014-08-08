@@ -276,6 +276,9 @@ sub AugmentProgram( $$$ ){
               # tv stations sometimes list the movie as being "by the author" instead of the director, so accept both
               if( ( $crew->{'job'} eq 'Director' )||( $crew->{'job'} eq 'Author' )||( $crew->{'job'} eq 'Screenplay' ) ) {
                 my $person = $self->{themoviedb}->person( id => $crew->{id} );
+                if( $self->{Slow} ) {
+                #  sleep (1);
+                }
                 if( defined( $person ) ){
                   if( defined( $person->aka() ) ){
                     if( defined( $person->aka()->[0] ) ){
