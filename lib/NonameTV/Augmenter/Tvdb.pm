@@ -5,6 +5,7 @@ use warnings;
 
 use TVDB::API;
 use utf8;
+use Data::Dumper;
 
 use NonameTV qw/norm normUtf8 AddCategory/;
 use NonameTV::Augmenter::Base;
@@ -96,13 +97,14 @@ sub FillHash( $$$$ ) {
   my $episodeid = $series->{Seasons}[$episode->{SeasonNumber}][$episode->{EpisodeNumber}];
 
   # Dont set if original title
-  if(!defined($ceref->{original_title})) {
+  if(!defined $ceref->{original_title}) {
+    #w("changing title from ".$ceref->{title}." to ".normUtf8( norm( $series->{SeriesName} ) ));
     $resultref->{title} = normUtf8( norm( $series->{SeriesName} ) );
   }
   
   # Only set original title if its not defined
   # and the title aint like the original title.
-  if(!defined($ceref->{original_title}) and ($resultref->{title} ne norm($ceref->{title}))) {
+  if(!defined $ceref->{original_title} and ($resultref->{title} ne norm($ceref->{title}))) {
   	$resultref->{original_title} = norm($ceref->{title});
   }
   
@@ -423,7 +425,7 @@ sub AugmentProgram( $$$ ){
         }
       }
       if( defined $series ){
-        $resultref->{title} = normUtf8( norm( $series->{SeriesName} ) );
+        #$resultref->{title} = normUtf8( norm( $series->{SeriesName} ) );
         
         my $episodetitle = $ceref->{subtitle};
 
