@@ -40,12 +40,12 @@ sub new {
     # need config for main content cache path
     my $conf = ReadConfig( );
 
-#    my $cachefile = $conf->{ContentCachePath} . '/' . $self->{Type} . '/tvdb.db';
-#    my $bannerdir = $conf->{ContentCachePath} . '/' . $self->{Type} . '/banner';
+    my $cachedir = $conf->{ContentCachePath} . '/' . $self->{Type};
 
     $self->{themoviedb} = TMDB->new(
         apikey => $self->{ApiKey},
         lang   => $self->{Language},
+        cache  => $cachedir,
     );
 
     $self->{search} = $self->{themoviedb}->search(
@@ -126,7 +126,7 @@ sub FillHash( $$$ ) {
   # FIXME shall we use the alternative name if that's what was in the guide???
   # on one hand the augmenters are here to unify various styles on the other
   # hand matching the other guides means less surprise for the users
-  $resultref->{title} = norm( $movie->title );
+  #$resultref->{title} = norm( $movie->title ); # We dont want to set this.
   if( defined( $movie->info ) ){
     my $original_title = $movie->info->{original_title};
     if( defined( $original_title ) ){
@@ -192,6 +192,9 @@ sub FillHash( $$$ ) {
   $self->FillCrew( $resultref, 'producers', $movie, 'Producer');
   $self->FillCrew( $resultref, 'writers', $movie, 'Screenplay');
 
+  $resultref->{extra_id} = $movie->info->{imdb_id};
+  $resultref->{extra_id_type} = "themoviedb";
+
 #  print STDERR Dumper( $apiresult );
 }
 
@@ -228,10 +231,25 @@ sub AugmentProgram( $$$ ){
       sleep (1);
     }
     # TODO fix upstream instead of working around here
+
     my @candidates = $self->{search}->movie( $searchTerm );
     my @keep = ();
 
     my $numResult = @candidates;
+
+    # No results? Try with the original title
+    if(defined $ceref->{original_title} and $ceref->{original_title} ne "" and $numResult < 1) {
+        my $original_title = $ceref->{original_title};
+        $original_title =~ s|&|%26|g;
+        $original_title =~ s|[-#\?\N{U+00BF}\(\)]||g;
+        $original_title =~ s|[:]| |g;
+
+        my @title_org = $self->{search}->movie( $original_title );
+        push @candidates, @title_org;
+    }
+
+    $numResult = @candidates;
+
     if( $numResult < 1 ){
       return( undef,  "No matching movie found when searching for: " . $searchTerm );
     }else{
