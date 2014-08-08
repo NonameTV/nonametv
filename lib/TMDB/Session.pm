@@ -11,12 +11,15 @@ use Carp qw(croak carp);
 # LOAD CPAN MODULES
 #######################
 use JSON::Any;
+use Data::Dumper;
 use Encode qw();
 use HTTP::Tiny qw();
 use URI::Encode qw();
 use Params::Validate qw(validate_with :types);
 use Locale::Codes::Language qw(all_language_codes);
 use Object::Tiny qw(apikey apiurl lang debug client encoder json);
+use WWW::Mechanize::Cached;
+use CHI;
 
 #######################
 # PACKAGE VARIABLES
@@ -54,6 +57,9 @@ sub new {
                 optional => 1,
                 default  => 'http://api.themoviedb.org/3',
             },
+            cache => {
+                type     => SCALAR,
+            },
             lang => {
                 type      => SCALAR,
                 optional  => 1,
@@ -63,11 +69,12 @@ sub new {
             },
             client => {
                 type     => OBJECT,
-                isa      => 'HTTP::Tiny',
+                isa      => 'WWW::Mechanize::Cached',
                 optional => 1,
-                default  => HTTP::Tiny->new(
-                    agent           => $default_ua,
-                    default_headers => $default_headers,
+                default  => WWW::Mechanize::Cached->new(
+                    cache => CHI->new( driver => 'File',
+                             root_dir => '/nonametv/contentcache/Tmdb3',
+                             expires_in => '1 month', expires_variance => 0.25 ), agent => $default_ua, headers => $default_headers
                 ),
             },
             encoder => {
@@ -119,24 +126,26 @@ sub talk {
     warn "DEBUG: GET -> $url\n" if $self->debug;
     my $response = $self->client->get($url);
 
+    #print Dumper($response, $self->client->is_cached($url));
+
     # Debug
     if ( $self->debug ) {
         warn "DEBUG: Got a successful response\n" if $response->{success};
         warn "DEBUG: Got Status -> $response->{status}\n";
         warn "DEBUG: Got Reason -> $response->{reason}\n"   if $response->{reason};
-        warn "DEBUG: Got Content -> $response->{content}\n" if $response->{content};
+        warn "DEBUG: Got Content -> $response->{_content}\n" if $response->{content};
     } ## end if ( $self->debug )
 
     # Return
-  return unless $response->{success};  # Error
-    if ( $args->{want_headers} and exists $response->{headers} ) {
+  return unless $response->{_msg};  # Error
+    if ( $args->{want_headers} and exists $response->{_request}->{_headers} ) {
 
         # Return headers only
-      return $response->{headers};
+      return $response->{_request}->{_headers};
     } ## end if ( $args->{want_headers...})
-  return unless $response->{content};  # Blank Content
+  return unless $response->{_content};  # Blank Content
   return $self->json->decode(
-        Encode::decode( 'utf-8-strict', $response->{content} ) );  # Real Response
+        Encode::decode( 'utf-8-strict', $response->{_content} ) );  # Real Response
 } ## end sub talk
 
 ## ====================
