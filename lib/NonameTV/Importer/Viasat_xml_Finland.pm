@@ -141,7 +141,7 @@ sub ImportContent {
       my $start_time = $emission->findvalue( 'startTime' );
       my $other_name = $emission->findvalue( 'name' );
       my $original_name = $emission->findvalue( 'orgName' );
-      my $name = $original_name || $other_name;
+      my $name = $other_name || $original_name;
       $name =~ s/#//g; # crashes the whole importer
       
       # # End of airtime
@@ -217,6 +217,11 @@ sub ImportContent {
 	  {
 	  	$ce->{production_date} = "$1-01-01";
 	  }
+
+      # Send back original swedish title
+      if(norm($name) ne norm($original_name)) {
+      	$ce->{original_title} = norm($original_name);
+      }
 	  
 	  # Find aspect-info
 	  if( $widescreen eq "true" )
