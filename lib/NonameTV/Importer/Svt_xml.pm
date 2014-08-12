@@ -117,6 +117,7 @@ sub ImportXML
 
   foreach my $row ($rows->get_nodelist) {
       my $title = norm2($row->findvalue( './/sch:Title/@official' ) );
+      my $title_org = norm2($row->findvalue( './/sch:Title/@original' ) );
       $title =~ s/¿/‒/g; # Wrong encoded char
       
       my $time = $row->findvalue( './/sch:StartTime/@startcet' );
@@ -180,6 +181,8 @@ sub ImportXML
       {
         $ce->{stereo} = "dolby digital";
       }
+
+      $ce->{original_title} = norm($title_org) if defined($title_org) and $ce->{title} ne norm($title_org) and norm($title_org) ne "";
       
       #my ( $program_type, $category ) = ParseDescCatSwe( $genredesc );
   	  #AddCategory( $ce, $program_type, $category );
@@ -190,7 +193,7 @@ sub ImportXML
       
       for( my $i2=0; $i2<scalar(@sentences2); $i2++ )
   	  {
-  	  	if( my( $seasontextnum ) = ($sentences2[$i2] =~ /^Säsong (\d+)./ ) )
+        if( my( $seasontextnum ) = ($sentences2[$i2] =~ /^Säsong (\d+)./ ) )
 	    {
 	      $season = $seasontextnum;
 	      
@@ -223,7 +226,12 @@ sub ImportXML
       
       for( my $i=0; $i<scalar(@sentences); $i++ )
   	  {
-	  	if( $sentences[$i] =~ /Del\s+\d+\.*/ )
+        if( my( $originaltitle ) = ($sentences[$i] =~ /^\((.*)\)\.$/ ) )
+	    {
+          $ce->{original_title} = norm2($originaltitle) if norm2($originaltitle) ne $ce->{title};
+          $sentences[$i] = "";
+	    }
+	    elsif( $sentences[$i] =~ /Del\s+\d+\.*/ )
 	    {
 	      # If this program has an episode-number, it is by definition
 		  # a series (?). Svt often miscategorize series as movie.
@@ -278,6 +286,11 @@ sub ImportXML
       		$ce->{guests} = parse_person_list( $guestartist );
       		$sentences[$i] = "";
     	}
+        elsif( my( $guests ) = ($sentences[$i] =~ /^Kvällens\s+gäster:\s*(.*)/ ) )
+        {
+            $ce->{guests} = parse_person_list( $guests );
+            $sentences[$i] = "";
+        }
     	elsif( my( $guests ) = ($sentences[$i] =~ /^Gäster\s+ikväll:\s*(.*)/ ) )
         {
             $ce->{guests} = parse_person_list( $guests );
@@ -427,6 +440,7 @@ sub parse_person_list
     # character name might be missing a trailing ).
     s/\s*\(.*$//;
     s/.*\s+-\s+//;
+    s/^\.$//;
   }
 
   return join( ", ", grep( /\S/, @persons ) );
@@ -466,7 +480,7 @@ sub split_text
 
   # Mark sentences ending with '.', '!', or '?' for split, but preserve the 
   # ".!?".
-  $t =~ s/([\.\!\?])\s+([A-Z���])/$1;;$2/g;
+  $t =~ s/([\.\!\?])\s+([\(A-Z���])/$1;;$2/g;
   
   my @sent = grep( /\S\S/, split( ";;", $t ) );
 
