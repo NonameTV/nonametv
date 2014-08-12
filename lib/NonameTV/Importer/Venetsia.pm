@@ -564,6 +564,7 @@ sub parse_person_list
     # The character name is sometimes given . Remove it.
     # The Cast-entry is sometimes cutoff, which means that the
     # character name might be missing a trailing ).
+    s/\.$//;
     s/\s*\(.*$//;
     s/.*\s+-\s+//;
   }
