@@ -150,7 +150,7 @@ sub talk {
   } else {
     # Probably want to remove that file from cache when this happened than just return nothing.
     # This is what happens when you do too many api requests
-    warn "DEBUG: Not an actual JSON.";
+    warn "Not an actual JSON. HTML found.";
     return;
   }
 
