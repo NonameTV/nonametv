@@ -192,7 +192,8 @@ sub FillHash( $$$ ) {
   $self->FillCrew( $resultref, 'producers', $movie, 'Producer');
   $self->FillCrew( $resultref, 'writers', $movie, 'Screenplay');
 
-  $resultref->{extra_id} = $movie->info->{imdb_id};
+  $resultref->{extra_id} = $movie->info->{imdb_id} if $movie->info->{imdb_id} ne "";
+  $resultref->{extra_id} = $movie->{ id } if $movie->info->{imdb_id} eq "";
   $resultref->{extra_id_type} = "themoviedb";
 
 #  print STDERR Dumper( $apiresult );
