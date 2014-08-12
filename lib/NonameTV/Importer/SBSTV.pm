@@ -240,8 +240,10 @@ sub ImportContent {
     	$ce->{program_type} = 'movie';
     } else {
     	my $instruktion = $b->findvalue( "instruktion" );
-    	my ( $instr ) = ( $instruktion =~ /Instr.:\s+(.*)./ );
+    	my ( $instr ) = ( $instruktion =~ /Instr.:\s+(.*)/ );
     	if(defined($instr) and $instr and $instr ne "") {
+    	    $instr = norm($instr);
+    	    $instr =~ s/\.$//;
     	    $ce->{directors} = norm($instr);
             $ce->{program_type} = 'movie';
     	}
