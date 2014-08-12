@@ -96,6 +96,14 @@ sub ImportContent
     
     $title =~ s/\(R\)//g if $title;
     $title =~ s/^Filmski maraton://;
+    my ($newtitle, $cat) = ($title =~ /(.*),(.*)/);
+    if(defined $cat) {
+        $title = norm($newtitle);
+    }
+
+    $title =~ s/\((\d+)\)//;
+    $title =~ s/\((\d+)\/(\d+)\)//;
+    $title =~ s/\.$//;
     
     
     #
@@ -152,7 +160,7 @@ sub ImportContent
       description  => norm($desc),
       start_time   => $start->ymd("-") . " " . $start->hms(":"),
       end_time     => $end->ymd("-") . " " . $end->hms(":"),
-      #aspect       => $sixteen_nine ? "16:9" : "4:3", 
+      #aspect       => $sixteen_nine ? "16:9" : "4:3",
       directors    => norm($directors),
       actors       => norm($actors),
       writers      => norm($writers),
@@ -260,15 +268,21 @@ sub create_dt
   return $dt;
 }
 
-sub FetchDataFromSite
-{
+sub Object2Url {
   my $self = shift;
   my( $batch_id, $data ) = @_;
 
   my $url = $self->{UrlRoot} . "\?$data->{grabber_info}";
 
-  my( $content, $code ) = MyGet( $url );
-  return( $content, $code );
+  return( $url, undef );
+}
+
+sub ContentExtension {
+  return 'xml';
+}
+
+sub FilteredExtension {
+  return 'xml';
 }
 
 1;
