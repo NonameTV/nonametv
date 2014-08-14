@@ -46,8 +46,8 @@ def download_json_files():
 
             if filedate >= datetime.datetime.today().date():
                 if len(channels) == 0 or channel in channels or channel == "channels.js.gz":
-                    stdout.write("Downloading http://xmltv.tvtab.la/json/%s " % anchor['href'])
-                    f = urllib2.urlopen('http://xmltv.tvtab.la/json/%s' % anchor['href'])
+                    stdout.write("Downloading http://json.xmltv.se/%s " % anchor['href'])
+                    f = urllib2.urlopen('http://json.xmltv.se/%s' % anchor['href'])
                     data = f.read()
                     with open('/tmp/xmltv_convert/json/%s' % anchor['href'].replace('.gz', ''), 'w+ ') as outfile:
                         outfile.write(data)
