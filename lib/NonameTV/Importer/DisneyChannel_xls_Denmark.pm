@@ -251,11 +251,11 @@ sub ImportFlatXLS
 			AddCategory( $ce, $program_type2, $category2 );
 		}
 
-		# movie
-		#if($episode eq 1 and $season eq 0) {
-		#	$ce->{episode} = undef;
-		#	$ce->{program_type} = "movie";
-		#}
+        # movie
+		if($episode eq 1 and $season eq 0) {
+			$ce->{episode} = undef;
+			$ce->{program_type} = "movie";
+		}
 
 		# Desc
 		$ce->{description} = norm($desc) if defined($desc);
@@ -268,6 +268,11 @@ sub ImportFlatXLS
 	    }
 
 	    $ce->{original_title} = norm($title_org) if $ce->{title} ne norm($title_org) and norm($title_org) ne "";
+        # , The
+        if($ce->{original_title} =~ /, The$/) {
+            $ce->{original_title} =~ s/, The$//;
+            $ce->{original_title} = "The ".$originaltitle;
+        }
 
 		#print Dumper($ce);
 

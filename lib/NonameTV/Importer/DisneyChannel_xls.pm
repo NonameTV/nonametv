@@ -246,10 +246,11 @@ sub ImportFlatXLS
 			AddCategory( $ce, $program_type2, $category2 );
 		}
 
-        # add one
-		#if($episode eq 1 and $season eq 0 and defined($program_type2) and $program_type2 ne "movie") {
-		#	$season = 1;
-		#}
+        # movie
+		if($episode eq 1 and $season eq 0) {
+			$ce->{episode} = undef;
+			$ce->{program_type} = "movie";
+		}
 
 		if(defined($ce->{episode}) and $season > 0) {
 			$ce->{episode} = $season-1 . $ce->{episode};
@@ -267,6 +268,11 @@ sub ImportFlatXLS
 	    }
 
 	    $ce->{original_title} = norm($title_org) if $ce->{title} ne norm($title_org) and norm($title_org) ne "";
+        # , The
+        if($ce->{original_title} =~ /, The$/) {
+            $ce->{original_title} =~ s/, The$//;
+            $ce->{original_title} = "The ".$originaltitle;
+        }
 
         $dsh->AddProgramme( $ce );
 		

@@ -268,6 +268,11 @@ sub ImportFlatXLS
 	    }
 
 		$ce->{original_title} = norm($title_org) if $ce->{title} ne norm($title_org) and norm($title_org) ne "";
+        # , The
+        if($ce->{original_title} =~ /, The$/) {
+            $ce->{original_title} =~ s/, The$//;
+            $ce->{original_title} = "The ".$originaltitle;
+        }
 
         $dsh->AddProgramme( $ce );
 
