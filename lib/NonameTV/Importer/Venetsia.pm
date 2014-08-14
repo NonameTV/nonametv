@@ -184,6 +184,12 @@ sub ImportXML
         $ce->{description} = norm($description);
       }
 
+     # , The
+     if($ce->{title} =~ /, The$/) {
+        $ce->{title} =~ s/, The$//;
+        $ce->{title} = "The ".$ce->{title};
+     }
+
  	 ## Stuff
  	 my @sentences = (split_text( $description ), "");
  	 my $season = "0";
@@ -197,7 +203,7 @@ sub ImportXML
 
            for( my $i2=0; $i2<scalar(@sentences); $i2++ )
        	  {
-       	  	if( my( $seasontextnum ) = ($sentences[$i2] =~ /^Kausi (\d+)./ ) )
+       	  	if( my( $seasontextnum ) = ($sentences[$i2] =~ /^Kausi (\d+)\./ ) )
      	    {
      	      $season = $seasontextnum;
 
@@ -205,7 +211,7 @@ sub ImportXML
      	      if($season ne "") {
      	      	$sentences[$i2] = "";
      	      }
-     	    }elsif( my( $seasontextnum12 ) = ($sentences[$i2] =~ /^Säsong (\d+)./i ) )
+     	    }elsif( my( $seasontextnum12 ) = ($sentences[$i2] =~ /^Säsong (\d+)\./i ) )
      	    {
      	      $season = $seasontextnum12;
 
@@ -213,7 +219,7 @@ sub ImportXML
      	      if($season ne "") {
      	      	$sentences[$i2] = "";
      	      }
-     	    } elsif( my( $seasontextnum11, $episoder, $ofepisodess ) = ($sentences[$i2] =~ /^Säsong (\d+), del (\d+)\/(\d+)./i ) )
+     	    } elsif( my( $seasontextnum11, $episoder, $ofepisodess ) = ($sentences[$i2] =~ /^Säsong (\d+), del (\d+)\/(\d+)\./i ) )
      	    {
      	      $season = $seasontextnum11;
      	      $episode = $episoder;
@@ -223,7 +229,7 @@ sub ImportXML
      	      if($season ne "") {
      	      	$sentences[$i2] = "";
      	      }
-     	    }elsif( my( $seasontextnum9 ) = ($sentences[$i2] =~ /^(\d+) säsongen./i ) )
+     	    }elsif( my( $seasontextnum9 ) = ($sentences[$i2] =~ /^(\d+) säsongen\./i ) )
      	    {
      	      $season = $seasontextnum9;
 
@@ -232,10 +238,10 @@ sub ImportXML
      	      	$sentences[$i2] = "";
      	      }
      	    }
-     	    elsif( my( $dummy4 ) = ($sentences[$i2] =~ /^S(\s*)songsstart./i ) )
+     	    elsif( my( $dummy4 ) = ($sentences[$i2] =~ /^S(\s*)songsstart\./i ) )
             {
                 $sentences[$i2] = "";
-            }elsif( my( $episodetextnum5, $ofepisode3 ) = ($sentences[$i2] =~ /^(\d+)\/(\d+)./ ) )
+            }elsif( my( $episodetextnum5, $ofepisode3 ) = ($sentences[$i2] =~ /^(\d+)\/(\d+)\./ ) )
             {
             	$episode = $episodetextnum5;
             	$eps = $ofepisode3;
@@ -244,7 +250,7 @@ sub ImportXML
             	if($episode ne "") {
                 	$sentences[$i2] = "";
                 }
-            }elsif( my( $episodetextnum4, $ofepisode2 ) = ($sentences[$i2] =~ /Del (\d+)\/(\d+)./i ) )
+            }elsif( my( $episodetextnum4, $ofepisode2 ) = ($sentences[$i2] =~ /Del (\d+)\/(\d+)\./i ) )
             {
             	$episode = $episodetextnum4;
             	$eps = $ofepisode2;
@@ -253,7 +259,7 @@ sub ImportXML
             	if($episode ne "") {
                 	$sentences[$i2] = "";
                 }
-            }elsif( my( $episodetextnum8, $ofepisode8, $epititle2 ) = ($sentences[$i2] =~ /^Del (\d+) av (\d+)\:(.*)./i ) )
+            }elsif( my( $episodetextnum8, $ofepisode8, $epititle2 ) = ($sentences[$i2] =~ /^Del (\d+) av (\d+)\:(.*)\./i ) )
             {
             	$episode = $episodetextnum8;
             	$eps = $ofepisode8;
@@ -263,7 +269,7 @@ sub ImportXML
             	if($episode ne "") {
                 	$sentences[$i2] = "";
                 }
-            }elsif( my( $episodetextnum11, $ofepisode11) = ($sentences[$i2] =~ /^(\d+)\/(\d+)./ ) )
+            }elsif( my( $episodetextnum11, $ofepisode11) = ($sentences[$i2] =~ /^(\d+)\/(\d+)\./ ) )
             {
             	$episode = $episodetextnum11;
             	$eps = $ofepisode11;
@@ -272,7 +278,7 @@ sub ImportXML
             	if($episode ne "") {
                 	$sentences[$i2] = "";
                 }
-            }elsif( my( $episodetextnum7, $ofepisode7, $epititle ) = ($sentences[$i2] =~ /^Del (\d+)\/(\d+)\:(.*)./i ) )
+            }elsif( my( $episodetextnum7, $ofepisode7, $epititle ) = ($sentences[$i2] =~ /^Del (\d+)\/(\d+)\:(.*)\./i ) )
             {
             	$episode = $episodetextnum7;
             	$eps = $ofepisode7;
@@ -282,7 +288,7 @@ sub ImportXML
             	if($episode ne "") {
                 	$sentences[$i2] = "";
                 }
-            }elsif( my( $episodetextnum2, $ofepisode ) = ($sentences[$i2] =~ /^Del (\d+) av (\d+)./i ) )
+            }elsif( my( $episodetextnum2, $ofepisode ) = ($sentences[$i2] =~ /^Del (\d+) av (\d+)\./i ) )
             {
             	$episode = $episodetextnum2;
             	$eps = $ofepisode;
@@ -291,7 +297,7 @@ sub ImportXML
             	if($episode ne "") {
                 	$sentences[$i2] = "";
                 }
-            }elsif( my( $episodetextnum3 ) = ($sentences[$i2] =~ /^Del (\d+)./i ) )
+            }elsif( my( $episodetextnum3 ) = ($sentences[$i2] =~ /^Del (\d+)\./i ) )
             {
             	$episode = $episodetextnum3;
 
@@ -299,7 +305,7 @@ sub ImportXML
             	if($episode ne "") {
                 	$sentences[$i2] = "";
                 }
-            }elsif( my( $episodetextnum ) = ($sentences[$i2] =~ /^Osa (\d+)./ ) )
+            }elsif( my( $episodetextnum ) = ($sentences[$i2] =~ /^Osa (\d+)\./ ) )
             {
             	$episode = $episodetextnum;
 
@@ -307,77 +313,77 @@ sub ImportXML
             	if($episode ne "") {
                 	$sentences[$i2] = "";
                 }
-            } elsif( my( $directors ) = ($sentences[$i2] =~ /^Ohjaus:\s*(.*)/) )
+            } elsif( my( $directors ) = ($sentences[$i2] =~ /^Ohjaus:\s*(.*)\./) )
             {
                 $ce->{directors} = parse_person_list( $directors );
                 $sentences[$i2] = "";
-            } elsif( my( $directors4 ) = ($sentences[$i2] =~ /^O:\s*(.*)/) )
+            } elsif( my( $directors4 ) = ($sentences[$i2] =~ /^O:\s*(.*)\./) )
             {
                 $ce->{directors} = parse_person_list( $directors4 );
                 $sentences[$i2] = "";
-            }elsif( my( $actors5 ) = ($sentences[$i2] =~ /^P:\s*(.*)/ ) )
+            }elsif( my( $actors5 ) = ($sentences[$i2] =~ /^P:\s*(.*)\./ ) )
             {
                 #$ce->{actors} = parse_person_list( $actors5 ); # not sure if producer or actor
                 $sentences[$i2] = "";
-            }elsif( my( $actors ) = ($sentences[$i2] =~ /^Pääosissa:\s*(.*)/ ) )
+            }elsif( my( $actors ) = ($sentences[$i2] =~ /^Pääosissa:\s*(.*)\./ ) )
             {
                 $ce->{actors} = parse_person_list( $actors );
                 $sentences[$i2] = "";
-            }elsif( my( $directors7 ) = ($sentences[$i2] =~ /^R:\s*(.*)/) )
+            }elsif( my( $directors7 ) = ($sentences[$i2] =~ /^R:\s*(.*)\./) )
             {
                 $ce->{directors} = parse_person_list( $directors7 );
                 $sentences[$i2] = "";
-            }elsif( my( $actors7 ) = ($sentences[$i2] =~ /^S:\s*(.*)/ ) )
+            }elsif( my( $actors7 ) = ($sentences[$i2] =~ /^S:\s*(.*)\./ ) )
             {
                 $ce->{actors} = parse_person_list( $actors7 );
                 $sentences[$i2] = "";
-            }elsif( my( $actors9 ) = ($sentences[$i2] =~ /^Programledare:\s*(.*)/ ) )
+            }elsif( my( $actors9 ) = ($sentences[$i2] =~ /^Programledare:\s*(.*)\./ ) )
             {
                 $ce->{presenters} = parse_person_list( $actors9 );
                 $sentences[$i2] = "";
             }
 
-            elsif( my( $directors2 ) = ($sentences[$i2] =~ /^Regi:\s*(.*)/) )
+            elsif( my( $directors2 ) = ($sentences[$i2] =~ /^Regi:\s*(.*)\./) )
             {
                   $ce->{directors} = parse_person_list( $directors2 );
                   $sentences[$i2] = "";
             }
-            elsif( my( $directors3 ) = ($sentences[$i2] =~ /^Regi\s*(.*)/) )
+            elsif( my( $directors3 ) = ($sentences[$i2] =~ /^Regi\s*(.*)\./) )
             {
                   $ce->{directors} = parse_person_list( $directors3 );
                   $sentences[$i2] = "";
             }
-            elsif( my( $writers2 ) = ($sentences[$i2] =~ /^Manus:\s*(.*)/) )
+            elsif( my( $writers2 ) = ($sentences[$i2] =~ /^Manus:\s*(.*)\./) )
             {
                   $ce->{writers} = parse_person_list( $writers2 );
                   $sentences[$i2] = "";
             }
-            elsif( my( $actors2 ) = ($sentences[$i2] =~ /^I rollerna:\s*(.*)/ ) )
+            elsif( my( $actors2 ) = ($sentences[$i2] =~ /^I rollerna:\s*(.*)\./ ) )
             {
                   $ce->{actors} = parse_person_list( $actors2 );
                   $sentences[$i2] = "";
             }
-            elsif( my( $actors3 ) = ($sentences[$i2] =~ /^I huvudrollerna:\s*(.*)/ ) )
+            elsif( my( $actors3 ) = ($sentences[$i2] =~ /^I huvudrollerna:\s*(.*)\./ ) )
             {
                   $ce->{actors} = parse_person_list( $actors3 );
                   $sentences[$i2] = "";
             }
-            elsif( my( $actors6 ) = ($sentences[$i2] =~ /^I huvudrollerna\s*(.*)/ ) )
+            elsif( my( $actors6 ) = ($sentences[$i2] =~ /^I huvudrollerna\s*(.*)\./ ) )
             {
                   $ce->{actors} = parse_person_list( $actors6 );
                   $sentences[$i2] = "";
             }
 
             # Clean it up
-            elsif( my( $rerun, $dummerinoerino3 ) = ($sentences[$i2] =~ /^\(R\)(|\.)/ ) )
+            elsif( my( $rerun, $dummerinoerino3 ) = ($sentences[$i2] =~ /^\(R\)\./ ) )
             {
                   $sentences[$i2] = "";
             }
-            elsif( my( $dunno, $dummerinoerino2 ) = ($sentences[$i2] =~ /^\(U\)(|\.)/ ) )
+            elsif( my( $dunno, $dummerinoerino2 ) = ($sentences[$i2] =~ /^\(U\)\./ ) )
             {
                   $sentences[$i2] = "";
             }
-            elsif( my( $hdtv, $dummerinoerino ) = ($sentences[$i2] =~ /^HD(|\.)$/ ) )
+            elsif( my( $hdtv, $dummerinoerino ) = ($sentences[$i2] =~ /^HD\.$/ ) )
             {
                   $ce->{quality} = "HDTV";
                   $sentences[$i2] = "";
@@ -430,17 +436,50 @@ sub ImportXML
      $ce->{description} =~ s/^\((.*)\)//i;
      $ce->{description} = norm($ce->{description});
 
-     # Prod year - (Country Year)
-     if(defined($extradesc) and $extradesc =~ /(\d\d\d\d)/) {
-	  	$ce->{production_date} = "$1-01-01";
-	 }
+     # Grab data from the extradesc, like original title.
+     if(defined($extradesc)) {
+        my ( $originaltitle, $country, $productionyear, $seasontext, $genretext );
+        if( ( $originaltitle, $country, $productionyear ) = ($extradesc =~ /^(.*)\/(.*)\s+(\d\d\d\d)$/ ) )
+        {
+            # , The
+            if($originaltitle =~ /, The$/) {
+                $originaltitle =~ s/, The$//;
+                $originaltitle = "The ".$originaltitle;
+            }
+            $ce->{original_title} = norm($originaltitle);
+            $ce->{production_date} = $productionyear."-01-01";
+        }
+        elsif( ( $originaltitle, $genretext, $seasontext, $country, $productionyear ) = ($extradesc =~ /^(.*),\s+(.*),\s+(.*),\s+(.*),\s+(\d\d\d\d)$/ ) )
+        {
+            $ce->{original_title} = norm($originaltitle) if $originaltitle !~ /,/;
+            $ce->{production_date} = $productionyear."-01-01";
+        }
+        elsif( ( $originaltitle, $genretext, $country, $productionyear ) = ($extradesc =~ /^(.*),\s+(.*),\s+(.*),\s+(\d\d\d\d)$/ ) )
+        {
+            $ce->{original_title} = norm($originaltitle) if $originaltitle !~ /,/;
+            $ce->{production_date} = $productionyear."-01-01";
+        }
+        elsif( ( $originaltitle, $genretext, $seasontext, $country ) = ($extradesc =~ /^(.*),\s+(.*),\s+(.*),\s+(\S*)$/ ) )
+        {
+            $ce->{original_title} = norm($originaltitle) if $originaltitle !~ /,/;
+        }
+        elsif( ( $originaltitle, $productionyear ) = ($extradesc =~ /^(.*)\s+(\d\d\d\d)$/ ) )
+        {
+            # , The
+            if($originaltitle =~ /, The$/) {
+                $originaltitle =~ s/, The$//;
+                $originaltitle = "The ".$originaltitle;
+            }
+            $ce->{original_title} = norm($originaltitle) if $originaltitle !~ /,/;
+            $ce->{production_date} = $productionyear."-01-01";
+        }
+        elsif( ( $productionyear ) = ($extradesc =~ /(\d\d\d\d)/ ) )
+        {
+            $ce->{production_date} = $productionyear."-01-01";
+        }
+     }
 
-     # Remove if season = 0, episode 1, of_episode 1 - it's a one episode only programme
-     #if(($episode eq "1") and ( $season eq "0")) {
-     #	delete($ce->{episode});
-     #}
-
-
+     delete $ce->{original_title} if defined($ce->{original_title}) and $ce->{original_title} eq $ce->{title}; # Remove if they are the same
 
      # Genre
      if(defined($genre) and $genre ne "") {
@@ -517,7 +556,7 @@ sub split_text
 
   # Mark sentences ending with '.', '!', or '?' for split, but preserve the
   # ".!?".
-  $t =~ s/([\.\!\?])\s+([A-Z���])/$1;;$2/g;
+  $t =~ s/([\.\!\?])\s+([\(A-Z���])/$1;;$2/g;
 
   my @sent = grep( /\S\S/, split( ";;", $t ) );
 
@@ -564,6 +603,7 @@ sub parse_person_list
     # The character name is sometimes given . Remove it.
     # The Cast-entry is sometimes cutoff, which means that the
     # character name might be missing a trailing ).
+    s/\s+$//;
     s/\.$//;
     s/\s*\(.*$//;
     s/.*\s+-\s+//;
