@@ -264,7 +264,7 @@ sub ImportContent {
                 ( $episodetitle eq 'Teil' )||
                 ( $episodetitle eq 'Titel wird nachgereicht.' )||
                 ( $episodetitle eq 'Thema:' )||
-                ( $episodetitle eq 'Thema: steht noch nicht fest!' ){
+                ( $episodetitle eq 'Thema: steht noch nicht fest!' ) ){
               $episodetitle = '';
               # FIXME, mark this as generic episode!
             }
