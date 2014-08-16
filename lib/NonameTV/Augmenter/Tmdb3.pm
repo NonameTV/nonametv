@@ -52,9 +52,6 @@ sub new {
         include_adult => 'false',  # Include adult results. 'true' or 'false'
     );
 
-    # slow down to avoid rate limiting
-    $self->{Slow} = 1;
-
     return $self;
 }
 
@@ -100,10 +97,7 @@ sub FillCrew( $$$$$ ) {
 
 sub FillHash( $$$ ) {
   my( $self, $resultref, $movieId, $ceref )=@_;
- 
-  if( $self->{Slow} ) {
-    sleep (1);
-  }
+
   my $movie = $self->{themoviedb}->movie( id => $movieId );
 #  print Dumper $movie->info;
 #  print Dumper $movie->alternative_titles;
@@ -228,9 +222,6 @@ sub AugmentProgram( $$$ ){
     $searchTerm =~ s|[-#\?\N{U+00BF}\(\)]||g;
     $searchTerm =~ s|[:]| |g;
 
-    if( $self->{Slow} ) {
-      sleep (1);
-    }
     # TODO fix upstream instead of working around here
 
     my @candidates = $self->{search}->movie( $searchTerm );
@@ -267,9 +258,6 @@ sub AugmentProgram( $$$ ){
           if( defined( $candidate->{id} ) ) {
             # we have to fetch the remaining candidates to peek at the directors
             my $movieId = $candidate->{id};
-            if( $self->{Slow} ) {
-              sleep (1);
-            }
             my $movie = $self->{themoviedb}->movie( id => $movieId );
 
             my @names = ( );
@@ -277,9 +265,7 @@ sub AugmentProgram( $$$ ){
               # tv stations sometimes list the movie as being "by the author" instead of the director, so accept both
               if( ( $crew->{'job'} eq 'Director' )||( $crew->{'job'} eq 'Author' )||( $crew->{'job'} eq 'Screenplay' ) ) {
                 my $person = $self->{themoviedb}->person( id => $crew->{id} );
-                if( $self->{Slow} ) {
-                #  sleep (1);
-                }
+
                 if( defined( $person ) ){
                   if( defined( $person->aka() ) ){
                     if( defined( $person->aka()->[0] ) ){

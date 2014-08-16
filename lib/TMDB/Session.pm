@@ -126,7 +126,11 @@ sub talk {
     warn "DEBUG: GET -> $url\n" if $self->debug;
     my $response = $self->client->get($url);
 
-    #print Dumper($response, $self->client->is_cached($url));
+    # Only sleep if the response isn't cached.
+    if(!$self->client->is_cached()) {
+        print("Not cached. Sleeping for 1s\n");
+        sleep (1);
+    }
 
     # Debug
     if ( $self->debug ) {
