@@ -425,15 +425,15 @@ sub ImportXML
 
      $ce->{description} = join_text( @sentences );
      # Extra info
-     my ( $extradesc ) = ($ce->{description} =~ /^\((.*)\)/ ); # bugfix
+     my ( $extradesc ) = ($ce->{description} =~ /^\((.*?)\)/ ); # bugfix
 
      if(!defined($extradesc)) {
-        my ( $extradesc2, $tedummy ) = ($ce->{description} =~ /\((.*)\)(|\.)$/ ); # bugfix
+        my ( $extradesc2, $tedummy ) = ($ce->{description} =~ /\((.*?)\)(|\.)$/ ); # bugfix
         $extradesc = $extradesc2;
-        $ce->{description} =~ s/\((.*)\)(|\.)$//i;
+        $ce->{description} =~ s/\((.*?)\)(|\.)$//i;
      }
 
-     $ce->{description} =~ s/^\((.*)\)//i;
+     $ce->{description} =~ s/^\((.*?)\)//i;
      $ce->{description} = norm($ce->{description});
 
      # Grab data from the extradesc, like original title.
@@ -485,6 +485,11 @@ sub ImportXML
      if(defined($genre) and $genre ne "") {
         my($program_type, $category ) = $ds->LookupCat( 'Venetsia', $genre );
           AddCategory( $ce, $program_type, $category );
+     }
+
+     # no description (splitting weird) or its just a dot, add the description they send with it.
+     if((defined $ce->{description} and ($ce->{description} eq "." or $ce->{description} eq "")) or !defined $ce->{description}) {
+        $ce->{description} = norm($description) if $description ne "";
      }
 
      $ds->AddProgramme( $ce );
@@ -604,6 +609,7 @@ sub parse_person_list
     # The Cast-entry is sometimes cutoff, which means that the
     # character name might be missing a trailing ).
     s/\s+$//;
+    s/^\S*\s+(\d\d\d\d)$//; # USA 1996
     s/\.$//;
     s/\s*\(.*$//;
     s/.*\s+-\s+//;
