@@ -440,7 +440,7 @@ sub guess_channel
  }
 
  if( $dir =~ /RTL2/ and $filename =~ /\.xml$/i ) {
-  	return "rtl2.de";
+ # 	return "rtl2.de"; # ÅÄÖ becomes ? in their mails.
  }
 
  if( $dir =~ /Gospel/ and $filename =~ /\.xls$/i ) {
@@ -448,7 +448,7 @@ sub guess_channel
  }
 
  if( $dir =~ /VisjonNorge/ and $filename =~ /\.xls$/i ) {
-    return "visjonnorge.com";
+ #   return "visjonnorge.com";
  }
 
  if( $dir =~ /CNBC/ and $filename =~ /\.xml/i ) {
