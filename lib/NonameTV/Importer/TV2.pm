@@ -226,10 +226,21 @@ sub ImportContent
     if(defined($ce->{original_title})) {
         $ce->{original_title} = fq( $ce->{original_title} );
 
+        # , The to THE
+        if (defined $ce->{original_title} and $ce->{original_title} =~ /, The$/i) {
+            $ce->{original_title} =~ s/, The$//i;
+            $ce->{original_title} = "The ".$ce->{original_title};
+        }
+
         # Is it the same name?
         if(($ce->{original_title} eq $ce->{title}) or $ce->{original_title} eq "") {
             delete $ce->{original_title};
         }
+    }
+
+    # Actually movie
+    if(defined $ce->{directors} and $ce->{directors} ne "") {
+        $ce->{program_type} = "movie";
     }
 
     #$self->extract_extra_info( $ce );
