@@ -180,26 +180,25 @@ sub ImportContent {
       description => norm($desc),
     };
 
+    my ( $original_title, $romanseason, $episode3 );
     if($subtitle ne "") {
-        my ( $original_title, $romanseason, $episode );
-
         # orgname - romanseason - num
         if($subtitle =~ /^(.*)\s+-\s+(.*)\s+-\s+(\d+)$/) {
-            ( $original_title, $romanseason, $episode ) = ( $subtitle =~ /^(.*)\s+-\s+(.*)\s+-\s+(\d+)$/ );
-            $ce->{episode} = sprintf( " . %d .", $episode-1 );
+            ( $original_title, $romanseason, $episode3 ) = ( $subtitle =~ /^(.*?)\s+-\s+(.*?)\s+-\s+(\d+)$/ );
+            $ce->{episode} = sprintf( " . %d .", $episode3-1 );
         }
 
         # orgname - num
-        if($subtitle =~ /^(.*)\s+-\s+(\d+)$/) {
-            ( $original_title, $episode ) = ( $subtitle =~ /^(.*)\s+-\s+(\d+)$/ );
-            $ce->{episode} = sprintf( " . %d .", $episode-1 );
+        if(!defined $original_title and $subtitle =~ /^(.*)\s+-\s+(\d+)$/) {
+            ( $original_title, $episode3 ) = ( $subtitle =~ /^(.*)\s+-\s+(\d+)$/ );
+            $ce->{episode} = sprintf( " . %d .", $episode3-1 );
             $subtitle = "";
         }
 
         # orgname - romanseason (num)
-        if($subtitle =~ /^(.*)\s+-\s+(.*)\s+\((\d+)\)$/) {
-            ( $original_title, $romanseason, $episode ) = ( $subtitle =~ /^(.*)\s+-\s+(.*)\s+\((\d+)\)$/ );
-            $ce->{episode} = sprintf( " . %d .", $episode-1 );
+        if(!defined $original_title and $subtitle =~ /^(.*)\s+-\s+(.*)\s+\((\d+)\)$/) {
+            ( $original_title, $romanseason, $episode3 ) = ( $subtitle =~ /^(.*)\s+-\s+(.*)\s+\((\d+)\)$/ );
+            $ce->{episode} = sprintf( " . %d .", $episode3-1 );
         }
 
         # Clean it up
@@ -243,7 +242,7 @@ sub ImportContent {
     	my ( $instr ) = ( $instruktion =~ /Instr.:\s+(.*)/ );
     	if(defined($instr) and $instr and $instr ne "") {
     	    $instr = norm($instr);
-    	    $instr =~ s/\.$//;
+    	    $instr =~ s/\.$//g;
     	    $ce->{directors} = norm($instr);
             $ce->{program_type} = 'movie';
     	}
@@ -292,6 +291,12 @@ sub ImportContent {
     }
 
     $ce->{original_title} = norm($org_title) if $ce->{title} ne norm($org_title) and norm($org_title) ne "";
+    $ce->{original_title} = norm($original_title) if defined $original_title and norm($original_title) ne $ce->{title} and norm($original_title) ne "";
+
+    if (defined $ce->{original_title} and $ce->{original_title} =~ /, The$/i) {
+        $ce->{original_title} =~ s/, The$//i;
+        $ce->{original_title} = "The ".$ce->{original_title};
+    }
 
     $dsh->AddProgramme( $ce );
   }
@@ -320,6 +325,7 @@ sub parse_person_list
     s/\s*\(.*$//;
     s/.*\s+-\s+//;
     s/\.//;
+    s/\.$//g;
   }
 
   return join( ", ", grep( /\S/, @persons ) );

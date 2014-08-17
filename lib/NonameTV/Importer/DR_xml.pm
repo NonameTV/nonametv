@@ -235,10 +235,6 @@ sub ImportContent {
                     	$ce->{category} = undef;
                     }
 				}
-
-				# Use the original title if found
-				$ce->{title} = norm($title_alt) if $title_alt;
-				$ce->{original_title} = norm($title) if $title_alt; # Add original title
 			} else {
 				push @actors, $name_new;
 			}

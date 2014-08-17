@@ -252,13 +252,8 @@ sub ImportContent
       $ce->{title} = norm($org_title) || norm($title);
     }
 
-    if( $sport )
-    {
-      $ce->{category} = 'Sports';
-    }
-
-    $ce->{program_type} = "series"
-      if $series;
+    $ce->{category} = 'Sports' if $sport;
+    $ce->{program_type} = "series" if $series;
 
     if( (not $series) and (not $sport) ) {
       $ce->{program_type} = 'movie';

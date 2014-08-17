@@ -160,8 +160,8 @@ sub ImportContent
             $ce->{episode} = sprintf( "%d . %d .", $season2-1, $episode-1 );
         }
   	}
-    
-    progress( "TV2: $chd->{xmltvid}: $start - ".$ce->{title} );
+
+    progress( "TV2: $chd->{xmltvid}: $start - ".norm($ce->{title}) );
     
     # Desc
     if(defined($pgm->findvalue( 'description' ))) {
@@ -205,6 +205,14 @@ sub ImportContent
 		$ce->{producers} = norm(parse_person_list( $creators ));
 	}
 
+    my( $writers ) = (norm($cast) =~ /Manuskript:\s*(.*)\.$/ );
+    if( $writers ) {
+        $cast =~ s/Manuskript:\s*(.*)//i;
+        $writers =~ s/, baseret(.*)//i;
+        $writers =~ s/\((.*)//;
+        #$ce->{writers} = norm(parse_person_list( $writers ));
+    }
+
 	my( $directors ) = (norm($cast) =~ /Instruktion:\s*(.*)/i );
 	if( $directors ) {
 	    $cast =~ s/Instruktion:\s*(.*)//i;
@@ -218,16 +226,15 @@ sub ImportContent
 		$ce->{writers} = norm(parse_person_list( $directorandwriter ));
 	}
 
-	my( $writers ) = (norm($cast) =~ /Manuskript:\s*(.*).$/ );
-    if( $writers ) {
-        $cast =~ s/Manuskript:\s*(.*)\.//i;
-        $ce->{writers} = norm(parse_person_list( $writers ));
-    }
-
     my( $actors1 ) = (norm($cast) =~ /Desuden\s+medvirker:\s*(.*)$/i );
     if( $actors1 ) {
         $cast =~ s/Desuden\s+medvirker:\s*(.*)//i;
         #$ce->{actors} = norm(parse_person_list( $actors1 )); # Probably want to include these in actors later on they have a DOT as a ,
+    }
+
+    my( $programkoder ) = (norm($cast) =~ /Programkoder:\s*(.*)$/i );
+    if( $programkoder ) {
+        $cast =~ s/Programkoder:\s*(.*)//i;
     }
 
     my( $actors2 ) = (norm($cast) =~ /Vært:\s*(.*)\.$/ );
@@ -250,7 +257,21 @@ sub ImportContent
     }
 
     $ce->{original_title} = norm($original_title) if defined($original_title) and $ce->{title} ne norm($original_title) and norm($original_title) ne "";
-    
+
+    # , The to THE
+    if (defined $ce->{original_title} and $ce->{original_title} =~ /, The$/i) {
+        $ce->{original_title} =~ s/, The$//i;
+        $ce->{original_title} = "The ".$ce->{original_title};
+    }
+
+    # Subttile
+    if (defined $ce->{subtitle} and $ce->{subtitle} =~ /, The$/i) {
+        $ce->{subtitle} =~ s/, The$//i;
+        $ce->{subtitle} = "The ".$ce->{subtitle};
+    }
+
+    $ce->{directors} = undef if defined $ce->{directors} and $ce->{directors} =~ /^\(/; # Failure to parse
+
     $dsh->AddProgramme( $ce );
   }
   

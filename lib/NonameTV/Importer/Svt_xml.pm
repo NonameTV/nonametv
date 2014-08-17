@@ -291,9 +291,9 @@ sub ImportXML
             $ce->{guests} = parse_person_list( $guests );
             $sentences[$i] = "";
         }
-    	elsif( my( $guests ) = ($sentences[$i] =~ /^Gäster\s+ikväll:\s*(.*)/ ) )
+    	elsif( my( $guests2 ) = ($sentences[$i] =~ /^Gäster\s+ikväll:\s*(.*)/ ) )
         {
-            $ce->{guests} = parse_person_list( $guests );
+            $ce->{guests} = parse_person_list( $guests2 );
             $sentences[$i] = "";
         }
      }
