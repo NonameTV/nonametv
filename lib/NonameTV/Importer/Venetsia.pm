@@ -317,7 +317,13 @@ sub ImportXML
             {
                 $ce->{directors} = parse_person_list( $directors );
                 $sentences[$i2] = "";
-            } elsif( my( $directors4 ) = ($sentences[$i2] =~ /^O:\s*(.*)\./) )
+            } elsif( my( $directors8 ) = ($sentences[$i2] =~ /^Ohjaaja:\s*(.*)\./) )
+            {
+                my ($prodyear) = ($sentences[$i2] =~ /(\d\d\d\d)$/);
+                $ce->{production_date} = $prodyear."-01-01" if defined $prodyear and $prodyear ne "";
+                $ce->{directors} = parse_person_list( $directors8 );
+                $sentences[$i2] = "";
+            }elsif( my( $directors4 ) = ($sentences[$i2] =~ /^O:\s*(.*)\./) )
             {
                 $ce->{directors} = parse_person_list( $directors4 );
                 $sentences[$i2] = "";
@@ -386,6 +392,22 @@ sub ImportXML
             elsif( my( $hdtv, $dummerinoerino ) = ($sentences[$i2] =~ /^HD\.$/ ) )
             {
                   $ce->{quality} = "HDTV";
+                  $sentences[$i2] = "";
+            }
+            elsif( my( $swelang ) = ($sentences[$i2] =~ /^SV\.$/ ) )
+            {
+                  $sentences[$i2] = "";
+            }
+            elsif( my( $numberino ) = ($sentences[$i2] =~ /^\((\d+)'\)\.$/ ) )
+            {
+                  $sentences[$i2] = "";
+            }
+            elsif( my( $nelonenpaketti ) = ($sentences[$i2] =~ /www\.nelonenpaketti\.fi\.$/ ) )
+            {
+                  $sentences[$i2] = "";
+            }
+            elsif( my( $runtime ) = ($sentences[$i2] =~ /^(\d+)\s+min\.$/ ) )
+            {
                   $sentences[$i2] = "";
             }
      	 }
@@ -487,10 +509,8 @@ sub ImportXML
           AddCategory( $ce, $program_type, $category );
      }
 
-     # no description (splitting weird) or its just a dot, add the description they send with it.
-     if((defined $ce->{description} and ($ce->{description} eq "." or $ce->{description} eq "")) or !defined $ce->{description}) {
-        $ce->{description} = norm($description) if $description ne "";
-     }
+     $ce->{description} =~ s/^\.//;
+     $ce->{description} = norm($ce->{description});
 
      $ds->AddProgramme( $ce );
      progress( "Venetsia: $chd->{xmltvid}: $start - $title" );

@@ -192,7 +192,7 @@ sub ImportContent
     my $epi_desc = $sc->findvalue( './Program/Synopsis/Long' );
     my $desc  = $epi_desc || $org_desc;
     
-    my $genre = norm($sc->findvalue( './Program/@Genre' ));
+    my $genre = norm($sc->findvalue( './Program/@GenreKey' ));
 #    my $country = $sc->findvalue( './Program/@Country' );
 
     # LastChance is 0 or 1.
@@ -205,6 +205,7 @@ sub ImportContent
     # program_type can be partially derived from this:
     my $sport = $sc->findvalue( './Program/@Sport' );
     my $series = $sc->findvalue( './Program/@Series' );
+    my $cate = $sc->findvalue( './Program/@Category' );
 
     if( $series and ($series_title eq "") ) {
 #      w "Series without SeriesTitle: $title";
@@ -263,9 +264,11 @@ sub ImportContent
       $ce->{program_type} = 'movie';
     }
 
-    my($program_type, $category ) = $ds->LookupCat( "CanalPlus", 
-                                                    $genre );
+    my($program_type, $category ) = $ds->LookupCat( "CMore_genre", $genre );
     AddCategory( $ce, $program_type, $category );
+
+    my($program_type2, $category2 ) = $ds->LookupCat( "CMore_category", $cate );
+    AddCategory( $ce, $program_type2, $category2 );
 
     if( defined( $production_year ) and ($production_year =~ /(\d\d\d\d)/) )
     {

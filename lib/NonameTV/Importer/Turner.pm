@@ -290,7 +290,7 @@ sub FlushDayData {
       	
       	# Get year from description
       	if(defined($element->{description})) {
-      		my( $year ) = ( $element->{description} =~ /^(\d+),/ );
+      		my( $year ) = ( $element->{description} =~ /^(\d\d\d\d),/ );
       		if($year) {
       			$element->{production_date} = $year."-01-01";
       		}
