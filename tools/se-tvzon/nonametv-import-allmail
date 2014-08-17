@@ -5,6 +5,7 @@ tools/nonametv-import Discovery $1 $2 $3
 tools/nonametv-import DisneyChannel $1 $2 $3
 tools/nonametv-import DisneyChannelNO $1 $2 $3
 tools/nonametv-import DisneyChannelDK $1 $2 $3
+tools/nonametv-import DisneyChannelFI $1 $2 $3
 tools/nonametv-import DWDE $1 $2 $3
 tools/nonametv-import Kanal10 $1 $2 $3
 tools/nonametv-import Motors $1 $2 $3

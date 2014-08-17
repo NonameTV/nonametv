@@ -287,6 +287,9 @@ sub guess_channel
 
 	return "cartoonnetwork.no" if $filename =~ /^cn\s*nordic\s+\(nor\)\s*\b/i;
     return "boomerangtv.no" if $filename =~ /^boomerang\s*nordic\s*\(nor\)\s*\b/i;
+
+    return "cartoonnetwork.dk" if $filename =~ /^cn\s*nordic\s+\(dan\)\s*\b/i;
+    return "boomerangtv.dk" if $filename =~ /^boomerang\s*nordic\s*\(dan\)\s*\b/i;
 	
 	# Excel (XLS)
 	if( $filename =~ /\.xls$/i ) {
@@ -296,6 +299,9 @@ sub guess_channel
 		if( $filename =~ /cnn/i ) {
 		    return "cnn.com" if $filename =~ /\(in\s+cet\)/i;
 		}
+
+		# Cartoon network ENGLISH
+        return "cartoonnetwork.com" if $filename =~ /^cn\s*nordic/i;
 	}
   }
  
