@@ -1,4 +1,4 @@
-package NonameTV::Importer::DisneyChannel_xls;
+package NonameTV::Importer::DisneyChannel_xls_Finland;
 
 use strict;
 use warnings;
@@ -48,8 +48,8 @@ sub ImportContentFile {
 
   $self->{fileerror} = 0;
 
-  if( $file =~ /\.xls$/i ){
-    $self->ImportFlatXLS( $file, $chd ) if $file =~ /swe*.*xls$/i;
+  if( $file =~ /fin*.*xls$/i ){
+    $self->ImportFlatXLS( $file, $chd ) if $file =~ /fin*.*xls$/i;
   } elsif( $file =~ /\.zip$/i ) {
   	# When ParseExcel can load a XLS file
   	# from a string Please remove this
@@ -62,13 +62,14 @@ sub ImportContentFile {
     }
 
     my @swedish_files;
-    
+
     my @members = $zip->members();
     foreach my $member (@members) {
-      push( @swedish_files, $member->{fileName} ) 
-	  if $member->{fileName} =~ /swe*.*xls$/i;
+      if($member->{fileName} !~ /dan*.*xls$/i) {
+              push( @swedish_files, $member->{fileName} ) if $member->{fileName} =~ /fin*.*xls$/i;
+      }
     }
-    
+
     my $numfiles = scalar( @swedish_files );
     if( $numfiles != 1 ) {
       f "Found $numfiles matching files, expected 1.";
@@ -76,19 +77,19 @@ sub ImportContentFile {
     }
 
     d "Using file $swedish_files[0]";
-    
+
     # file exists - could be a new file with the same filename
     # remove it.
     my $filename = '/tmp/'.$swedish_files[0];
     if (-e $filename) {
     	unlink $filename; # remove file
     }
-    
+
     my $content = $zip->contents( $swedish_files[0] );
-    
+
     open (MYFILE, '>>'.$filename);
 	print MYFILE $content;
-	close (MYFILE); 
+	close (MYFILE);
 
     $self->ImportFlatXLS( $filename, $chd );
     unlink $filename; # remove file
@@ -120,7 +121,7 @@ sub ImportFlatXLS
   my( $program_title , $program_description );
   my($program_type, $category );
   my @ces;
-  
+
   # main loop
   foreach my $oWkS (@{$oBook->{Worksheet}}) {
 
@@ -140,7 +141,7 @@ sub ImportFlatXLS
 
 			$columns{'Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Title/ );
 			$columns{'Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /\(NOT\) Title/ ); # Often SWE Title
-			$columns{'Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /\(SWE\) Title/ );
+			$columns{'Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /\(FIN\) Title/ );
 
 			$columns{'ORGTitle'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /\(ENG\) Title/ );
 
@@ -150,7 +151,7 @@ sub ImportFlatXLS
           	$columns{'Episode'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Episode Number/ );
           	$columns{'Genre'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Genre/ );
           	$columns{'Synopsis'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Synopsis/ );
-          	
+
 
             $foundcolumns = 1 if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Season/ ); # Only import if season number is found
           }
@@ -163,7 +164,7 @@ sub ImportFlatXLS
       # date (column 1)
       $oWkC = $oWkS->{Cells}[$iR][$columns{'Date'}];
 	  $date = ParseDate( $oWkC->Value );
-	  
+
 	  if($date ne $currdate ) {
         if( $currdate ne "x" ) {
 			# save last day if we have it in memory
@@ -182,27 +183,27 @@ sub ImportFlatXLS
 
         progress("Disney: Date is: $date");
       }
-	  
+
 	  # time (column 1)
       $oWkC = $oWkS->{Cells}[$iR][$columns{'Time'}];
       next if( ! $oWkC );
       my $time = ParseTime( $oWkC->Value );
       next if( ! $time );
 
-	  
+
 	  my $title;
 	  my $title_org;
 	  my $test;
 	  my $season;
 	  my $episode;
-	  
+
       # program_title (column 4)
       $oWkC = $oWkS->{Cells}[$iR][$columns{'Title'}];
       $title = norm($oWkC->Value);
-      
+
       # Remove
 	  $title =~ s/S(\d+)$//;
-	  
+
       # Clean it
 	  $title = norm($title);
 
@@ -213,10 +214,10 @@ sub ImportFlatXLS
       my $desc = $oWkC->Value if( $oWkC );
 
       if( $time and $title ){
-	  
+
 	  # empty last day array
       undef @ces;
-      
+
         progress("$time - $title");
 
         my $ce = {
@@ -228,34 +229,33 @@ sub ImportFlatXLS
 		## Episode
 		$oWkC = $oWkS->{Cells}[$iR][$columns{'Episode'}];
      	my $episode = $oWkC->Value;
-     	
+
      	$oWkC = $oWkS->{Cells}[$iR][$columns{'Season'}];
      	my $season = $oWkC->Value;
-     	
+
      	# genre (column 6)
         $oWkC = $oWkS->{Cells}[$iR][$columns{'Genre'}];
 	    my $genre = norm($oWkC->Value) if( $oWkC );
-      
+
       	if($episode > 0) {
       		$ce->{episode} = ". " . ($episode-1) . " ." if $episode ne "";
-		}
-
-        # Genre
-		if( defined($genre) and $genre ne "" ){
-			my ($program_type2, $category2 ) = $ds->LookupCat( 'DisneyChannel_xls', $genre );
-			AddCategory( $ce, $program_type2, $category2 );
-		}
-
-        # movie
-		if($episode eq 1 and $season eq 0) {
-			$ce->{episode} = undef;
-			$ce->{program_type} = "movie";
 		}
 
 		if(defined($ce->{episode}) and $season > 0) {
 			$ce->{episode} = $season-1 . $ce->{episode};
 		}
 		## END
+
+		if( defined($genre) and $genre ne "" ){
+			my ($program_type2, $category2 ) = $ds->LookupCat( 'DisneyChannel_xls', $genre );
+			AddCategory( $ce, $program_type2, $category2 );
+		}
+
+		# movie
+		if($episode eq 1 and $season eq 0) {
+			$ce->{episode} = undef;
+			$ce->{program_type} = "movie";
+		}
 
 		# Desc
 		$ce->{description} = norm($desc) if defined($desc);
@@ -267,7 +267,7 @@ sub ImportFlatXLS
 	    	$ce->{production_date} = "$1-01-01";
 	    }
 
-	    $ce->{original_title} = norm($title_org) if $ce->{title} ne norm($title_org) and norm($title_org) ne "";
+		$ce->{original_title} = norm($title_org) if $ce->{title} ne norm($title_org) and norm($title_org) ne "";
         # , The
         if(defined($ce->{original_title}) and $ce->{original_title} =~ /, The$/) {
             $ce->{original_title} =~ s/, The$//;
@@ -275,16 +275,16 @@ sub ImportFlatXLS
         }
 
         $dsh->AddProgramme( $ce );
-		
+
 		#push( @ces , $ce );
       }
 
     } # next row
-	
+
   } # next worksheet
 
   $dsh->EndBatch( 1 );
-  
+
   return;
 }
 
@@ -331,10 +331,10 @@ sub ParseTime {
   if( $text2 =~ /^\d+:\d+$/ ){
     ( $hour , $min ) = ( $text2 =~ /^(\d+):(\d+)$/ );
   }
-  
+
   if($hour >= 24) {
   	$hour = $hour-24;
-  	
+
   	#print("Hour: $hour\n");
   }
 
