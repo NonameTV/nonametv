@@ -156,6 +156,7 @@ sub ImportXML
       $title =~ s/Bio\s+Klassiker://;
       $title =~ s/Sommarbio://;
       $title =~ s/Film://;
+      $title =~ s/Actiontorsdag://;
       $title =~ s/\.$//; # remove ending dot.
       
       $title = norm($title);
