@@ -287,27 +287,13 @@ sub extract_extra_info
   my ( $program_type, $category ) = ParseDescCatSwe( $ce->{description} );
   AddCategory( $ce, $program_type, $category );
 
-  # Find production year from description.
-  if( defined( $ce->{description} ) and
-      ($ce->{description} =~ /\bfr.n (\d\d\d\d)\b/) )
-  {
-    $ce->{production_date} = "$1-01-01";
-  }
-
   my @sentences = (split_text( $ce->{description} ), "");
-  my $found_episode=0;
   for( my $i=0; $i<scalar(@sentences); $i++ )
   {
     $sentences[$i] =~ tr/\n\r\t /    /s;
-
     $sentences[$i] =~ s/^I detta (avsnitt|program)://;
-
-    if( extract_episode( $sentences[$i], $ce ) )
-    {
-      $found_episode = 1;
-    }
 		
-		if( my( $originaltitle ) = ($sentences[$i] =~ /Originaltitel:\s*(.*)/ ) )
+	if( my( $originaltitle ) = ($sentences[$i] =~ /Originaltitel:\s*(.*)/ ) )
     {
     	# Remove originaltitle from description, maybe use originaltitle instead of
     	# swedish title?
@@ -399,11 +385,12 @@ sub extract_extra_info
     	# Remove from description
       $sentences[$i] = "";
     }
-     
-    # Delete the episode and everything after it from the description.
-    if( $found_episode ) 
+    elsif(my ($prodyear) = ($sentences[$i] =~ /\bfr.n (\d\d\d\d)\b/))
     {
-      $sentences[$i] = "";
+        # Remove the bline and add it to the db instead and grab production year
+        $ce->{bline} = norm($sentences[$i]);
+        $ce->{production_date} = $prodyear."-01-01";
+        $sentences[$i] = "";
     }
   }
 
@@ -490,68 +477,6 @@ sub join_text
   $t =~ s/([\!\?])\./$1/g;
 
   return $t;
-}
-
-sub extract_episode
-{
-  my( $d, $ce ) = @_;
-
-  return 0 unless defined( $d );
-
-  #
-  # Try to extract episode-information from the description.
-  #
-  my( $ep, $eps, $seas );
-  my $episode;
-
-  # Avsn 2
-  ( $ep ) = ($d =~ /\bAvsn\s+(\d+)/ );
-  $episode = sprintf( " . %d .", $ep-1 ) if defined $ep;
-
-  # Avsn 2/3
-  ( $ep, $eps ) = ($d =~ /\bAvsn\s+(\d+)\s*\/\s*(\d+)/ );
-  $episode = sprintf( " . %d/%d . ", $ep-1, $eps ) 
-    if defined $eps;
-
-  # Avsn 2/3 s?s 2.
-  ( $ep, $eps, $seas ) = ($d =~ /\bAvsn\s+(\d+)\s*\/\s*(\d+)\s+s.s\s+(\d+)/ );
-  $episode = sprintf( " %d . %d/%d . ", $seas-1, $ep-1, $eps ) 
-    if defined $seas;
-
-  # Avsn 2 s?s 2.
-  ( $ep, $seas ) = ($d =~ /\bAvsn\s+(\d+)\s+s.s\s+(\d+)/ );
-  $episode = sprintf( " %d . %d . ", $seas-1, $ep-1 ) 
-    if defined $seas;
-
-  # Del 2
-  ( $ep ) = ($d =~ /\bDel\s+(\d+)/ );
-  $episode = sprintf( " . %d .", $ep-1 ) if defined $ep;
-
-  # Del 2/3
-  ( $ep, $eps ) = ($d =~ /\bDel\s+(\d+)\s*\/\s*(\d+)/ );
-  $episode = sprintf( " . %d/%d . ", $ep-1, $eps ) 
-    if defined $eps;
-
-  # Del 2/3 s?s 2.
-  ( $ep, $eps, $seas ) = ($d =~ /\bDel\s+(\d+)\s*\/\s*(\d+)\s+s.s\s+(\d+)/ );
-  $episode = sprintf( " %d . %d/%d . ", $seas-1, $ep-1, $eps ) 
-    if defined $seas;
-
-  # Del 2 s?s 2.
-  ( $ep, $seas ) = ($d =~ /\bDel\s+(\d+)\s+s.s\s+(\d+)/ );
-  $episode = sprintf( " %d . %d . ", $seas-1, $ep-1 ) 
-    if defined $seas;
-  
-  
-  
-  if( defined $episode )
-  {
-    $ce->{episode} = $episode;
-    $ce->{program_type} = 'series';
-    return 1
-  }
-
-  return 0;
 }
 
 1;
