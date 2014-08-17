@@ -128,7 +128,6 @@ sub talk {
 
     # Only sleep if the response isn't cached.
     if(!$self->client->is_cached()) {
-        print("Not cached. Sleeping for 1s\n");
         sleep (1);
     }
 

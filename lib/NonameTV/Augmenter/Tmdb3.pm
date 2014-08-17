@@ -225,19 +225,48 @@ sub AugmentProgram( $$$ ){
     # TODO fix upstream instead of working around here
 
     my @candidates = $self->{search}->movie( $searchTerm );
+    my @mids = ();
     my @keep = ();
+
+    foreach my $c ( @candidates ){
+        if( defined( $c->{id} ) ) {
+            push( @mids, $c->{id} );
+        }
+    }
+
+    #print Dumper(@mids);
 
     my $numResult = @candidates;
 
     # No results? Try with the original title
-    if(defined $ceref->{original_title} and $ceref->{original_title} ne "" and $numResult < 1) {
+    if(defined $ceref->{original_title} and $ceref->{original_title} ne "" and $ceref->{original_title} ne $ceref->{title}) {
         my $original_title = $ceref->{original_title};
         $original_title =~ s|&|%26|g;
         $original_title =~ s|[-#\?\N{U+00BF}\(\)]||g;
         $original_title =~ s|[:]| |g;
 
         my @title_org = $self->{search}->movie( $original_title );
-        push @candidates, @title_org;
+        my $match = 0;
+
+        foreach my $c2 ( @title_org ){
+            my $match = 0;
+            if( defined( $c2->{id} ) ) {
+                my $mid = $c2->{id};
+
+                # Search
+                foreach my $c3 ( @mids ){
+                    if($c3 eq $mid) {
+                        $match = 1;
+                    }
+                }
+            }
+
+            if(!$match) {
+                push( @candidates, $c2 );
+            }
+        }
+
+
     }
 
     $numResult = @candidates;
