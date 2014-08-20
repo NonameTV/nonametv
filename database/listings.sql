@@ -80,14 +80,17 @@ CREATE TABLE `programs` (
   `commentators` text NOT NULL,
   `guests` text NOT NULL,
   `url` varchar(100) DEFAULT NULL,
-  `url_image_main` varchar(100) DEFAULT NULL,
-  `url_image_thumbnail` varchar(100) DEFAULT NULL,
-  `url_image_icon` varchar(100) DEFAULT NULL,
   `star_rating` varchar(20) DEFAULT NULL,
   `live` int(1) DEFAULT NULL,
+  `rerun` int(1) DEFAULT NULL,
   `extra_id` varchar(65) DEFAULT NULL COMMENT 'imdbid(movies)/tvdbid(series)/tvrageid(series)',
   `extra_id_type` varchar(65) DEFAULT NULL COMMENT 'type: tvrage,themoviedb,thetvdb',
   `original_title` varchar(255) DEFAULT NULL COMMENT 'Original Title',
+  `previously_shown` varchar(255) DEFAULT NULL,
+  `bline` varchar(255) DEFAULT NULL,
+  `country` varchar(255) DEFAULT NULL,
+  `poster` varchar(255) DEFAULT NULL,
+  `fanart` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`channel_id`,`start_time`),
   KEY `batch` (`batch_id`,`start_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -213,7 +216,7 @@ CREATE TABLE `augmenterrules` (
   `otherfield` varchar(20) DEFAULT NULL,
   `othervalue` varchar(100) DEFAULT NULL,
   `remoteref` varchar(100) DEFAULT NULL,
-  `matchby` varchar(20) DEFAULT NULL,
+  `matchby` varchar(30) DEFAULT NULL,
   UNIQUE KEY `channel_id` (`channel_id`,`augmenter`,`title`,`otherfield`,`othervalue`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

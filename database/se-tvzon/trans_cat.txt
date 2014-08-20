@@ -293,6 +293,38 @@ CanalPlus,vampyrthriller,Thriller,
 CanalPlus,västern,Western,
 CanalPlus,"verklighetsbaserat drama",Drama,
 CanalPlus,western,Western,
+CMore_category,film,\N,movie
+CMore_genre,action,Action,
+CMore_genre,action/comedy,Action/Comedy,
+CMore_genre,action/comedy/family,Action/Comedy/Family,
+CMore_genre,action/comedy/sci-fi,Action/Comedy/Sci-Fi,
+CMore_genre,action/drama,Action/Drama,
+CMore_genre,action/family,Action/Family,
+CMore_genre,action/horror,Action/Horror,
+CMore_genre,action/sci-fi,Action/Sci-Fi,
+CMore_genre,action/sci-fi/horror,Action/Sci-Fi/Horror,
+CMore_genre,action/sci-fi/thriller,Action/Sci-Fi/Thriller,
+CMore_genre,action/thriller,Action/Thriller,
+CMore_genre,children/comedy,Children's/Comedy,
+CMore_genre,comedy,Comedy,
+CMore_genre,comedy/action,Comedy/Action,
+CMore_genre,comedy/drama,Comedy/Drama,
+CMore_genre,comedy/drama/romantic,Comedy/Drama/Romance,
+CMore_genre,comedy/family,Comedy/Family,
+CMore_genre,comedy/horror,Comedy/Horror,
+CMore_genre,comedy/music,Comedy/Music,
+CMore_genre,comedy/romantic,Comedy/Romance,
+CMore_genre,documentary,Documentary,
+CMore_genre,drama,Drama,
+CMore_genre,drama/comedy,Drama/Comedy,
+CMore_genre,drama/thriller,Drama/Thriller,
+CMore_genre,horror,Horror,
+CMore_genre,horror/comedy,Horror/Comedy,
+CMore_genre,horror/thriller,Horror/Thriller,
+CMore_genre,sci-fi/drama,Sci-Fi/Drama,
+CMore_genre,thriller,Thriller,
+CMore_genre,thriller/drama,Thriller/Drama,
+CMore_genre,thriller/sci-fi,Thriller/Sci-Fi,
 DasErste_type,3d-animationsfilm,,movie
 DasErste_type,3d-animationsserie,\N,series
 DasErste_type,abenteuerfilm,\N,movie
@@ -357,6 +389,8 @@ DasErste_type,weihnachtsfilm,\N,movie
 DasErste_type,zeichentrickfilm,,movie
 DasErste_type,zeichentrickserie,\N,series
 DasErste_type,zeichtrickfilm,,movie
+DigiTV,nyheder,News,tvshow
+DigiTV,"socialt / politisk / økonomi",Social/Political/Economy,tvshow
 DisneyChannel,"animated series",Animation,series
 DisneyChannel,animation,Animation,
 DisneyChannel,comedy,Comedy,
@@ -599,6 +633,9 @@ Instore,documentaire,Documentary,series
 Instore,film,\N,movie
 Instore,muziek,Music,series
 Instore,serie/soap,Soap,series
+Kanal23,"kunst / kultur (uden musik, generelt)",Culture/Art,
+Kanal23,"musik / ballet / danse (generelt)",Music/Ballet/Dance,
+Kanal23,"nyheder (generelt)",News,tvshow
 Kanal5,documentary,Documentary,
 Kanal5,film,,movie
 Kanal5,series,,series
@@ -618,6 +655,17 @@ Kanal5_xml,series,\N,series
 Kanal5_xml,sport,\N,sports
 MTVde,barnprogram,Children's,series
 MTVde,"children series",Children's,series
+MTVde,comedy,Comedy,series
+MTVde,film,Movies,movie
+MTVde,livsstil,Lifestyle,series
+MTVde,livsstilsprogram,Lifestyle,series
+MTVde,livsstilsserie,Lifestyle,series
+MTVde,movie,Movies,movie
+MTVde,"reality soap",Reality/Soap,series
+MTVde,reality-serie,Reality,series
+MTVde,serie,\N,series
+MTVde,series,\N,series
+MTVde,show,\N,tvshow
 MTVde,show/unterhaltung,Entertainment,series
 MTVNN,actionserie,Action,series
 MTVNN,barnfilm,Children's,movie
@@ -857,19 +905,24 @@ RTL2,animationsfilm,Animation,movie
 RTL2,bollywood,Bollywood,
 RTL2,comedy,Comedy,
 RTL2,crime,Crime,
-RTL2,doku-soap,Soap,
+RTL2,doku-soap,Soap/Documentary,
 RTL2,dokumentarfilm,Documentary,movie
 RTL2,dokumentation,Documentary,
 RTL2,drama,Drama,
 RTL2,familienfilm,Family,movie
 RTL2,fantasy,Fantasy,
+RTL2,fantasy-abenteuer,Fantasy/Adventure,
 RTL2,fantasy/thriller,Fantasy/Thriller,
 RTL2,katastrophenfilm,\N,movie
+RTL2,komï¿½die,Comedy,
 RTL2,komödie,Comedy,
 RTL2,krimi,Crime,
 RTL2,magazin,Magazine,tvshow
+RTL2,musical,Musical,
 RTL2,musik-event,Music,tvshow
+RTL2,musikfilm,Music,
 RTL2,mystery,Mystery,
+RTL2,nachrichten,News,tvshow
 RTL2,reality,Reality,
 RTL2,reportage,\N,tvshow
 RTL2,"romantic comedy",Romance,
@@ -1144,24 +1197,33 @@ Tele5,thriller-serie,Crime/Mystery,
 Tele5,vampirfilm,Vampire,movie
 Tele5,western,Action/Adv,
 Tele5,westernparodie,Action/Adv,
-Tmdb_genre,action,Action,movie
-Tmdb_genre,adventure,Adventure,movie
-Tmdb_genre,comedy,Comedy,movie
-Tmdb_genre,crime,Crime,movie
-Tmdb_genre,drama,Drama,movie
-Tmdb_genre,family,Family,movie
-Tmdb_genre,fantasy,Fantasy,movie
-Tmdb_genre,foreign,Foreign,movie
-Tmdb_genre,history,History,movie
-Tmdb_genre,horror,Horror,movie
-Tmdb_genre,indie,Indie,movie
-Tmdb_genre,music,Music,movie
-Tmdb_genre,mystery,Mystery,movie
-Tmdb_genre,romance,Romance,movie
-Tmdb_genre,suspense,Suspense,movie
-Tmdb_genre,thriller,Thriller,movie
-Tmdb_genre,war,War,movie
-Tmdb_genre,western,Western,movie
+Tmdb_genre,10402,Music,
+Tmdb_genre,105,Disaster,
+Tmdb_genre,10748,Suspense,
+Tmdb_genre,10749,Romance,
+Tmdb_genre,10751,Family,
+Tmdb_genre,10752,War,
+Tmdb_genre,10755,Short,
+Tmdb_genre,10756,Indie,
+Tmdb_genre,10757,Sports,
+Tmdb_genre,10770,"TV Movie",
+Tmdb_genre,12,Adventure,
+Tmdb_genre,14,Fantasy,
+Tmdb_genre,16,Animation,
+Tmdb_genre,18,Drama,
+Tmdb_genre,22,Musical,
+Tmdb_genre,27,Horror,
+Tmdb_genre,28,Action,
+Tmdb_genre,2916,Adult,
+Tmdb_genre,35,Comedy,
+Tmdb_genre,36,History,
+Tmdb_genre,37,Western,
+Tmdb_genre,53,Thriller,
+Tmdb_genre,80,Crime,
+Tmdb_genre,878,Sci-Fi,
+Tmdb_genre,9648,Mystery,
+Tmdb_genre,9805,Sports,
+Tmdb_genre,99,Documentary,
 TV2Denmark,børn,Children's,series
 TV2Denmark,dokumentar/aktualitet,Documentary,series
 TV2Denmark,film,Movies,movie
@@ -1559,7 +1621,7 @@ Venetsia,02,Magazine,series
 Venetsia,03,\N,series
 Venetsia,04,\N,sports
 Venetsia,06,\N,series
-Venetsia,07,\N,movie
+Venetsia,07,Movies,movie
 Venetsia,08,Children's,series
 Venetsia,09,\N,series
 Venetsia,1,News,tvshow
@@ -1584,9 +1646,9 @@ Venetsia,4.1,News,sports
 Venetsia,4.2,\N,sports
 Venetsia,5,\N,series
 Venetsia,6,\N,series
-Venetsia,7,\N,movie
-Venetsia,7.1,\N,movie
-Venetsia,7.2,\N,movie
+Venetsia,7,Movies,movie
+Venetsia,7.1,Movies,movie
+Venetsia,7.2,Movies,movie
 Venetsia,8,Children's,series
 Venetsia,9,\N,series
 Viasat2_category,miniseries,\N,series
