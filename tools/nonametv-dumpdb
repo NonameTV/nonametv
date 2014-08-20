@@ -54,7 +54,7 @@ my $conf = ReadConfig();
 
 my $ds = NonameTV::DataStore->new( $conf->{DataStore} );
 
-#dump_structure( "$datadir/listings.sql" ); # bugs out on mariadb
+dump_structure( "$datadir/listings.sql" ); # bugs out on mariadb
 
 dump_table( $ds, "languagestrings", "$datadir/languagestrings.txt" );
 dump_table( $ds, "dvb_cat", "$datadir/dvb_cat.txt" );
