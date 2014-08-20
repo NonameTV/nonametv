@@ -414,10 +414,13 @@ sub ImportRTF {
             if (defined ($actor)) {
               $actor = norm ($actor);
               $role = norm ($role);
+              if ($role) {
+                $actor .= ' (' . $role . ')';
+              }
               if (!defined ($ce->{actors})) {
-                $ce->{actors} = $actor . ' (' . $role . ')';
+                $ce->{actors} = $actor;
               } else {
-                $ce->{actors} = join (', ', $ce->{actors}, $actor . ' (' . $role . ')');
+                $ce->{actors} = join (', ', $ce->{actors}, $actor);
               }
             }
           }
