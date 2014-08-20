@@ -118,18 +118,18 @@ sub ImportContentFile {
       my $i = 1;
       $column = {};
       foreach my $cell ($ns2->get_nodelist) {
-	my $v = $cell->findvalue( "." );
-	d "Found column $v";
-	$column->{$v} = "ss:Cell[$i]";
-	$i++;
+        my $v = $cell->findvalue( "." );
+        d "Found column $v";
+        $column->{$v} = "ss:Cell[$i]";
+        $i++;
       }
 
       # Check that we found the necessary columns.
       foreach my $col ("Date", "Time", "(SWE) Title", "SYNOPSIS") {
-	if( not defined( $column->{$col} ) ) {
-	  f "Column $col not found.";
-	  return 0;
-	}
+        if( not defined( $column->{$col} ) ) {
+          f "Column $col not found.";
+          return 0;
+        }
       }
 
       next;

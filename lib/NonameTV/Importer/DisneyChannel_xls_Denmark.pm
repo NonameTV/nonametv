@@ -145,6 +145,8 @@ sub ImportFlatXLS
 
 			$columns{'ORGTitle'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /\(ENG\) Title/ );
 
+			$columns{'Year'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Production Yr/ );
+
           	$columns{'Time'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Time/ );
           	$columns{'Date'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Date/ );
           	$columns{'Season'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Season Number/ );
@@ -252,10 +254,10 @@ sub ImportFlatXLS
 		}
 
         # movie
-		if($episode eq 1 and $season eq 0) {
-			$ce->{episode} = undef;
-			$ce->{program_type} = "movie";
-		}
+		#if($episode eq 1 and $season eq 0) {
+		#	$ce->{episode} = undef;
+		#	$ce->{program_type} = "movie";
+		#}
 
 		# Desc
 		$ce->{description} = norm($desc) if defined($desc);
@@ -274,7 +276,16 @@ sub ImportFlatXLS
             $ce->{original_title} = "The ".$ce->{original_title};
         }
 
-		#print Dumper($ce);
+        # Production Year
+        if(defined $columns{'Year'}) {
+            $oWkC = $oWkS->{Cells}[$iR][$columns{'Year'}];
+            my $year = $oWkC->Value if( $oWkC );
+
+            if(($year =~ /(\d\d\d\d)/) )
+            {
+                $ce->{production_date} = "$1-01-01";
+            }
+        }
 
         $dsh->AddProgramme( $ce );
 
