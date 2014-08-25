@@ -72,7 +72,7 @@ sub ApproveContent {
     return "404 not found";
   }
   elsif( $$cref eq '' ) {
-    return "404not found";
+    return "404 not found";
   }
   else {
     return undef;
@@ -241,7 +241,9 @@ sub ImportContent {
 	  if(defined($prodyear) and $prodyear ne "" and $prodyear =~ /(\d\d\d\d)/)
 	  {
 	  	$ce->{production_date} = "$1-01-01";
-	  }
+	  } elsif(defined($bline) and $bline ne "" and $bline =~ /(\d\d\d\d)/) {
+        $ce->{production_date} = "$1-01-01";
+      }
 	  
 	  # Find aspect-info
 	  if( $widescreen eq "true" )
@@ -272,8 +274,13 @@ sub ImportContent {
 	  {
 	    $ce->{live} = "0";
 	  }
-	
-	  $ce->{directors} = norm($emission->findvalue( 'director' )) if $emission->findvalue( 'director' );
+
+	  if( $emission->findvalue( 'director' ) ) {
+	    my $dirs = norm($emission->findvalue( 'director' ));
+	    $dirs =~ s/ & /, /g;
+	    $ce->{directors} = $dirs;
+	  }
+
       
       # Episodes
       if($episode2 and $episode2 ne "") {
