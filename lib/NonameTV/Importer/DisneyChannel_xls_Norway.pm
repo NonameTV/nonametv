@@ -281,7 +281,7 @@ sub ImportFlatXLS
             $oWkC = $oWkS->{Cells}[$iR][$columns{'Year'}];
             my $year = $oWkC->Value if( $oWkC );
 
-            if(($year =~ /(\d\d\d\d)/) )
+            if(defined $year and $year =~ /(\d\d\d\d)/ )
             {
                 $ce->{production_date} = "$1-01-01";
             }
