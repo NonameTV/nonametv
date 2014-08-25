@@ -95,6 +95,19 @@ sub ImportXML
       return;
     }
 
+  ## Fix for data falling off when on a new week (same date, removing old programmes for that date)
+  my ($week, $year) = ($file =~ /tab(\d\d)(\d\d)/);
+
+  if(!defined $year) {
+    error( "Kanal5_xml: $chd->{xmltvid}: Failure to get year from filename" ) ;
+    return;
+  } else { $year += 2000; }
+
+  my $batchid = $chd->{xmltvid} . "_" . $year . "-".$week;
+
+  $dsh->StartBatch( $batchid , $chd->{id} );
+  ## END
+
   foreach my $row ($rows->get_nodelist) {
       my $start = $self->create_dt( $row->findvalue( './/starttime/TIMEINSTANT/@full' ) );
       my $end = $self->create_dt( $row->findvalue( './/end/TIMEINSTANT/@full' ) );
@@ -102,12 +115,6 @@ sub ImportXML
       my $date = $start->ymd("-");
 
       if($date ne $currdate ) {
-        if( $currdate ne "x" ) {
-            $dsh->EndBatch( 1 );
-        }
-
-        my $batchid = $chd->{xmltvid} . "_" . $date;
-        $dsh->StartBatch( $batchid , $chd->{id} );
         $dsh->StartDate( $date , "06:00" );
         $currdate = $date;
 
@@ -125,7 +132,7 @@ sub ImportXML
       my $titles = $row->findnodes( ".//titles/PRODUCTTITLE" );
       foreach my $t ($titles->get_nodelist) {
       	# predefined is which title you want, these can be: TTV (chosen by Kanal5), SwedishTitle, OriginalTitle.
-      	if($t->findvalue( './/type/PSIPRODUCTTITLETYPE/@predefined' ) eq "TTV") {
+      	if($t->findvalue( './/type/PSIPRODUCTTITLETYPE/@predefined' ) eq "SwedishTitle") {
       		$title = $t->findvalue( './@title' );
       	}
 
@@ -293,86 +300,86 @@ sub extract_extra_info
     $sentences[$i] =~ tr/\n\r\t /    /s;
     $sentences[$i] =~ s/^I detta (avsnitt|program)://;
 		
-	if( my( $originaltitle ) = ($sentences[$i] =~ /Originaltitel:\s*(.*)/ ) )
+	if( my( $originaltitle ) = ($sentences[$i] =~ /^Originaltitel:\s*(.*)/ ) )
     {
     	# Remove originaltitle from description, maybe use originaltitle instead of
     	# swedish title?
       $sentences[$i] = "";
     }
-    elsif( my( $rating ) = ($sentences[$i] =~ /.ldersgr.ns:\s*(.*)$/ ) )
+    elsif( my( $rating ) = ($sentences[$i] =~ /^.ldersgr.ns:\s*(.*)$/ ) )
     {
     	# Agerating
       #$ce->{rating} = norm($rating);
       $sentences[$i] = "";
     }
-    elsif( my( $directors ) = ($sentences[$i] =~ /Regi:\s*(.*)/) )
+    elsif( my( $directors ) = ($sentences[$i] =~ /^Regi:\s*(.*)/) )
     {
       $ce->{directors} = parse_person_list( $directors );
       $sentences[$i] = "";
     }
-    elsif( my( $teller ) = ($sentences[$i] =~ /Ber.ttare:\s*(.*)/ ) )
+    elsif( my( $teller ) = ($sentences[$i] =~ /^Ber.ttare:\s*(.*)/ ) )
     {
       $ce->{commentators} = parse_person_list( $teller );
       $sentences[$i] = "";
     }
-    elsif( my( $audioactors ) = ($sentences[$i] =~ /R.ster:\s*(.*)/ ) )
+    elsif( my( $audioactors ) = ($sentences[$i] =~ /^R.ster:\s*(.*)/ ) )
     {
       $ce->{actors} = parse_person_list( $audioactors );
       $sentences[$i] = "";
     }
-    elsif( my( $actors ) = ($sentences[$i] =~ /I rollerna:\s*(.*)/ ) )
+    elsif( my( $actors ) = ($sentences[$i] =~ /^I rollerna:\s*(.*)/ ) )
     {
       $ce->{actors} = parse_person_list( $actors );
       $sentences[$i] = "";
     }
-    elsif( my( $actors2 ) = ($sentences[$i] =~ /Medverkande:\s*(.*)/ ) )
+    elsif( my( $actors2 ) = ($sentences[$i] =~ /^Medverkande:\s*(.*)/ ) )
     {
       $ce->{actors} = parse_person_list( $actors2 );
       $sentences[$i] = "";
     }
-    elsif( my( $actors3 ) = ($sentences[$i] =~ /Sk.despelare:\s*(.*)/ ) )
+    elsif( my( $actors3 ) = ($sentences[$i] =~ /^Sk.despelare:\s*(.*)/ ) )
     {
       $ce->{actors} = parse_person_list( $actors3 );
       $sentences[$i] = "";
     }
-    elsif( my( $actors4 ) = ($sentences[$i] =~ /I rollerna.\s*(.*)/ ) )
+    elsif( my( $actors4 ) = ($sentences[$i] =~ /^I rollerna.\s*(.*)/ ) )
     {
       $ce->{actors} = parse_person_list( $actors4 );
       $sentences[$i] = "";
     }
-    elsif( my( $gueststar ) = ($sentences[$i] =~ /G.ststj.rna:\s*(.*)/ ) )
+    elsif( my( $gueststar ) = ($sentences[$i] =~ /^G.ststj.rna:\s*(.*)/ ) )
     {
       $ce->{guests} = parse_person_list( $gueststar );
       $sentences[$i] = "";
     }
-    elsif( my( $guestactor ) = ($sentences[$i] =~ /G.stsk.despelare:\s*(.*)/ ) )
+    elsif( my( $guestactor ) = ($sentences[$i] =~ /^G.stsk.despelare:\s*(.*)/ ) )
     {
     	# Kanal5 listes it in Sk�despelare. No need to have it in guests.
       #$ce->{guests} = parse_person_list( $guestactor );
       $sentences[$i] = "";
     }
-    elsif( my( $guests ) = ($sentences[$i] =~ /G.ster:\s*(.*)/ ) )
+    elsif( my( $guests ) = ($sentences[$i] =~ /^G.ster:\s*(.*)/ ) )
     {
       $ce->{guests} = parse_person_list( $guests );
       $sentences[$i] = "";
     }
-    elsif( my( $presenters ) = ($sentences[$i] =~ /Programledare:\s*(.*)/ ) )
+    elsif( my( $presenters ) = ($sentences[$i] =~ /^Programledare:\s*(.*)/ ) )
     {
       $ce->{presenters} = parse_person_list( $presenters );
       $sentences[$i] = "";
     }
-    elsif( my( $guest ) = ($sentences[$i] =~ /G.stv.rd:\s*(.*)/ ) )
+    elsif( my( $guest ) = ($sentences[$i] =~ /^G.stv.rd:\s*(.*)/ ) )
     {
     	# Series like Saturday Night Live.
       $ce->{subtitle} = parse_person_list( $guest );
       $sentences[$i] = "";
     }
-    elsif( my( $fran ) = ($sentences[$i] =~ /Fr.n\s*(.*)/ ) )
+    elsif( my( $fran ) = ($sentences[$i] =~ /^Fr.n\s*(.*)/ ) )
     {
     	# Previous air
       $sentences[$i] = "";
     }
-    elsif( my( $next ) = ($sentences[$i] =~ /.ven\s*(.*)/ ) )
+    elsif( my( $next ) = ($sentences[$i] =~ /^.ven\s*(.*)/ ) )
     {
     	# Next air
       $sentences[$i] = "";
@@ -394,8 +401,7 @@ sub extract_extra_info
     }
   }
 
-  $ce->{description} = join_text( @sentences );
-  
+  $ce->{description} = norm(join_text( @sentences ));
   
 }
 
@@ -450,7 +456,7 @@ sub split_text
 #  my @sent = grep( /\S/, split( /\.\s+(?=[A-Z???])/, $t ) );
 
   # Mark sentences ending with a dot for splitting.
-  $t =~ s/\.\s+([A-Z???])/;;$1/g;
+  $t =~ s/\.(|\s+)([A-Z???])/;;$2/g;
 
   # Mark sentences ending with ! or ? for split, but preserve the "!?".
   $t =~ s/([\!\?])\s+([A-Z???])/$1;;$2/g;
