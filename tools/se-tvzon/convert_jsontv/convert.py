@@ -37,14 +37,15 @@ def download_json_files():
 
     for anchor in soup.findAll('a', href=True):
         if anchor['href'] != '../':
+            aweekago = datetime.datetime.now() - datetime.timedelta(days=7)
             try:
                 anchor_list = anchor['href'].split("_")
                 channel = anchor_list[0]
                 filedate = datetime.datetime.strptime(anchor_list[1][0:10], "%Y-%m-%d").date()
             except IndexError:
-                filedate = datetime.datetime.today().date()
+                filedate = aweekago.date()
 
-            if filedate >= datetime.datetime.today().date():
+            if filedate >= aweekago.date():
                 if len(channels) == 0 or channel in channels or channel == "channels.js.gz":
                     stdout.write("Downloading http://json.xmltv.se/%s " % anchor['href'])
                     f = urllib2.urlopen('http://json.xmltv.se/%s' % anchor['href'])
