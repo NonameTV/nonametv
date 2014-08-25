@@ -264,9 +264,12 @@ sub guess_channel
     return "wild.natgeo.se" if $filename =~ /^ngwscan\s*\b/i;
 
 	# History Channel
-    return "historytv.se" if $filename =~ /his.eur.swe/i;
-    return "historytv.no" if $filename =~ /his.eur.nor/i;
-    return "historytv.dk" if $filename =~ /his.eur.dan/i;
+	if($filename =~ /\.doc$/i) {
+        return "historytv.se"  if $filename =~ /his.eur.swe/i;
+        return "historytv.no"  if $filename =~ /his.eur.nor/i;
+        return "historytv.dk"  if $filename =~ /his.eur.dan/i;
+        return "historytv.eu"  if $filename =~ /his.eur.eng/i;
+    }
 
 	# Travel Channel
     return "travelchanneltv.se" if $filename =~ /^travel/i;
