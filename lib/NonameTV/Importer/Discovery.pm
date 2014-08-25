@@ -78,10 +78,15 @@ sub ImportContentFile {
 
 #defined( $chd->{sched_lang} ) or die "You must specify the language used for this channel (sched_lang)";
 #my $schedlang = $chd->{sched_lang};
-my $schedlang = "en";
+  my $schedlang = "en";
 
-if( $filename !~ /\sAmend\s*.*$/ ) {return $self->ImportDocument( $filename, $doc, $channel_xmltvid, $channel_id );}
-  else { return $self->ImportAmendments( $filename, $doc, $channel_xmltvid, $channel_id ); }
+  if( $filename =~ /(amend|amd)/i ) {
+    return $self->ImportAmendments( $filename, $doc, $channel_xmltvid, $channel_id );
+  }
+  else {
+    return $self->ImportDocument( $filename, $doc, $channel_xmltvid, $channel_id );
+  }
+
 
 }
 
@@ -549,8 +554,8 @@ sub extract_extra_info
 {
   my( $ce ) = shift;
 
-  my( $episode ) = ($ce->{title} =~ /:\s*Avsnitt\s*(\d+)$/);
-  $ce->{title} =~ s/:\s*Avsnitt\s*(\d+)$//; 
+  my( $dumperino, $episode ) = ($ce->{title} =~ /:\s*(Avsnitt|Episode)\s*(\d+)$/);
+  $ce->{title} =~ s/:\s*(Avsnitt|Episode)\s*(\d+)$//;
   $ce->{episode} = sprintf(" . %d . ", $episode-1)
     if defined( $episode );
   my( $t, $st ) = ($ce->{title} =~ /(.*)\: (.*)/);
@@ -563,7 +568,8 @@ sub extract_extra_info
   }
   $ce->{title} =~ s/:\s*(.+)$//;
 
-  $ce->{title} =~ s/^PREMI.R\s+//;
+  $ce->{title} =~ s/^PREMI.R\s+//i;
+  $ce->{title} =~ s/^PREMIERE\s+//i;
 
   if( $ce->{title} =~ /^\bs.ndningsslut\b$/i )
   {
