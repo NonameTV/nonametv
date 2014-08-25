@@ -81,7 +81,7 @@ sub ImportContent
   my $columns = [ split( "\t", $rows[0] ) ];
   my $date = "";
   my $olddate = "";
-  #print ( $batch_id );
+
   for ( my $i = 1; $i < scalar @rows; $i++ )
   {
     my $inrow = $self->row_to_hash($batch_id, $rows[$i], $columns );
@@ -92,26 +92,10 @@ sub ImportContent
       progress("Date is ".$ymd);
       $dsh->StartDate( $ymd );
     }
-    
     $olddate = $date;
-    
-    #$date = substr( $date, 0, 10 );
-    #$date =~ s/\./-/;
-    #if ( exists($inrow->{'Date'}) )
-    #{
-    #  $dsh->StartDate( $inrow->{'Date'} );
-    #}
+
     my $start = $inrow->{'SENDETID'};
-    #my ($date, $time) = split(/ /, $start);
-    #$date =~ s/\./-/;
-    #$time =~ s/\./:/;
-    #$date = turnDate($date);
-    #$start = "$date $time";
-    #print norm($start);
     $start = parseStart(fq($start));
-    
-    #my $start = $inrow->{'Start time'};
-    #my $start = $starttime;
 
     my $title = norm( $inrow->{'NORSKTITTEL'} );
     my $title_org = norm( $inrow->{'ORIGINALTITTEL'} );
@@ -127,9 +111,6 @@ sub ImportContent
     } elsif($subtitle eq "<p />") {
     	$subtitle = undef;
     }
-    
-    #$description = norm( $description );
-    #$description = fq( $description );
 
     # Episode info in xmltv-format
     my $ep_nr = norm(fq($inrow->{'EPISODENUMMER'})) || 0;
