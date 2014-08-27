@@ -473,19 +473,24 @@ sub guess_channel
  }
 
  if( $dir =~ /ETVMedia/ ) {
-     # Channel 1 Russia
-     if( $filename =~ /\d{8}_\d{8}/i and $filename =~ /\.rtf$/i ) {
-        return "1tvrus.com";
-     }
+    # Channel 1 Russia
+    if( $filename =~ /\d{8}_\d{8}/i and $filename =~ /\.rtf$/i ) {
+       return "1tvrus.com";
+    }
 
-     # TBN
-     if( $filename =~ /TBN/i ) {
-     #   return "tbn.org";
-     }
+    # TBN
+    if( $filename =~ /TBN/i ) {
+    #   return "tbn.org";
+    }
 
-     if( ( $subject =~ /WFC/i or $subject =~ /Fashion/i ) and $filename =~ /\.(xls|xlsx|txt)$/i ) {
-         return "wfc.tv";
-     }
+    if( $subject =~ /WFC/i and $filename =~ /\.(xls|xlsx|txt)$/i ) {
+        return "wfc.tv";
+    }
+
+    if( ( $subject =~ /fashiontv/i or $from =~ /\@ftv.com/i ) and $filename =~ /\.xlsx$/i ) {
+        return "ftv.com" if $filename =~ /hotbird/i;
+        return "hd.ftv.com" if $filename =~ /eurobird/i;
+    }
  }
 
   return undef;

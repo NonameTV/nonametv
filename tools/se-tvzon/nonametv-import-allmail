@@ -30,6 +30,7 @@ tools/nonametv-import Playboy $1 $2 $3
 
 tools/nonametv-import LifestyleTV $1 $2 $3
 tools/nonametv-import FuelTV $1 $2 $3
+tools/nonametv-import FTV $1 $2 $3
 tools/nonametv-import Fatstone $1 $2 $3
 tools/nonametv-import France24 $1 $2 $3
 tools/nonametv-import LuxeTV $1 $2 $3
