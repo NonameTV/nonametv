@@ -340,7 +340,7 @@ sub AugmentProgram( $$$ ){
 
           # Check against original title if the title cant be found.
           if(!(defined($series)) and (defined($ceref->{original_title}) and $ceref->{original_title} ne "")) {
-            w("trying original title ".$ceref->{original_title}." instead of ".$ceref->{title});
+            w("trying original title \"".$ceref->{original_title}."\" instead of \"".$ceref->{title}."\"");
             $series = $self->{tvdb}->getSeries( $ceref->{original_title}, 0 );
           }
         }
@@ -376,9 +376,9 @@ sub AugmentProgram( $$$ ){
 
     	my( $season ) = $ruleref->{remoteref};
     	
-			if( defined $ceref->{episode} ){
-      	my( $season_episode, $episode )=( $ceref->{episode} =~ m|^\s*(\d+)\s*\.\s*(\d+)\s*/?\s*\d*\s*\.\s*$| );
-      	if( (defined $episode) and (defined $season_episode) ){
+		if( defined $ceref->{episode} ){
+      	    my( $season_episode, $episode )=( $ceref->{episode} =~ m|^\s*(\d+)\s*\.\s*(\d+)\s*/?\s*\d*\s*\.\s*$| );
+      	    if( (defined $episode) and (defined $season_episode) ){
         		$episode += 1;
         		$season_episode += 1;
         
@@ -390,7 +390,7 @@ sub AugmentProgram( $$$ ){
         		# Norm it.
         		$seriesname = norm($seriesname);
         
-            my $series = $self->{tvdb}->getSeries( $seriesname, 0 );
+                my $series = $self->{tvdb}->getSeries( $seriesname, 0 );
         
         		if( (defined $series)){
         			# Find season and episode
