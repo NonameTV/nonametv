@@ -171,6 +171,11 @@ sub ImportContent {
       {
       	$name = "end-of-transmission";
       }
+
+      if( $name =~ /^P.\s+GENSYN/)
+      {
+      	$name = "end-of-transmission";
+      }
       
       
       # Category and genre

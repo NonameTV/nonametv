@@ -91,7 +91,7 @@ $d perl -I lib/ tools/nonametv-export Json --remove-old
 $d tools/nonametv-icon-update --quiet --unattended
 
 # Export
-$d tools/se-tvzon/nonametv-updatesite $Q
+#$d tools/se-tvzon/nonametv-updatesite $Q
 
 # Upload to www - I don't know if I wanna run this here.
 #tools/se-tvzon/nonametv-upload $Q
@@ -112,7 +112,7 @@ $h perl -I lib tools/nonametv-import Downconverter --short-grab $Q
 $d perl -I lib tools/nonametv-batchlog > $NROOT/html/00status.html
 
 # Export
-tools/se-tvzon/nonametv-updatesite $Q
+$d tools/se-tvzon/nonametv-updatesite $Q
 
 # Upload to www (daily)
 $d tools/se-tvzon/nonametv-upload $Q
