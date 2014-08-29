@@ -3,14 +3,12 @@
 tools/nonametv-import CNBC $1 $2 $3
 tools/nonametv-import Discovery $1 $2 $3
 tools/nonametv-import DisneyChannel $1 $2 $3
-tools/nonametv-import DisneyChannelNO $1 $2 $3
-tools/nonametv-import DisneyChannelDK $1 $2 $3
-tools/nonametv-import DisneyChannelFI $1 $2 $3
 tools/nonametv-import DWDE $1 $2 $3
 tools/nonametv-import Kanal10 $1 $2 $3
 tools/nonametv-import Motors $1 $2 $3
 tools/nonametv-import Mtve_mail $1 $2 $3
 tools/nonametv-import NatGeoWild $1 $2 $3
+tools/nonametv-import NGScan $1 $2 $3
 tools/nonametv-import PokerChannel $1 $2 $3
 tools/nonametv-import History $1 $2 $3
 tools/nonametv-import TravelChannel $1 $2 $3
