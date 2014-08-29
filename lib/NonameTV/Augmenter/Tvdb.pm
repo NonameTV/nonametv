@@ -255,10 +255,18 @@ sub AugmentProgram( $$$ ){
     if(defined($ceref->{subtitle}) && !defined($ceref->{episode})) {
     	# Match it by subtitle
     	$ruleref->{matchby} = "episodetitle";
-    }elsif(!defined($ceref->{subtitle}) && defined($ceref->{episode})) {
+    } elsif(!defined($ceref->{subtitle}) && defined($ceref->{episode})) {
     	# The opposite, match it by episode
     	$ruleref->{matchby} = "episodeseason";
-    }else {
+    } elsif(defined($ceref->{subtitle}) && defined($ceref->{episode})) {
+        # Check if it has season otherwise title.
+        my( $season, $episode )=( $ceref->{episode} =~ m|^\s*(\d+)\s*\.\s*(\d+)\s*/?\s*\d*\s*\.\s*$| );
+        if( (defined $episode) and (defined $season) ){
+            $ruleref->{matchby} = "episodeseason";
+        } else {
+            $ruleref->{matchby} = "episodetitle";
+        }
+    } else {
     	# Match it by seriesname (only change series name) here later on maybe?
     	return( undef, 'couldn\'t guess the right matchby, sorry.' );
     }
