@@ -245,7 +245,12 @@ sub ParseShow {
 
   my( $hour, $min, $title ) = ( $text =~ /^(\d+)\.(\d+)\s+(.*)$/ );
 
-  $title =~ s/"//gi;
+  #$title =~ s/"//gi;
+  my ($realtitle) = ($title =~ /"(.*?)"/);
+  if(defined($realtitle)) {
+    $title = $realtitle;
+  }
+
   $title =~ s/\.\.\.//i;
   $title =~ s/\(.*\)//i;
 
