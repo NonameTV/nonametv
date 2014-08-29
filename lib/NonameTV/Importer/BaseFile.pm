@@ -78,6 +78,10 @@ sub ImportData {
 
       # Ignore emacs backup-files.
       next if $file =~ /~$/;
+
+      # Ignore 00files
+      next if $file =~ /^00files$/;
+
       my $md5 = md5sum( "$dir/$file" );
       my $fdata = $ds->sa->Lookup( "files", { channelid => $data->{id},
                                               filename => $file } );
