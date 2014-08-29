@@ -87,7 +87,6 @@ sub ImportXLS
 
   if ( $file =~ /\.xlsx$/i ){ progress( "using .xlsx" );  $oBook = Spreadsheet::XLSX -> new ($file, $converter); }
   else { $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );  }
-  my $ref = ReadData ($file);
 
   # main loop
   #for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
@@ -158,7 +157,7 @@ sub ImportXLS
 			}
 
 			# Danish
-            if($chd->{sched_lang} eq "dk") {
+            if($chd->{sched_lang} eq "da") {
                 $columns{'Title'}    = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Programme \(Danish\)/ );
 			    $columns{'Synopsis'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Synopsis \(Danish\)/ );
 			}
