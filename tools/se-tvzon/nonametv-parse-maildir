@@ -271,6 +271,8 @@ sub guess_channel
         return "historytv.eu"  if $filename =~ /his.eur.eng/i;
     }
 
+    return "natgeotv.com" if $filename =~ /^ngscan/i and $filename =~ /\.xls$/i;
+
 	# Travel Channel
     return "travelchanneltv.se" if $filename =~ /^travel/i;
 
