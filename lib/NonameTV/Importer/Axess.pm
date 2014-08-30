@@ -177,12 +177,18 @@ sub ImportContent {
       url         => $url,
     };
 
-		my ( $program_type, $category ) = ParseDescCatSwe( $ce->{description} );
+	my ( $program_type, $category ) = ParseDescCatSwe( $ce->{description} );
   	AddCategory( $ce, $program_type, $category );
     
-    if( my( $year ) = ($description =~ /Produktions.r:\s+(\d\d\d\d)./) )
+    if( my( $dumperino, $year ) = ($description =~ /(Produktions.r|Produktion.r):\s+(\d\d\d\d)\./) )
     {
       $ce->{production_date} = "$year-01-01";
+    }
+
+    # original title
+    if( my( $orgtitle ) = ($description =~ /Originaltitel:\s+(.*?)\./) )
+    {
+        $ce->{original_title} = norm($orgtitle);
     }
 
     if( $end ne "" ) {
