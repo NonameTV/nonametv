@@ -122,7 +122,11 @@ sub ImportContentFile
       };
 
       $ce->{directors} = join( ", ", split( /\s*,\s*/, norm($director) ) ) if defined $director and norm($director) ne "";
-      $ce->{production_date} = norm($prodyear)."-01-01" if defined $prodyear and norm($prodyear) ne "";
+      if( defined( $prodyear ) and ($prodyear =~ /(\d\d\d\d)/) )
+      {
+        $ce->{production_date} = "$1-01-01";
+      }
+
       $ce->{program_type} = "movie" if defined $director and norm($director) ne "";
 
       # add the programme to the array
