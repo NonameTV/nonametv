@@ -58,7 +58,7 @@ sub ImportContentFile {
     } elsif($chd->{sched_lang} eq "no") {
         $self->ImportFlatXLS( $file, $chd ) if $file =~ /nor*.*xls$/i;
     } elsif($chd->{sched_lang} eq "en") {
-        $self->ImportFlatXLS( $file, $chd ) if $file =~ /eng*.*xls$/i;
+        $self->ImportFlatXLS( $file, $chd ) if $file =~ /eng*.*xls$/i and $file !~ /swe*.*xls$/i;
     }
   } elsif( $file =~ /\.zip$/i ) {
   	# When ParseExcel can load a XLS file
@@ -84,7 +84,7 @@ sub ImportContentFile {
       } elsif($chd->{sched_lang} eq "no") {
         push( @swedish_files, $member->{fileName} ) if $member->{fileName} =~ /nor*.*xls$/i;
       } elsif($chd->{sched_lang} eq "en") {
-        push( @swedish_files, $member->{fileName} ) if $member->{fileName} =~ /eng*.*xls$/i;
+        push( @swedish_files, $member->{fileName} ) if $member->{fileName} =~ /eng*.*xls$/i and $member->{fileName} !~ /swe*.*xls$/i;
       }
     }
     
@@ -180,10 +180,9 @@ sub ImportFlatXLS
           	    $columns{'Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /\(NOR\) Title/ );
           	} elsif($chd->{sched_lang} eq "da") {
                 $columns{'Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /\(DAN\) Title/ );
+          	} elsif($chd->{sched_lang} eq "en") {
+          	    $columns{'Title'} = $iC if( $oWkS->{Cells}[$iR][$iC]->Value =~ /\(ENG\) Title/ );
           	}
-
-
-          	
 
             $foundcolumns = 1 if( $oWkS->{Cells}[$iR][$iC]->Value =~ /Season/ ); # Only import if season number is found
           }
@@ -305,6 +304,12 @@ sub ImportFlatXLS
         if(defined($ce->{original_title}) and $ce->{original_title} =~ /, The$/) {
             $ce->{original_title} =~ s/, The$//;
             $ce->{original_title} = "The ".$ce->{original_title};
+        }
+
+        # Eng title
+        if($ce->{title} =~ /, The$/) {
+            $ce->{title} =~ s/, The$//;
+            $ce->{title} = "The ".$ce->{title};
         }
 
         # Production Year
