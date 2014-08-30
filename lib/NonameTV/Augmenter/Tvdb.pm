@@ -95,18 +95,6 @@ sub FillHash( $$$$ ) {
   return if( !defined $episode );
 
   my $episodeid = $series->{Seasons}[$episode->{SeasonNumber}][$episode->{EpisodeNumber}];
-
-  # Dont set if original title
-  if(!defined $ceref->{original_title}) {
-    #w("changing title from ".$ceref->{title}." to ".normUtf8( norm( $series->{SeriesName} ) ));
-    $resultref->{title} = normUtf8( norm( $series->{SeriesName} ) );
-  }
-  
-  # Only set original title if its not defined
-  # and the title aint like the original title.
-  if(!defined $ceref->{original_title} and ($resultref->{title} ne norm($ceref->{title}))) {
-  	$resultref->{original_title} = norm($ceref->{title});
-  }
   
   if( $episode->{SeasonNumber} == 0 ){
     # it's a special
@@ -140,11 +128,6 @@ sub FillHash( $$$$ ) {
 # TODO skip the Overview for now, it falls back to english in a way we can not detect
 #  if( defined( $episode->{Overview} ) and ($episode->{Language} eq $self->{Language}) and !defined($resultref->{description}) ) {
 #    $resultref->{description} = normUtf8(norm($episode->{Overview})) . "\nSource: Tvdb";
-#  }
-
-# TODO add proviously-shown to carry the first showing instead of slapping it over the starting year of the series
-#  if( $episode->{FirstAired} ) {
-#    $resultref->{production_date} = $episode->{FirstAired};
 #  }
 
   if( $series->{FirstAired} ) {
@@ -271,26 +254,6 @@ sub AugmentProgram( $$$ ){
     	return( undef, 'couldn\'t guess the right matchby, sorry.' );
     }
   }
-  
-  # Set season and name
-  if( $ruleref->{matchby} eq 'episodeseasonid' ) {
-    # Subtitles, no episode
-    my( $esid, $seasonnmbr ) = split( /:/, $ruleref->{remoteref} );
-    
-    # No id
-    if(!$esid) {
-    	return(undef, 'not the right style: seriesid:seasonmbr');
-    }
-    
-    # Get episode
-    
-    
-    # Set id
-    $ruleref->{remoteref} = $esid;
-    
-    # Match it later on
-    $ruleref->{matchby} = "episodeseason";
-  }
 
   if( $ruleref->{matchby} eq 'episodeabs' ) {
     # match by absolute episode number from program hash. USE WITH CAUTION, NOT EVERYONE AGREES ON ANY ORDER!!!
@@ -309,7 +272,7 @@ sub AugmentProgram( $$$ ){
 
           # Check against original title if the title cant be found.
           if(!(defined($series)) and (defined($ceref->{original_title}) and $ceref->{original_title} ne "")) {
-                w("trying original title ".$ceref->{original_title}." instead of ".$ceref->{title});
+          #      w("trying original title ".$ceref->{original_title}." instead of ".$ceref->{title});
                 $series = $self->{tvdb}->getSeries( $ceref->{original_title}, 0 );
           }
         }
@@ -348,7 +311,7 @@ sub AugmentProgram( $$$ ){
 
           # Check against original title if the title cant be found.
           if(!(defined($series)) and (defined($ceref->{original_title}) and $ceref->{original_title} ne "")) {
-            w("trying original title \"".$ceref->{original_title}."\" instead of \"".$ceref->{title}."\"");
+          #  w("trying original title \"".$ceref->{original_title}."\" instead of \"".$ceref->{title}."\"");
             $series = $self->{tvdb}->getSeries( $ceref->{original_title}, 0 );
           }
         }
@@ -428,7 +391,7 @@ sub AugmentProgram( $$$ ){
 
         # Check against original title if the title cant be found.
         if(!(defined($series)) and (defined($ceref->{original_title}) and $ceref->{original_title} ne "")) {
-            w("trying original title ".$ceref->{original_title}." instead of ".$ceref->{title});
+        #    w("trying original title ".$ceref->{original_title}." instead of ".$ceref->{title});
             $series = $self->{tvdb}->getSeries( $ceref->{original_title}, 0 );
         }
       }
