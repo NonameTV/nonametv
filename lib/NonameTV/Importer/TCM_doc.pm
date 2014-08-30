@@ -41,6 +41,9 @@ sub new {
   my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
   $self->{datastorehelper} = $dsh;
 
+  # use augment
+  $self->{datastore}->{augment} = 1;
+
   return $self;
 }
 
@@ -87,9 +90,10 @@ sub ImportContentFile
   my @ces;
   my $description;
 
-    $ds->StartBatch( basename( $file ), $channel_id );
 
-   my $actors = 0;
+
+  my $actors = 0;
+  my $batched = 0;
 
   foreach my $div ($ns->get_nodelist) {
 
@@ -105,13 +109,19 @@ sub ImportContentFile
       next if( ! $time );
       next if( ! $title );
 
+      if(!$batched) {
+        $batched = 1;
+        my( $year, $month, $day ) = split( '-', $date );
+        $ds->StartBatch( $xmltvid."_".$year."-".$month, $channel_id );
+      }
+
       my $ce = {
         channel_id => $chd->{id},
         start_time => $date." ".$time,
         title => $title,
       };
 
-      $ce->{directors} = norm($director) if defined $director and norm($director) ne "";
+      $ce->{directors} = join( ", ", split( /\s*,\s*/, norm($director) ) ) if defined $director and norm($director) ne "";
       $ce->{production_date} = norm($prodyear)."-01-01" if defined $prodyear and norm($prodyear) ne "";
       $ce->{program_type} = "movie" if defined $director and norm($director) ne "";
 
@@ -127,7 +137,7 @@ sub ImportContentFile
 
         # Genre
         if($actors eq 1 and $text =~ /,/ and $text !~ /^Genre/i) {
-            $element->{actors} = norm($text);
+            $element->{actors} = join( ", ", split( /\s*,\s*/, norm($text) ) );
         } elsif($text =~ /^Genre/i) {
             my( $genre ) = ($text =~ /^Genre:(.*?)\./ );
 
