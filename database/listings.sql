@@ -116,7 +116,8 @@ CREATE TABLE `languagestrings` (
   `module` varchar(32) NOT NULL DEFAULT '',
   `strname` varchar(32) NOT NULL DEFAULT '',
   `strvalue` text NOT NULL,
-  `language` varchar(4) NOT NULL DEFAULT ''
+  `language` varchar(4) NOT NULL DEFAULT '',
+  UNIQUE KEY `lng` (`module`,`strname`,`language`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `epgservers`;
