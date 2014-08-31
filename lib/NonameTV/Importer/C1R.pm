@@ -146,7 +146,7 @@ sub ImportContentFile
       }
       elsif( isShow( $text ) ) { # the token with the time in format '19.30 Vremja'
 
-	my( $starttime , $title ) = ParseShow( $text );
+	    my( $starttime , $title, $desc ) = ParseShow( $text );
 
         progress("C1R: $chd->{xmltvid}: $starttime - $title");
 
@@ -155,6 +155,8 @@ sub ImportContentFile
           start_time => $starttime,
           title => norm($title),
         };
+
+        $ce->{description} = norm($desc) if defined $desc and norm($desc) ne "";
 
         $dsh->AddProgramme( $ce );
 
@@ -245,16 +247,28 @@ sub ParseShow {
 
   my( $hour, $min, $title ) = ( $text =~ /^(\d+)\.(\d+)\s+(.*)$/ );
 
+  my $desc = undef;
+
   #$title =~ s/"//gi;
   my ($realtitle) = ($title =~ /"(.*?)"/);
   if(defined($realtitle)) {
+    # Remove the title and clean it up
+    # then add it to description (Premiere, actors etc)
+    $desc  = $title;
+    $desc  =~ s/"(.*?)"//;
+    $desc  = norm($desc);
+    $desc  =~ s/^\.//;
+    $desc  =~ s/\((.*?)\)//g;
+    $desc  = norm($desc);
+
+    # New title
     $title = $realtitle;
   }
 
   $title =~ s/\.\.\.//i;
   $title =~ s/\(.*\)//i;
 
-  return( sprintf("%02d:%02d", $hour, $min) , $title );
+  return( sprintf("%02d:%02d", $hour, $min) , $title, $desc );
 }
 
 1;
