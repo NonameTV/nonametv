@@ -380,7 +380,7 @@
 257,Tvrage,"Det stora matkriget",program_type,series,25453,episodeseason
 255,Tvdb,"Battlestar Galactica",program_type,series,73545,episodeseason
 320,Tvdb,^.*$,program_type,series,\N,episodetitle
-321,Tvdb,^.*$,program_type,series,\N,episodetitle
+321,Tvdb,^.*$,\N,\N,\N,episodetitle
 268,Tvdb,^.*$,program_type,series,\N,episodetitle
 295,TvdbNO,^.*$,program_type,series,\N,episodeseason
 295,TvdbNO,Dallas,program_type,series,\N,episodeseason
@@ -761,3 +761,42 @@
 938,TvdbNL,^.*$,program_type,series,\N,episodeseason
 939,TvdbNL,^.*$,program_type,series,\N,episodeseason
 940,TvdbNL,^.*$,program_type,series,\N,episodeseason
+260,Tvdb,"Good guys",program_type,series,140101,episodeseason
+941,TvdbEN,^.*$,\N,\N,\N,episodetitle
+942,TvdbEN,^.*$,\N,\N,\N,episodetitle
+485,TvdbEN,^.*$,"program_type
+",series,\N,episodeseason
+487,TvdbEN,^.*$,"program_type
+",series,\N,episodeseason
+499,TvdbDK,^.*$,"program_type
+",series,\N,episodeseason
+757,TvdbEN,^.*$,"program_type
+",series,\N,episodeseason
+761,TvdbDK,^.*$,"program_type
+",series,\N,episodeseason
+762,TvdbDK,^.*$,"program_type
+",series,\N,episodeseason
+948,Tvdb,^.*$,program_type,series,\N,episodeseason
+948,TvdbEN,^.*$,program_type,series,\N,episodeseason
+949,TvdbEN,^.*$,program_type,series,\N,episodeseason
+950,TvdbEN,^.*$,program_type,series,\N,episodeseason
+722,TvdbNO,Jessie,program_type,series,252312,episodeseason
+723,TvdbNO,Jessie,program_type,series,252312,episodeseason
+724,TvdbNO,Jessie,program_type,series,252312,episodeseason
+787,TvdbDK,Jessie,program_type,series,252312,episodeseason
+788,TvdbDK,Jessie,program_type,series,252312,episodeseason
+789,TvdbDK,Jessie,program_type,series,252312,episodeseason
+909,TvdbFI,Jessie,program_type,series,252312,episodeseason
+910,TvdbFI,Jessie,program_type,series,252312,episodeseason
+911,TvdbFI,Jessie,program_type,series,252312,episodeseason
+948,TvdbEN,Jessie,program_type,series,252312,episodeseason
+949,TvdbEN,Jessie,program_type,series,252312,episodeseason
+950,TvdbEN,Jessie,program_type,series,252312,episodeseason
+254,Tvdb,"Paradise Hotel",program_type,series,129801,episodeseason
+486,TvdbNO,"Paradise Hotel Sverige",program_type,series,129801,episodeseason
+943,TvdbEN,^.*$,program_type,series,\N,guess
+945,TvdbFI,^.*$,program_type,series,\N,guess
+946,TvdbNO,^.*$,program_type,series,\N,guess
+947,Tvdb,^.*$,program_type,series,\N,guess
+951,TvdbDK,^.*$,program_type,series,\N,guess
+952,TvdbEN,^.*$,\N,\N,\N,guess
