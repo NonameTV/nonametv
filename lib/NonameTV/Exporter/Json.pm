@@ -69,12 +69,6 @@ sub new {
       'quiet' => 0,
     };
 
-    my $ds = $self->{datastore};
-
-    # Load language strings
-    $self->{lngstr} = LoadLanguage( $self->{Language}, 
-                                   "exporter-xmltv", $ds );
-
     return $self;
 }
 
@@ -420,12 +414,17 @@ sub CreateWriter
   my $path = $self->{Root};
   my $filename =  $xmltvid . "_" . $date . ".js";
 
+  my $ds = $self->{datastore};
+
   $self->{writer_filename} = $filename;
   $self->{writer_entries} = 0;
   # Make sure that writer_entries is always true if we don't require data
   # for this date.
   $self->{writer_entries} = "0 but true" 
     if( ($date gt $self->{LastRequiredDate}) or $chd->{empty_ok} );
+
+  $self->{lngstr} = LoadLanguage( $chd->{sched_lang},
+                                         "exporter-xmltv", $ds );
 
   my $data = [];
 

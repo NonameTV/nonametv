@@ -1,198 +1,235 @@
-exporter-rss,nowonchgroup,"Trenutno na kanalima u grupi",hr
-exporter-rss,nowonchgroup,"Now on channels in group",en
-exporter-rss,todayonchgroup,"Danas na kanalima u grupi",hr
-exporter-rss,todayonchgroup,"Today on channels in group",en
-exporter-rss,nowon,"Trenutno na",hr
+exporter-conax,episode_number,Folge,de
+exporter-conax,episode_number,episode,en
+exporter-conax,episode_number,epizoda,hr
+exporter-conax,episode_number,Del,sv
+exporter-conax,episode_part,Teil,de
+exporter-conax,episode_part,part,en
+exporter-conax,episode_part,dio,hr
+exporter-conax,episode_part,Part,sv
+exporter-conax,episode_season,Staffel,de
+exporter-conax,episode_season,season,en
+exporter-conax,episode_season,sezona,hr
+exporter-conax,episode_season,"sÃ¤song",sv
+exporter-conax,of,von,de
+exporter-conax,of,of,en
+exporter-conax,of,od,hr
+exporter-conax,of,av,sv
+exporter-dreampark,episode_number,episode,en
+exporter-dreampark,episode_number,epizoda,hr
+exporter-dreampark,episode_number,Del,sv
+exporter-dreampark,episode_part,part,en
+exporter-dreampark,episode_part,dio,hr
+exporter-dreampark,episode_part,Part,sv
+exporter-dreampark,episode_season,season,en
+exporter-dreampark,episode_season,sezona,hr
+exporter-dreampark,episode_season,"sÃ¤song",sv
+exporter-dreampark,of,of,en
+exporter-dreampark,of,od,hr
+exporter-dreampark,of,av,sv
+exporter-lysis,episode_number,episode,en
+exporter-lysis,episode_number,epizoda,hr
+exporter-lysis,episode_number,Del,sv
+exporter-lysis,episode_part,part,en
+exporter-lysis,episode_part,dio,hr
+exporter-lysis,episode_part,Part,sv
+exporter-lysis,episode_season,season,en
+exporter-lysis,episode_season,sezona,hr
+exporter-lysis,episode_season,"sÃ¤song",sv
+exporter-lysis,of,of,en
+exporter-lysis,of,od,hr
+exporter-lysis,of,av,sv
 exporter-rss,nowon,"Now on",en
-exporter-rss,todayon,"Danas na",hr
+exporter-rss,nowon,"Trenutno na",hr
+exporter-rss,nowonchgroup,"Now on channels in group",en
+exporter-rss,nowonchgroup,"Trenutno na kanalima u grupi",hr
 exporter-rss,todayon,"Today on",en
-exporter-xmltv,episode_part,part,en
-exporter-xmltv,episode_number,episode,en
-exporter-xmltv,episode_season,season,en
-exporter-xmltv,of,of,en
-exporter-xmltv,episode_part,Part,sv
-exporter-xmltv,episode_number,Del,sv
-exporter-xmltv,episode_season,säsong,sv
-exporter-xmltv,of,av,sv
-exporter-xmltv,episode_part,dio,hr
-exporter-xmltv,episode_number,epizoda,hr
-exporter-xmltv,episode_season,sezona,hr
-exporter-xmltv,of,od,hr
-exporter-xmltv,episode_part,Teil,de
+exporter-rss,todayon,"Danas na",hr
+exporter-rss,todayonchgroup,"Today on channels in group",en
+exporter-rss,todayonchgroup,"Danas na kanalima u grupi",hr
+exporter-xmltv,episode_number,Episode,ar
+exporter-xmltv,episode_number,Afsnit,da
 exporter-xmltv,episode_number,Folge,de
+exporter-xmltv,episode_number,Episode,en
+exporter-xmltv,episode_number,Episodio,es
+exporter-xmltv,episode_number,Osa,fi
+exporter-xmltv,episode_number,"Épisode",fr
+exporter-xmltv,episode_number,epizoda,hr
+exporter-xmltv,episode_number,Episode,it
+exporter-xmltv,episode_number,Aflevering,nl
+exporter-xmltv,episode_number,Episode,no
+exporter-xmltv,episode_number,Episode,ru
+exporter-xmltv,episode_number,epizoda,si
+exporter-xmltv,episode_number,Del,sv
+exporter-xmltv,episode_part,part,ar
+exporter-xmltv,episode_part,Teil,de
+exporter-xmltv,episode_part,part,en
+exporter-xmltv,episode_part,parte,es
+exporter-xmltv,episode_part,partie,fr
+exporter-xmltv,episode_part,dio,hr
+exporter-xmltv,episode_part,part,it
+exporter-xmltv,episode_part,deel,nl
+exporter-xmltv,episode_part,part,ru
+exporter-xmltv,episode_part,dio,si
+exporter-xmltv,episode_part,Part,sv
+exporter-xmltv,episode_season,season,ar
+exporter-xmltv,episode_season,sæson,da
 exporter-xmltv,episode_season,Staffel,de
+exporter-xmltv,episode_season,season,en
+exporter-xmltv,episode_season,temporada,es
+exporter-xmltv,episode_season,kausi,fi
+exporter-xmltv,episode_season,saison,fr
+exporter-xmltv,episode_season,sezona,hr
+exporter-xmltv,episode_season,season,it
+exporter-xmltv,episode_season,seizoen,nl
+exporter-xmltv,episode_season,sesong,no
+exporter-xmltv,episode_season,season,ru
+exporter-xmltv,episode_season,sezona,si
+exporter-xmltv,episode_season,säsong,sv
+exporter-xmltv,of,of,ar
+exporter-xmltv,of,af,da
 exporter-xmltv,of,von,de
-listchannels,title,"This is the title of your channel listing page.",en
-listchannels,headertext,"Put whatever you want here. It will be displayed on the top of the channel list.",en
+exporter-xmltv,of,of,en
+exporter-xmltv,of,de,es
+exporter-xmltv,of,jonka,fi
+exporter-xmltv,of,par,fr
+exporter-xmltv,of,od,hr
+exporter-xmltv,of,of,it
+exporter-xmltv,of,van,nl
+exporter-xmltv,of,av,no
+exporter-xmltv,of,of,ru
+exporter-xmltv,of,od,si
+exporter-xmltv,of,av,sv
+exporter-xmltv2,episode_number,episode,en
+exporter-xmltv2,episode_number,epizoda,hr
+exporter-xmltv2,episode_number,Del,sv
+exporter-xmltv2,episode_part,part,en
+exporter-xmltv2,episode_part,dio,hr
+exporter-xmltv2,episode_part,Part,sv
+exporter-xmltv2,episode_season,season,en
+exporter-xmltv2,episode_season,sezona,hr
+exporter-xmltv2,episode_season,"sÃ¤song",sv
+exporter-xmltv2,of,of,en
+exporter-xmltv2,of,od,hr
+exporter-xmltv2,of,av,sv
 listchannels,channel,Channel,en
-listchannels,xmltvid,"XMLTV ID",en
-listchannels,datasource,Source,en
-listchannels,footertext,"Put whatever you want here. It will be displayed on the bottom of the channel list.",en
-listchannels,title,"This is the title of your channel listing page.",sv
-listchannels,headertext,"Put whatever you want here. It will be displayed on the top of the channel list.",sv
-listchannels,channel,Channel,sv
-listchannels,xmltvid,"XMLTV ID",sv
-listchannels,datasource,Source,sv
-listchannels,footertext,"Put whatever you want here. It will be displayed on the bottom of the channel list.",sv
-listchannels,title,"Kanali za koje goNIX ima raspored emitiranja",hr
-listchannels,headertext,"Rasporedi programa svih navedenih kanala nalaze se u <a href=""/xmltv/"">XMLTV</a> direktoriju. Za svaki dan i svaki kanal kreira se po jedan file.",hr
 listchannels,channel,Kanal,hr
-listchannels,xmltvid,"XMLTV ID",hr
+listchannels,channel,Channel,sv
+listchannels,datasource,Source,en
 listchannels,datasource,Izvor,hr
+listchannels,datasource,Source,sv
+listchannels,footertext,"Put whatever you want here. It will be displayed on the bottom of the channel list.",en
 listchannels,footertext,,hr
-nowshowing,title,"Now showing",en
-nowshowing,title,"Trenutno na programu",hr
-nowshowing,headertext,"What's now showing on the channels?",en
-nowshowing,headertext,,hr
-nowshowing,categories,categories,en
-nowshowing,categories,kategorije,hr
-nowshowing,nodata,"No data...",en
-nowshowing,nodata,"Nema podataka...",hr
-nowshowing,nodatadesc,"No data found for this period.",en
-nowshowing,nodatadesc,"Nema podataka za ovaj period.",hr
-programdetails,prgtitle,Title,en
-programdetails,prgtitle,Naslov,hr
-programdetails,prgdescription,Description,en
-programdetails,prgdescription,Opis,hr
-programdetails,nochanspecified,"No channel specified",en
-programdetails,nochanspecified,"Nije određen kanal",hr
-programdetails,notimespecified,"No time specified",en
-programdetails,notimespecified,"Nije određeno vrijeme",hr
-programdetails,invchanid,"Invalid channel id",en
-programdetails,invchanid,"Neispravan id kanala",hr
-programdetails,noprogstartingat,"No program starting at",en
-programdetails,noprogstartingat,"Nema programa koji pocinje u",hr
-programdetails,progdetailsfor,"Program details for",en
-programdetails,progdetailsfor,"Detalji o programu za",hr
-programdetails,at,at,en
-programdetails,at,u,hr
-programdetails,prgsubtitle,Subtitle,en
-programdetails,prgsubtitle,Podnaslov,hr
-programdetails,prgcategory,Category,en
-programdetails,prgcategory,Kategorija,hr
-programdetails,prgdirectors,Directors,en
-programdetails,prgdirectors,Redatelji,hr
-programdetails,prgactors,Actors,en
-programdetails,prgactors,Glumci,hr
-programdetails,prgwriters,Writers,en
-programdetails,prgwriters,Pisci,hr
-programdetails,prgadapters,Adapters,en
-programdetails,prgadapters,Adapteri,hr
-programdetails,prgproducers,Producers,en
-programdetails,prgproducers,Producenti,hr
-programdetails,prgpresenters,Presenters,en
-programdetails,prgpresenters,Voditelji,hr
-programdetails,prgcommentators,Commentators,en
-programdetails,prgcommentators,Komentatori,hr
-programdetails,prgguests,Guests,en
-programdetails,prgguests,Gosti,hr
-listepgservers,name,Name,en
-listepgservers,description,Description,en
-listepgservers,name,Ime,hr
-listepgservers,description,Opis,hr
-listepgservers,title,"EPG servers",en
-listepgservers,title,"EPG serveri",hr
-listnetworks,title,"Networks on server",en
-listnetworks,title,"Mreže na serveru",hr
-listnetworks,name,Name,en
-listnetworks,description,Description,en
-listnetworks,name,Ime,hr
-listnetworks,description,Opis,hr
+listchannels,footertext,"Put whatever you want here. It will be displayed on the bottom of the channel list.",sv
+listchannels,headertext,"Put whatever you want here. It will be displayed on the top of the channel list.",en
+listchannels,headertext,"Rasporedi programa svih navedenih kanala nalaze se u <a href=""/xmltv/"">XMLTV</a> direktoriju. Za svaki dan i svaki kanal kreira se po jedan file.",hr
+listchannels,headertext,"Put whatever you want here. It will be displayed on the top of the channel list.",sv
+listchannels,title,"This is the title of your channel listing page.",en
+listchannels,title,"Kanali za koje goNIX ima raspored emitiranja",hr
+listchannels,title,"This is the title of your channel listing page.",sv
+listchannels,xmltvid,"XMLTV ID",en
+listchannels,xmltvid,"XMLTV ID",hr
+listchannels,xmltvid,"XMLTV ID",sv
 listepgservers,active,Active,en
 listepgservers,active,Aktivan,hr
+listepgservers,addnewepgserver,"Add new EPG server",en
+listepgservers,addnewepgserver,"Dodaj novi EPG server",hr
+listepgservers,description,Description,en
+listepgservers,description,Opis,hr
+listepgservers,name,Name,en
+listepgservers,name,Ime,hr
+listepgservers,title,"EPG servers",en
+listepgservers,title,"EPG serveri",hr
 listnetworks,active,Active,en
 listnetworks,active,Aktivna,hr
-viewepg,title,Title,en
-viewepg,title,Naslov,hr
-viewepg,name,Name,en
-viewepg,name,Ime,hr
-viewepg,description,Description,en
-viewepg,description,Opis,hr
-programdetails,nowon,"Trenutno na",hr
-programdetails,nowon,"Now on",en
-programdetails,starttime,"Vrijeme početka",hr
-programdetails,starttime,"Start time",en
-exporter-dreampark,episode_part,part,en
-exporter-dreampark,episode_number,episode,en
-exporter-dreampark,episode_season,season,en
-exporter-dreampark,of,of,en
-exporter-dreampark,episode_part,Part,sv
-exporter-dreampark,episode_number,Del,sv
-exporter-dreampark,episode_season,"sÃ¤song",sv
-exporter-dreampark,of,av,sv
-exporter-dreampark,episode_part,dio,hr
-exporter-dreampark,episode_number,epizoda,hr
-exporter-dreampark,episode_season,sezona,hr
-exporter-dreampark,of,od,hr
-exporter-conax,episode_part,part,en
-exporter-conax,episode_number,episode,en
-exporter-conax,episode_season,season,en
-exporter-conax,of,of,en
-exporter-conax,episode_part,Part,sv
-exporter-conax,episode_number,Del,sv
-exporter-conax,episode_season,"sÃ¤song",sv
-exporter-conax,of,av,sv
-exporter-conax,episode_part,dio,hr
-exporter-conax,episode_number,epizoda,hr
-exporter-conax,episode_season,sezona,hr
-exporter-conax,of,od,hr
+listnetworks,description,Description,en
+listnetworks,description,Opis,hr
+listnetworks,name,Name,en
+listnetworks,name,Ime,hr
+listnetworks,title,"Networks on server",en
+listnetworks,title,"Mreže na serveru",hr
 listnetworks,type,Type,en
 listnetworks,type,Tip,hr
-listtses,tsid,"TS id",en
-listtses,tsid,"TS id",hr
-listtses,active,Active,en
-listtses,active,Aktivan,hr
-listtses,description,Description,en
-listtses,description,Opis,hr
-listtses,title,"Transport streams on network",en
-listtses,title,"Transportni streamovi na mreži",hr
-listservices,tsid,"TS id",en
-listservices,tsid,"TS id",hr
 listservices,active,Active,en
 listservices,active,Aktivan,hr
+listservices,addnewservice,"Add new service",en
+listservices,addnewservice,"Dodaj novi servis",hr
 listservices,description,Description,en
 listservices,description,Opis,hr
+listservices,nntvchannel,"Gonix channel",en
+listservices,nntvchannel,"Gonix kanal",hr
 listservices,serviceid,"Service id",en
 listservices,serviceid,"Service id",hr
 listservices,servicename,"Operator service name",en
 listservices,servicename,"Naziv servisa kod operatera",hr
-listservices,addnewservice,"Add new service",en
-listservices,addnewservice,"Dodaj novi servis",hr
 listservices,title,"Services on network",en
 listservices,title,"Servisi na mreži",hr
-listepgservers,addnewepgserver,"Add new EPG server",en
-listepgservers,addnewepgserver,"Dodaj novi EPG server",hr
+listservices,tsid,"TS id",en
+listservices,tsid,"TS id",hr
+listtses,active,Active,en
+listtses,active,Aktivan,hr
 listtses,addnewts,"Add new TS",en
 listtses,addnewts,"Dodaj novi transportni stream",hr
-listservices,nntvchannel,"Gonix channel",en
-listservices,nntvchannel,"Gonix kanal",hr
+listtses,description,Description,en
+listtses,description,Opis,hr
 listtses,nodvbcnetworks,"No DVB networks found on this server",en
 listtses,nodvbcnetworks,"Ovaj server ne poslužuje ni jednu DVB mrežu",hr
-exporter-lysis,episode_part,part,en
-exporter-lysis,episode_number,episode,en
-exporter-lysis,episode_season,season,en
-exporter-lysis,of,of,en
-exporter-lysis,episode_part,Part,sv
-exporter-lysis,episode_number,Del,sv
-exporter-lysis,episode_season,"sÃ¤song",sv
-exporter-lysis,of,av,sv
-exporter-lysis,episode_part,dio,hr
-exporter-lysis,episode_number,epizoda,hr
-exporter-lysis,episode_season,sezona,hr
-exporter-lysis,of,od,hr
-exporter-xmltv2,episode_part,part,en
-exporter-xmltv2,episode_number,episode,en
-exporter-xmltv2,episode_season,season,en
-exporter-xmltv2,of,of,en
-exporter-xmltv2,episode_part,Part,sv
-exporter-xmltv2,episode_number,Del,sv
-exporter-xmltv2,episode_season,"sÃ¤song",sv
-exporter-xmltv2,of,av,sv
-exporter-xmltv2,episode_part,dio,hr
-exporter-xmltv2,episode_number,epizoda,hr
-exporter-xmltv2,episode_season,sezona,hr
-exporter-xmltv2,of,od,hr
-exporter-conax,episode_season,Staffel,de
-exporter-conax,episode_number,Folge,de
-exporter-conax,episode_part,Teil,de
-exporter-conax,of,von,de
+listtses,title,"Transport streams on network",en
+listtses,title,"Transportni streamovi na mreži",hr
+listtses,tsid,"TS id",en
+listtses,tsid,"TS id",hr
+nowshowing,categories,categories,en
+nowshowing,categories,kategorije,hr
+nowshowing,headertext,"What's now showing on the channels?",en
+nowshowing,headertext,,hr
+nowshowing,nodata,"No data...",en
+nowshowing,nodata,"Nema podataka...",hr
+nowshowing,nodatadesc,"No data found for this period.",en
+nowshowing,nodatadesc,"Nema podataka za ovaj period.",hr
+nowshowing,title,"Now showing",en
+nowshowing,title,"Trenutno na programu",hr
+programdetails,at,at,en
+programdetails,at,u,hr
+programdetails,invchanid,"Invalid channel id",en
+programdetails,invchanid,"Neispravan id kanala",hr
+programdetails,nochanspecified,"No channel specified",en
+programdetails,nochanspecified,"Nije određen kanal",hr
+programdetails,noprogstartingat,"No program starting at",en
+programdetails,noprogstartingat,"Nema programa koji pocinje u",hr
+programdetails,notimespecified,"No time specified",en
+programdetails,notimespecified,"Nije određeno vrijeme",hr
+programdetails,nowon,"Now on",en
+programdetails,nowon,"Trenutno na",hr
+programdetails,prgactors,Actors,en
+programdetails,prgactors,Glumci,hr
+programdetails,prgadapters,Adapters,en
+programdetails,prgadapters,Adapteri,hr
+programdetails,prgcategory,Category,en
+programdetails,prgcategory,Kategorija,hr
+programdetails,prgcommentators,Commentators,en
+programdetails,prgcommentators,Komentatori,hr
+programdetails,prgdescription,Description,en
+programdetails,prgdescription,Opis,hr
+programdetails,prgdirectors,Directors,en
+programdetails,prgdirectors,Redatelji,hr
+programdetails,prgguests,Guests,en
+programdetails,prgguests,Gosti,hr
+programdetails,prgpresenters,Presenters,en
+programdetails,prgpresenters,Voditelji,hr
+programdetails,prgproducers,Producers,en
+programdetails,prgproducers,Producenti,hr
+programdetails,prgsubtitle,Subtitle,en
+programdetails,prgsubtitle,Podnaslov,hr
+programdetails,prgtitle,Title,en
+programdetails,prgtitle,Naslov,hr
+programdetails,prgwriters,Writers,en
+programdetails,prgwriters,Pisci,hr
+programdetails,progdetailsfor,"Program details for",en
+programdetails,progdetailsfor,"Detalji o programu za",hr
+programdetails,starttime,"Start time",en
+programdetails,starttime,"Vrijeme početka",hr
+viewepg,description,Description,en
+viewepg,description,Opis,hr
+viewepg,name,Name,en
+viewepg,name,Ime,hr
+viewepg,title,Title,en
+viewepg,title,Naslov,hr
