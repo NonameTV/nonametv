@@ -114,8 +114,11 @@ def create_xml():
                         xml_credits = ET.SubElement(xml_programme, "credits")
                         for key in credits_order:
                             for value in programme['credits'].get(key, []):
-                                xml_credit = ET.SubElement(xml_credits, key)
-                                xml_credit.text = value
+                                if ( value.has_key("role") and value['role'] != "" ):
+                                    xml_credit = ET.SubElement(xml_credits, key, { "role": value['role'] })
+                                else:
+                                    xml_credit = ET.SubElement(xml_credits, key)
+                                xml_credit.text = value['name']
 
                     # A date COULD be there
                     if programme.has_key("date"):
