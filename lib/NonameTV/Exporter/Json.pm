@@ -9,6 +9,7 @@ use IO::File;
 use DateTime;
 use File::Copy;
 use JSON::XS;
+use Data::Dumper;
 
 use NonameTV::Exporter;
 use NonameTV::Language qw/LoadLanguage/;
@@ -581,7 +582,7 @@ sub WriteEntry
 
   if( $entry->{actors} =~ /\S/ )
   {
-    $d->{credits}->{actor} = [split( ", ", $entry->{actors})];
+    $d->{credits}->{actor} = ParseCredits($entry->{actors});
   }
 
   if( $entry->{writers} =~ /\S/ )
@@ -611,7 +612,7 @@ sub WriteEntry
 
   if( $entry->{guests} =~ /\S/ )
   {
-    $d->{credits}->{guest} = [split( ", ", $entry->{guests})];
+    $d->{credits}->{guest} = ParseCredits($entry->{guests});
   }
 
   if( $entry->{url} )
@@ -640,6 +641,25 @@ sub WriteEntry
   }
 
   push @{$data}, $d;
+}
+
+sub ParseCredits
+{
+    my( $data ) = @_;
+
+    my @credits = split( ", ", $data);
+    my $return = [];
+
+    foreach my $act (@credits)
+    {
+        my ( $role ) = ($act =~ /\((.*)\)$/);
+        $act =~ s/\((.*?)\)$//;
+        my $name = norm($act);
+
+        push @{$return}, { role => norm($role), name => norm($name) };
+    }
+
+    return $return;
 }
 
 #

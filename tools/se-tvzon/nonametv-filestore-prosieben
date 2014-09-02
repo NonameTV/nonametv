@@ -30,9 +30,15 @@ my $filestore = $conf->{FileStore};
 # Channels
 my %channel_data;
 $channel_data{ "K1C" } = "k1c.prosiebensat1.de";
+$channel_data{ "K1" }  = "k1.prosiebensat1.de";
 $channel_data{ "P7F" } = "p7f.prosiebensat1.de";
 $channel_data{ "P7M" } = "p7m.prosiebensat1.de";
 $channel_data{ "S1E" } = "s1e.prosiebensat1.de";
+$channel_data{ "P7" }  = "p7.prosiebensat1.de";
+$channel_data{ "P4" }  = "p4.prosiebensat1.de";
+$channel_data{ "S1" }  = "s1.prosiebensat1.de";
+$channel_data{ "S1G" } = "s1g.prosiebensat1.de";
+$channel_data{ "SX" }  = "sx.prosiebensat1.de";
 
   # list files inside of the channel directory and check when they have been touched
   my( $cf ) = File::Util->new();
@@ -42,7 +48,6 @@ $channel_data{ "S1E" } = "s1e.prosiebensat1.de";
     my ( $id, $week, $year ) = split(/_/, $cff);
 
     my $cftype = join(',', File::Util->file_type( "/nonametv/autoupload/prosieben/$cff" ) );
-    my $fsftype = join(',', File::Util->file_type( "/nonametv/autoupload/prosieben/$cff" ) );
 
     if( $cff !~ /\.xml$/i ){
         #progress( "File $cff isn't a xml file - skipping" );
