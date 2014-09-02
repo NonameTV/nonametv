@@ -135,7 +135,9 @@ sub ImportContentFile
         if( $subtitle ){
           my $staffel;
           my $folge;
-          if( ( $staffel, $folge ) = ($subtitle =~ m|^Staffel (\d+) Folge (\d+)$| ) ){
+          if( ( $folge, $staffel ) = ($subtitle =~ m|^Folge (\d+) \(Staffel (\d+)\)$| ) ){
+            $ce->{episode} = ($staffel - 1) . ' . ' . ($folge - 1) . ' .';
+          } elsif( ( $staffel, $folge ) = ($subtitle =~ m|^Staffel (\d+) Folge (\d+)$| ) ){
             $ce->{episode} = ($staffel - 1) . ' . ' . ($folge - 1) . ' .';
           } elsif( ( $folge ) = ($subtitle =~ m|^Folge (\d+)$| ) ){
             $ce->{episode} = '. ' . ($folge - 1) . ' .';
@@ -149,7 +151,7 @@ sub ImportContentFile
           }
         }
 
-        my $production_year = $xpc->findvalue( 's:produktion/s:produktionszeitraum/s:jahr/@von' );
+        my $production_year = $xpc->findvalue( 's:infos/s:produktion/s:produktionszeitraum/s:jahr/@von' );
         if( $production_year =~ m|^\d{4}$| ){
           $ce->{production_date} = $production_year . '-01-01';
         }
@@ -161,8 +163,8 @@ sub ImportContentFile
         }
         $genre = $xpc->findvalue( 's:infos/s:klassifizierung/@formatgruppe' );
         if( $genre ){
-          my ( $program_type, $category ) = $self->{datastore}->LookupCat( "ProSieben_main", $genre );
-          AddCategory( $ce, $program_type, $category );
+          my ( $program_type2, $category2 ) = $self->{datastore}->LookupCat( "ProSieben_main", $genre );
+          AddCategory( $ce, $program_type2, $category2 );
         }
 
         #Descr
