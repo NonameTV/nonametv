@@ -694,7 +694,11 @@ sub ParseCredits
         $act =~ s/\((.*?)\)$//;
         my $name = norm($act);
 
-        push @{$return}, { role => norm($role), name => norm($name) };
+        if(defined $role and $role ne "") {
+            push @{$return}, { role => norm($role), name => norm($name) };
+        } else {
+            push @{$return}, { name => norm($name) };
+        }
     }
 
     return $return;

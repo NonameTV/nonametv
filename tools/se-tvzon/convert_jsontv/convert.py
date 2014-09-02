@@ -115,7 +115,11 @@ def create_xml():
                         xml_credits = ET.SubElement(xml_programme, "credits")
                         for key in programme['credits'].keys():
                             for person in programme['credits'][key]:
-                                if ( isinstance(person, object) ):
+                                if ( isinstance(person, basestring) ):
+                                    # Old Format
+                                    xml_credit = ET.SubElement(xml_credits, key)
+                                    xml_credit.text = person
+                                else:
                                     if ( person.has_key("role") and person['role'] != "" ):
                                         xml_credit = ET.SubElement(xml_credits, key, { "role": person['role'] })
                                     else:
