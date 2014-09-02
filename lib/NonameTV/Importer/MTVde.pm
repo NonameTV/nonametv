@@ -31,6 +31,8 @@ sub new {
   my $self  = $class->SUPER::new( @_ );
   bless ($self, $class);
 
+  $self->{KeepDesc} = 0;
+
   if (!defined $self->{HaveVGMediaLicense}) {
     warn( 'Extended event information (texts, pictures, audio and video sequences) is subject to a license sold by VG Media. Set HaveVGMediaLicense to yes or no.' );
     $self->{HaveVGMediaLicense} = 'no';
@@ -186,7 +188,7 @@ sub ImportContent( $$$ ) {
         $desc = $xpc->findvalue( 's:text[@textart="Allgemein"]' );
     }
 
-    $ce->{description} = norm($desc) if $desc and $desc ne "";
+    $ce->{description} = norm($desc) if $self->{KeepDesc} and $desc and $desc ne "";
 
     $self->{datastore}->AddProgramme( $ce );
 
