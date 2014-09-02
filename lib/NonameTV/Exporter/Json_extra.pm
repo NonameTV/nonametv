@@ -534,6 +534,10 @@ sub WriteEntry
 	  if defined $ep_max;
       $ep_text .= " " . $self->{lngstr}->{episode_season} . " $season" 
 	  if( $season );
+
+	  $d->{episode_number} = $ep_nr if( $ep_nr );
+	  $d->{episode_number_of} = $ep_max if( $ep_max );
+	  $d->{season_number} = $season if( $season );
       
       $d->{'episodeNum'} = { xmltv_ns =>  norm($entry->{episode}),
 			     onscreen => $ep_text };
