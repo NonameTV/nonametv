@@ -280,10 +280,10 @@ sub ImportContent
 		}
                 # just a remark, not a programm description => remove it
                 if( $desc =~ m|^\s*\(.*\)\s*$| ){
-                        $desc = undef;
+                        $desc = '';
                 }
                 if( $desc =~ m|^\s*Details folgen!\s*$| ) {
-                        $desc = undef;
+                        $desc = '';
                 }
                 if( $desc ){
                        $ce->{description} = norm($desc);
