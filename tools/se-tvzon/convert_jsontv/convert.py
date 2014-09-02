@@ -5,6 +5,7 @@ import json
 import time
 import urllib2
 import os
+import pprint
 from sys import stdout, argv
 from bs4 import BeautifulSoup
 import xml.etree.ElementTree as ET
@@ -112,13 +113,15 @@ def create_xml():
                     # Credits COULD be present
                     if programme.has_key("credits"):
                         xml_credits = ET.SubElement(xml_programme, "credits")
-                        for key in credits_order:
-                            for value in programme['credits'].get(key, []):
-                                if ( value.has_key("role") and value['role'] != "" ):
-                                    xml_credit = ET.SubElement(xml_credits, key, { "role": value['role'] })
-                                else:
-                                    xml_credit = ET.SubElement(xml_credits, key)
-                                xml_credit.text = value['name']
+                        for key in programme['credits'].keys():
+                            for person in programme['credits'][key]:
+                                if ( isinstance(person, object) ):
+                                    if ( person.has_key("role") and person['role'] != "" ):
+                                        xml_credit = ET.SubElement(xml_credits, key, { "role": person['role'] })
+                                    else:
+                                        xml_credit = ET.SubElement(xml_credits, key)
+                                    xml_credit.text = person['name']
+
 
                     # A date COULD be there
                     if programme.has_key("date"):
