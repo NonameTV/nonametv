@@ -45,6 +45,7 @@ tools/nonametv-import VisjonNorge $1 $2 $3
 
 tools/nonametv-import Euronews $1 $2 $3
 tools/nonametv-import RTL2 $1 $2 $3
+tools/nonametv-import ProSieben $1 $2 $3
 tools/nonametv-import Ginx $1 $2 $3
 
 tools/nonametv-import Turner $1 $2 $3
