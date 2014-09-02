@@ -577,7 +577,7 @@ sub WriteEntry
 
   if( $entry->{directors} =~ /\S/ )
   {
-    $d->{credits}->{director} = [split( ", ", $entry->{directors})];
+    $d->{credits}->{director} = ParseCredits($entry->{directors});
   }
 
   if( $entry->{actors} =~ /\S/ )
@@ -587,27 +587,27 @@ sub WriteEntry
 
   if( $entry->{writers} =~ /\S/ )
   {
-    $d->{credits}->{writer} = [split( ", ", $entry->{writers})];
+    $d->{credits}->{writer} = ParseCredits($entry->{writers});
   }
 
   if( $entry->{adapters} =~ /\S/ )
   {
-    $d->{credits}->{adapter} = [split( ", ", $entry->{adapters})];
+    $d->{credits}->{adapter} = ParseCredits($entry->{adapters});
   }
 
   if( $entry->{producers} =~ /\S/ )
   {
-    $d->{credits}->{producer} = [split( ", ", $entry->{producers})];
+    $d->{credits}->{producer} = ParseCredits($entry->{producers});
   }
 
   if( $entry->{presenters} =~ /\S/ )
   {
-    $d->{credits}->{presenter} = [split( ", ", $entry->{presenters})];
+    $d->{credits}->{presenter} = ParseCredits($entry->{presenters});
   }
 
   if( $entry->{commentators} =~ /\S/ )
   {
-    $d->{credits}->{commentator} = [split( ", ", $entry->{commentators})];
+    $d->{credits}->{commentator} = ParseCredits($entry->{commentators});
   }
 
   if( $entry->{guests} =~ /\S/ )
