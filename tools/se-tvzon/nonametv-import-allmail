@@ -9,8 +9,6 @@ tools/nonametv-import Motors $1 $2 $3
 tools/nonametv-import Mtve_mail $1 $2 $3
 tools/nonametv-import NatGeoWild $1 $2 $3
 tools/nonametv-import NGScan $1 $2 $3
-tools/nonametv-import PokerChannel $1 $2 $3
-tools/nonametv-import History $1 $2 $3
 tools/nonametv-import TravelChannel $1 $2 $3
 tools/nonametv-import God $1 $2 $3
 tools/nonametv-import Gospel $1 $2 $3
