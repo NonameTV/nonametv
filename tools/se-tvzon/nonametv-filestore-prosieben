@@ -1,0 +1,63 @@
+#!/usr/bin/perl -w
+
+use strict;
+
+use FindBin;
+use lib "$FindBin::Bin/../lib";
+
+use DateTime;
+use File::Util;
+use File::Copy qw/copy move/;
+
+use NonameTV;
+use NonameTV::DataStore;
+use NonameTV::Config qw/ReadConfig/;
+use NonameTV::Log qw/progress error d p w f/;
+
+use Getopt::Long;
+
+my $opt = { 'verbose' => 0 };
+
+my $res = GetOptions( $opt, qw/verbose/ );
+
+NonameTV::Log::SetVerbosity( $opt->{verbose} );
+
+# Read configuration
+my $conf = ReadConfig();
+my $ds = NonameTV::DataStore->new( $conf->{DataStore} );
+my $filestore = $conf->{FileStore};
+
+# Channels
+my %channel_data;
+$channel_data{ "K1C" } = "k1c.prosiebensat1.de";
+$channel_data{ "P7F" } = "p7f.prosiebensat1.de";
+$channel_data{ "P7M" } = "p7m.prosiebensat1.de";
+$channel_data{ "S1E" } = "s1e.prosiebensat1.de";
+
+  # list files inside of the channel directory and check when they have been touched
+  my( $cf ) = File::Util->new();
+  my( @cffiles ) = $cf->list_dir( "/nonametv/autoupload/prosieben", '--no-fsdots' );
+  foreach my $cff (@cffiles)
+  {
+    my ( $id, $week, $year ) = split(/_/, $cff);
+
+    my $cftype = join(',', File::Util->file_type( "/nonametv/autoupload/prosieben/$cff" ) );
+    my $fsftype = join(',', File::Util->file_type( "/nonametv/autoupload/prosieben/$cff" ) );
+
+    if( $cff !~ /\.xml$/i ){
+        #progress( "File $cff isn't a xml file - skipping" );
+        next;
+    }
+
+    if( not exists( $channel_data{$id} ) )
+    {
+        print "Files with name $id hasnt been specified as a channel.\n";
+        #unlink "/nonametv/autoupload/prosieben/$cff";
+    } else {
+      move( "/nonametv/autoupload/prosieben/$cff", "$filestore/$channel_data{$id}/$cff" );
+      print "$cff moved to $channel_data{$id}\n";
+    }
+
+  }
+
+exit;
