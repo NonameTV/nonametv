@@ -489,6 +489,7 @@ sub WriteEntry
 {
   my $self = shift;
   my( $data, $entry, $chd ) = @_;
+  my ($system, $inetref);
 
   $self->{writer_entries}++;
 
@@ -528,7 +529,6 @@ sub WriteEntry
 
     if( $ep =~ /\S/ ) {
       my( $ep_nr, $ep_max ) = split( "/", $ep );
-      my( $inetref, $system );
       $ep_nr++;
       
       my $ep_text = $self->{lngstr}->{episode_number} . " $ep_nr";
@@ -645,7 +645,6 @@ sub WriteEntry
     $d->{url} = [ $entry->{url} ];
 
     # MythTV in case of no episodeNum
-    my ($system, $inetref);
     if( $entry->{url} =~ m|^http://www.themoviedb.org/| ){
         ( $inetref )=( $entry->{url} =~ m|movie/(\d+)| );
         $system = 'themoviedb.org';
