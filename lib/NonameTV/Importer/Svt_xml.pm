@@ -92,7 +92,7 @@ sub ImportXML
 
 
   #my $cref = do{local(@ARGV,$/)=$file;<>};
-  my $cref=`cat $file`;
+  my $cref=`cat \"$file\"`;
   #$cref =~ s|&#(\d+);|chr($1)|eg;
 
   my $doc;
