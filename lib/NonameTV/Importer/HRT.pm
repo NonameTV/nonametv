@@ -241,6 +241,8 @@ sub parse_person_list
 {
   my( $str ) = @_;
 
+  return undef if not defined $str;
+
   my @persons = split( /\s*,\s*/, $str );
   foreach (@persons)
   {
