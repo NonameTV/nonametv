@@ -457,6 +457,13 @@ sub Import
 
     my $start_dt = DateTime->today->subtract( days => 1 );
 
+    my @source_channels = ();
+    foreach my $chan (keys %{$channel_data{$data->{xmltvid}}})
+    {
+        push (@source_channels, '\'' . $chan . '\'');
+    }
+    my $source_xmltvids = join (', ', @source_channels);
+      
     for( my $days = 0; $days <= $maxdays; $days++ )
     {
       my $dt = $start_dt->clone;
@@ -466,6 +473,40 @@ sub Import
 
       my $gotcontent = 0;
       my %prog;
+
+      my ($res, $sth) = $ds->sa->Sql (
+                      'SELECT MAX(b.last_update) AS last_update
+                       FROM batches b, programs p, channels c
+                       WHERE c.xmltvid IN (' .
+                      $source_xmltvids .
+                      ') AND c.id = p.channel_id
+                       AND p.start_time >= ?
+                       AND p.start_time < ?
+                       AND p.batch_id=b.id;',
+                      [$dt->datetime(), $dt->add (days => 1)->datetime()]);
+
+      if (!$res) {
+        die $sth->errstr;
+      }
+      my $source_last_update;
+      my $row = $sth->fetchrow_hashref;
+      if (defined ($row)) {
+        $source_last_update = $row->{'last_update'};
+      }
+      my $row2 = $sth->fetchrow_hashref;
+      $sth->finish();
+      if (!defined ($source_last_update)) {
+        $source_last_update = 0;
+      }
+
+      my $target_last_update = $ds->sa->Lookup ('batches', {'name' => $batch_id}, 'last_update');
+      if (!defined ($target_last_update)) {
+        $target_last_update = 0;
+      }
+
+      if ($source_last_update < $target_last_update) {
+        next;
+      }
 
       foreach my $chan (keys %{$channel_data{$data->{xmltvid}}})
       {
