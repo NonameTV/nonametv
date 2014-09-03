@@ -90,8 +90,8 @@ sub FilterContent {
   unzip $zref => \$cref;
 
   # mixed in windows line breaks
-  $$cref =~ s|
-||g;
+#  $$cref =~ s|
+#||g;
 
   $cref =~ s| xmlns:ns='http://struppi.tv/xsd/'||;
   $cref =~ s| xmlns:xsd='http://www.w3.org/2001/XMLSchema'||;
