@@ -685,7 +685,7 @@ sub ParseCredits
 {
     my( $data ) = @_;
 
-    my @credits = split( ", ", $data);
+    my @credits = split( ";", $data);
     my $return = [];
 
     foreach my $act (@credits)

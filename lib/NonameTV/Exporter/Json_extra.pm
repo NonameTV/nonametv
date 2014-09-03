@@ -580,42 +580,42 @@ sub WriteEntry
 
   if( $entry->{directors} =~ /\S/ )
   {
-    $d->{credits}->{director} = [split( ", ", $entry->{directors})];
+    $d->{credits}->{director} = [split( ";", $entry->{directors})];
   }
 
   if( $entry->{actors} =~ /\S/ )
   {
-    $d->{credits}->{actor} = [split( ", ", $entry->{actors})];
+    $d->{credits}->{actor} = [split( ";", $entry->{actors})];
   }
 
   if( $entry->{writers} =~ /\S/ )
   {
-    $d->{credits}->{writer} = [split( ", ", $entry->{writers})];
+    $d->{credits}->{writer} = [split( ";", $entry->{writers})];
   }
 
   if( $entry->{adapters} =~ /\S/ )
   {
-    $d->{credits}->{adapter} = [split( ", ", $entry->{adapters})];
+    $d->{credits}->{adapter} = [split( ";", $entry->{adapters})];
   }
 
   if( $entry->{producers} =~ /\S/ )
   {
-    $d->{credits}->{producer} = [split( ", ", $entry->{producers})];
+    $d->{credits}->{producer} = [split( ";", $entry->{producers})];
   }
 
   if( $entry->{presenters} =~ /\S/ )
   {
-    $d->{credits}->{presenter} = [split( ", ", $entry->{presenters})];
+    $d->{credits}->{presenter} = [split( ";", $entry->{presenters})];
   }
 
   if( $entry->{commentators} =~ /\S/ )
   {
-    $d->{credits}->{commentator} = [split( ", ", $entry->{commentators})];
+    $d->{credits}->{commentator} = [split( ";", $entry->{commentators})];
   }
 
   if( $entry->{guests} =~ /\S/ )
   {
-    $d->{credits}->{guest} = [split( ", ", $entry->{guests})];
+    $d->{credits}->{guest} = [split( ";", $entry->{guests})];
   }
 
   if( $entry->{url} )
