@@ -128,13 +128,10 @@ sub ImportContentFile
         $title_org = $xpc->findvalue( 's:titel/s:alias[@titelart="originaltitel"]/@aliastitel' );
         $ce->{original_title} = norm($title_org) if $ce->{title} ne norm($title_org) and norm($title_org) ne "";
 
-        my $subtitle = $xpc->findvalue( 's:titel/s:alias[@titelart="originaluntertitel"]/@aliastitel' );
-        if( !$subtitle ){
-          $subtitle = $xpc->findvalue( 's:titel/s:alias[@titelart="untertitel"]/@aliastitel' );
-        }
+        my ($folge, $staffel),
+        my $subtitle = $xpc->findvalue( 's:titel/s:alias[@titelart="untertitel"]/@aliastitel' );
+        my $subtitle_org = $xpc->findvalue( 's:titel/s:alias[@titelart="originaluntertitel"]/@aliastitel' );
         if( $subtitle ){
-          my $staffel;
-          my $folge;
           if( ( $folge, $staffel ) = ($subtitle =~ m|^Folge (\d+) \(Staffel (\d+)\)$| ) ){
             $ce->{episode} = ($staffel - 1) . ' . ' . ($folge - 1) . ' .';
           } elsif( ( $staffel, $folge ) = ($subtitle =~ m|^Staffel (\d+) Folge (\d+)$| ) ){
@@ -148,6 +145,24 @@ sub ImportContentFile
             $subtitle =~ s|[ ,-]+Teil (\d)+$| \($1\)|;
             $subtitle =~ s|[ ,-]+Part (\d)+$| \($1\)|;
             $ce->{subtitle} = norm( $subtitle );
+          }
+        }
+
+        if( $subtitle_org ){
+          if( ( $folge, $staffel ) = ($subtitle_org =~ m|^Folge (\d+) \(Staffel (\d+)\)$| ) ){
+            $ce->{episode} = ($staffel - 1) . ' . ' . ($folge - 1) . ' .';
+          } elsif( ( $staffel, $folge ) = ($subtitle_org =~ m|^Staffel (\d+) Folge (\d+)$| ) ){
+            $ce->{episode} = ($staffel - 1) . ' . ' . ($folge - 1) . ' .';
+          } elsif( ( $folge ) = ($subtitle_org =~ m|^Folge (\d+)$| ) ){
+            $ce->{episode} = '. ' . ($folge - 1) . ' .';
+          } else {
+            # unify style of two or more episodes in one programme
+            $subtitle_org =~ s|\s*/\s*| / |g;
+            # unify style of story arc
+            $subtitle_org =~ s|[ ,-]+Teil (\d)+$| \($1\)|;
+            $subtitle_org =~ s|[ ,-]+Part (\d)+$| \($1\)|;
+            $ce->{original_subtitle} = norm( $subtitle_org ) if defined $ce->{subtitle} and $ce->{subtitle} ne norm( $subtitle_org );
+            $ce->{subtitle} = norm( $subtitle_org ) if not defined $ce->{subtitle};
           }
         }
 
