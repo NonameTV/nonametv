@@ -300,6 +300,8 @@ sub ParseData
           # new attributes 2012-10
           case /&mo;/   {$ce{stereo} = "mono"}
           case /&f43;/  {$ce{aspect} = "4:3"}
+          # 2014-04, for 3sat
+          case /&ot;/   {} # audio language == original audio
           else                    { w ("unhandled attribute: $attribut") } 
         }
       }
