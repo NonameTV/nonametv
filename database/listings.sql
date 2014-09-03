@@ -86,6 +86,7 @@ CREATE TABLE `programs` (
   `extra_id` varchar(65) DEFAULT NULL COMMENT 'imdbid(movies)/tvdbid(series)/tvrageid(series)',
   `extra_id_type` varchar(65) DEFAULT NULL COMMENT 'type: tvrage,themoviedb,thetvdb',
   `original_title` varchar(255) DEFAULT NULL COMMENT 'Original Title',
+  `original_subtitle` varchar(255) DEFAULT NULL,
   `previously_shown` varchar(255) DEFAULT NULL,
   `bline` varchar(255) DEFAULT NULL,
   `country` varchar(255) DEFAULT NULL,

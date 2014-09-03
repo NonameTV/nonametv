@@ -880,6 +880,56 @@ OUTTV,"tysk komediserie",Comedy,series
 OUTTV,"utnämnd till världens första reseprogram för",Travel,
 OUTTV,"utnämnt till världens första reseprogram för",Travel,
 OUTTV,"utnämt till världens första reseprogram för ",Travel,
+ProSieben_genre,abenteuer,Adventure,
+ProSieben_genre,action,Action,
+ProSieben_genre,actionkomödie,Action/Comedy,
+ProSieben_genre,actionthriller,Action/Thriller,
+ProSieben_genre,animation,Animation,
+ProSieben_genre,boulevard-magazin,Magazine,
+ProSieben_genre,comedy,Comedy,
+ProSieben_genre,"comedy show",Comedy,
+ProSieben_genre,crime-serie,Crime,
+ProSieben_genre,dating-show,Reality,
+ProSieben_genre,doku-serie,Documentary,
+ProSieben_genre,doku-soap,Soap/Documentary,
+ProSieben_genre,dokumentation,Documentary,
+ProSieben_genre,dokutainment,Dcoumentary/Entertainment,
+ProSieben_genre,drama,Drama,
+ProSieben_genre,ermittler-doku,Documentary,
+ProSieben_genre,familie,Family,
+ProSieben_genre,fantastisch,Fantasy,
+ProSieben_genre,fantasy,Fantasy,
+ProSieben_genre,horrorfilm,Horror,
+ProSieben_genre,koch-doku,Food/Documentary,
+ProSieben_genre,kochshow,Food,
+ProSieben_genre,komödie,Comedy,
+ProSieben_genre,krimi,Crime,
+ProSieben_genre,krimi-serie,Crime,
+ProSieben_genre,kurznachrichten,News,tvshow
+ProSieben_genre,liebesdrama,Drama/Romance,
+ProSieben_genre,magazin,Magazine,
+ProSieben_genre,musik,Music,
+ProSieben_genre,musikfilm,Music,
+ProSieben_genre,mystery,Mystery,
+ProSieben_genre,reality-tv,Reality,
+ProSieben_genre,rennsport,\N,sports
+ProSieben_genre,"romantic comedy",Romance/Comedy,
+ProSieben_genre,science-fiction,Sci-Fi,
+ProSieben_genre,sitcom,Sitcom,
+ProSieben_genre,sketch-comedy,Comedy,
+ProSieben_genre,sport,\N,sports
+ProSieben_genre,thriller,Thriller,
+ProSieben_genre,unterhaltungsmagazin,Entertainment/Magazine,
+ProSieben_genre,western,Western,
+ProSieben_genre,zeichentrickfilm,Animated,
+ProSieben_main,dokumentation/reportage,Documentary,
+ProSieben_main,film,\N,movie
+ProSieben_main,information,\N,tvshow
+ProSieben_main,magazin/ratgeber,\N,series
+ProSieben_main,serie,\N,series
+ProSieben_main,show/unterhaltung,\N,series
+ProSieben_main,sonstiges,\N,series
+ProSieben_main,werbung,\N,tvshow
 RAI,documentario,Documentary,
 RAI,"film animazione",Animation,movie
 RAI,"film avventura",Adventure,movie

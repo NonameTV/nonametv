@@ -514,3 +514,28 @@
 954,"TCM Denmark",dk.tcmeurope.com,"TV,Denmark",TCM_doc,1,,0,series,Series,da,0,http://www.tcmeurope.com/,0
 955,"TCM Norway",no.tcmeurope.com,"TV,Norway",TCM_doc,1,,0,series,Series,no,0,http://www.tcmeurope.com/,0
 956,"TCM (English)",tcmeurope.com,TV,TCM_doc,1,,1,series,Series,en,0,http://www.tcmeurope.com/,0
+969,"ORF III",orf3.orf.at,"TV,Austria,Germany",ORF,1,ORF3,0,,,de,0,http://orf.at/,0
+970,"ORF Sport Plus",sportplus.orf.at,"TV,Austria,Germany",ORF,1,ORFS,0,,,de,0,http://orf.at/,0
+971,"ORF 2 Europe",europe.orf2.orf.at,"TV,Sweden,Norway,Denmark,Netherlands,Germany",ORF,1,"ORF2, orf2europe",0,,,de,0,http://orf.at/,0
+972,"kabel eins classics",classics.kabel1.de,"TV,Germany",ProSieben,1,,0,series,Series,de,0,,0
+973,"SAT.1 emotions",emotions.sat1.de,"TV,Germany",ProSieben,1,,0,series,Series,de,0,,0
+974,"ProSieben FUN",fun.prosieben.de,"TV,Germany",ProSieben,1,,0,series,Series,de,0,,0
+975,"SAT.1 Gold",gold.sat1.de,"TV,Germany",ProSieben,1,,0,series,Series,de,0,,0
+976,"kabel eins",kabel1.de,"TV,Germany",ProSieben,1,,0,series,Series,de,0,,0
+977,"ProSieben MAXX",maxx.prosieben.de,"TV,Germany",ProSieben,1,,0,series,Series,de,0,,0
+978,ProSieben,prosieben.de,"TV,Germany",ProSieben,1,,0,series,Series,de,0,,0
+980,SAT.1,sat1.de,"TV,Germany",ProSieben,1,,0,series,Series,de,0,,0
+981,sixx,sixx.de,"TV,Germany",ProSieben,1,,0,series,Series,de,0,,0
+982,"Eurosport 2 Germany",2.eurosport.de,"TV,Germany",EurosportDE,1,Eurosport2Germany,0,sports,Sports,de,0,http://www.eurosport.de/,0
+983,"Eurosport Germany",eurosport.de,"TV,Germany",EurosportDE,1,EurosportGermany,0,sports,Sports,de,0,http://www.eurosport.de/,0
+984,"MTV Brand New Germany",brandnew.mtv.de,"TV,Germany",MTV_novg,1,12:de:DE,0,,,de,0,http://www.mtv.de/,0
+985,"Comedy Central Switzerland",comedycentral.ch,"TV,Austria",MTV_novg,1,3:de:DE,0,,,de,0,http://comedycentral.de/,0
+986,"Comedy Central Germany",comedycentral.de,"TV,Germany",MTV_novg,1,16:de:DE,0,,,de,0,http://comedycentral.de/,0
+987,"Nick. Jr Germany",jr.nick.de,"TV,Germany",MTV_novg,1,20:de:DE,0,,,de,0,http://www.nick.de/,0
+988,"MTV Switzerland",mtv.ch,"TV,Austria",MTV_novg,1,11:de:DE,0,,,de,0,http://www.mtv.de/,0
+989,"MTV Germany",mtv.de,"TV,Germany",MTV_novg,1,10:de:DE,0,,,de,0,http://www.mtv.de/,0
+990,"Nickelodeon Switzerland",nick.ch,"TV,Austria",MTV_novg,1,25:de:DE,0,,,de,0,http://www.nick.ch/,0
+991,"Nickelodeon Germany",nick.de,"TV,Germany",MTV_novg,1,17:de:DE,0,,,de,0,http://www.nick.de/,0
+992,"Nick. Toons Germany",toons.nick.de,"TV,Germany",MTV_novg,1,19:de:DE,0,,,de,0,http://www.nick.de/,0
+993,"VIVA Germany",viva.tv,"TV,Germany",MTV_novg,1,1:de:DE,0,,,de,0,http://www.viva.tv/,0
+994,"PULS 4",puls4.at,"TV,Austria,Germany",ProSieben,1,,0,series,Series,de,0,,0
