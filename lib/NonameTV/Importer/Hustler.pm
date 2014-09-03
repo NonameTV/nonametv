@@ -250,8 +250,6 @@ if( $file =~ /\.pdf$/i ) {return $self->ImportPDF( $file, $channel_id, $xmltvid 
   return;
 }
 
-
-
 sub ImportPDF{
   my $self = shift;
   my( $file, $channel_id, $xmltvid ) = @_;

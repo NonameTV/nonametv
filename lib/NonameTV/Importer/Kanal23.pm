@@ -120,9 +120,9 @@ sub ImportContent
         if( $actornodes->size() > 0 ){
           foreach my $actor ($actornodes->get_nodelist)
           {
-            $actors .= $actor->textContent . ", ";
+            $actors .= $actor->textContent . ";";
           }
-          $actors =~ s/, $//;
+          $actors =~ s/;$//;
         }
 
         # producers
@@ -130,9 +130,9 @@ sub ImportContent
         if( $producernodes->size() > 0 ){
           foreach my $producer ($producernodes->get_nodelist)
           {
-            $producers .= $producer->textContent . ", ";
+            $producers .= $producer->textContent . ";";
           }
-          $producers =~ s/, $//;
+          $producers =~ s/;$//;
         }
 
       }

@@ -443,7 +443,7 @@ sub parse_person_list
     s/^\.$//;
   }
 
-  return join( ", ", grep( /\S/, @persons ) );
+  return join( ";", grep( /\S/, @persons ) );
 }
 
 # Split a string into individual sentences.

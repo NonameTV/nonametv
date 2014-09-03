@@ -75,7 +75,9 @@ sub ImportFlatXLS
 	  my( $time, $episode );
   my( $program_title , $program_description );
     my @ces;
-  
+
+
+  $dsh->StartBatch( $file , $chd->{id} );
   # main loop
   foreach my $oWkS (@{$oBook->{Worksheet}}) {
 
@@ -85,17 +87,16 @@ sub ImportFlatXLS
       $oWkC = $oWkS->{Cells}[$iR][0];
       if($oWkC->Value ne "") {
         $date = ParseDate( $oWkC->Value );
+        #print Dumper($date, $oWkC->Value);
+
       }
-
-            print("HEJ\n");
-
 	  	if($date ne $currdate ) {
     		if( $currdate ne "x" ) {
 					$dsh->EndBatch( 1 );
     		}
 
         my $batchid = $chd->{xmltvid} . "_" . $date;
-        $dsh->StartBatch( $batchid , $chd->{id} );
+
         $dsh->StartDate( $date , "06:00" );
         $currdate = $date;
 
@@ -105,23 +106,13 @@ sub ImportFlatXLS
       $oWkC = $oWkS->{Cells}[$iR][4];
       my $title =  norm( $oWkC->Value );
 
-
-
-
-
       $oWkC = $oWkS->{Cells}[$iR][1];
-      next if( ! $oWkC );
+      #next if( ! $oWkC );
       my $time = ParseTime( $oWkC->Value );
-      next if( ! $time );
+      #next if( ! $time );
 
-
-
-      #$oWkC = $oWkS->{Cells}[$iR][2];
-      #my $endtime = "";
-      #if($oWkC->Value ne "") {
-     	#$endtime = ParseTime( $oWkC->Value );
-      #}
-
+      $oWkC = $oWkS->{Cells}[$iR][2];
+      my $endtime = $oWkC->Value;
 
       if( $time and $title ){
 
@@ -130,11 +121,11 @@ sub ImportFlatXLS
         my $ce = {
           channel_id   => $chd->{id},
           title        => $title,
-          start_time   => $time,
+          start_time   => $date." ".$time,
         };
 		
-		#$ce->{end_time} = $endtime if $endtime ne "";
-        $dsh->AddProgramme( $ce );
+		#$ce->{end_time} = ParseTime($endtime) if $endtime ne "";
+        $ds->AddProgramme( $ce );
       } else {
         print Dumper($time);
         print Dumper($title);
@@ -153,8 +144,6 @@ sub ImportFlatXLS
 sub ParseDate {
   my ( $text ) = @_;
 
-  print("$text\n");
-
   my( $year, $day, $month );
 
   # format '2011-04-13'
@@ -165,6 +154,7 @@ sub ParseDate {
   } elsif( $text =~ /^\d{4}\/\d{2}\/\d{2}$/i ){
     ( $year, $month, $day  ) = ( $text =~ /^(\d{4})\/(\d{2})\/(\d{2})$/i );
   } else {
+    print(">$text<");
     $text = ExcelFmt('yyyy-mm-dd', $text );
     return $text;
   }
@@ -176,20 +166,21 @@ sub ParseDate {
     year => $year,
     month => $month,
     day => $day
-      );
-	return $dt->ymd("-");
+  );
+
+  return $dt->ymd("-");
 }
 
 sub ParseTime {
   my( $text ) = @_;
-  print("$text\n");
-  
+
 	if($text ne "") {
   	my( $hour , $min );
 
   	if( $text =~ /^\d+:\d+$/ ){
   	  ( $hour , $min ) = ( $text =~ /^(\d+):(\d+)$/ );
   	} else {
+  	    print("$text");
         return ExcelFmt('hh:mm', $text);
   	}
 

@@ -233,9 +233,9 @@ sub ImportContent
         }
         
         # Get the peoples.
-        $ce->{actors} = join( ", ", grep( /\S/, @actors ) );
-        $ce->{directors} = join( ", ", grep( /\S/, @directors ) );
-        $ce->{writers} = join( ", ", grep( /\S/, @writers ) );
+        $ce->{actors} = join( ";", grep( /\S/, @actors ) );
+        $ce->{directors} = join( ";", grep( /\S/, @directors ) );
+        $ce->{writers} = join( ";", grep( /\S/, @writers ) );
         
         # Remove big subtitle for Commerical programmes.
         if($ce->{title} eq "Commercial programming") {

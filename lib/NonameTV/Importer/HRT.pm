@@ -144,14 +144,14 @@ sub ImportContent
     }
 
     # The director and actor info are children of 'credits'
-    my $directors = $sc->getElementsByTagName( 'director' );
-    my $actors = $sc->getElementsByTagName( 'actor' );
-    my $writers = $sc->getElementsByTagName( 'writer' );
-    my $adapters = $sc->getElementsByTagName( 'adapter' );
-    my $producers = $sc->getElementsByTagName( 'producer' );
-    my $presenters = $sc->getElementsByTagName( 'presenter' );
-    my $commentators = $sc->getElementsByTagName( 'commentator' );
-    my $guests = $sc->getElementsByTagName( 'guest' );
+    my $directors = parse_person_list($sc->getElementsByTagName( 'director' ));
+    my $actors = parse_person_list($sc->getElementsByTagName( 'actor' ));
+    my $writers = parse_person_list($sc->getElementsByTagName( 'writer' ));
+    my $adapters = parse_person_list($sc->getElementsByTagName( 'adapter' ));
+    my $producers = parse_person_list($sc->getElementsByTagName( 'producer' ));
+    my $presenters = parse_person_list($sc->getElementsByTagName( 'presenter' ));
+    my $commentators = parse_person_list($sc->getElementsByTagName( 'commentator' ));
+    my $guests = parse_person_list($sc->getElementsByTagName( 'guest' ));
 
     my $ce = {
       channel_id   => $chd->{id},
@@ -234,6 +234,21 @@ sub ImportContent
   
   # Success
   return 1;
+}
+
+
+sub parse_person_list
+{
+  my( $str ) = @_;
+
+  my @persons = split( /\s*,\s*/, $str );
+  foreach (@persons)
+  {
+    # The character name is sometimes given . Remove it.
+    s/^.*\s+-\s+//;
+  }
+
+  return join( ";", grep( /\S/, @persons ) );
 }
 
 sub create_dt

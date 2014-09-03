@@ -206,17 +206,17 @@ sub ImportXML
     # Actors
 	if( scalar( @actors ) > 0 )
 	{
-		$ce->{actors} = join ", ", @actors;
+		$ce->{actors} = join ";", @actors;
     }
 
     if( scalar( @directors ) > 0 )
     {
-        $ce->{directors} = join ", ", @directors;
+        $ce->{directors} = join ";", @directors;
     }
 
     if( scalar( @writers ) > 0 )
     {
-        $ce->{writers} = join ", ", @writers;
+        $ce->{writers} = join ";", @writers;
     }
 
     # Genre

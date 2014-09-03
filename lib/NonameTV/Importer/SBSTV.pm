@@ -243,7 +243,7 @@ sub ImportContent {
     	if(defined($instr) and $instr and $instr ne "") {
     	    $instr = norm($instr);
     	    $instr =~ s/\.$//g;
-    	    $ce->{directors} = norm($instr);
+    	    $ce->{directors} = join( ";", split(',', norm($instr)) );
             $ce->{program_type} = 'movie';
     	}
     }
@@ -282,7 +282,7 @@ sub ImportContent {
             push(@acts, $pushname);
         }
 
-        $ce->{actors} = join( ", ", @acts );
+        $ce->{actors} = join( ";", @acts );
     }
 
 
@@ -328,7 +328,7 @@ sub parse_person_list
     s/\.$//g;
   }
 
-  return join( ", ", grep( /\S/, @persons ) );
+  return join( ";", grep( /\S/, @persons ) );
 }
 
 

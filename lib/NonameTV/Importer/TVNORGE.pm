@@ -173,19 +173,19 @@ sub ImportContent
     # Director
     my $director = norm($sc->findvalue( './director' ));
     if(defined($director) and $director ne "") {
-        $ce->{directors} = $director;
+        $ce->{directors} = parse_person_list($director);
         $ce->{program_type} = 'movie';
     }
 
     # Hosts
-    my $host = norm($sc->findvalue( './hosts' ));
+    my $host = norm($sc->findvalue( './host' ));
     if(defined($host) and $host ne "") {
-        $ce->{presenters} = $host;
+        $ce->{presenters} = parse_person_list($host);
     }
 
     # Actors
     my @actors;
-    my $acts = $sc->find( './/actor' );
+    my $acts = $sc->find( './/actors' );
     foreach my $act ($acts->get_nodelist)
     {
         my $name = $act->to_literal;
@@ -198,7 +198,7 @@ sub ImportContent
 
     if( scalar( @actors ) > 0 )
     {
-        $ce->{actors} = join ", ", @actors;
+        $ce->{actors} = join ";", @actors;
     }
 
 	# Episodes
@@ -231,6 +231,20 @@ sub ImportContent
   
   # Success
   return 1;
+}
+
+sub parse_person_list
+{
+  my( $str ) = @_;
+
+  my @persons = split( /\s*,\s*/, $str );
+  foreach (@persons)
+  {
+    # The character name is sometimes given . Remove it.
+    s/^.*\s+-\s+//;
+  }
+
+  return join( ";", grep( /\S/, @persons ) );
 }
 
 sub create_dt

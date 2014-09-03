@@ -302,11 +302,11 @@ sub FlushDayData {
 						if(defined($dirs) and $dirs ne "") {
 							#print Dumper($dirs, $actors);
 							my @directors = split( /\s*,\s*/, $dirs );
-							$element->{directors} = join( ", ", grep( /\S/, @directors ) );
+							$element->{directors} = join( ";", grep( /\S/, @directors ) );
 						}
 						if(defined($actors) and $actors ne "") {
 							my @actors = split( /\s*,\s*/, $actors );
-							$element->{actors} = join( ", ", grep( /\S/, @actors ) );
+							$element->{actors} = join( ";", grep( /\S/, @actors ) );
 						}
 						
 						# TCM only provides a weird description, so please use

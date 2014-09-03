@@ -199,12 +199,12 @@ sub ImportXML
       
       if( scalar( @actors ) > 0 and !defined($ce->{actors}) )
       {
-        $ce->{actors} = join ", ", @actors;
+        $ce->{actors} = join ";", @actors;
       }
 
       if( scalar( @directors ) > 0 and !defined($ce->{directors}) )
       {
-        $ce->{directors} = join ", ", @directors;
+        $ce->{directors} = join ";", @directors;
       }
 
       $ce->{original_title} = norm($title_org) if defined($title_org) and $ce->{title} ne norm($title_org) and norm($title_org) ne "";

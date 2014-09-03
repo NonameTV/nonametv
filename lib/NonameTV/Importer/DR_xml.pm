@@ -269,12 +269,12 @@ sub ImportContent {
 
     if( scalar( @actors ) > 0 )
     {
-    	$ce->{actors} = join ", ", @actors;
+    	$ce->{actors} = join ";", @actors;
     }
 
     if( scalar( @directors ) > 0 )
     {
-		$ce->{directors} = join ", ", @directors;
+		$ce->{directors} = join ";", @directors;
     }
 
     # DR fucks Family guy up and tags every episode as a movie, wtf?
@@ -392,7 +392,7 @@ sub parse_person_list
     s/.*\s+-\s+//;
   }
 
-  return join( ", ", grep( /\S/, @persons ) );
+  return join( ";", grep( /\S/, @persons ) );
 }
 
 # Join a number of sentences into a single paragraph.

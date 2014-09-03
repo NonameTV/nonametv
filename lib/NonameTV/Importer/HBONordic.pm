@@ -214,8 +214,8 @@ sub ImportContent
       end_time     => $end->ymd("-") . " " . $end->hms(":"),
     };
 
-    $ce->{actors} = join( ", ", grep( /\S/, @actors ) );
-    $ce->{directors} = join( ", ", grep( /\S/, @directors ) );
+    $ce->{actors} = join( ";", grep( /\S/, @actors ) );
+    $ce->{directors} = join( ";", grep( /\S/, @directors ) );
 
     if( defined( $subtitle ) and length( $subtitle ) )
     {

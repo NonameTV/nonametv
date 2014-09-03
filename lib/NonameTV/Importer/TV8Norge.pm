@@ -88,7 +88,7 @@ sub ImportFlatXLS
       next if( ! $date );
 
 	  unless( $date ) {
-		progress("SKIPPING :D");
+		#progress("SKIPPING :D");
 	  next;
 	  }
 

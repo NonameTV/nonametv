@@ -59,7 +59,8 @@ sub FilterContent {
   gunzip $gzcref => $cref
     or $cref = $gzcref;
 
-  $$cref =~ s|$||mg;
+  $$cref =~ s|
+$||mg;
   $$cref =~ s|http://www.kika-presse.de/scripts/media/export/dtd/kika_programmWoche.dtd|http://www.kika-presse.de/media/export/dtd/kika_programmWoche.dtd|;
   # misescaped entities
   $$cref =~ s|&amp;#(\d+);|&#$1;|g;
@@ -215,7 +216,7 @@ sub ImportContent {
           $directors = norm ($directors);
           if ($directors) {
             # directors are split by space slash space in the source data
-            $ce->{directors} = join (', ', split (/\s*\/\s*/, $directors));
+            $ce->{directors} = join (';', split (/\s*\/\s*/, $directors));
           }
         }
 
@@ -238,7 +239,7 @@ sub ImportContent {
               push( @actors_array, $name );
             }
           }
-          $ce->{actors} = join( ', ', @actors_array );
+          $ce->{actors} = join( ';', @actors_array );
         }
 
 

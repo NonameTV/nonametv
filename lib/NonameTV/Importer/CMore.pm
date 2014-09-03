@@ -291,14 +291,14 @@ sub ImportContent
 
     # Actors and directors
     if(defined($actors)) {
-    	$ce->{actors} = $actors;
+    	$ce->{actors} = parse_person_list($actors);
     }
 
     if(defined($direcs)) {
-    	$ce->{directors} = $direcs;
+    	$ce->{directors} = parse_person_list($direcs);
     }
     
-    $self->extract_extra_info( $ce );
+    #$self->extract_extra_info( $ce );
 
     # Org title
     my $title_org = $sc->findvalue( './Program/@OriginalTitle' );
@@ -353,11 +353,18 @@ sub create_dt
   return $dt;
 }
 
-sub extract_extra_info
+sub parse_person_list
 {
-  my $self = shift;
-  my( $ce ) = @_;
-  
+  my( $str ) = @_;
+
+  my @persons = split( /\s*,\s*/, $str );
+  foreach (@persons)
+  {
+    # The character name is sometimes given . Remove it.
+    s/^.*\s+-\s+//;
+  }
+
+  return join( ";", grep( /\S/, @persons ) );
 }
-    
+
 1;

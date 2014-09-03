@@ -259,14 +259,14 @@ sub ImportContent
 			$actors =~ s| u\.a\.$||;
 			# TODO clean up the list of actors
                         $actors =~ s|,\s*,|,|g; # remove empty elements from the list
-			$ce->{actors} = $actors;
+			$ce->{actors} = parse_person_list($actors);
 		}
 		my( $directors )=( $desc =~ m|^Regie:\s+(.+?)$|m );
 		if( $directors ){
 			$desc =~ s|^Regie:\s+.+?$||m;
 			# TODO clean up the list of directors
                         $directors = norm( $directors );
-			$ce->{directors} = $directors;
+			$ce->{directors} = parse_person_list($directors);
 		}
 		my( $running_time )=( $desc =~ m|^(\d+\.\d+)$|m );
 		if( $running_time ){
@@ -355,6 +355,20 @@ sub ImportContent
   
   # Success
   return 1;
+}
+
+sub parse_person_list
+{
+  my( $str ) = @_;
+
+  my @persons = split( /\s*,\s*/, $str );
+  foreach (@persons)
+  {
+    # The character name is sometimes given . Remove it.
+    s/^.*\s+-\s+//;
+  }
+
+  return join( ";", grep( /\S/, @persons ) );
 }
 
 sub ParseTime {

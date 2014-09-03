@@ -319,7 +319,7 @@ sub parse_person_list
   
   #print Dumper(@pers);
 
-  return join( ", ", grep( /\S/, @pers ) );
+  return join( ";", grep( /\S/, @pers ) );
 }
 
 # The start and end-times are in the format 2007-12-31T01:00:00

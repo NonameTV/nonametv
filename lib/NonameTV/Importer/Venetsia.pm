@@ -636,7 +636,7 @@ sub parse_person_list
     s/.*\s+-\s+//;
   }
 
-  return join( ", ", grep( /\S/, @persons ) );
+  return join( ";", grep( /\S/, @persons ) );
 }
 
 

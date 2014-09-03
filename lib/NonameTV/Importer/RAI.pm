@@ -271,7 +271,7 @@ sub parse_person_list
     s/.*\s+-\s+//;
   }
 
-  return join( ", ", grep( /\S/, @persons ) );
+  return join( ";", grep( /\S/, @persons ) );
 }
 
 # The start and end-times are in the format 2007-12-31T01:00:00

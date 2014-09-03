@@ -231,12 +231,12 @@ sub ImportContent
 
     if( scalar( @actors ) > 0 )
     {
-      $ce->{actors} = join ", ", @actors;
+      $ce->{actors} = join ";", @actors;
     }
 
     if( scalar( @directors ) > 0 )
     {
-      $ce->{directors} = join ", ", @directors;
+      $ce->{directors} = join ";", @directors;
     }
 
     $self->extract_extra_info( $ce );

@@ -228,9 +228,9 @@ sub AddCredits
 
   if( scalar( @people ) > 0 ) {
     if( defined( $ce->{$field} ) ) {
-      $ce->{$field} = join( ', ', $ce->{$field}, @people );
+      $ce->{$field} = join( ';', $ce->{$field}, @people );
     } else {
-      $ce->{$field} = join( ', ', @people );
+      $ce->{$field} = join( ';', @people );
     }
   }
 }

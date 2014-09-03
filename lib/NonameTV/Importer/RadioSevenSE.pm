@@ -46,7 +46,8 @@ sub FilterContent {
   my( $cref, $chd ) = @_;
 
   # mixed in windows line breaks
-  $$cref =~ s|||g;
+  $$cref =~ s|
+||g;
 
   $$cref =~ s|& |&amp; |g;
 
@@ -160,7 +161,7 @@ sub parse_person_list
     s/^.*\s+-\s+//;
   }
 
-  return join( ", ", grep( /\S/, @persons ) );
+  return join( ";", grep( /\S/, @persons ) );
 }
     
 1;

@@ -184,7 +184,7 @@ sub ImportContent
         # character name might be missing a trailing ).
         s/\s*\(.*$//;
       }
-      $ce->{actors} = join( ", ", grep( /\S/, @actors ) );
+      $ce->{actors} = join( ";", grep( /\S/, @actors ) );
     }
 
     my $director = norm( $inrow->{'REGI'} );
@@ -199,7 +199,7 @@ sub ImportContent
       # Remove trailing '.'
       $director =~ s/\.$//;
       my @directors = split( /\s*,\s*/, $director );
-      $ce->{directors} = join( ", ", grep( /\S/, @directors ) );
+      $ce->{directors} = join( ";", grep( /\S/, @directors ) );
     }
 
     $ce->{original_title} = norm($title_org) if $ce->{title} ne $title_org and norm($title_org) ne "";

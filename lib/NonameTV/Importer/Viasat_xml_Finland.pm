@@ -224,7 +224,7 @@ sub ImportContent {
       # Actors
       if( scalar( @actors ) > 0 )
 	  {
-	      $ce->{actors} = join ", ", @actors;
+	      $ce->{actors} = join ";", @actors;
 	  }
 	  
 	  # prod year
@@ -273,7 +273,7 @@ sub ImportContent {
       if( $emission->findvalue( 'director' ) ) {
 	    my $dirs = norm($emission->findvalue( 'director' ));
 	    $dirs =~ s/ & /, /g;
-	    $ce->{directors} = $dirs;
+	    $ce->{directors} = parse_person_list($dirs);
 	  }
       
       # Episodes
@@ -322,4 +322,19 @@ sub ImportContent {
 
   return 1;
 }
+
+sub parse_person_list
+{
+  my( $str ) = @_;
+
+  my @persons = split( /\s*,\s*/, $str );
+  foreach (@persons)
+  {
+    # The character name is sometimes given . Remove it.
+    s/^.*\s+-\s+//;
+  }
+
+  return join( ";", grep( /\S/, @persons ) );
+}
+
 1;

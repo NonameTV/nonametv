@@ -130,11 +130,11 @@ sub ImportContent {
 
 			# Actors (It's actually in the correct form)
 			my ($actors) = $programme->findvalue ('./WYKONAWCY');
-			$ce->{actors} = norm($actors) if $actors;
+			$ce->{actors} = parse_person_list(norm($actors)) if $actors;
 
 			# Presenters (It's actually in the correct form)
 			my ($presenters) = $programme->findvalue ('./REZYSER');
-			$ce->{directors} = norm($presenters) if $presenters;
+			$ce->{directors} = parse_person_list(norm($presenters)) if $presenters;
 
 			# Genre
       my ($genre) = $programme->findvalue ('./RODZAJ');
@@ -168,6 +168,19 @@ sub ImportContent {
   return 1;
 }
 
+sub parse_person_list
+{
+  my( $str ) = @_;
+
+  my @persons = split( /\s*,\s*/, $str );
+  foreach (@persons)
+  {
+    # The character name is sometimes given . Remove it.
+    s/^.*\s+-\s+//;
+  }
+
+  return join( ";", grep( /\S/, @persons ) );
+}
 
 sub ParseTime {
   my( $text ) = @_;

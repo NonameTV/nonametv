@@ -228,10 +228,10 @@ sub ImportXLS
       };
 
 	  # Extra
-	  $ce->{subtitle}        = norm($oWkS->{Cells}[$iR][$columns{'Episode Title'}]->Value) if $oWkS->{Cells}[$iR][$columns{'Episode Title'}];
-	  $ce->{actors}          = norm($oWkS->{Cells}[$iR][$columns{'Cast'}]->Value)          if defined($columns{'Cast'}) and $oWkS->{Cells}[$iR][$columns{'Cast'}];
-	  $ce->{directors}       = norm($oWkS->{Cells}[$iR][$columns{'Director'}]->Value)      if defined($columns{'Director'}) and $oWkS->{Cells}[$iR][$columns{'Director'}];
-	  $ce->{presenters}      = norm($oWkS->{Cells}[$iR][$columns{'Presenter'}]->Value)     if defined($columns{'Presenter'}) and $oWkS->{Cells}[$iR][$columns{'Presenter'}];
+	  $ce->{subtitle}        = parse_person_list(norm($oWkS->{Cells}[$iR][$columns{'Episode Title'}]->Value)) if $oWkS->{Cells}[$iR][$columns{'Episode Title'}];
+	  $ce->{actors}          = parse_person_list(norm($oWkS->{Cells}[$iR][$columns{'Cast'}]->Value))          if defined($columns{'Cast'}) and $oWkS->{Cells}[$iR][$columns{'Cast'}];
+	  $ce->{directors}       = parse_person_list(norm($oWkS->{Cells}[$iR][$columns{'Director'}]->Value))      if defined($columns{'Director'}) and $oWkS->{Cells}[$iR][$columns{'Director'}];
+	  $ce->{presenters}      = parse_person_list(norm($oWkS->{Cells}[$iR][$columns{'Presenter'}]->Value))     if defined($columns{'Presenter'}) and $oWkS->{Cells}[$iR][$columns{'Presenter'}];
       $ce->{production_date} = $year."-01-01" if defined($year) and $year ne "" and $year ne "0000";
 
       if( $epino ){
@@ -277,6 +277,20 @@ sub ParseDate {
   }
 
   return sprintf( '%d-%02d-%02d', $year, $month, $day );
+}
+
+sub parse_person_list
+{
+  my( $str ) = @_;
+
+  my @persons = split( /\s*,\s*/, $str );
+  foreach (@persons)
+  {
+    # The character name is sometimes given . Remove it.
+    s/^.*\s+-\s+//;
+  }
+
+  return join( ";", grep( /\S/, @persons ) );
 }
 
 1;

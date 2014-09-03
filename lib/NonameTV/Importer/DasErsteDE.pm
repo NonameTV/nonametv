@@ -357,7 +357,7 @@ sub ImportContent {
       }
     }
     if (@actors_array) {
-      $ce->{actors} = join (", ", @actors_array);
+      $ce->{actors} = join (";", @actors_array);
     }
 
     my $directors = $pgm->findnodes ('.//Regie');
@@ -386,7 +386,7 @@ sub ImportContent {
       @writers_array = (@writers_array, @fixup);
     }
     if (@writers_array) {
-      $ce->{writers} = join (", ", @writers_array);
+      $ce->{writers} = join (";", @writers_array);
     }
 
     my $production_date = $pgm->findvalue( 'Produktionsjahr' );
@@ -433,7 +433,7 @@ sub parse_subtitle
     # split ", " and " und "
     my (@presenter) = split (", ", join (", ", split (" und ", $presenters)));
     if ($sce->{presenters}) {
-      $sce->{presenters} = join (", ", $sce->{presenters}, @presenter);
+      $sce->{presenters} = join (";", $sce->{presenters}, @presenter);
     } else {
       $sce->{presenters} = join (@presenter);
     }
@@ -442,7 +442,7 @@ sub parse_subtitle
     # match "mit First Lastname" but not "mit den Wildgaensen"
     my ($presenter) = ($subtitle =~ m|^mit (\S+ \S+)$|);
     if ($sce->{presenters}) {
-      $sce->{presenters} = join (", ", $sce->{presenters}, $presenter);
+      $sce->{presenters} = join (";", $sce->{presenters}, $presenter);
     } else {
       $sce->{presenters} = $presenter;
     }
@@ -451,7 +451,7 @@ sub parse_subtitle
     # match "mit First Lastname" but not "mit den Wildgaensen"
     my ($presenter) = ($subtitle =~ m|^mit (\S+ \S+), (\S+ \S+) und (\S+ \S+)$|);
     if ($sce->{presenters}) {
-      $sce->{presenters} = join (", ", $sce->{presenters}, $presenter);
+      $sce->{presenters} = join (";", $sce->{presenters}, $presenter);
     } else {
       $sce->{presenters} = $presenter;
     }
@@ -495,7 +495,7 @@ sub parse_subtitle
   } elsif ($subtitle =~ m/^(?:Ein |)Film von [A-Z]\S+ [A-Z]\S+$/) {
     my ($producer) = ($subtitle =~ m/^(?:Ein |)Film von (\S+ \S+)$/);
     if ($sce->{producers}) {
-      $sce->{producers} = join (", ", $sce->{producers}, $producer);
+      $sce->{producers} = join (";", $sce->{producers}, $producer);
     } else {
       $sce->{producers} = $producer;
     }
@@ -503,7 +503,7 @@ sub parse_subtitle
   } elsif ($subtitle =~ m/^(?:Ein |)Film von [A-Z]\S+ von [A-Z]\S+$/) {
     my ($producer) = ($subtitle =~ m/^(?:Ein |)Film von (\S+ von \S+)$/);
     if ($sce->{producers}) {
-      $sce->{producers} = join (", ", $sce->{producers}, $producer);
+      $sce->{producers} = join (";", $sce->{producers}, $producer);
     } else {
       $sce->{producers} = $producer;
     }
@@ -511,7 +511,7 @@ sub parse_subtitle
   } elsif ($subtitle =~ m/^(?:Ein |)Film von [A-Z]\S+ [A-Z]\. [A-Z]\S+$/) {
     my ($producer) = ($subtitle =~ m/^(?:Ein |)Film von (\S+ \S+ \S+)$/);
     if ($sce->{producers}) {
-      $sce->{producers} = join (", ", $sce->{producers}, $producer);
+      $sce->{producers} = join (";", $sce->{producers}, $producer);
     } else {
       $sce->{producers} = $producer;
     }
@@ -519,17 +519,17 @@ sub parse_subtitle
   } elsif ($subtitle =~ m/^(?:Ein |)Film von [A-Z]\S+ [A-Z]\S+ und [A-Z]\S+ [A-Z]\S+$/) {
     my ($producer1, $producer2) = ($subtitle =~ m/^(?:Ein |)Film von (\S+ \S+) und (\S+ \S+)$/);
     if ($sce->{producers}) {
-      $sce->{producers} = join (", ", $sce->{producers}, $producer1, $producer2);
+      $sce->{producers} = join (";", $sce->{producers}, $producer1, $producer2);
     } else {
-      $sce->{producers} = join (", ", $producer1, $producer2);
+      $sce->{producers} = join (";", $producer1, $producer2);
     }
     $subtitle = undef;
   } elsif ($subtitle =~ m/^(?:Ein |)Film von [A-Z]\S+ [A-Z]\S+, [A-Z]\S+ [A-Z]\S+$/) {
     my ($producer1, $producer2) = ($subtitle =~ m/^(?:Ein |)Film von (\S+ \S+), (\S+ \S+)$/);
     if ($sce->{producers}) {
-      $sce->{producers} = join (", ", $sce->{producers}, $producer1, $producer2);
+      $sce->{producers} = join (";", $sce->{producers}, $producer1, $producer2);
     } else {
-      $sce->{producers} = join (", ", $producer1, $producer2);
+      $sce->{producers} = join (";", $producer1, $producer2);
     }
     $subtitle = undef;
   } elsif ($subtitle =~ m!^\((?:BR|DFF|HR|MDR|NDR|RB|SR|SWR|RBB|WDR|SWR/HR)\)!) {
@@ -555,7 +555,7 @@ sub parse_subtitle
   } elsif ($subtitle =~ m|^Reporter: \S+ \S+$|) {
     my ($presenter) = ($subtitle =~ m|^Reporter: (\S+ \S+)$|);
     if ($sce->{presenters}) {
-      $sce->{presenters} = join (", ", $sce->{presenters}, $presenter);
+      $sce->{presenters} = join (";", $sce->{presenters}, $presenter);
     } else {
       $sce->{presenters} = $presenter;
     }
@@ -563,7 +563,7 @@ sub parse_subtitle
   } elsif ($subtitle =~ m|^\S+teiliger Film von [A-Z]\S+ [A-Z]\S+$|) {
     my ($producer) = ($subtitle =~ m|^\S+ Film von (\S+ \S+)$|);
     if ($sce->{producers}) {
-      $sce->{producers} = join (", ", $sce->{producers}, $producer);
+      $sce->{producers} = join (";", $sce->{producers}, $producer);
     } else {
       $sce->{producers} = $producer;
     }
@@ -571,9 +571,9 @@ sub parse_subtitle
   } elsif ($subtitle =~ m|^\S+teiliger Film von [A-Z]\S+ [A-Z]\S+ und [A-Z]\S+ [A-Z]\S+$|) {
     my ($producer1, $producer2) = ($subtitle =~ m|^\S+ Film von (\S+ \S+) und (\S+ \S+)$|);
     if ($sce->{producers}) {
-      $sce->{producers} = join (", ", $sce->{producers}, $producer1, $producer2);
+      $sce->{producers} = join (";", $sce->{producers}, $producer1, $producer2);
     } else {
-      $sce->{producers} = join (", ", $producer1, $producer2);
+      $sce->{producers} = join (";", $producer1, $producer2);
     }
     $subtitle = undef;
   } elsif (($subtitle =~ m|^mit den Wildgänsen$|) && ($sce->{title} =~ m|^Die wunderbare Reise des kleinen Nils Holgersson$|)) {
@@ -586,7 +586,7 @@ sub parse_subtitle
     my ( $type, $categ ) = $self->{datastore}->LookupCat( "DasErste_type", $genre);
     AddCategory( $sce, $type, $categ );
     if ($sce->{presenters}) {
-      $sce->{presenters} = join (", ", $sce->{presenters}, $presenter);
+      $sce->{presenters} = join (";", $sce->{presenters}, $presenter);
     } else {
       $sce->{presenters} = $presenter;
     }

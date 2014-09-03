@@ -197,7 +197,7 @@ my $ref = ReadData ($file);
     if(defined($p)) {
     	# This program has an presenter, add it.
     	$ce->{title} = norm($t1);
-    	$ce->{presenters} = norm($p);
+    	$ce->{presenters} = parse_person_list(norm($p));
     }
       
       # Desc (only works on XLS files)
@@ -215,6 +215,20 @@ my $ref = ReadData ($file);
   $dsh->EndBatch( 1 );
 
   return;
+}
+
+sub parse_person_list
+{
+  my( $str ) = @_;
+
+  my @persons = split( /\s*,\s*/, $str );
+  foreach (@persons)
+  {
+    # The character name is sometimes given . Remove it.
+    s/^.*\s+-\s+//;
+  }
+
+  return join( ";", grep( /\S/, @persons ) );
 }
 
 sub ParseDate

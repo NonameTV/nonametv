@@ -121,7 +121,7 @@ sub ImportContentFile
         title => $title,
       };
 
-      $ce->{directors} = join( ", ", split( /\s*,\s*/, norm($director) ) ) if defined $director and norm($director) ne "";
+      $ce->{directors} = join( ";", split( /\s*,\s*/, norm($director) ) ) if defined $director and norm($director) ne "";
       if( defined( $prodyear ) and ($prodyear =~ /(\d\d\d\d)/) )
       {
         $ce->{production_date} = "$1-01-01";
@@ -141,7 +141,7 @@ sub ImportContentFile
 
         # Genre
         if($actors eq 1 and $text =~ /,/ and $text !~ /^Genre/i) {
-            $element->{actors} = join( ", ", split( /\s*,\s*/, norm($text) ) );
+            $element->{actors} = join( ";", split( /\s*,\s*/, norm($text) ) );
         } elsif($text =~ /^Genre/i) {
             my( $genre ) = ($text =~ /^Genre:(.*?)\./ );
 

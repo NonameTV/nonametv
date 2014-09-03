@@ -220,7 +220,7 @@ sub ImportContent
     	}
     }
 
-    $ce->{actors} = join( ", ", grep( /\S/, @actors ) );
+    $ce->{actors} = join( ";", grep( /\S/, @actors ) );
 
 	# Add Programme
 	$dsh->AddCE( $ce );
