@@ -17,8 +17,9 @@ TODO handle regional programmes on DRS
 
 use Encode qw/decode encode/;
 use utf8;
+use Data::Dumper;
 
-use NonameTV qw/AddCategory normLatin1 ParseXml/;
+use NonameTV qw/AddCategory normLatin1 norm ParseXml/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/w f/;
 
@@ -49,7 +50,7 @@ sub Object2Url {
     return (undef, 'Grabber info must contain channel id!');
   }
 
-  my $url = sprintf( 'https://medienportal.srf.ch/app/ProgramInfo.asmx/getProgramInfoExtendedHD' .
+  my $url = sprintf( 'http://programmdatenwebservice.srf.ch/app/programinfo.asmx/getProgramInfoExtendedHD' .
     '?username=%s&password=%s&channel=%s&fromDate=%s&toDate=%s', $self->{Username}, $self->{Password}, $chd->{grabber_info}, $date, $date );
 
   # Only one url to look at and no error
@@ -107,11 +108,13 @@ sub ImportContent {
       w( 'programme without start time!' );
     }else{
       my ($title) = $programme->findvalue ('./TITEL');
+      my ($org_title) = $programme->findvalue ('./ORGTITEL');
+      my ($cast) = $programme->findvalue ('./PERSONEN');
 
       my $ce = {
 #        channel_id => $chd->{id},
         start_time => $time,
-        title => $title
+        title => norm(normLatin1($title)),
       };
 
       my ($subtitle) = $programme->findvalue ('./UNTERTITEL');
@@ -124,7 +127,7 @@ sub ImportContent {
         ($description) = $programme->findvalue ('./LEAD');
       }
       if( $description ){
-        $ce->{description} = $description;
+        $ce->{description} = norm(normLatin1($description));
       }
 
       my ($genre) = $programme->findvalue ('./GENRE');
@@ -136,6 +139,63 @@ sub ImportContent {
         $ce->{production_date} = $year . '-01-01';
       }
 
+      # Cast
+      if($cast) {
+        $cast =~ s/^Mit/Mit:/; # Make it pretty
+        $cast =~ s/^Ein Film von/Regie:/; # Alternative way
+        my @sentences = (split_personen( $cast ), "");
+        my( $actors, $dummy, $actors2, $directors, $writers, $guests, $guest, $presenter, $host, $producer );
+
+        for( my $i=0; $i<scalar(@sentences); $i++ )
+        {
+            if( ( $actors ) = ($sentences[$i] =~ /^Mit\:(.*)/ ) )
+            {
+              $ce->{actors} = norm(parse_person_list(normLatin1($actors)));;
+              $sentences[$i] = "";
+            }
+            elsif( ( $directors ) = ($sentences[$i] =~ /^Regie\:(.*)/ ) )
+            {
+                $directors =~ s/\((.*?)\)//g; # Remove () texts
+                $ce->{directors} = norm(parse_person_list(normLatin1($directors)));;
+                $sentences[$i] = "";
+            }
+            elsif( ($dummy, $presenter ) = ($sentences[$i] =~ /^(Moderator|Moderation)\:(.*)/ ) )
+            {
+                $presenter =~ s/\((.*?)\)//g; # Remove () texts
+                $ce->{presenters} = norm(parse_person_list(normLatin1($presenter)));;
+                $sentences[$i] = "";
+            }
+            elsif( ($host ) = ($sentences[$i] =~ /^Redaktion\:(.*)/ ) )
+            {
+                $host =~ s/\((.*?)\)//g; # Remove () texts
+                $ce->{commentators} = norm(parse_person_list(normLatin1($host)));;
+                $sentences[$i] = "";
+            }
+            elsif( ( $producer ) = ($sentences[$i] =~ /^Produzent\:(.*)/ ) )
+            {
+                $producer =~ s/\((.*?)\)//g; # Remove () texts
+                $ce->{producers} = norm(parse_person_list(normLatin1($producer)));;
+                $sentences[$i] = "";
+            }
+            elsif( ( $writers ) = ($sentences[$i] =~ /^Drehbuch\:(.*)/ ) )
+            {
+                $writers =~ s/\((.*?)\)//g; # Remove () texts
+                $ce->{writers} = norm(parse_person_list(normLatin1($writers)));;
+                $sentences[$i] = "";
+            }
+            elsif( ( $actors2 ) = ($sentences[$i] =~ /^Sprecher\:(.*)/ ) )
+            {
+                $actors2 =~ s/\((.*?)\)//g; # Isn't a role.
+                $ce->{actors} = norm(parse_person_list(normLatin1($actors2)));;
+                $sentences[$i] = "";
+            }
+        }
+      }
+
+
+
+      $ce->{original_title} = norm(normLatin1($org_title)) if $org_title;
+
       $self->{datastorehelper}->AddProgramme( $ce );
     }
   }
@@ -143,5 +203,37 @@ sub ImportContent {
   return 1;
 }
 
+sub parse_person_list
+{
+  my( $str ) = @_;
+
+  my @persons = split( /\s*,\s*/, $str );
+  foreach (@persons)
+  {
+    # The character name is sometimes given . Remove it.
+    s/^.*\s+-\s+//;
+  }
+
+  return join( ";", grep( /\S/, @persons ) );
+}
+
+sub split_personen
+{
+  my( $t ) = @_;
+
+  return () if not defined( $t );
+
+  $t =~ s/(\S+)\:\s+([\(A-ZÅÄÖ])/;;$1: $2/g;
+
+  my @sent = grep( /\S\S/, split( ";;", $t ) );
+
+  if( scalar( @sent ) > 0 )
+  {
+    # Make sure that the last sentence ends in a proper way.
+    $sent[-1] =~ s/\s+$//;
+  }
+
+  return @sent;
+}
 
 1;
