@@ -114,17 +114,18 @@ def create_xml():
                     if programme.has_key("credits"):
                         xml_credits = ET.SubElement(xml_programme, "credits")
                         for key in credits_order:
-                            for person in programme['credits'][key]:
-                                if ( isinstance(person, basestring) ):
-                                    # Old Format
-                                    xml_credit = ET.SubElement(xml_credits, key)
-                                    xml_credit.text = person
-                                else:
-                                    if ( person.has_key("role") and person['role'] != "" ):
-                                        xml_credit = ET.SubElement(xml_credits, key, { "role": person['role'] })
-                                    else:
+                            if ( programme['credits'].has_key(key) ):
+                                for person in programme['credits'][key]:
+                                    if ( isinstance(person, basestring) ):
+                                        # Old Format
                                         xml_credit = ET.SubElement(xml_credits, key)
-                                    xml_credit.text = person['name']
+                                        xml_credit.text = person
+                                    else:
+                                        if ( person.has_key("role") and person['role'] != "" and key == "actor" ):
+                                            xml_credit = ET.SubElement(xml_credits, key, { "role": person['role'] })
+                                        else:
+                                            xml_credit = ET.SubElement(xml_credits, key)
+                                        xml_credit.text = person['name']
 
 
                     # A date COULD be there
