@@ -95,34 +95,25 @@ sub FillHash( $$$$ ) {
   return if( !defined $episode );
 
   my $episodeid = $series->{Seasons}[$episode->{SeasonNumber}][$episode->{EpisodeNumber}];
-  
+
+  #print Dumper($series);
+
   if( $episode->{SeasonNumber} == 0 ){
     # it's a special
     $resultref->{episode} = undef;
     $resultref->{subtitle} = normUtf8( norm( "Special - ".$episode->{EpisodeName} ) );
   }else{
-  	my $data = $series->{Seasons}[$episode->{SeasonNumber}];
-  	my $of_episodes = $#$data;
-  	my $currentyear = (localtime)[5] + 1900;
-  	my $FirstAired = undef;
+  	my $of_episodes = $self->{tvdb}->getMaxEpisode( $episode->{seriesid}, $episode->{SeasonNumber} );
 
-  	
-  	# Sometimes it doesn't exist
-  	if(defined($episode->{FirstAired}) and $episode->{FirstAired}) {
-	  	$FirstAired = $episode->{FirstAired};
-	    $FirstAired =~ s|^(\d{4})\-\d+\-\d+$|$1|;
-	}
-
-	# Provide of_episodes only if the firstaired of the episode is more than 1
-	# As the seasons continue mostly over 2 years. And only if the of_episodes is less than 100.
-  	if( defined($FirstAired) and abs( $FirstAired - $currentyear ) > 1 and $episode->{EpisodeNumber} <= $of_episodes and $of_episodes < 100 ) {
+	# Provide of_episodes only if the episode number isnt higher than the of_episodes, and of_episodes is lower than 100
+  	if( $episode->{EpisodeNumber} <= $of_episodes and $of_episodes < 100 ) {
   		$resultref->{episode} = sprintf( "%d . %d/%d . ", $episode->{SeasonNumber}-1, $episode->{EpisodeNumber}-1, $of_episodes );
   	} else {
     	$resultref->{episode} = ($episode->{SeasonNumber} - 1) . ' . ' . ($episode->{EpisodeNumber} - 1) . ' .';
     }
     
     # use episode title
-    $resultref->{subtitle} = normUtf8( norm( $episode->{EpisodeName} ) );
+    $resultref->{subtitle} = normUtf8( norm( $episode->{EpisodeName} ) ) if not defined $ceref->{original_subtitle};
   }
 
 # TODO skip the Overview for now, it falls back to english in a way we can not detect
@@ -146,14 +137,23 @@ sub FillHash( $$$$ ) {
       );
   }
   
+  my $tvdbactors = $self->{tvdb}->getSeriesActors( $episode->{seriesid});
 
   my @actors = ();
   # only add series actors if its not a special
   if( $episode->{SeasonNumber} != 0 ){
-    if( $series->{Actors} ) {
-      push( @actors, split( '\|', norm($series->{Actors}) ) );
+    while ( my ($actorid, $data) = each %{ $tvdbactors } ) {
+      my $name = normUtf8( $data->{Name} );
+
+      # Role played
+      if( defined ($data->{Role}) ) {
+      	$name .= " (".normUtf8($data->{Role}).")";
+      }
+
+       push @actors, $name;
     }
   }
+
   # always add the episode cast
   if( $episode->{GuestStars} ) {
     push( @actors, split( '\|', norm($episode->{GuestStars}) ) );
@@ -423,7 +423,36 @@ sub AugmentProgram( $$$ ){
         if( defined( $episode ) ) {
           $self->FillHash( $resultref, $series, $episode, $ceref );
         } else {
-          w( "episode not found by title: " . $ceref->{title} . " - \"" . $episodetitle . "\"" );
+          if(!(defined($series)) and (defined($ceref->{original_subtitle}) and $ceref->{original_subtitle} ne "")) {
+            my $org_eptitle = $ceref->{original_subtitle};
+
+            $org_eptitle =~ s|\s+-\s+Teil\s+(\d+)$| ($1)|;   # _-_Teil_#
+            $org_eptitle =~ s|\s+\/\s+Teil\s+(\d+)$| ($1)|;  # _/_Teil_#
+            $org_eptitle =~ s|,\s+Teil\s+(\d+)$| ($1)|;      # ,_Teil #
+            $org_eptitle =~ s|\s+Teil\s+(\d+)$| ($1)|;       # _Teil #
+            $org_eptitle =~ s|\s+\(Teil\s+(\d+)\)$| ($1)|;   # _(Teil_#)
+            $org_eptitle =~ s|\s+-\s+(\d+)\.\s+Teil$| ($1)|; # _-_#._Teil
+
+            $org_eptitle =~ s|\s*\(Part\s+(\d+)\)$| ($1)|;   # _(Part_#) for Comedy Central Germany
+            $org_eptitle =~ s|\s+-\s+\((\d+)\)$| ($1)|;      # _-_(#) for Comedy Central Germany
+            $org_eptitle =~ s|\bPart\s+(\d+)$| ($1)|;        # ...Part_# for Comedy Central Germany
+
+            $org_eptitle =~ s|\s*-\s+part\s+(\d+)$| ($1)|;   # _(Part_#) for Al Jazeera International
+
+            $org_eptitle =~ s|\s+-\s+(\d+)$| ($1)|;          # _-_# for ORF
+
+            # " - - " to " - " for Eisenbahnromantik on SWR, maybe happens when shuffling title/subtitle around
+            $org_eptitle =~ s|\s+-\s+-\s+| - |;
+
+            my $episode_org = $self->{tvdb}->getEpisodeByName( $series->{SeriesName}, $org_eptitle );
+            if( defined( $episode_org ) ) {
+              $self->FillHash( $resultref, $series, $episode_org, $ceref );
+            } else {
+                w( "episode not found by title nor org subtitle: " . $ceref->{title} . " - \"" . $episodetitle . "\"" );
+            }
+          } else {
+            w( "episode not found by title: " . $ceref->{title} . " - \"" . $episodetitle . "\"" );
+          }
         }
       } else {
         d( "series not found by title: " . $ceref->{title} );
