@@ -417,6 +417,12 @@ sub AugmentProgram( $$$ ){
 
         $episodetitle =~ s|\s+-\s+(\d+)$| ($1)|;          # _-_# for ORF
 
+        # Discovery
+        $episodetitle =~ s|\s+\s+| |;           # Two spaces to one space
+        $episodetitle =~ s|\s+-\s+\(| \(|;      # " - (" to " ("
+        $episodetitle =~ s|,\s+\(| \(|;         # ", (" to " ("
+        $episodetitle =~ s|\:\s+\(| \(|;        # ": (" to " ("
+
         # " - - " to " - " for Eisenbahnromantik on SWR, maybe happens when shuffling title/subtitle around
         $episodetitle =~ s|\s+-\s+-\s+| - |;
 
