@@ -79,7 +79,7 @@ sub ParseCast( $$ ) {
   @people = grep{ defined } @people;
   if( @people ) {
     # replace
-    $result = join( ', ', @people );
+    $result = join( ';', @people );
   } else {
     # remove
     $result = undef;
@@ -103,10 +103,10 @@ sub FillHash( $$$$ ) {
     $resultref->{episode} = undef;
     $resultref->{subtitle} = normUtf8( norm( "Special - ".$episode->{EpisodeName} ) );
   }else{
-  	my $of_episodes = $self->{tvdb}->getMaxEpisode( $episode->{seriesid}, $episode->{SeasonNumber} );
+  	my $of_episodes = $self->{tvdb}->getMaxEpisode( $series->{SeriesName}, $episode->{SeasonNumber} );
 
 	# Provide of_episodes only if the episode number isnt higher than the of_episodes, and of_episodes is lower than 100
-  	if( $episode->{EpisodeNumber} <= $of_episodes and $of_episodes < 100 ) {
+  	if( defined $of_episodes and $episode->{EpisodeNumber} <= $of_episodes and $of_episodes < 100 ) {
   		$resultref->{episode} = sprintf( "%d . %d/%d . ", $episode->{SeasonNumber}-1, $episode->{EpisodeNumber}-1, $of_episodes );
   	} else {
     	$resultref->{episode} = ($episode->{SeasonNumber} - 1) . ' . ' . ($episode->{EpisodeNumber} - 1) . ' .';
@@ -137,17 +137,17 @@ sub FillHash( $$$$ ) {
       );
   }
   
-  my $tvdbactors = $self->{tvdb}->getSeriesActors( $episode->{seriesid});
+  my $tvdbactors = $series->{Actor};
 
   my @actors = ();
   # only add series actors if its not a special
-  if( $episode->{SeasonNumber} != 0 ){
+  if( $episode->{SeasonNumber} != 0 and $series->{Actor} and $series->{Actor} ne "" ){
     while ( my ($actorid, $data) = each %{ $tvdbactors } ) {
-      my $name = normUtf8( $data->{Name} );
+      my $name = normUtf8( norm ( $data->{Name} ) );
 
       # Role played
       if( defined ($data->{Role}) ) {
-      	$name .= " (".normUtf8($data->{Role}).")";
+      	$name .= " (".normUtf8( norm ( $data->{Role} ) ).")";
       }
 
        push @actors, $name;
@@ -168,7 +168,7 @@ sub FillHash( $$$$ ) {
   
   if( @actors ) {
   	  # replace programme's actors
-	  $resultref->{actors} = join( ', ', @actors );
+	  $resultref->{actors} = join( ';', @actors );
 	} else {
 	  # remove existing actors from programme
 	  $resultref->{actors} = undef;
@@ -423,7 +423,7 @@ sub AugmentProgram( $$$ ){
         if( defined( $episode ) ) {
           $self->FillHash( $resultref, $series, $episode, $ceref );
         } else {
-          if(!(defined($series)) and (defined($ceref->{original_subtitle}) and $ceref->{original_subtitle} ne "")) {
+          if(!(defined($episode)) and (defined($ceref->{original_subtitle}) and $ceref->{original_subtitle} ne "")) {
             my $org_eptitle = $ceref->{original_subtitle};
 
             $org_eptitle =~ s|\s+-\s+Teil\s+(\d+)$| ($1)|;   # _-_Teil_#

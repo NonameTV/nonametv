@@ -74,7 +74,7 @@ sub FillCast( $$$$ ) {
     push( @credits, $name );
   }
   if( @credits ) {
-    $resultref->{$credit} = join( ', ', @credits );
+    $resultref->{$credit} = join( ';', @credits );
   }
 }
 
@@ -90,7 +90,7 @@ sub FillCrew( $$$$$ ) {
     }
   }
   if( @credits ) {
-    $resultref->{$credit} = join( ', ', @credits );
+    $resultref->{$credit} = join( ';', @credits );
   }
 }
 
@@ -277,7 +277,7 @@ sub AugmentProgram( $$$ ){
 
       # strip out all candidates without any matching director
       if( ( @candidates >= 1 ) and ( $ceref->{directors} ) ){
-        my @directors = split( /, /, $ceref->{directors} );
+        my @directors = split( /;/, $ceref->{directors} );
         my $match = 0;
 
         # loop over all remaining movies
