@@ -113,7 +113,7 @@ def create_xml():
                     # Credits COULD be present
                     if programme.has_key("credits"):
                         xml_credits = ET.SubElement(xml_programme, "credits")
-                        for key in programme['credits'].keys():
+                        for key in credits_order:
                             for person in programme['credits'][key]:
                                 if ( isinstance(person, basestring) ):
                                     # Old Format
