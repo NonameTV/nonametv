@@ -442,7 +442,8 @@ sub getBannerUpdate {
 ###############################################################################
 sub getUpdates {
 	my $self = shift;
-	my $period = lc shift || 'guess';
+	my $period = shift || 'guess';
+	$period = lc $period;
 	
 	&verbose(2, "TVDB::API: updates...\n");
 
