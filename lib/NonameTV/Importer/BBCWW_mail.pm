@@ -228,7 +228,7 @@ sub ImportXLS
       };
 
 	  # Extra
-	  $ce->{subtitle}        = parse_person_list(norm($oWkS->{Cells}[$iR][$columns{'Episode Title'}]->Value)) if $oWkS->{Cells}[$iR][$columns{'Episode Title'}];
+	  $ce->{subtitle}        = norm($oWkS->{Cells}[$iR][$columns{'Episode Title'}]->Value) if $oWkS->{Cells}[$iR][$columns{'Episode Title'}];
 	  $ce->{actors}          = parse_person_list(norm($oWkS->{Cells}[$iR][$columns{'Cast'}]->Value))          if defined($columns{'Cast'}) and $oWkS->{Cells}[$iR][$columns{'Cast'}];
 	  $ce->{directors}       = parse_person_list(norm($oWkS->{Cells}[$iR][$columns{'Director'}]->Value))      if defined($columns{'Director'}) and $oWkS->{Cells}[$iR][$columns{'Director'}];
 	  $ce->{presenters}      = parse_person_list(norm($oWkS->{Cells}[$iR][$columns{'Presenter'}]->Value))     if defined($columns{'Presenter'}) and $oWkS->{Cells}[$iR][$columns{'Presenter'}];
