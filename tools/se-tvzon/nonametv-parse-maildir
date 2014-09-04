@@ -281,6 +281,7 @@ sub guess_channel
     return "dk.eonline.com" if $filename =~ /^e\s*dan\b/i;
     return "no.eonline.com" if $filename =~ /^e\s*nor\b/i;
     return "eu.eonline.com" if $filename =~ /^e\s*eng\b/i;
+    return "de.online.com"  if $filename =~ /^eent\.ger\b/i and $filename =~ /\.xls$/i;
 
     # FOX TV Norway
     return "foxtv.no"       if $filename =~ /^fox\s+norway/i;
