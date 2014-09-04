@@ -68,7 +68,7 @@ sub ParseCast( $$ ) {
 
   my @people = ();
   if( $cast ) {
-    push( @people, split( '\|', $cast ) );
+    push( @people, split( '\||, ', $cast ) );
   }
   foreach( @people ){
     $_ = normUtf8( norm( $_ ) );
@@ -103,17 +103,8 @@ sub FillHash( $$$$ ) {
     $resultref->{episode} = undef;
     $resultref->{subtitle} = normUtf8( norm( "Special - ".$episode->{EpisodeName} ) );
   }else{
-  	#my $of_episodes = $self->{tvdb}->getMaxEpisode( $series->{SeriesName}, $episode->{SeasonNumber} );
+    $resultref->{episode} = ($episode->{SeasonNumber} - 1) . ' . ' . ($episode->{EpisodeNumber} - 1) . ' .';
 
-  	#if (!(ref $episode eq ref {})) { print Dumper($episode); return; }
-
-	# Provide of_episodes only if the episode number isnt higher than the of_episodes, and of_episodes is lower than 100
-  	#if( defined($of_episodes) and defined($episode->{EpisodeNumber}) and $episode->{EpisodeNumber} <= $of_episodes and $of_episodes < 100 ) {
-  	#	$resultref->{episode} = sprintf( "%d . %d/%d . ", $episode->{SeasonNumber}-1, $episode->{EpisodeNumber}-1, $of_episodes );
-  	#} else {
-    	$resultref->{episode} = ($episode->{SeasonNumber} - 1) . ' . ' . ($episode->{EpisodeNumber} - 1) . ' .';
-    #}
-    
     # use episode title
     $resultref->{subtitle} = normUtf8( norm( $episode->{EpisodeName} ) ) if not defined $ceref->{original_subtitle};
   }
