@@ -126,13 +126,15 @@ sub ImportContentFile
 
         my $title_org;
         $title_org = $xpc->findvalue( 's:titel/s:alias[@titelart="originaltitel"]/@aliastitel' );
-        $ce->{original_title} = norm($title_org) if $ce->{title} ne norm($title_org) and norm($title_org) ne "";
+        $ce->{original_title} = norm($title_org) if $title_org and $ce->{title} ne norm($title_org) and norm($title_org) ne "";
 
-        my ($folge, $staffel),
+        my ($folge, $staffel);
         my $subtitle = $xpc->findvalue( 's:titel/s:alias[@titelart="untertitel"]/@aliastitel' );
         my $subtitle_org = $xpc->findvalue( 's:titel/s:alias[@titelart="originaluntertitel"]/@aliastitel' );
         if( $subtitle ){
-          if( ( $folge, $staffel ) = ($subtitle =~ m|^Folge (\d+) \(Staffel (\d+)\)$| ) ){
+          if( ( $folge, $staffel ) = ($subtitle =~ m|^Folge (\d+) \((\d+)\. Staffel\)$| ) ){
+            $ce->{episode} = ($staffel - 1) . ' . ' . ($folge - 1) . ' .';
+          } elsif( ( $folge, $staffel ) = ($subtitle =~ m|^Folge (\d+) \(Staffel (\d+)\)$| ) ){
             $ce->{episode} = ($staffel - 1) . ' . ' . ($folge - 1) . ' .';
           } elsif( ( $staffel, $folge ) = ($subtitle =~ m|^Staffel (\d+) Folge (\d+)$| ) ){
             $ce->{episode} = ($staffel - 1) . ' . ' . ($folge - 1) . ' .';
@@ -202,7 +204,7 @@ sub ImportContentFile
         #print Dumper($ce);
 
         $ce->{description} = norm($desc) if $self->{KeepDesc} and $desc and $desc ne "";
-
+        
         $ds->AddProgrammeRaw( $ce );
 
         progress("ProSieben: $chd->{xmltvid}: ".$ce->{start_time}." - ".$ce->{title});
