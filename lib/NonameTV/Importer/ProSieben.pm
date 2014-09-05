@@ -204,7 +204,7 @@ sub ImportContentFile
         #print Dumper($ce);
 
         $ce->{description} = norm($desc) if $self->{KeepDesc} and $desc and $desc ne "";
-        
+
         $ds->AddProgrammeRaw( $ce );
 
         progress("ProSieben: $chd->{xmltvid}: ".$ce->{start_time}." - ".$ce->{title});
