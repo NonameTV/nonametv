@@ -144,14 +144,14 @@ sub ImportContent
     }
 
     # The director and actor info are children of 'credits'
-    my $directors = parse_person_list($sc->getElementsByTagName( 'director' ));
-    my $actors = parse_person_list($sc->getElementsByTagName( 'actor' ));
-    my $writers = parse_person_list($sc->getElementsByTagName( 'writer' ));
-    my $adapters = parse_person_list($sc->getElementsByTagName( 'adapter' ));
-    my $producers = parse_person_list($sc->getElementsByTagName( 'producer' ));
-    my $presenters = parse_person_list($sc->getElementsByTagName( 'presenter' ));
-    my $commentators = parse_person_list($sc->getElementsByTagName( 'commentator' ));
-    my $guests = parse_person_list($sc->getElementsByTagName( 'guest' ));
+    my $directors = parse_person_list($sc->findvalue( 'credits/director' ));
+    my $actors = parse_person_list($sc->findvalue( 'credits/actor' ));
+    my $writers = parse_person_list($sc->findvalue( 'credits/writer' ));
+    my $adapters = parse_person_list($sc->findvalue( 'credits/adapter' ));
+    my $producers = parse_person_list($sc->findvalue( 'credits/producer' ));
+    my $presenters = parse_person_list($sc->findvalue( 'credits/presenter' ));
+    my $commentators = parse_person_list($sc->findvalue( 'credits/commentator' ));
+    my $guests = parse_person_list($sc->findvalue( 'credits/guest' ));
 
     my $ce = {
       channel_id   => $chd->{id},
@@ -216,8 +216,7 @@ sub ImportContent
 			}
 		} elsif(defined($program_type) and $program_type eq "movie" and $org_title ne "") {
 			$org_title = ucfirst(lc($org_title));
-			$ce->{original_title} = norm($ce->{title});
-			$ce->{title} = norm($org_title);
+			$ce->{original_title} = norm($org_title);
 			$ce->{subtitle} = undef;
 		}
 	}
