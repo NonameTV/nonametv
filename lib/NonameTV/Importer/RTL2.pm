@@ -156,9 +156,9 @@ sub ImportXML
 
 
       if( defined( $subtitle ) and ($subtitle ne '') )
-        {
+      {
             $ce->{subtitle} = norm($subtitle);
-        }
+      }
 
      #print Dumper($ce);
 
@@ -177,8 +177,8 @@ sub ImportXML
 		my $name = norm( $act->findvalue('./pname') );
 
         # Role played - TODO: Add rolename to the actor
-        if( $act->findvalue('./rname') ) {
-        	my $role = norm( $act->findvalue('./rname') );
+        if( $act->findvalue('./rname') and norm($act->findvalue('./rname')) ne "" ) {
+        	my $name .= " (".norm( $act->findvalue('./rname') ).")";
         }
 
         push @actors, $name;
@@ -223,8 +223,6 @@ sub ImportXML
     my ( $program_type, $categ ) = $self->{datastore}->LookupCat( "RTL2", $genre );
     # movie
     if( $type eq "Film") {
-       $ce->{title} = norm($org_title) if $org_title;
-       $ce->{original_title} = norm($title) if $org_title;
        AddCategory( $ce, 'movie', $categ );
     } elsif($type eq "Serie") {
         AddCategory( $ce, 'series', $categ );
@@ -233,6 +231,10 @@ sub ImportXML
     } else {
         AddCategory( $ce, 'series', $categ );
     }
+
+    $ce->{title} = norm($title);
+    $ce->{original_title} = norm($org_title) if $org_title and $org_title ne $title;
+    $ce->{original_subtitle} = norm($subtitle_org) if $subtitle_org and $subtitle ne $subtitle_org;
 
     $ce->{aspect} = norm($aspect) if $aspect;
 
