@@ -8,6 +8,7 @@ use lib "$FindBin::Bin/../../lib";
 
 use Mail::Box;
 use Mail::Box::Manager;
+use MIME::Base64;
 
 use File::Temp qw/tempdir/;
 use File::Copy qw/move copy/;
@@ -56,7 +57,12 @@ EOHELP
 my $ds = CreateDataStore();
 
 my $root = "/home/jnylen/maildir/.Projects/";
-my @folders = qw(NonameTV-Data.Disney
+my @folders = qw(
+         NonameTV-Data.DWDE
+		 NonameTV-Data.HaC
+		 NonameTV-Data.ETVMedia
+		 NonameTV-Data.VisjonNorge
+		 NonameTV-Data.Disney
 		 NonameTV-Data.Turner
 		 NonameTV-Data.GlobalListings
 		 NonameTV-Data.France24
@@ -87,11 +93,7 @@ my @folders = qw(NonameTV-Data.Disney
 		 NonameTV-Data.Fatstone
 		 NonameTV-Data.Gospel
 		 NonameTV-Data.RTL2
-		 NonameTV-Data.DWDE
-		 NonameTV-Data.HaC
-		 NonameTV-Data.ETVMedia
-		 NonameTV-Data.VisjonNorge
-                 );
+        );
 
 # Flag messages AFTER they have been processed. Then I normally
 # only have to move the message to the correct folder.
@@ -179,8 +181,16 @@ sub process_parts
     p "Adding file $name for $channel";
 
     my $fs = GetFileStore( $chd->{grabber} );
+    my ($content);
 
-    my $content = $part->decoded->string;
+    # Channels you only want it decoded, not fucked up
+    if($channel eq "rtl2.de") {
+        $content = decode_base64($part->body);
+    } else {
+        $content = $part->decoded->string;
+    }
+
+
     #print Dumper($content);
     $fs->AddFile( $channel, $name, \$content );
   }
@@ -456,7 +466,7 @@ sub guess_channel
  }
 
  if( $dir =~ /RTL2/ and $filename =~ /\.xml$/i ) {
- # 	return "rtl2.de"; # ÅÄÖ becomes ? in their mails.
+  	return "rtl2.de"; # ÅÄÖ becomes ? in their mails.
  }
 
  if( $dir =~ /Gospel/ and $filename =~ /\.xls$/i ) {
