@@ -100,7 +100,7 @@ sub ImportXLS
   my $num_actors = 11;
   my $num_prodyear = 12;
   my $num_country = 13;
-  my $num_desc = 13;
+  my $num_desc = 14;
 
   # main loop
   #for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {

@@ -394,6 +394,12 @@ sub ImportContent {
       $ce->{production_date} = $production_date."-01-01";
     }
 
+  $ce->{presenters} = parse_person_list($ce->{presenters}) if defined $ce->{presenters};
+  $ce->{producers} = parse_person_list($ce->{producers}) if defined $ce->{producers};
+  $ce->{actors} = parse_person_list($ce->{actors}) if defined $ce->{actors};
+  $ce->{writers} = parse_person_list($ce->{writers}) if defined $ce->{writers};
+  $ce->{directors} = parse_person_list($ce->{directors}) if defined $ce->{directors};
+
     # TODO how do we handle programmes that are "inside" other programmes?
     my $DazwischenSendung = $pgm->findvalue( 'DazwischenSendung' );
     if ($DazwischenSendung ne "True") {
@@ -642,6 +648,17 @@ sub parse_subtitle
   }
 
   return $subtitle;
+}
+
+sub parse_person_list
+{
+  my( $str ) = @_;
+
+  return undef if not defined $str;
+
+  my @persons = split( /\s*,\s*/, $str );
+
+  return join( ";", grep( /\S/, @persons ) );
 }
 
 1;

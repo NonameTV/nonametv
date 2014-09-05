@@ -224,6 +224,11 @@ sub AugmentProgram( $$$ ){
     # broken dataset on Tvdb
     return( undef, 'known bad data for SOKO Leipzig, skipping' );
   }
+
+  if( $ceref->{title} eq 'Challenge' ){
+      # broken dataset on Tvdb
+  #    return( undef, 'known bad data for Challenge, skipping' );
+  }
   
   # Runned before every other "matchby", so it can guess the right "matchby" by what data which is supplied.
   if( $ruleref->{matchby} eq 'guess' ) {

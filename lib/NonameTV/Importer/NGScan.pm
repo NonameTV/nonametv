@@ -180,9 +180,22 @@ sub ImportXLS
       my $time = ParseTime($oWkC->Value) if( $oWkC->Value );
 
       # title
+      my ($title, $test);
       $oWkC = $oWkS->{Cells}[$iR][$columns{'Title'}];
-      next if( ! $oWkC );
-      my $title = $oWkC->Value if( $oWkC->Value );
+      if (defined $oWkC)
+	  {
+	    $title = norm($oWkC->Value);
+	  }
+	  else
+	  {
+	    my $oWkl = $oWkS->{Cells}[$iR][$columns{'Episode Title'}];
+		next if( ! $oWkl );
+		$test = $oWkl->Value if $oWkl->Value;
+	  }
+
+	  #$title = norm($test) if !defined($title);
+
+      next if( ! $title );
 
 	  # episode and season
       my $epino = $oWkS->{Cells}[$iR][$columns{'Ep No'}]->Value if $oWkS->{Cells}[$iR][$columns{'Ep No'}];
@@ -209,7 +222,10 @@ sub ImportXLS
       }
 
       # Extra
-      $ce->{subtitle} = norm($oWkS->{Cells}[$iR][$columns{'Episode Title'}]->Value) if $oWkS->{Cells}[$iR][$columns{'Episode Title'}];
+      if(defined($oWkS->{Cells}[$iR][$columns{'Episode Title'}]) and norm($oWkS->{Cells}[$iR][$columns{'Episode Title'}]->Value) ne $ce->{title}) {
+        $ce->{subtitle} = norm($oWkS->{Cells}[$iR][$columns{'Episode Title'}]->Value);
+      }
+
 
       # org title
       if(defined $columns{'ORGTitle'}) {
