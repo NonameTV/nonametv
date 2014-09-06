@@ -483,7 +483,7 @@ sub Import
                        AND p.start_time >= ?
                        AND p.start_time < ?
                        AND p.batch_id=b.id;',
-                      [$dt->datetime(), $dt->add (days => 1)->datetime()]);
+                      [$dt->datetime(), $dt->clone()->add (days => 1)->datetime()]);
 
       if (!$res) {
         die $sth->errstr;
@@ -505,7 +505,10 @@ sub Import
       }
 
       if ($source_last_update < $target_last_update) {
+        p ('Source data last changed ' . $source_last_update . ' and target data last changed ' . $target_last_update . " => nothing to do, continuing.\n");
         next;
+      } else {
+        p ('Source data last changed ' . $source_last_update . ' and target data last changed ' . $target_last_update . " => generating target batch.\n");
       }
 
       foreach my $chan (keys %{$channel_data{$data->{xmltvid}}})
