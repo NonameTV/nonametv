@@ -73,7 +73,7 @@ sub ImportContentFile
 
   defined( $chd->{sched_lang} ) or die "You must specify the language used for this channel (sched_lang)";
   if( $chd->{sched_lang} !~ /^en$/ and $chd->{sched_lang} !~ /^sv$/ and $chd->{sched_lang} !~ /^hr$/ and $chd->{sched_lang} !~ /^no$/
-  	  and $chd->{sched_lang} !~ /^dk$/ and $chd->{sched_lang} !~ /^nl$/ ){
+  	  and $chd->{sched_lang} !~ /^da$/ and $chd->{sched_lang} !~ /^nl$/ ){
     error( "GlobalListings: $chd->{xmltvid} Unsupported language '$chd->{sched_lang}'" );
     return;
   }
@@ -680,7 +680,7 @@ sub ParseDate
         ( $weekday, $day, $monthname, $year ) = ( $text =~ /^(\S+?)\s*(\d+)\s*(\S+?)\s*(\d+)$/ );
       }
 
-  } elsif( $lang =~ /^dk$/ ){
+  } elsif( $lang =~ /^da$/ ){
 
       # try 'Tisdag 3 Juni 2008'
       if( $text =~ /^(mandag|tirsdag|onsdag|torsdag|fredag|lørdag|søndag)\s*\d+\.\s*\D+\s*\d+$/i ){
