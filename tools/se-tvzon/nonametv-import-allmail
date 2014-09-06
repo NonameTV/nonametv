@@ -36,10 +36,14 @@ tools/nonametv-import HaC $1 $2 $3
 
 # Boomerang and Cartoon network
 tools/nonametv-import Turner_doc $1 $2 $3
+tools/nonametv-import Turner_xml $1 $2 $3
+tools/nonametv-import Turner $1 $2 $3
 tools/nonametv-import TCM_doc $1 $2 $3
+
 tools/nonametv-import VH1Classic $1 $2 $3
 
 tools/nonametv-import GlobalListings_xls $1 $2 $3
+tools/nonametv-import History_xml $1 $2 $3
 
 tools/nonametv-import VisjonNorge $1 $2 $3
 
@@ -48,7 +52,6 @@ tools/nonametv-import RTL2 $1 $2 $3
 tools/nonametv-import ProSieben $1 $2 $3
 tools/nonametv-import Ginx $1 $2 $3
 
-tools/nonametv-import Turner $1 $2 $3
 tools/nonametv-import TV8Norge $1 $2 $3
 
 tools/nonametv-import Motors $1 $2 $3

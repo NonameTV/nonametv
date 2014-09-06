@@ -50,11 +50,6 @@ $channel_data{ "SVTK" } = "kunskapskanalen.svt.se";
     my $cftype = join(',', File::Util->file_type( "/nonametv/autoupload/svt/$cff" ) );
     my $fsftype = join(',', File::Util->file_type( "/nonametv/autoupload/svt/$cff" ) );
 
-    if( $cff !~ /\.xml$/i ){
-        #progress( "File $org_cff isn't a xml file - skipping" );
-        next;
-    }
-
     if( not exists( $channel_data{$id} ) )
     {
         print "Files with name $id hasnt been specified as a channel.\n";

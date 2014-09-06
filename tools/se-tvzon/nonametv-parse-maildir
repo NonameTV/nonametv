@@ -184,7 +184,8 @@ sub process_parts
     my ($content);
 
     # Channels you only want it decoded, not fucked up
-    if($channel eq "rtl2.de") {
+    if($channel eq "rtl2.de" or $channel eq "historytv.se" or
+       $channel eq "historytv.no" or $channel eq "historytv.dk") {
         $content = decode_base64($part->body);
     } else {
         $content = $part->decoded->string;
@@ -274,12 +275,13 @@ sub guess_channel
     return "wild.natgeo.se" if $filename =~ /^ngwscan\s*\b/i;
 
 	# History Channel
-	if($filename =~ /\.doc$/i) {
+	if($filename =~ /\.xml$/i) {
         return "historytv.se"  if $filename =~ /his.eur.swe/i;
         return "historytv.no"  if $filename =~ /his.eur.nor/i;
         return "historytv.dk"  if $filename =~ /his.eur.dan/i;
-        return "historytv.eu"  if $filename =~ /his.eur.eng/i;
     }
+
+    return "historytv.eu"  if $filename =~ /his.eur.eng/i and $filename =~ /\.doc$/i;
 
     return "natgeotv.com" if $filename =~ /^ngscan/i and $filename =~ /\.xls$/i;
 
@@ -291,7 +293,7 @@ sub guess_channel
     return "dk.eonline.com" if $filename =~ /^e\s*dan\b/i;
     return "no.eonline.com" if $filename =~ /^e\s*nor\b/i;
     return "eu.eonline.com" if $filename =~ /^e\s*eng\b/i;
-    return "de.online.com"  if $filename =~ /^eent\.ger\b/i and $filename =~ /\.xls$/i;
+    return "de.eonline.com"  if $filename =~ /^eent\.ger\b/i and $filename =~ /\.xls$/i;
 
     # FOX TV Norway
     return "foxtv.no"       if $filename =~ /^fox\s+norway/i;
