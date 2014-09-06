@@ -98,7 +98,8 @@ sub ImportXML
   foreach my $row ($rows->get_nodelist) {
 
       my $time = $row->findvalue( './/BROADCAST_START_DATETIME' );
-      my $title = $row->findvalue( './/PROGRAMME//PROGRAMME_TITLE_ORIGINAL' );
+      my $title = $row->findvalue( './/BROADCAST_TITLE' );
+      my $title_org = $row->findvalue( './/PROGRAMME//PROGRAMME_TITLE_ORIGINAL' );
       my $start = $self->create_dt( $row->findvalue( './/BROADCAST_START_DATETIME' ) );
       my $end = $self->create_dt( $row->findvalue( './/BROADCAST_END_TIME' ) );
       
@@ -119,6 +120,7 @@ sub ImportXML
 
 	  # extra info
 	  my $subtitle = $row->findvalue( './/PROGRAMME//PROGRAMME_SUBTITLE_ORIGINAL' );
+	  my $subtitle_org = $row->findvalue( './/BROADCAST_SUBTITLE' );
 	  my $season = $row->findvalue( './/PROGRAMME//SERIES_NUMBER' );
 	  my $episode = $row->findvalue( './/PROGRAMME//EPISODE_NUMBER' );
 	  my $of_episode = $row->findvalue( './/PROGRAMME//NUMBER_OF_EPISODES' );
@@ -159,6 +161,9 @@ sub ImportXML
       {
         $ce->{episode} = sprintf( ". %d .", $episode-1 );
       }
+
+      $ce->{original_title}    = norm($title_org) if defined $title_org and norm($title_org) ne $ce->{title} and $title_org ne "";
+      $ce->{original_subtitle} = norm($subtitle_org) if defined $subtitle_org and norm($subtitle_org) ne $ce->{title} and norm($subtitle_org) ne norm($subtitle) and $subtitle_org ne "";
       
       progress( "HistoryXML: $chd->{xmltvid}: $start - $title" );
       $ds->AddProgramme( $ce );
