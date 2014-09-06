@@ -91,13 +91,9 @@ sub ImportXML
   progress( "SvtXML: $chd->{xmltvid}: Processing XML $file" );
 
 
-  #my $cref = do{local(@ARGV,$/)=$file;<>};
-  my $cref=`cat \"$file\"`;
-  #$cref =~ s|&#(\d+);|chr($1)|eg;
-
   my $doc;
   my $xml = XML::LibXML->new;
-  eval { $doc = $xml->parse_string($cref); };
+  eval { $doc = $xml->parse_file($file); };
 
   if( not defined( $doc ) ) {
     error( "SvtXML: $file: Failed to parse xml" );
