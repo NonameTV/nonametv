@@ -122,7 +122,7 @@ def create_xml():
                                         xml_credit.text = person
                                     else:
                                         if ( person.has_key("role") and person['role'] != "" and key == "actor" ):
-                                            xml_credit = ET.SubElement(xml_credits, key, { "role": person['role'] })
+                                            xml_credit = ET.SubElement(xml_credits, key, { "role": person['role'].replace('"','\"') })
                                         else:
                                             xml_credit = ET.SubElement(xml_credits, key)
                                         xml_credit.text = person['name']
