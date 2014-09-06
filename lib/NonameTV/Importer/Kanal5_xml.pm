@@ -75,7 +75,6 @@ sub ImportXML
   #$ds->{SILENCE_DUPLICATE_SKIP}=1;
 
   my $doc;
-  #my $cref=`cat $file`;
   my $xml = XML::LibXML->new;
   eval { $doc = $xml->parse_file($file); };
 
