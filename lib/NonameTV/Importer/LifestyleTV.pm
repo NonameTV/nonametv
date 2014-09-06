@@ -103,10 +103,6 @@ sub ImportXLS {
   for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
 
     my $oWkS = $oBook->{Worksheet}[$iSheet];
-    if( $oWkS->{Name} !~ /1/ ){
-      progress( "LifestyleTV: Skipping other sheet: $oWkS->{Name}" );
-      next;
-    }
 
     progress( "LifestyleTV: Processing worksheet: $oWkS->{Name}" );
 
