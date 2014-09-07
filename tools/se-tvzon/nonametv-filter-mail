@@ -39,6 +39,9 @@ foreach my $msg ($infolder->messages) {
   elsif( $fromaddr =~ /\@googlemail.com/i ) {
     MoveMessage( $msg, "Gmail" );
   }
+  elsif( $fromaddr =~ /\@protv.ro/i ) {
+    MoveMessage( $msg, "Gmail" );
+  }
   elsif( $fromaddr =~ /\@france24.com/i ) {
     MoveMessage( $msg, "France24" );
   }

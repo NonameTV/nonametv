@@ -347,6 +347,7 @@ sub guess_channel
      # XLS
      if($filename =~ /\.xls$/i) {
         return "privatespice.com" if $filename =~ /^private/i;
+        return "protv.ro" if $from =~ /\@protv.ro/i;
      }
 
      # Word
