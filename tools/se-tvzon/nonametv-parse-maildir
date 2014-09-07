@@ -57,14 +57,7 @@ EOHELP
 my $ds = CreateDataStore();
 
 my $root = "/home/jnylen/maildir/.Projects/";
-my @folders = qw(
-         NonameTV-Data.DWDE
-		 NonameTV-Data.HaC
-		 NonameTV-Data.ETVMedia
-		 NonameTV-Data.VisjonNorge
-		 NonameTV-Data.Disney
-		 NonameTV-Data.Turner
-		 NonameTV-Data.GlobalListings
+my @folders = qw(NonameTV-Data.GlobalListings
 		 NonameTV-Data.France24
 		 NonameTV-Data.CNBC
 		 NonameTV-Data.OUTTV
@@ -93,6 +86,12 @@ my @folders = qw(
 		 NonameTV-Data.Fatstone
 		 NonameTV-Data.Gospel
 		 NonameTV-Data.RTL2
+		 NonameTV-Data.DWDE
+		 NonameTV-Data.HaC
+		 NonameTV-Data.ETVMedia
+		 NonameTV-Data.VisjonNorge
+		 NonameTV-Data.Disney
+		 NonameTV-Data.Turner
         );
 
 # Flag messages AFTER they have been processed. Then I normally
@@ -185,7 +184,8 @@ sub process_parts
 
     # Channels you only want it decoded, not fucked up
     if($channel eq "rtl2.de" or $channel eq "historytv.se" or
-       $channel eq "historytv.no" or $channel eq "historytv.dk") {
+       $channel eq "historytv.no" or $channel eq "historytv.dk" or
+       $channel eq "historytv.eu" or $channel eq "crimeandinvestigation.eu") {
         $content = decode_base64($part->body);
     } else {
         $content = $part->decoded->string;
@@ -279,9 +279,9 @@ sub guess_channel
         return "historytv.se"  if $filename =~ /his.eur.swe/i;
         return "historytv.no"  if $filename =~ /his.eur.nor/i;
         return "historytv.dk"  if $filename =~ /his.eur.dan/i;
+        return "historytv.eu"  if $filename =~ /his.eur.eng/i;
+        return "crimeandinvestigation.eu"  if $filename =~ /cai.eng/i;
     }
-
-    return "historytv.eu"  if $filename =~ /his.eur.eng/i and $filename =~ /\.doc$/i;
 
     return "natgeotv.com" if $filename =~ /^ngscan/i and $filename =~ /\.xls$/i;
 
