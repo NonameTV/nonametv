@@ -164,11 +164,14 @@ sub FillHash( $$$ ) {
 
   if( exists( $movie->info()->{genres} ) ){
     my @genres = @{ $movie->info()->{genres} };
+    my @cats;
     foreach my $node ( @genres ) {
       my $genre_id = $node->{id};
       my ( $type, $categ ) = $self->{datastore}->LookupCat( "Tmdb_genre", $genre_id );
-      AddCategory( $resultref, $type, $categ );
+      push @cats, $categ if defined $categ;
     }
+    my $cat = join "/", @cats;
+    AddCategory( $resultref, "movie", $cat );
   }
 
   if( exists( $movie->info()->{production_countries} ) ){
