@@ -24,7 +24,7 @@ use XML::LibXML;
 use HTTP::Date;
 use Data::Dumper;
 
-use NonameTV qw/ParseXml norm AddCategory/;
+use NonameTV qw/ParseXml norm AddCategory AddCountry/;
 use NonameTV::Log qw/w progress error f/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Importer::BaseWeekly;
@@ -221,8 +221,14 @@ sub ImportContent {
 	  {
 	  	push @actors, $act->to_literal;
 	  }
-	  
-	  
+
+	  my @countries;
+      my $ns4 = $emission->find( './/country' );
+      foreach my $con ($ns4->get_nodelist)
+	  {
+	  	push @countries, norm($con->to_literal);
+	  }
+
 	  my $ce = {
 	      title       => norm($name),
 	      description => norm($desc),
@@ -240,6 +246,11 @@ sub ImportContent {
       if( scalar( @actors ) > 0 )
 	  {
 	      $ce->{actors} = join ";", @actors;
+	  }
+
+      if( scalar( @countries ) > 0 )
+	  {
+	      $ce->{country} = join "/", @countries;
 	  }
 	  
 	  # prod year
