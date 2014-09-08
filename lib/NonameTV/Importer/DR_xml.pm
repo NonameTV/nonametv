@@ -16,7 +16,7 @@ use DateTime;
 use XML::LibXML;
 use Roman;
 
-use NonameTV qw/ParseXml AddCategory norm/;
+use NonameTV qw/ParseXml AddCategory AddCountry norm/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/w f p/;
 
@@ -155,7 +155,10 @@ sub ImportContent {
       {
         $ce->{episode} = sprintf( ". %d .", $episode-1 );
       }
-    
+
+    my($country2 ) = $ds->LookupCountry( "DR", norm($country) );
+    AddCountry( $ce, $country2 );
+
     $ce->{aspect} = '4:3';
     
     my $widescreen =  $b->findvalue( 'pro_publish[1]/ppu_video' );
