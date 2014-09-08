@@ -32,7 +32,7 @@ BEGIN {
 		      File2Xml Content2Xml
 		      FindParagraphs
                       norm normLatin1 normUtf8
-                      AddCategory
+                      AddCategory AddCountry
                       ParseDescCatSwe FixProgrammeData
 		      ParseXml ParseXmltv ParseJson
                       MonthNumber DayNumber
@@ -423,6 +423,27 @@ sub AddCategory
   {
     $ce->{category} = $category;
   }
+}
+
+=item AddCountry
+
+Add country to an entry if the entry does not already
+have a country.
+
+AddCountry( $ce, $country );
+
+=cut
+
+sub AddCountry
+{
+  my( $ce, $country ) = @_;
+
+  if( not defined( $ce->{country} ) and defined( $country )
+      and ( $country =~ /\S/ ) )
+  {
+    $ce->{country} = $country;
+  }
+
 }
 
 =item ParseDescCatSwe

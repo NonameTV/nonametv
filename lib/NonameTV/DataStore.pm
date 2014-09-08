@@ -455,9 +455,7 @@ sub ClearChannel {
 
   my $deleted = $self->{sa}->Delete( 'programs', { channel_id => $chid } );
 
-  my $xmltvid = $self->{sa}->Lookup( 'channels', { id => $chid }, 'xmltvid' );
-
-  $self->{sa}->DoSql( "delete from batches where name like '${xmltvid}_%'", [] );
+  $self->{sa}->DoSql( "delete from batches where name like '${chid}_%'", [] );
   $self->{sa}->Delete( 'files', { channelid => $chid } );
 
   return $deleted;
@@ -535,6 +533,55 @@ sub LookupCat {
 
   if ( defined( $self->{categories}->{"$type++$org"} ) ) {
     return @{ ( $self->{categories}->{"$type++$org"} ) };
+  }
+  else {
+    return ( undef, undef );
+  }
+
+}
+
+sub LookupCountry {
+  my $self = shift;
+  my ( $type, $org ) = @_;
+
+  return ( undef, undef ) if ( not defined($org) ) or ( $org !~ /\S/ );
+
+  $org =~ s/^\s+//;
+  $org =~ s/\s+$//;
+
+  # I should be using locales, but I don't dare turn them on.
+  $org = lc($org);
+  $org =~ tr/ÅÄÖ/åäö/;
+
+  # The field has room for 50 characters. Unicode may occupy
+  # several bytes with one character.
+  # Treat all countries with the same X character prefix
+  # as equal.
+  $org = substr( $org, 0, 44 );
+
+  $self->LoadCountries()
+    if not exists( $self->{countries} );
+
+  if ( not exists( $self->{countries}->{"$type++$org"} ) ) {
+
+    # MySQL considers some characters as equal, e.g. e and é.
+    # Trying to insert both anime and animé will give an error-message
+    # from MySql. Therefore, I try to lookup the new entry before adding
+    # it to see if MySQL thinks it already exists. I should probably
+    # normalize the strings before inserting them instead...
+    my $data =
+      $self->{sa}->Lookup( "trans_country", { type => $type, original => $org } );
+    if ( defined($data) ) {
+      $self->{countries}->{ $type . "++" . $org } =
+        [ $data->{country} ];
+    }
+    else {
+      $self->AddCountry( $type, $org );
+    }
+  }
+
+  if ( defined( $self->{countries}->{"$type++$org"} ) ) {
+    return @{ ( $self->{countries}->{"$type++$org"} ) };
   }
   else {
     return ( undef, undef );
@@ -628,6 +675,41 @@ sub AddCategory {
     }
   );
   $self->{categories}->{"$type++$org"} = [ undef, undef ];
+}
+
+sub LoadCountries {
+  my $self = shift;
+
+  my $d = {};
+
+  my $sth = $self->{sa}->Iterate( 'trans_country', {} );
+  if ( not defined($sth) ) {
+    $self->{countries} = {};
+    w "No countries found in database.";
+    return;
+  }
+
+  while ( my $data = $sth->fetchrow_hashref() ) {
+    $d->{ $data->{type} . "++" . $data->{original} } =
+      [ $data->{country} ];
+  }
+  $sth->finish();
+
+  $self->{countries} = $d;
+}
+
+sub AddCountry {
+  my $self = shift;
+  my ( $type, $org ) = @_;
+
+  $self->{sa}->Add(
+    'trans_country',
+    {
+      type     => $type,
+      original => $org
+    }
+  );
+  $self->{countries}->{"$type++$org"} = [ undef, undef ];
 }
 
 =item sa
