@@ -895,6 +895,7 @@ ProSieben_genre,doku-soap,Soap/Documentary,
 ProSieben_genre,dokumentation,Documentary,
 ProSieben_genre,dokutainment,Dcoumentary/Entertainment,
 ProSieben_genre,drama,Drama,
+ProSieben_genre,entertainment,Entertainment,
 ProSieben_genre,ermittler-doku,Documentary,
 ProSieben_genre,familie,Family,
 ProSieben_genre,fantastisch,Fantasy,
@@ -925,7 +926,7 @@ ProSieben_genre,zeichentrickfilm,Animated,
 ProSieben_main,dokumentation/reportage,Documentary,
 ProSieben_main,film,\N,movie
 ProSieben_main,information,\N,tvshow
-ProSieben_main,magazin/ratgeber,\N,series
+ProSieben_main,magazin/ratgeber,\N,tvshow
 ProSieben_main,serie,\N,series
 ProSieben_main,show/unterhaltung,\N,series
 ProSieben_main,sonstiges,\N,series
@@ -1095,6 +1096,33 @@ SBSTV,"fodbold fra den spanske liga.",Football,sports
 SBSTV,"fransk actionfilm",\N,movie
 SBSTV,"new zealandsk dokumentarserie.",Documentary,series
 SBSTV,"tysk animationsfilm",\N,movie
+SRF,serie,\N,series
+SRF,"serie (animation)",Animation,series
+SRF,"serie (arzt)",\N,series
+SRF,"serie (drama)",Drama,series
+SRF,"serie (familie)",Family,series
+SRF,"serie (komödie)",Comedy,series
+SRF,"serie (krimi / thriller)",Crime/Thriller,series
+SRF,"serie (sciencefiction / fantasy / mystery)",Sci-Fi/Fantasy/Mystery,series
+SRF,"serie (sitcom)",Sitcom,series
+SRF,"serie (telenovela)",\N,series
+SRF,spielfilm,\N,movie
+SRF,"spielfilm (action / adventure)",Action/Adventure,movie
+SRF,"spielfilm (animationsfilm)",Animation,movie
+SRF,"spielfilm (dokumentarfilm)",Documentary,movie
+SRF,"spielfilm (drama)",Drama,movie
+SRF,"spielfilm (horrorfilm)",Horror,movie
+SRF,"spielfilm (jugendfilm)",\N,movie
+SRF,"spielfilm (klamauk)",\N,movie
+SRF,"spielfilm (komödie)",Comedy,movie
+SRF,"spielfilm (krimi / thriller)",Crime/Thriller,movie
+SRF,"spielfilm (krimi)",Crime,movie
+SRF,"spielfilm (kurzfilm)",\N,movie
+SRF,"spielfilm (musikfilm)",Music,movie
+SRF,"spielfilm (romanze)",Romance,movie
+SRF,"spielfilm (sciencefiction / fantasy)",Sci-Fi/Fantasy,movie
+SRF,"spielfilm (western)",Western,movie
+SRF,sport,\N,sports
 Svt,barn,Children's,
 Svt,film,,movie
 Svt,musik/dans,Music,
@@ -1308,6 +1336,19 @@ Tmdb_genre,878,Sci-Fi,
 Tmdb_genre,9648,Mystery,
 Tmdb_genre,9805,Sports,
 Tmdb_genre,99,Documentary,
+Turner_xml,action,Action,
+Turner_xml,adventure,Adventure,
+Turner_xml,animated,Animation,
+Turner_xml,comedy,Comedy,
+Turner_xml,crime,Crime,
+Turner_xml,drama,Drama,
+Turner_xml,historical,History,
+Turner_xml,musical,Musical,
+Turner_xml,mystery,Mystery,
+Turner_xml,political,Politics,
+Turner_xml,sit-com,Sitcom,
+Turner_xml,thriller,Thriller,
+Turner_xml,western,Western,
 TV2Denmark,børn,Children's,series
 TV2Denmark,dokumentar/aktualitet,Documentary,series
 TV2Denmark,film,Movies,movie

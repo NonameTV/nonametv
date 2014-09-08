@@ -380,7 +380,7 @@
 257,Tvrage,"Det stora matkriget",program_type,series,25453,episodeseason
 255,Tvdb,"Battlestar Galactica",program_type,series,73545,episodeseason
 320,Tvdb,^.*$,program_type,series,\N,episodetitle
-321,Tvdb,^.*$,\N,\N,\N,episodetitle
+321,Tvdb,^.*$,\N,\N,\N,guess
 268,Tvdb,^.*$,program_type,series,\N,episodetitle
 295,TvdbNO,^.*$,program_type,series,\N,episodeseason
 295,TvdbNO,Dallas,program_type,series,\N,episodeseason
@@ -549,7 +549,7 @@
 442,TvdbDK,^.*$,program_type,series,\N,episodeseason
 443,TvdbEN,^.*$,program_type,series,\N,episodetitle
 501,TvdbEN,^.*$,program_type,series,\N,episodetitle
-441,TvdbDK,^.*$,program_type,series,\N,episodeseason
+441,TvdbDK,^.*$,program_type,series,\N,guess
 443,TvdbDK,^.*$,"program_type
 ",series,\N,episodeseason
 501,TvdbDK,^.*$,program_type,series,\N,episodeseason
@@ -557,8 +557,8 @@
 528,Tvdb,"Don't Trust The B**** In Apartment 23",program_type,series,248812,episodeseason
 685,TvdbNO,^.*$,program_type,series,\N,episodeseason
 686,TvdbNO,^.*$,program_type,series,\N,episodeseason
-708,TvdbNO,^.*$,program_type,series,\N,episodeseason
-701,TvdbNO,^.*$,program_type,series,\N,episodeseason
+708,TvdbNO,^.*$,program_type,series,\N,guess
+701,TvdbNO,^.*$,program_type,series,\N,guess
 704,TvdbNO,^.*$,program_type,series,\N,episodeseason
 725,TvdbNO,^.*$,program_type,series,\N,episodeseason
 726,TvdbNO,^.*$,program_type,series,\N,episodeseason
@@ -669,8 +669,8 @@
 851,TvdbFI,^.*$,program_type,series,\N,episodeseason
 852,TvdbFI,^.*$,program_type,series,\N,episodeseason
 856,TvdbFI,^.*$,program_type,series,\N,episodeseason
-858,TvdbEN,^.*$,\N,\N,\N,episodetitle
-857,TvdbEN,^.*$,\N,\N,\N,episodetitle
+858,TvdbNO,^.*$,\N,\N,\N,guess
+857,TvdbDK,^.*$,\N,\N,\N,guess
 625,Fixups,"Strike Back - Project Dawn (V+VI)",program_type,series,"Strike Back",replacetitle
 625,TvdbDE,Flashpoint,program_type,series,82438,episodetitle
 852,Fixups,"The Hero",program_type,series,"The Hero (2013)",replacetitle
@@ -727,7 +727,6 @@
 876,TvdbEN,Jackass,program_type,series,\N,episodetitle
 882,TvdbEN,Jackass,program_type,series,\N,episodetitle
 875,TvdbEN,Jackass,program_type,series,\N,episodetitle
-441,TvdbEN,^.*$,program_type,series,\N,episodetitle
 442,TvdbEN,^.*$,program_type,series,\N,episodetitle
 442,TvdbEN,Mistresses,program_type,series,259054,episodetitle
 442,TvdbDK,Mistresses,program_type,series,259054,episodeseason
@@ -739,19 +738,19 @@
 615,TvdbEN,^.*$,program_type,series,\N,episodeseason
 891,TvdbEN,^.*$,program_type,series,\N,episodetitle
 893,TvdbFI,^.*$,program_type,series,\N,episodeseason
-899,TvdbFI,^.*$,program_type,series,\N,episodeseason
-904,TvdbFI,^.*$,program_type,series,\N,episodeseason
+899,TvdbFI,^.*$,program_type,series,\N,guess
+904,TvdbFI,^.*$,program_type,series,\N,guess
 905,TvdbFI,^.*$,program_type,series,\N,episodeseason
 903,TvdbFI,^.*$,program_type,series,\N,episodeseason
 909,TvdbFI,^.*$,program_type,series,\N,episodeseason
 910,TvdbFI,^.*$,program_type,series,\N,episodeseason
 911,TvdbFI,^.*$,program_type,series,\N,episodeseason
-925,TvdbEN,^.*$,program_type,series,\N,episodeseason
+925,TvdbDK,^.*$,program_type,series,\N,guess
 926,TvdbEN,^.*$,program_type,series,\N,episodeseason
 924,TvdbEN,^.*$,program_type,series,\N,episodeseason
-921,TvdbEN,^.*$,program_type,series,\N,episodeseason
-503,TvdbEN,^.*$,program_type,series,\N,episodeseason
-504,TvdbEN,^.*$,program_type,series,\N,episodeseason
+921,TvdbDK,^.*$,program_type,series,\N,guess
+503,TvdbDK,^.*$,program_type,series,\N,guess
+504,TvdbDK,^.*$,program_type,series,\N,guess
 931,TvdbDK,^.*$,program_type,series,\N,episodeseason
 932,TvdbNO,^.*$,program_type,series,\N,episodeseason
 933,TvdbFI,^.*$,program_type,series,\N,episodeseason
@@ -763,7 +762,7 @@
 940,TvdbNL,^.*$,program_type,series,\N,episodeseason
 260,Tvdb,"Good guys",program_type,series,140101,episodeseason
 941,TvdbEN,^.*$,\N,\N,\N,episodetitle
-942,TvdbEN,^.*$,\N,\N,\N,episodetitle
+942,TvdbEN,^.*$,\N,\N,\N,guess
 485,TvdbEN,^.*$,"program_type
 ",series,\N,episodeseason
 487,TvdbEN,^.*$,"program_type
@@ -800,15 +799,15 @@
 947,Tvdb,^.*$,program_type,series,\N,guess
 951,TvdbDK,^.*$,program_type,series,\N,guess
 952,TvdbEN,^.*$,\N,\N,\N,guess
-973,TvdbEN,^.*$,program_type,series,\N,guess
-974,TvdbEN,^.*$,program_type,series,\N,guess
-975,TvdbEN,^.*$,program_type,series,\N,guess
-976,TvdbEN,^.*$,program_type,series,\N,guess
-977,TvdbEN,^.*$,program_type,series,\N,guess
-978,TvdbEN,^.*$,program_type,series,\N,guess
-979,TvdbEN,^.*$,program_type,series,\N,guess
-980,TvdbEN,^.*$,program_type,series,\N,guess
-981,TvdbEN,^.*$,program_type,series,\N,guess
+973,TvdbDE,^.*$,program_type,series,\N,guess
+974,TvdbDE,^.*$,program_type,series,\N,guess
+975,TvdbDE,^.*$,program_type,series,\N,guess
+976,TvdbDE,^.*$,program_type,series,\N,guess
+977,TvdbDE,^.*$,program_type,series,\N,guess
+978,TvdbDE,^.*$,program_type,series,\N,guess
+979,TvdbDE,^.*$,program_type,series,\N,guess
+980,TvdbDE,^.*$,program_type,series,\N,guess
+981,TvdbDE,^.*$,program_type,series,\N,guess
 985,TvdbEN,^.*$,program_type,series,\N,guess
 986,TvdbEN,^.*$,program_type,series,\N,guess
 987,TvdbEN,^.*$,program_type,series,\N,guess
@@ -819,4 +818,41 @@
 992,TvdbEN,^.*$,program_type,series,\N,guess
 993,TvdbEN,^.*$,program_type,series,\N,guess
 994,TvdbEN,^.*$,program_type,series,\N,guess
-972,TvdbEN,^.*$,program_type,series,\N,guess
+972,TvdbDE,^.*$,program_type,series,\N,guess
+1001,TvdbDE,^.*$,program_type,series,\N,guess
+1002,TvdbDE,^.*$,program_type,series,\N,guess
+1003,TvdbDE,^.*$,program_type,series,\N,guess
+1015,TvdbEN,^.*$,program_type,series,\N,guess
+1021,TvdbDE,^.*$,program_type,series,\N,guess
+972,TvdbDE,Castle,program_type,series,83462,guess
+973,TvdbDE,Castle,program_type,series,83462,guess
+974,TvdbDE,Castle,program_type,series,83462,guess
+975,TvdbDE,Castle,program_type,series,83462,guess
+976,TvdbDE,Castle,program_type,series,83462,guess
+977,TvdbDE,Castle,program_type,series,83462,guess
+978,TvdbDE,Castle,program_type,series,83462,guess
+980,TvdbDE,Castle,program_type,series,83462,guess
+981,TvdbDE,Castle,program_type,series,83462,guess
+994,TvdbDE,Castle,program_type,series,83462,guess
+316,TvdbEN,^.*$,program_type,series,\N,guess
+822,TvdbEN,^.*$,program_type,series,\N,guess
+823,TvdbEN,^.*$,program_type,series,\N,guess
+1022,TvdbDE,^.*$,program_type,series,\N,guess
+1024,TvdbDE,^.*$,program_type,series,\N,guess
+1023,TvdbDE,^.*$,program_type,series,\N,guess
+1025,TvdbDE,^.*$,program_type,series,\N,guess
+1026,TvdbDE,^.*$,program_type,series,\N,guess
+1027,TvdbEN,^.*$,\N,\N,\N,guess
+812,TvdbDK,^.*$,program_type,series,\N,guess
+813,TvdbFI,^.*$,program_type,series,\N,guess
+814,TvdbDK,^.*$,program_type,series,\N,guess
+815,TvdbFI,^.*$,program_type,series,\N,guess
+816,TvdbDK,^.*$,program_type,series,\N,guess
+817,TvdbFI,^.*$,program_type,series,\N,guess
+818,TvdbDK,^.*$,program_type,series,\N,guess
+819,TvdbFI,^.*$,program_type,series,\N,guess
+820,TvdbDK,^.*$,program_type,series,\N,guess
+821,TvdbFI,^.*$,program_type,series,\N,guess
+464,Tvdb,^.*$,program_type,series,\N,guess
+465,Tvdb,^.*$,program_type,series,\N,guess
+458,Tvdb,^.*$,program_type,series,\N,guess
