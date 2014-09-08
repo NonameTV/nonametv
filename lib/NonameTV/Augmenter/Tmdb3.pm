@@ -8,7 +8,7 @@ use Encode;
 use utf8;
 use TMDB;
 
-use NonameTV qw/AddCategory norm ParseXml/;
+use NonameTV qw/AddCategory AddCountry norm ParseXml/;
 use NonameTV::Augmenter::Base;
 use NonameTV::Config qw/ReadConfig/;
 use NonameTV::Log qw/w d/;
@@ -168,6 +168,15 @@ sub FillHash( $$$ ) {
       my $genre_id = $node->{id};
       my ( $type, $categ ) = $self->{datastore}->LookupCat( "Tmdb_genre", $genre_id );
       AddCategory( $resultref, $type, $categ );
+    }
+  }
+
+  if( exists( $movie->info()->{production_countries} ) ){
+    my @production_countries = @{ $movie->info()->{production_countries} };
+    foreach my $node2 ( @production_countries ) {
+      my $c_id = $node2->{iso_3166_1};
+      my ( $country ) = $self->{datastore}->LookupCountry( "Tmdb_country", $c_id );
+      AddCountry( $resultref, $country );
     }
   }
 
