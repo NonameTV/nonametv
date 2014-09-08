@@ -485,7 +485,11 @@ sub guess_channel
  }
 
  if( $dir =~ /DWDE/ and $filename =~ /\.xls|.xlsx$/i ) {
-    return "dw.de";
+    return "dw.de" if $filename =~ /Europa/i;
+    return "asien.dw.de" if $filename =~ /Asien/i;
+    return "english.dw.de" if $filename =~ /English/i;
+    return "la.dw.de" if $filename =~ /Latino/i;
+    return "amerika.dw.de" if $filename =~ /Amerika/i;
  }
 
  if( $dir =~ /HaC/ and $filename =~ /\.xls|.xlsx$/i ) {
