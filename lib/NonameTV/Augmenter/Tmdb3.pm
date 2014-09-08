@@ -172,12 +172,15 @@ sub FillHash( $$$ ) {
   }
 
   if( exists( $movie->info()->{production_countries} ) ){
+    my @countries;
     my @production_countries = @{ $movie->info()->{production_countries} };
     foreach my $node2 ( @production_countries ) {
       my $c_id = $node2->{iso_3166_1};
       my ( $country ) = $self->{datastore}->LookupCountry( "Tmdb_country", $c_id );
-      AddCountry( $resultref, $country );
+      push @countries, $country;
     }
+    my $country2 = join "/", @countries;
+    AddCountry( $resultref, $country2 );
   }
 
   # TODO themoviedb does not store a year of production only the first screening, that should go to previosly-shown instead
