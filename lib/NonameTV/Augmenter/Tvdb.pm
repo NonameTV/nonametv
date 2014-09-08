@@ -111,7 +111,7 @@ sub FillHash( $$$$ ) {
 
 # TODO skip the Overview for now, it falls back to english in a way we can not detect
 #  if( defined( $episode->{Overview} ) and ($episode->{Language} eq $self->{Language}) and !defined($resultref->{description}) ) {
-#    $resultref->{description} = normUtf8(norm($episode->{Overview})) . "\nSource: Tvdb";
+#    $resultref->{description} = normUtf8(norm($episode->{Overview})) . "\nSource: TheTVDB.com - DMCA Takedown via Link in URL";
 #  }
 
   if( $series->{FirstAired} ) {
@@ -183,11 +183,14 @@ sub FillHash( $$$$ ) {
         }
       }
       @genres = grep{ defined } @genres;
+      my @cats;
       foreach my $genre ( @genres ){
         my ( $program_type, $categ ) = $self->{datastore}->LookupCat( "Tvdb", $genre );
         # set category, unless category is already set!
-        AddCategory( $resultref, undef, $categ );
+        push @cats, $categ if defined $categ;
       }
+      my $cat = join "/", @cats;
+      AddCategory( $resultref, undef, $cat );
     } else {
       $resultref->{category} = 'Special';
     }
