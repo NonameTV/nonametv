@@ -376,7 +376,7 @@
 797,"Discovery World Denmark",world.discovery.dk,"TV,Denmark",Discovery_xml,1,DWDAN,1,series,Nature,da,0,http://www.discovery.dk/,0
 798,"CNBC Europe",europe.cnbc.com,"TV,Norway,Denmark,Finland,Sweden,Switzerland,Germany,Austria",CNBC,1,,1,,,en,0,http://www.cnbceurope.com/,0
 799,"Viasat Film Comedy Norway",comedy.film.viasat.no,"TV,Norway",ViasatNO,1,viasat_film_comedy_no_,1,movie,Comedy,fi,0,http://www.viasat.no/,0
-800,"DW Europe",dw.de,"TV,Norway,Denmark,Finland,Sweden,Germany",DWDE,1,,1,series,News,en,0,http://www.dw.de/,0
+800,"DW (Europe)",dw.de,"TV,Norway,Denmark,Finland,Sweden,Germany",DWDE,1,,1,series,News,en,0,http://www.dw.de/,0
 801,"TV4 Fakta (Boxer)",tv4fakta.boxer.se,"TV,Sweden",Combiner,1,,1,,,sv,0,\N,0
 802,"TV4 Film (Boxer)",tv4film.boxer.se,"TV,Sweden",Combiner,1,,1,,,sv,0,\N,0
 803,"VH1 Classic",classic.vh1.se,"TV,Norway,Sweden,Denmark,Finland,Germany",Mtve_mail,1,,1,series,Music,en,0,http://www.mtv.se/,0
@@ -565,3 +565,7 @@
 1026,"Cartoon Network Germany",cartoonnetwork.de,"TV,Germany,Austria",Turner_xml,1,,0,series,Children's,de,0,,0
 1027,"Crime & Investigation Network",crimeandinvestigation.eu,"TV,Netherlands",History_xml,1,,0,series,Documentary,en,0,http://www.crimeandinvestigation.eu/,0
 1028,"ProTV International",protv.ro,"TV,Sweden,Norway,Denmark,Netherlands,Germany,Finland",ProTV,1,,0,series,Series,ro,0,http://www.protv.ro/,0
+1031,"DW (English)",english.dw.de,"TV,Germany,Austria",DWDE,1,,0,series,News,en,0,http://www.dw.de/,0
+1033,"DW (Ameria)",amerika.dw.de,TV,DWDE,1,,0,series,News,en,0,http://www.dw.de/,0
+1034,"DW (Asien)",asien.dw.de,TV,DWDE,1,,0,series,News,de,0,http://www.dw.de/,0
+1035,"DW (Latino America)",la.dw.de,TV,DWDE,1,,0,series,News,es,0,http://www.dw.de/,0
