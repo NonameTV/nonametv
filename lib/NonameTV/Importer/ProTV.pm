@@ -4,13 +4,7 @@ use strict;
 use warnings;
 
 =pod
-Importer for BBC Worldwide
-
-Channels: BBC Entertainment, BBC Knowledge, BBC HD, BBC Lifestyle, CBeebies
-
-The excel files is downloaded from BBCWWChannels.com
-
-Every month is runned as a seperate batch.
+Importer for Pro TV Romania
 
 =cut
 
@@ -49,7 +43,7 @@ sub new {
 
   $self->{FileStore} = $conf->{FileStore};
 
-  my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
+  my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore}, "CET" );
   $self->{datastorehelper} = $dsh;
 
   #$self->{datastore}->{augment} = 1;
