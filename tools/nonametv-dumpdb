@@ -84,7 +84,7 @@ sub dump_structure {
 
   my @tables = qw/
       batches channels channelgroups files
-      programs state trans_cat languagestrings
+      programs state trans_cat trans_country languagestrings
       epgservers dvb_cat networks services transportstreams
       admins augmenterrules jobs dvb_service_pointer
       /;
