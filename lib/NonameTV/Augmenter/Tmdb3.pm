@@ -176,8 +176,8 @@ sub FillHash( $$$ ) {
     my @production_countries = @{ $movie->info()->{production_countries} };
     foreach my $node2 ( @production_countries ) {
       my $c_id = $node2->{iso_3166_1};
-      my ( $country ) = $self->{datastore}->LookupCountry( "Tmdb_country", $c_id );
-      push @countries, $country;
+      #my ( $country ) = $self->{datastore}->LookupCountry( "Tmdb_country", $c_id );
+      push @countries, $c_id if defined $c_id;
     }
     my $country2 = join "/", @countries;
     AddCountry( $resultref, $country2 );
