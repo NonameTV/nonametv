@@ -43,7 +43,7 @@ sub new {
 
   $self->{FileStore} = $conf->{FileStore};
 
-  my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore}, "CET" );
+  my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore}, "Europe/Stockholm" );
   $self->{datastorehelper} = $dsh;
 
   #$self->{datastore}->{augment} = 1;
