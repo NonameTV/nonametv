@@ -582,7 +582,10 @@ sub WriteEntry
 
   if( defined( $entry->{category} ) and ($entry->{category} =~ /\S/) )
   {
-    push @{$d->{category}->{en}}, $entry->{category};
+    my @genres = split ("/", $entry->{category});
+    foreach my $genre (@genres) {
+        push @{$d->{category}->{en}}, $genre;
+    }
   }
   elsif( defined( $chd->{def_cat} ) and ($chd->{def_cat} =~ /\S/) )
   {
@@ -666,6 +669,11 @@ sub WriteEntry
   if( $entry->{rating} )
   {
     $d->{rating}->{mpaa} = $entry->{rating};
+  }
+
+  if( $entry->{country} =~ /\S/ )
+  {
+    $d->{country} = $entry->{country};
   }
 
   if( $entry->{previously_shown} )
