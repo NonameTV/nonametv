@@ -673,7 +673,11 @@ sub WriteEntry
 
   if( $entry->{country} =~ /\S/ )
   {
-    $d->{country} = $entry->{country};
+    #$d->{country} = $entry->{country};
+    my @countries  = split ("/", $entry->{country});
+    foreach my $country (@countries) {
+        push @{$d->{country}}, $genre;
+    }
   }
 
   if( $entry->{previously_shown} )
