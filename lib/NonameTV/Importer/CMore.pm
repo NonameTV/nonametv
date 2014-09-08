@@ -17,7 +17,7 @@ use HTTP::Date;
 
 use Compress::Zlib;
 
-use NonameTV qw/ParseXml norm AddCategory/;
+use NonameTV qw/ParseXml norm AddCategory AddCountry/;
 use NonameTV::Log qw/w f p/;
 
 use NonameTV::Importer::BaseDaily;
@@ -212,6 +212,7 @@ sub ImportContent
     }
  
     my $production_year = $sc->findvalue( './Program/@ProductionYear' );
+    my $production_country = $sc->findvalue( './Program/@ProductionCountry' );
 
     
     # Episode info
@@ -265,6 +266,9 @@ sub ImportContent
     my($program_type2, $category2 ) = $ds->LookupCat( "CMore_category", $cate );
     AddCategory( $ce, $program_type2, $category2 );
 
+    my($country ) = $ds->LookupCountry( "CMore", $production_country );
+    AddCountry( $ce, $country );
+
     if( defined( $production_year ) and ($production_year =~ /(\d\d\d\d)/) )
     {
       $ce->{production_date} = "$1-01-01";
@@ -309,6 +313,16 @@ sub ImportContent
     }
 
     p( "CMore: $chd->{xmltvid}: $start - $title" );
+
+    if(defined $ce->{original_title} and $ce->{original_title} =~ /, The$/i) {
+        $ce->{original_title} =~ s/, The$//i;
+        $ce->{original_title} = norm("The ".$ce->{original_title});
+    }
+
+    if(defined $ce->{original_title} and $ce->{original_title} =~ /, A$/i) {
+        $ce->{original_title} =~ s/, A$//i;
+        $ce->{original_title} = norm("A ".$ce->{original_title});
+    }
 
     $ds->AddProgramme( $ce );
   }
