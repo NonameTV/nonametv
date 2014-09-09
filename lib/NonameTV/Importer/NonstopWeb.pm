@@ -16,7 +16,7 @@ use XML::LibXML;
 use HTTP::Date;
 use Data::Dumper;
 
-use NonameTV qw/ParseXml norm AddCategory/;
+use NonameTV qw/ParseXml norm AddCountry AddCategory/;
 use NonameTV::Log qw/w progress error f/;
 
 use NonameTV::Importer::BaseMonthly;
@@ -154,6 +154,7 @@ sub ImportContent
     my $subtitle_default = $sc->findvalue( './@DefaultEpisodeTitle' );
     my $subtitle = norm($subtitle_episode) || norm($subtitle_default);
     my $aspect = $sc->findvalue( './@ProgrammeVersionTechnicalTypesAspect_Ratio' );
+    my $country = $sc->findvalue( './@SeriesCountryOfOrigin' );
 
     my $ce = {
       title => norm($title),
@@ -161,6 +162,9 @@ sub ImportContent
       description => norm($desc),
       start_time => $start->ymd("-") . " " . $start->hms(":"),
     };
+
+    my($country2 ) = $ds->LookupCountry( "Nonstop", norm($country) );
+    AddCountry( $ce, $country2 );
     
     my ( $dummy, $season, $dummy2, $episode ) = ($desc =~ /\((S.song|Season)\s*(\d+)\s*(avsnitt|episode)\s*(\d+)\)/i );
     
