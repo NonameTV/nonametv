@@ -147,9 +147,9 @@ def create_xml():
 
                     # A country or country list can be present
                     if programme.has_key("country"):
-                        for key in programme['country'].keys():
+                        for value in programme['country']:
                             xml_country = ET.SubElement(xml_programme, "country")
-                            xml_country.text = programme["country"][key].replace("\n", "")
+                            xml_country.text = value.replace("\n", "")
 
                     # An episode number sequence COULD be present
                     if programme.has_key("episodeNum"):
