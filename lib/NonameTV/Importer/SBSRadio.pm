@@ -114,6 +114,8 @@ sub ImportContent {
     my $shorttitle = $b->findvalue( "mediumName" );
     my $title = $longtitle || $shorttitle;
 
+    my $desc = $b->findvalue( 'longDescription' );
+
   	# Airings
     my $airings = $b->find( "./location" );
 
@@ -165,6 +167,8 @@ sub ImportContent {
         {
             $ce->{live} = "0";
         }
+
+        $ce->{description} = norm($desc) if defined $desc and $desc;
 
         progress($time." $ce->{title}");
 
