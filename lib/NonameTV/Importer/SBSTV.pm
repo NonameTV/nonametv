@@ -22,7 +22,7 @@ use XML::LibXML;
 use Roman;
 use Data::Dumper;
 
-use NonameTV qw/ParseXml AddCategory norm/;
+use NonameTV qw/ParseXml AddCategory AddCountry norm/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/progress w f/;
 
@@ -259,8 +259,19 @@ sub ImportContent {
     $genre =~ s/fra (\d+)//g;
 
     if( $genre and $genre ne "" ) {
-		my($program_type, $category ) = $ds->LookupCat( 'SBSTV', $genre );
+        my($country, $genretext) = ($genre =~ /^(.*?)\s+(.*?)$/);
+        $country = norm($country);
+        $genretext = norm($genretext);
+        $genretext =~ s/\.$//g;
+        $country =~ s/\.$//g;
+
+        $genretext =~ s/\[(.*?)\]//g;
+
+		my($program_type, $category ) = $ds->LookupCat( 'SBSTV', $genretext );
 		AddCategory( $ce, $program_type, $category );
+
+		my($country2 ) = $ds->LookupCountry( 'SBSTV', $country );
+        AddCountry( $ce, $country2 );
 	}
 
 
