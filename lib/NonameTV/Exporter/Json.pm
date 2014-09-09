@@ -671,23 +671,18 @@ sub WriteEntry
     $d->{rating}->{mpaa} = $entry->{rating};
   }
 
-  if( $entry->{country} =~ /\S/ )
+  if( $entry->{country} and $entry->{country} =~ /\S/ )
   {
     #$d->{country} = $entry->{country};
     my @countries  = split ("/", $entry->{country});
     foreach my $country (@countries) {
-        push @{$d->{country}}, $genre;
+        push @{$d->{country}}, $country;
     }
   }
 
   if( $entry->{previously_shown} )
   {
     $d->{previously_shown} = $entry->{previously_shown};
-  }
-
-  if( $entry->{country} )
-  {
-    $d->{country} = $entry->{country};
   }
 
   push @{$data}, $d;
