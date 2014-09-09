@@ -18,7 +18,7 @@ use Data::Dumper;
 use DateTime;
 use XML::LibXML::XPathContext;
 
-use NonameTV qw/AddCategory norm ParseXml/;
+use NonameTV qw/AddCategory AddCountry norm ParseXml/;
 use NonameTV::Importer::BaseFile;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/d progress w error f/;
@@ -168,9 +168,22 @@ sub ImportContentFile
           }
         }
 
-        my $production_year = $xpc->findvalue( 's:infos/s:produktion/s:produktionszeitraum/s:jahr/@von' );
+        my $production_year = $xpc->findvalue( 's:infos/s:produktion[@gueltigkeit="sendung"]/s:produktionszeitraum/s:jahr/@von' );
         if( $production_year =~ m|^\d{4}$| ){
           $ce->{production_date} = $production_year . '-01-01';
+        }
+
+        my @countries;
+        my $ns4 = $xpc->find( 's:infos/s:produktion[@gueltigkeit="sendung"]/s:produktionsland/@laendername' );
+        foreach my $con ($ns4->get_nodelist)
+	    {
+	        my ( $c ) = $self->{datastore}->LookupCountry( "KFZ", $con->to_literal );
+	  	    push @countries, $c if defined $c;
+	    }
+
+        if( scalar( @countries ) > 0 )
+        {
+              $ce->{country} = join "/", @countries;
         }
 
         my $genre = $xpc->findvalue( 's:infos/s:klassifizierung/@hauptgenre' );
