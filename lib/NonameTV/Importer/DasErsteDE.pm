@@ -24,7 +24,7 @@ use Encode qw/from_to/;
 use Switch;
 use XML::LibXML;
 
-use NonameTV qw/AddCategory norm ParseXml/;
+use NonameTV qw/AddCategory AddCountry norm ParseXml/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/d p w f/;
 
@@ -343,6 +343,22 @@ sub ImportContent {
         case "Zweikanalton"     { $ce->{stereo} = "bilingual" }
         else { w ("DasErsteDE: unknown attribute: " . $str) }
       }
+    }
+
+    my $country = norm($pgm->findvalue( 'Produktionslaender' ));
+    if($country ne "") {
+        my @conts = split('/', norm($country));
+        my @countries;
+
+        foreach my $c (@conts) {
+            my ( $c2 ) = $self->{datastore}->LookupCountry( "KFZ", $c );
+            push @countries, $c2 if defined $c2;
+        }
+
+        if( scalar( @countries ) > 0 )
+        {
+              $ce->{country} = join "/", @countries;
+        }
     }
 
     my $actors = $pgm->findnodes ('.//Rolle');
