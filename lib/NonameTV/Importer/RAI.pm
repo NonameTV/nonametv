@@ -16,7 +16,7 @@ use DateTime;
 use XML::LibXML;
 use Roman;
 
-use NonameTV qw/ParseXml AddCategory norm/;
+use NonameTV qw/ParseXml AddCategory AddCountry norm/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/w f p/;
 
@@ -117,6 +117,10 @@ sub ImportContent {
     # Descr. and genre
     my $desc = $b->findvalue( "sottotitolo" );
 
+    if($time !~ /:/) {
+        next;
+    }
+
 	# Put everything in a array
     my $ce = {
       channel_id => $chd->{id},
@@ -124,11 +128,6 @@ sub ImportContent {
       title => norm($title),
       description => norm($desc),
     };
-
-    if( defined( $text ) and ($text =~ /(\d\d\d\d)/) )
-    {
-    	$ce->{production_date} = "$1-01-01";
-    }
 
     # Title
     if( $title =~ /^FILM/  ) {
@@ -149,8 +148,13 @@ sub ImportContent {
         $ce->{program_type} = 'movie';
     }
 
-    if( my( $years, $country ) = ($text =~ /(\d\d\d\d)\s+(.*)$/) )
+    if( my( $years, $country ) = ($text =~ /(\d\d\d\d)\s+(.*?)$/) )
     {
+        $ce->{production_date} = $years."-01-01";
+
+        my($country2 ) = $ds->LookupCountry( "RAI", $country );
+        AddCountry( $ce, $country2 );
+
     	$text =~ s/$years//g; # REMOVE ET
     	$text =~ s/$country//g; # REMOVE ET
     	$text = norm($text);
@@ -221,14 +225,14 @@ sub ImportContent {
     }
 
     # Genre, in a way
-    my ($genre) = ($ce->{description} =~ /^(.*)\s+-/ );
+    my ($genre) = ($ce->{description} =~ /^(.*?)\s+-/ );
     if(defined($genre)) {
         $genre = lc($genre);
         my ( $program_type, $category ) = $self->{datastore}->LookupCat( "RAI", $genre );
         AddCategory( $ce, $program_type, $category );
 
         # Remove it
-        $ce->{description} =~ s/^(.*) -//gi;
+        $ce->{description} =~ s/^(.*?) -//gi;
     }
 
     # Seems buggy sometimes
