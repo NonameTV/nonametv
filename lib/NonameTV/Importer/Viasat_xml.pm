@@ -226,7 +226,8 @@ sub ImportContent {
       my $ns4 = $emission->find( './/country' );
       foreach my $con ($ns4->get_nodelist)
 	  {
-	  	push @countries, norm($con->to_literal);
+	    my ( $c ) = $self->{datastore}->LookupCountry( "Viasat", $con->to_literal );
+	  	push @countries, $c if defined $c;
 	  }
 
 	  my $ce = {
