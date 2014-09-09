@@ -133,6 +133,7 @@ sub ImportXML
 	  my $year = $row->findvalue( './/header//produktionsjahr' );
 	  my $hd = $row->findvalue( './/header//label//hd' );
 	  my $genre = $row->findvalue( './/header//pressegenre');
+	  my $prodco = $row->findvalue( './/header//produktionsland');
 	  my $aspect = $row->findvalue( './/header//bildformat');
 
 	  my $subtitle = $row->findvalue( './/header//epistitel' );
@@ -144,6 +145,20 @@ sub ImportXML
         start_time => $start,
       };
 
+      if(defined $prodco and $prodco ne "") {
+        my @conts = split(', ', norm($prodco));
+        my @countries;
+
+        foreach my $c (@conts) {
+            my ( $c2 ) = $self->{datastore}->LookupCountry( "KFZ", $c );
+            push @countries, $c2 if defined $c2;
+        }
+
+        if( scalar( @countries ) > 0 )
+        {
+              $ce->{country} = join "/", @countries;
+        }
+      }
 
       if( defined( $year ) and ($year =~ /(\d\d\d\d)/) )
     	{

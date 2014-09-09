@@ -206,6 +206,19 @@ sub ImportContent( $$$ ) {
       $ce->{production_date} = $production_year . '-01-01';
     }
 
+    my @countries;
+    my $ns4 = $xpc->find( 's:infos/s:produktion/s:produktionsland/@laendername' );
+    foreach my $con ($ns4->get_nodelist)
+	{
+	    my ( $c ) = $self->{datastore}->LookupCountry( "Arte", $con->to_literal );
+	  	push @countries, $c if defined $c;
+	}
+
+    if( scalar( @countries ) > 0 )
+    {
+        $ce->{country} = join "/", @countries;
+    }
+
     my $genre = $xpc->findvalue( 's:infos/s:klassifizierung/s:genre' );
     if( $genre ){
       my ( $program_type, $category ) = $self->{datastore}->LookupCat( "Arte_genre", $genre );

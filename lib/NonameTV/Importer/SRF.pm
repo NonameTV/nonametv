@@ -19,7 +19,7 @@ use Encode qw/decode encode/;
 use utf8;
 use Data::Dumper;
 
-use NonameTV qw/AddCategory normLatin1 norm ParseXml/;
+use NonameTV qw/AddCategory AddCountry normLatin1 norm ParseXml/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/w f/;
 
@@ -137,6 +137,21 @@ sub ImportContent {
       my ($year) = $programme->findvalue ('./PRODJAHR');
       if( $year ){
         $ce->{production_date} = $year . '-01-01';
+      }
+
+      if($programme->findvalue ('./PRODLAND') and $programme->findvalue ('./PRODLAND') ne "") {
+        my @conts = split(/,|\//, norm($programme->findvalue ('./PRODLAND')));
+        my @countries;
+
+        foreach my $c (@conts) {
+            my ( $c2 ) = $self->{datastore}->LookupCountry( "SRF", norm($c) );
+            push @countries, $c2 if defined $c2;
+        }
+
+        if( scalar( @countries ) > 0 )
+        {
+              $ce->{country} = join "/", @countries;
+        }
       }
 
       # Cast

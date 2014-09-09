@@ -12,7 +12,7 @@ use DateTime;
 use XML::LibXML;
 use HTTP::Date;
 
-use NonameTV qw/ParseXml norm AddCategory/;
+use NonameTV qw/ParseXml norm AddCategory AddCountry/;
 use NonameTV::Log qw/w progress error f/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Importer::BaseDaily;
@@ -165,9 +165,22 @@ sub ImportContent
       $ce->{production_date} = "$1-01-01";
     }
 
+    $genre =~ s/fra (\d+)//g;
+
     if( $genre ){
-    	my($program_type, $category ) = $ds->LookupCat( 'TVNorge', $genre );
-    	AddCategory( $ce, $program_type, $category );
+        my($country, $genretext) = ($genre =~ /^(.*?)\s+(.*?)$/);
+        $country = norm($country);
+        $genretext = norm($genretext);
+        $genretext =~ s/\.$//g;
+        $country =~ s/\.$//g;
+
+        $genretext =~ s/\[(.*?)\]//g;
+
+		my($program_type, $category ) = $ds->LookupCat( 'TVNorge', $genretext );
+		AddCategory( $ce, $program_type, $category );
+
+		my($country2 ) = $ds->LookupCountry( 'TVNorge', $country );
+        AddCountry( $ce, $country2 );
     }
 
     # Director
