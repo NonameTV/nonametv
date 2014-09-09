@@ -225,7 +225,7 @@ sub ImportFull
       {
 	if( defined( $ce->{description} ) )
 	{
-	  $ce->{description} .= " " . $text;
+	  $ce->{description} .= ";;" . $text;
 	}
 	else
 	{
@@ -335,12 +335,14 @@ sub ImportAmendments
         ($text =~ /Programoversikten forblir den samme som tidligere/i) or
         ($text =~ /slut på tablå/i) or
         ($text =~ /^page \d+ of \d+$/i) or
+        ($text =~ /^pagina \d+ van \d+$/i) or
+        ($text =~ /chema gaat verder zoals eerder gepubliceerd met/i) or
         ($text =~ /schedule resumes as/i)
         )
     {
       next;
     }
-    elsif( $text =~ /^SLUT|END|KRAJ|SLUTT$/ )
+    elsif( $text =~ /^SLUT|END|KRAJ|SLUTT|EINDE$/ )
     {
       last;
     }
@@ -444,7 +446,7 @@ sub parse_command
   $e->{title} = $title;
   $e->{desc} = "";
 
-  if( $command eq "ÄNDRA" or $command eq "RADERA" or $command eq "ENDRE" or $command eq "SLETT")
+  if( $command eq "ÄNDRA" or $command eq "RADERA" or $command eq "ENDRE" or $command eq "SLETT" or $command eq "WIJZIG")
   {
     $e->{command} = "DELETEBLIND";
   }
@@ -463,11 +465,13 @@ sub parse_command
   elsif(    $command eq "TILL" or $command eq "INFOGA"    # Swedish
          or $command eq "TIL" or $command eq "SETT INN" or $command eq "SETT" # norway
          or $command eq "TO" or $command eq "INSERT"   # English
-         or $command eq "U" or $command eq "UMETNI" )  # Croatian
+         or $command eq "U" or $command eq "UMETNI"    # Croatian
+         or $command eq "IN" or $command eq "TOEVOEGEN" # Dutch
+       )
   {
     $e->{command} = "INSERT";
   }
-  elsif( $command eq "EJ ÄNDRAD" or $command eq "UNCHANGED" or $command eq "NEPROMIJENJENO" )
+  elsif( $command eq "EJ ÄNDRAD" or $command eq "UNCHANGED" or $command eq "NEPROMIJENJENO" or $command eq "ONVERANDERD" )
   {
     $e->{command} = "IGNORE";
   }
@@ -538,6 +542,7 @@ sub extract_extra_info
 {
   my( $ce ) = shift;
 
+
   # Episode num
   my( $dummerino, $episode ) = ($ce->{title} =~ /:\s*(afsnit|episode|avsnitt)\s*(\d+)$/i);
   $ce->{title} =~ s/:\s*(afsnit|episode|avsnitt)\s*(\d+)$//i;
@@ -548,6 +553,9 @@ sub extract_extra_info
   $ce->{title} =~ s/Premiere ALSO APPEARING THIS MONTH://i;
   $ce->{title} =~ s/Premiere CONTINUING SERIES://i;
   $ce->{title} =~ s/^Premiere //i;
+  $ce->{title} =~ s/^CHANNEL PREMIERE: //i;
+  $ce->{title} =~ s/^TERRITORY PREMIERE: //i;
+  $ce->{title} =~ s/^\((.*?)\)//g;
   ## Ending
 
   ( $ce->{subtitle} ) = ($ce->{title} =~ /:\s*(.+)$/);
@@ -582,6 +590,67 @@ sub extract_extra_info
 	    $ce->{category} = "Movies";
         $ce->{title} =~ s/^FILM//;
         $ce->{title} = norm($ce->{title});
+  }
+
+  # Parse actors, directors etc
+  if(defined $ce->{description}) {
+    my @sentences = split(";;", $ce->{description});
+
+    for( my $i2=0; $i2<scalar(@sentences); $i2++ )
+    {
+        my $remove = 0;
+        if( my( $season2, $episode2, $genre ) = ($sentences[$i2] =~ /^\((\d+)\/(\d+)\)/ ) )
+	    {
+	        $ce->{episode} = sprintf( "%d . %d .", $season2-1, $episode2-1 );
+	        $ce->{program_type} = "series";
+            $remove = 1;
+	    }
+
+        if( my( $country, $prodyear ) = ($sentences[$i2] =~ /,\s+(\S*)\s+(\d\d\d\d),/ ) )
+	    {
+	        $ce->{production_date} = $prodyear."-01-01";
+            $remove = 1;
+	    }
+
+        if( my( $genre2, $prodyear2 ) = ($sentences[$i2] =~ /^(\S*)\s+(\d\d\d\d),/ ) )
+	    {
+	        $ce->{production_date} = $prodyear2."-01-01";
+            $remove = 1;
+	    }
+
+        if( my( $dumperino, $directors ) = ($sentences[$i2] =~ /(direction|Regisseur):(.*),\s+Cast:/i ) )
+	    {
+          my @persons = split( /\s*,\s*/, norm($directors) );
+          foreach (@persons)
+          {
+            # The character name is sometimes given . Remove it.
+            s/^.*\s+-\s+//;
+          }
+
+          $ce->{directors} = join( ";", grep( /\S/, @persons ) );
+          $remove = 1;
+	    }
+
+        if( my( $actor ) = ($sentences[$i2] =~ /\s+Cast:(.*)$/i ) )
+	    {
+          my @actors = split( /\s*,\s*/, norm($actor) );
+          foreach (@actors)
+          {
+            # The character name is sometimes given . Remove it.
+            s/^.*\s+-\s+//;
+          }
+
+          $ce->{actors} = join( ";", grep( /\S/, @actors ) );
+          $remove = 1;
+	    }
+
+	    # remove?
+	    if($remove) {
+	        $sentences[$i2] = "";
+	    }
+    }
+
+    $ce->{description} = join_text( @sentences );
   }
 
   return;
@@ -783,6 +852,14 @@ sub create_dt
   $dt->set_time_zone( "UTC" );
 
   return $dt;
+}
+
+sub join_text
+{
+  my $t = join( " ", grep( /\S/, @_ ) );
+  $t =~ s/::/../g;
+
+  return $t;
 }
 
 1;
