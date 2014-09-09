@@ -589,7 +589,10 @@ sub WriteEntry
   }
   elsif( defined( $chd->{def_cat} ) and ($chd->{def_cat} =~ /\S/) )
   {
-    push @{$d->{category}->{en}}, $chd->{def_cat};
+    my @genres2 = split ("/", $chd->{def_cat});
+    foreach my $genre2 (@genres2) {
+        push @{$d->{category}->{en}}, $genre2;
+    }
   }
 
   if( defined( $entry->{production_date} ) and 
