@@ -931,25 +931,22 @@ ProSieben_main,serie,\N,series
 ProSieben_main,show/unterhaltung,\N,series
 ProSieben_main,sonstiges,\N,series
 ProSieben_main,werbung,\N,tvshow
-RAI,documentario,Documentary,
 RAI,"film animazione",Animation,movie
 RAI,"film avventura",Adventure,movie
-RAI,"film comico",Comedy,movie
+RAI,"film azione",\N,movie
+RAI,"film comico",\N,movie
 RAI,"film commedia",Comedy,movie
-RAI,"film documentario",Documentary/Biography,movie
+RAI,"film documentario",Documentary,movie
 RAI,"film drammatico",Drama,movie
 RAI,"film fantascienza",Fantasy,movie
-RAI,"film giallo",\N,movie
 RAI,"film guerra",\N,movie
 RAI,"film horror",Horror,movie
-RAI,"film musicale",Musical,movie
+RAI,"film musicale",\N,movie
 RAI,"film per ragazzi",\N,movie
+RAI,"film poliziesco",\N,movie
 RAI,"film thriller",Thriller,movie
-RAI,"film western - quando una donna viene rapita",Western,movie
-RAI,musica,Music,
+RAI,"film western",Western,movie
 RAI,"serie tv",\N,series
-RAI,"talk show","Talk show",series
-RAI,"telefilm animazione",Animation,movie
 RTL2,abenteuer,Adventure,
 RTL2,action,Action,
 RTL2,animationsfilm,Animation,movie
@@ -981,121 +978,60 @@ RTL2,"science fiction",Sci-fi,
 RTL2,soap,Soap,
 RTL2,thriller,Thriller,
 RTL2,western,Western,
-SBSTV,"- fodboldmagasin.",Football,magazine
-SBSTV,"- pokerturnering",Poker,sports
-SBSTV,"amr. , amr. actionfilm",Action,movie
-SBSTV,"amr. , amr. romantisk komedie",Romance/Comedy,
-SBSTV,"amr. action",Action,
-SBSTV,"amr. action og komedieserie.",Action/Comedy,
-SBSTV,"amr. action.",Action,
-SBSTV,"amr. actiondrama",Action/Drama,
-SBSTV,"amr. actiondrama.",Action/Drama,
-SBSTV,"amr. actioneventyr",Action/Adventure,
-SBSTV,"amr. actionfilm",Action,movie
-SBSTV,"amr. actionfilm.",Action,movie
-SBSTV,"amr. actionkomedie",Action/Comedy,
-SBSTV,"amr. actionkomedie.",Action/Comedy,
-SBSTV,"amr. actionkrimi",Action/Crime,
-SBSTV,"amr. actionserie.",Action,series
-SBSTV,"amr. actionthriller",Action/Thriller,
-SBSTV,"amr. animationsfilm",Animated,movie
-SBSTV,"amr. animationsserie.",Animation,
-SBSTV,"amr. comedy- og dramaserie.",Comedy/Drama,series
-SBSTV,"amr. docusoap",Documentary/Soap,
-SBSTV,"amr. dokumentar",Documentary,
-SBSTV,"amr. dokumentar.",Documentary,
-SBSTV,"amr. dokumentarprogram.",Documentary,tvshow
-SBSTV,"amr. dokumentarserie",Documentary,series
-SBSTV,"amr. dokumentarserie.",Documentary,series
-SBSTV,"amr. drama",Drama,
-SBSTV,"amr. drama.",Drama,
-SBSTV,"amr. dramakomedie",Drama/Comedy,
-SBSTV,"amr. dramaserie",Drama,series
-SBSTV,"amr. dramaserie (1:2).",Drama,series
-SBSTV,"amr. dramaserie (2:2).",Drama,series
-SBSTV,"amr. dramaserie.",Drama,series
-SBSTV,"amr. eventyrdrama",Adventure/Drama,
-SBSTV,"amr. eventyrfilm",Adventure,movie
-SBSTV,"amr. eventyrfilm.",\N,movie
-SBSTV,"amr. eventyrkomedie",Adventure,
-SBSTV,"amr. familiefilm",Family,movie
-SBSTV,"amr. familiefilm.",\N,movie
-SBSTV,"amr. gangsterdrama",Gangster/Drama,
-SBSTV,"amr. gyser",Horror,
-SBSTV,"amr. gyserfilm.",\N,movie
-SBSTV,"amr. julefilm",\N,movie
-SBSTV,"amr. katastrofefilm",\N,movie
-SBSTV,"amr. komedie",Comedy,
-SBSTV,"amr. komedie- og actionserie.",Comedy/Action,series
-SBSTV,"amr. komedie.",Comedy,
-SBSTV,"amr. komedie/eventyrfilm",\N,movie
-SBSTV,"amr. komediedrama",Comedy/Drama,
-SBSTV,"amr. komediefilm",Comedy,movie
-SBSTV,"amr. komedieserie.",Comedy,series
-SBSTV,"amr. krigsfilm",\N,movie
-SBSTV,"amr. krimikomedie",Crime/Comedy,
-SBSTV,"amr. krimiserie.",Crime,series
-SBSTV,"amr. prisbelønnet krigsfilm",\N,movie
-SBSTV,"amr. realityserie.",Reality,series
-SBSTV,"amr. realityshow.",Reality,tvshow
-SBSTV,"amr. romantisk drama",Romance/Drame,
-SBSTV,"amr. romantisk komedie",Romance/Comedy,
-SBSTV,"amr. romantisk komedie.",Romance/Comedy,
-SBSTV,"amr. science fiction-drama",Sci-Fi/Drama,
-SBSTV,"amr. science fiction-film",Sci-Fi,movie
-SBSTV,"amr. science fiction-gyser",Sci-Fi/Horror,
-SBSTV,"amr. science fiction-komedie",Sci-Fi/Comedy,
-SBSTV,"amr. science fiction-serie",Sci-Fi,series
-SBSTV,"amr. science fiction-thriller",Sci-Fi/Thriller,
-SBSTV,"amr. science fictionserie.",Sci-Fi,series
-SBSTV,"amr. spændingsserie.",Thriller,series
-SBSTV,"amr. talentshow.",Talent,tvshow
-SBSTV,"amr. tegnefilm",\N,movie
-SBSTV,"amr. tegnefilm.",\N,movie
-SBSTV,"amr. thriller",Thriller,
-SBSTV,"amr. thrillerdrama",Thriller/Drama,
-SBSTV,"amr. underholdningsprogram.",Entertainment,tvshow
-SBSTV,"amr. underholdningsshow.",Entertainment,tvshow
-SBSTV,"amr. ungdomsfilm",Youth,movie
-SBSTV,"amr. ungdomsserie.",Youth,series
-SBSTV,"amr. videnskabsshow.",Science,tvshow
-SBSTV,"amr. western",Western,
-SBSTV,"austr. drama",Drama,
-SBSTV,"austr. dramaserie.",Drama,series
-SBSTV,"can. dramaserie.",Drama,series
-SBSTV,"comedy dokumentar.",Comedy/Dokumentary,
-SBSTV,"comedy underholdningsprogram.",Comedy/Entertainment,
-SBSTV,"dansk bilmagasin",Cars,sports
-SBSTV,"dansk boligprogram.",\N,tvshow
-SBSTV,"dansk dokumentar",Documentary,
-SBSTV,"dansk dokumentarserie.",Documentary,series
-SBSTV,"dansk fodboldmagasin.",Football,magazine
-SBSTV,"dansk krimidokumentar",Crime/Documentary,
-SBSTV,"dansk livsstilsprogram.",Lifestyle,tvshow
-SBSTV,"dansk madprogram",Food,tvshow
-SBSTV,"dansk musikprogram.",Music,tvshow
-SBSTV,"dansk politiserie.",Politic,series
-SBSTV,"dansk programserie",\N,series
-SBSTV,"dansk realityserie.",Reality,series
-SBSTV,"dansk reportageserie",\N,series
-SBSTV,"dansk reportageserie.",\N,series
-SBSTV,"dansk skjult kamera show.",\N,series
-SBSTV,"dansk underholdningsprogram.",Entertainment,tvshow
-SBSTV,"dansk underholdningsserie",Entertainment,tvshow
-SBSTV,"dansk underholdningsserie.",Entertainment,tvshow
-SBSTV,"eng. actionfilm",\N,movie
-SBSTV,"eng. bilmagasin",Cars,magazine
-SBSTV,"eng. dokumentar",Documentary,
-SBSTV,"eng. dokumentar.",Documentary,
-SBSTV,"eng. dokumentarserie",Documentary,series
-SBSTV,"eng. gyserkomedie",Horror/Comedy,
-SBSTV,"eng. romantisk komedie",Romance/Comedy,
-SBSTV,"eng. underholdningsprogram.",Entertainment,
-SBSTV,"fodbold fra den engelske liga.",Football,sports
-SBSTV,"fodbold fra den spanske liga.",Football,sports
-SBSTV,"fransk actionfilm",\N,movie
-SBSTV,"new zealandsk dokumentarserie.",Documentary,series
-SBSTV,"tysk animationsfilm",\N,movie
+SBSTV,action,Action,
+SBSTV,"action og komedieserie",Action/Comedy,series
+SBSTV,actiondrama,Action/Drama,
+SBSTV,actioneventyr,Action/Adventure,
+SBSTV,actionfilm,Action,movie
+SBSTV,actionserie,Action,series
+SBSTV,actionthriller,Action/Thriller,
+SBSTV,animationsfilm,Animation,movie
+SBSTV,animationsserie,Animation,series
+SBSTV,bilmagasin,Magazine,
+SBSTV,docusoap,Documentary/Soap,
+SBSTV,dokumentar,Documentary,
+SBSTV,dokumentarserie,Documentary,series
+SBSTV,dokumentarserie.,Documentary,series
+SBSTV,drama,Drama,
+SBSTV,dramakomedie,Drama/Comedy,
+SBSTV,dramaserie,Drama,series
+SBSTV,"erotisk komediedrama",Adult/Comedy/Drama,
+SBSTV,eventyrserie,Adventure,series
+SBSTV,familiefilm,Family,movie
+SBSTV,fodboldmagasin,Magazine/Soccer,
+SBSTV,"fra den engelske liga",\N,sports
+SBSTV,"fra den spanske liga",\N,sports
+SBSTV,gyser,Horror,
+SBSTV,komedie,Comedy,
+SBSTV,"komedie- og actionserie",Comedy/Action,series
+SBSTV,komediedrama,Comedy/Drama,
+SBSTV,komediefilm,Comedy,movie
+SBSTV,komedieserie,Comedy,series
+SBSTV,komedieserie.,Comedy,series
+SBSTV,krimidokumentar,Crime/Documentary,
+SBSTV,krimigyser,Crime/Horror,
+SBSTV,krimiserie,Crime,series
+SBSTV,livsstilsprogram,Lifestyle,series
+SBSTV,livsstilsserie,Lifestyle,series
+SBSTV,madprogram,Food,series
+SBSTV,"make-over program",Make-over,series
+SBSTV,modeprogram,Fashion,series
+SBSTV,musikprogram,Music,tvshow
+SBSTV,pokalfodbold,Soccer,sports
+SBSTV,realityserie,Reality,series
+SBSTV,realityshow,Reality,series
+SBSTV,reportageserie,\N,series
+SBSTV,"romantisk komedie",Romance/Comedy,
+SBSTV,"science fiction-film",Sci-Fi,movie
+SBSTV,show,\N,series
+SBSTV,spændingsserie,\N,series
+SBSTV,thriller,Thriller,
+SBSTV,thrillerdrama,Thriller/Drama,
+SBSTV,thrillerkomedie,Thriller/Comedy,
+SBSTV,underholdningsprogram,Entertainment,series
+SBSTV,underholdningsserie,Entertainment,series
+SBSTV,underholdningsshow,Entertainment,series
+SBSTV,ungdomskomedie,Youth/Comedy,
 SRF,serie,\N,series
 SRF,"serie (animation)",Animation,series
 SRF,"serie (arzt)",\N,series
@@ -1559,116 +1495,29 @@ Tvdb,"special interest","Special Interest",
 Tvdb,sport,Sports,
 Tvdb,"talk show",Talk,tvshow
 Tvdb,western,Western,
-TVNorge,"amerikansk action",Action,movie
-TVNorge,"amerikansk action-eventyr",Action/Adventure,movie
-TVNorge,"amerikansk actionserie",Action,series
-TVNorge,"amerikansk adventure",Adventure,\N
-TVNorge,"amerikansk animasjon",Animation,movie
-TVNorge,"amerikansk animasjonsfilm",Animation,movie
-TVNorge,"amerikansk biografi",Biograpy,
-TVNorge,"amerikansk dokumentar fra",Documentary,
-TVNorge,"amerikansk dokumentar fra 2006",Documentary,
-TVNorge,"amerikansk dokumentar fra 2007",Documentary,
-TVNorge,"amerikansk dokumentar fra 2009",Documentary,
-TVNorge,"amerikansk dokumentar fra 2010",Documentary,
-TVNorge,"amerikansk dokumentar fra 2011",Documentary,
-TVNorge,"amerikansk dokumentarserie",Documentary,series
-TVNorge,"amerikansk drama",Drama,movie
-TVNorge,"amerikansk dramaserie",Drama,series
-TVNorge,"amerikansk familiefilm",Family,movie
-TVNorge,"amerikansk familiekomedie",Family/Comedy,
-TVNorge,"amerikansk julefilm",Christmas,movie
-TVNorge,"amerikansk komedie",Comedy,movie
-TVNorge,"amerikansk komiserie",Comedy,series
-TVNorge,"amerikansk krimserie",Crime,series
-TVNorge,"amerikansk livsstilserie",Lifestyle,series
-TVNorge,"amerikansk miniserie",Mini,series
-TVNorge,"amerikansk movie",\N,movie
-TVNorge,"amerikansk musical",Musical,movie
-TVNorge,"amerikansk paranormal serie",Paranormal,series
-TVNorge,"amerikansk program",\N,tvshow
-TVNorge,"amerikansk realityserie",Reality,series
-TVNorge,"amerikansk romantisk komedie",Romance/Comedy,movie
-TVNorge,"amerikansk sci-fi",Sci-Fi,
-TVNorge,"amerikansk serie",series,series
-TVNorge,"amerikansk skrekkfilm",Horror,movie
-TVNorge,"amerikansk sport",Sports,sports
-TVNorge,"amerikansk svart komedie",Comedy,
-TVNorge,"amerikansk talkshow",Talk,tvshow
-TVNorge,"amerikansk thriller",Thriller,movie
-TVNorge,"amerikansk tv-film",\N,movie
-TVNorge,"amerikansk tv-movie",TV,movie
-TVNorge,"amerikansk underholdning",Entertainment,
-TVNorge,"amerikansk underholdningsspesial",Entertainment,tvshow
-TVNorge,"australsk animasjonsfilm",Animation,movie
-TVNorge,"australsk dokumentarserie",Documentary,series
-TVNorge,"australsk dramaserie",Drama,series
-TVNorge,"australsk livsstilserie",Lifestyle,series
-TVNorge,"australsk realityserie",Reality,series
-TVNorge,"britisk animasjonsfilm",Animation,movie
-TVNorge,"britisk dokumentar fra",Documentary,
-TVNorge,"britisk dokumentar fra 2006",Documentary,
-TVNorge,"britisk dokumentar fra 2007",Documentary,
-TVNorge,"britisk dokumentar fra 2008",Documentary,
-TVNorge,"britisk dokumentar fra 2009",Documentary,
-TVNorge,"britisk dokumentar fra 2010",Documentary,
-TVNorge,"britisk dokumentar fra 2011",Documentary,
-TVNorge,"britisk dokumentarserie",Documentary,series
-TVNorge,"britisk drama",Dama,
-TVNorge,"britisk dramaserie",Drama,series
-TVNorge,"britisk komiserie",Comedy,series
-TVNorge,"britisk krimserie",Crime,series
-TVNorge,"britisk livsstilserie",Lifestyle,series
-TVNorge,"britisk paranormal serie",Sci-Fi/Horror,series
-TVNorge,"britisk program",\N,tvshow
-TVNorge,"britisk realityserie",Reality,series
-TVNorge,"britisk serie",\N,series
-TVNorge,"britisk talkshow",Talk,tvshow
-TVNorge,"britisk thriller",Thriller,movie
-TVNorge,"britisk underholdning",Entertainment,tvshow
-TVNorge,"britisk underholdningsspesial",Entertainment,tvshow
-TVNorge,"dansk dokumentarserie",Documentary,series
-TVNorge,"dokumentar fra",Documentary,
-TVNorge,"dokumentar fra 2011",Documentary,series
-TVNorge,dokumentarserie,Documentary,
+TVNorge,action,Action,
+TVNorge,action-eventyr,Action/Adventure,
+TVNorge,actionserie,Action,series
+TVNorge,animasjon,Animation,
+TVNorge,animasjonsfilm,Animation,movie
+TVNorge,dokumentar,Documentary,
+TVNorge,dokumentarserie,Documentary,series
 TVNorge,drama,Drama,
 TVNorge,dramaserie,Drama,series
-TVNorge,film,\N,movie
-TVNorge,"fransk romantisk komedie",Romance/Comedy,
-TVNorge,"fransk sport",\N,sports
-TVNorge,"kanadisk animasjon",Animation,
-TVNorge,"kanadisk dokumentarserie",Documentary,series
-TVNorge,"kanadisk drama",Drama,
-TVNorge,"kanadisk dramaserie",Drama,series
-TVNorge,"kanadisk julefilm",Christmas,movie
-TVNorge,"kanadisk livsstilserie",Lifestyle,series
-TVNorge,"kanadisk realityserie",Reality,
-TVNorge,"kanadisk romantisk komedie",Romance/Comedy,
-TVNorge,"kanadisk thriller",Thriller,
+TVNorge,familiefilm,Family,movie
+TVNorge,familiekomedie,Family/Comedy,movie
+TVNorge,komedie,Comedy,
 TVNorge,komiserie,Comedy,series
+TVNorge,krimserie,Crime,series
 TVNorge,livsstilserie,Lifestyle,series
-TVNorge,miniserie,Mini,series
-TVNorge,musikk,Music,
-TVNorge,nattgrafikk,Ads,\N
-TVNorge,"new zealandsk dokumentarserie",Documentary,
-TVNorge,"new zealandsk paranormal serie",Paranormal,series
-TVNorge,"norsk action",Action,
-TVNorge,"norsk dokumentar fra 2011",Documentary,
-TVNorge,"norsk dokumentarserie",Documentary,series
-TVNorge,"norsk komiserie",Comedy,series
-TVNorge,"norsk livsstilserie",Lifestyle,series
-TVNorge,"norsk norske produksjoner",Norweigan,
-TVNorge,"norsk produksjon",Norweigan,
-TVNorge,"norsk program",\N,tvshow
-TVNorge,"norsk sport",Sports,sports
-TVNorge,program,\N,tvshow
 TVNorge,realityserie,Reality,series
+TVNorge,"romantisk komedie",Romance/Comedy,
 TVNorge,serie,\N,series
+TVNorge,skrekkfilm,Horror,movie
 TVNorge,sport,\N,sports
-TVNorge,"svensk dokumentarserie",Documentary,series
-TVNorge,"svensk livsstilserie",Lifestyle,series
-TVNorge,"svensk realityserie",Reality,series
-TVNorge,thriller,Thriller,\N
+TVNorge,talkshow,Talkshow,series
+TVNorge,thriller,Thriller,
+TVNorge,western,Western,
 TVP,"baśń filmowa",\N,movie
 TVP,"cykl dokumentalny",Documentary,series
 TVP,"cykl reportaå¼y",News,
