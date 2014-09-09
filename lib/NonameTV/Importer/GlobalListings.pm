@@ -100,7 +100,7 @@ sub ImportContentFile
   }
 
   # Norwegian and danish doesnt work and flip out (amd -files have a command that doesnt work yet)
-  if( $file =~ /amend/i ) {
+  if( $file =~ /amend|amd/i ) {
     $self->ImportAmendments( $file, $doc, $channel_xmltvid, $channel_id, $schedlang );
   }
   else {
@@ -552,9 +552,11 @@ sub extract_extra_info
   $ce->{title} =~ s/Storage Wars: New York/Storage Wars New York/i;
   $ce->{title} =~ s/Premiere ALSO APPEARING THIS MONTH://i;
   $ce->{title} =~ s/Premiere CONTINUING SERIES://i;
+  $ce->{title} =~ s/^Premiere series: //i;
   $ce->{title} =~ s/^Premiere //i;
   $ce->{title} =~ s/^CHANNEL PREMIERE: //i;
   $ce->{title} =~ s/^TERRITORY PREMIERE: //i;
+  $ce->{title} =~ s/THRILLER THURSDAY: //i;
   $ce->{title} =~ s/^\((.*?)\)//g;
   ## Ending
 
