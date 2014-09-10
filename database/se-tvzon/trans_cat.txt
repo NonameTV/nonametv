@@ -1032,6 +1032,22 @@ SBSTV,underholdningsprogram,Entertainment,series
 SBSTV,underholdningsserie,Entertainment,series
 SBSTV,underholdningsshow,Entertainment,series
 SBSTV,ungdomskomedie,Youth/Comedy,
+SonyDE_genre,action,Action,
+SonyDE_genre,adventure,Adventure,
+SonyDE_genre,"adventure,comedy",Adventure/Comedy,
+SonyDE_genre,animation,Animation,
+SonyDE_genre,crime,Crime,
+SonyDE_genre,"crime,comedy",Crime/Comedy,
+SonyDE_genre,documentary,Documentary,
+SonyDE_genre,drama,Drama,
+SonyDE_genre,"drama,thriller",Drama/Thriller,
+SonyDE_genre,horror,Horror,
+SonyDE_genre,"reality show",Reality,series
+SonyDE_genre,sci-fi,Sci-Fi,
+SonyDE_genre,thriller,Thriller,
+SonyDE_type,fil,\N,movie
+SonyDE_type,movi,\N,movie
+SonyDE_type,series,\N,series
 SRF,serie,\N,series
 SRF,"serie (animation)",Animation,series
 SRF,"serie (arzt)",\N,series

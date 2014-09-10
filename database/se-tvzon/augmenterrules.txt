@@ -856,3 +856,8 @@
 464,Tvdb,^.*$,program_type,series,\N,guess
 465,Tvdb,^.*$,program_type,series,\N,guess
 458,Tvdb,^.*$,program_type,series,\N,guess
+1036,TvdbNL,^.*$,program_type,series,\N,guess
+1037,TvdbEN,^.*$,program_type,series,\N,guess
+1038,TvdbEN,^.*$,program_type,series,\N,guess
+1039,TvdbNL,^.*$,program_type,series,\N,guess
+1043,TvdbDE,^.*$,program_type,series,\N,guess

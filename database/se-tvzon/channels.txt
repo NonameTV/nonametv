@@ -569,3 +569,11 @@
 1033,"DW (Ameria)",amerika.dw.de,TV,DWDE,1,,0,series,News,en,0,http://www.dw.de/,0
 1034,"DW (Asien)",asien.dw.de,TV,DWDE,1,,0,series,News,de,0,http://www.dw.de/,0
 1035,"DW (Latino America)",la.dw.de,TV,DWDE,1,,0,series,News,es,0,http://www.dw.de/,0
+1036,"13th Street Netherlands",13thstreet.nl,"TV,Netherlands",NBCUniversal,1,,0,series,Series,nl,0,http://www.13thstreet.nl/,0
+1037,"13th Street (English) Benelux",en.13thstreet.nl,"TV,Netherlands",NBCUniversal,1,,0,series,Series,en,0,http://www.13thstreet.nl/,0
+1038,"Syfy (English) Benelux",en.syfy.nl,"TV,Netherlands",NBCUniversal,1,,0,series,Series,en,0,http://www.syfy.nl/,0
+1039,"Syfy Netherlands",syfy.nl,"TV,Netherlands",NBCUniversal,1,,0,series,Series,nl,0,http://www.syfy.nl/,0
+1040,ANIMAX,animax.tv,"TV,Germany",SonyDE,1,,0,series,Series,de,0,http://www.animax.tv/,0
+1041,AXN,axntv.de,"TV,Germany",SonyDE,1,,0,series,Series,de,0,http://www.axntv.de/,0
+1042,"Sony Entertainment Television",sonyentertainment.tv,"TV,Germany",SonyDE,1,,0,series,Series,de,0,http://www.sonyentertainment.tv/,0
+1043,"TNT Glitz",tnt-glitz.tv,"TV,Germany,Austria",Turner_xml,1,,0,series,Series,de,0,,0
