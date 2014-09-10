@@ -25,7 +25,7 @@ use Encode;
 use Data::Dumper;
 use Scalar::Util qw(looks_like_number);
 
-use NonameTV qw/MyGet expand_entities AddCategory norm/;
+use NonameTV qw/MyGet expand_entities AddCountry AddCategory norm/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/progress error/;
 
@@ -218,6 +218,9 @@ sub ImportContent
             delete $ce->{original_title};
         }
     }
+
+    my($country2 ) = $ds->LookupCountry( "TV2NO", norm(fq($inrow->{'PRODUKSJONSLANDKOPI'})) );
+    AddCountry( $ce, $country2 );
 
     # Actually movie
     if(defined $ce->{directors} and $ce->{directors} ne "") {
