@@ -325,6 +325,15 @@ sub guess_channel
 		# Cartoon network ENGLISH
         return "cartoonnetwork.com" if $filename =~ /^cn\s*nordic/i;
 	}
+
+	# XML Germany
+	if( $filename =~ /\.xml$/i and $filename =~ /mediapress/i ) {
+	    return "cartoonnetwork.de" if $filename =~ /^CN_/i;
+	    return "boomerangtv.de" if $filename =~ /^Boomerang_/i;
+	    return "tnt-serie.de" if $filename =~ /^TNTSerie_/i;
+	    return "tnt-film.de" if $filename =~ /^TNT_/i;
+	    return "tnt-glitz.tv" if $filename =~ /^Glitz_/i;
+	}
   }
  
  if( $dir =~ /Kanal10/ and $filename =~ /\.doc$/i ) {

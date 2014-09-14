@@ -1,0 +1,49 @@
+#!/usr/bin/perl -w
+
+use strict;
+
+use FindBin;
+use lib "$FindBin::Bin/../lib";
+
+use DateTime;
+use File::Util;
+use File::Copy qw/copy move/;
+
+use NonameTV;
+use NonameTV::DataStore;
+use NonameTV::Config qw/ReadConfig/;
+use NonameTV::Log qw/progress error d p w f/;
+
+use Getopt::Long;
+
+my $opt = { 'verbose' => 0 };
+
+my $res = GetOptions( $opt, qw/verbose/ );
+
+NonameTV::Log::SetVerbosity( $opt->{verbose} );
+
+# Read configuration
+my $conf = ReadConfig();
+my $ds = NonameTV::DataStore->new( $conf->{DataStore} );
+my $filestore = $conf->{FileStore};
+
+  # list files inside of the channel directory and check when they have been touched
+  my( $cf ) = File::Util->new();
+  my( @cffiles ) = $cf->list_dir( "/nonametv/autoupload/tele5", '--no-fsdots' );
+  foreach my $cff (@cffiles)
+  {
+    if($cff =~ /^\./) { next; }
+
+    my $cftype = join(',', File::Util->file_type( "/nonametv/autoupload/tele5/$cff" ) );
+
+    if( $cff !~ /\.xml$/i ){
+        progress( "File $cff isn't a xml file - removing" );
+        unlink "/nonametv/autoupload/tele5/$cff";
+    } else {
+      move( "/nonametv/autoupload/tele5/$cff", "$filestore/tele5.de/$cff" );
+      print "$cff moved to tele5.de\n";
+    }
+
+  }
+
+exit;
