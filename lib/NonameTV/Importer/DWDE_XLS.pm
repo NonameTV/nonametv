@@ -17,6 +17,7 @@ use utf8;
 use DateTime;
 use Spreadsheet::ParseExcel;
 use Spreadsheet::Read;
+use Archive::Zip qw/:ERROR_CODES/;
 
 use Spreadsheet::XLSX;
 use Spreadsheet::XLSX::Utility2007 qw(ExcelFmt ExcelLocaltime LocaltimeExcel);
@@ -31,7 +32,7 @@ use File::Temp qw/tempfile/;
 
 use NonameTV qw/norm normUtf8 AddCategory/;
 use NonameTV::DataStore::Helper;
-use NonameTV::Log qw/progress error/;
+use NonameTV::Log qw/progress error d p w f/;
 
 use NonameTV::Importer::BaseFile;
 
@@ -65,8 +66,46 @@ sub ImportContentFile {
 
   if( $file =~ /\.xls|.xlsx$/i ){
     $self->ImportXLS( $file, $chd );
-  }else {
+  } elsif( $file =~ /\.zip$/i ) {
+    my $zip = Archive::Zip->new();
+    if( $zip->read( $file ) != AZ_OK ) {
+      f "Failed to read zip.";
+      return 0;
+    }
 
+
+    my @files;
+
+    my @members = $zip->members();
+    foreach my $member (@members) {
+        push( @files, $member->{fileName} ) if $member->{fileName} =~ /xls/i;
+    }
+
+    my $numfiles = scalar( @files );
+    if( $numfiles != 1 ) {
+      f "Found $numfiles matching files, expected 1.";
+      return 0;
+    }
+
+    d "Using file $files[0]";
+
+    # file exists - could be a new file with the same filename
+    # remove it.
+    my $filename = '/tmp/'.$files[0];
+    if (-e $filename) {
+    	unlink $filename; # remove file
+    }
+
+    my $content = $zip->contents( $files[0] );
+
+    open (MYFILE, '>>'.$filename);
+	print MYFILE $content;
+	close (MYFILE);
+
+    $self->ImportXLS( $filename, $chd );
+    unlink $filename; # remove file
+  }else {
+    error( "DWDE_XLS: Unknown file format: $file" );
   }
 
 
@@ -87,14 +126,36 @@ sub ImportXLS {
   # Only process .xls or .xlsx files.
   progress( "DWDE_XLS: $xmltvid: Processing $file" );
 
-	my %columns = ();
+  my($coldate, $coltime, $coltitle, $colsubtitle, $coldesc, $colgenre);
+
   my $date;
   my $currdate = "x";
-  my $coldate  = 0;
-  my $coltime  = 1;
-  my $coltitle = 2;
-  my $colgenre = 3;
-  my $coldesc  = 4;
+  if($xmltvid eq "amerika.dw.de") {
+    $coldate  = 0;
+    $coltime  = 2;
+    $coltitle = 3;
+    $colsubtitle = 4;
+    $coldesc  = 5;
+  } elsif($xmltvid eq "la.dw.de") {
+    $coldate  = 1;
+    $coltime  = 3;
+    $coltitle = 4;
+    $colsubtitle = 5;
+    $coldesc  = 6;
+  }elsif($xmltvid eq "asien.dw.de") {
+    $coldate  = 2;
+    $coltime  = 4;
+    $coltitle = 9;
+    $colsubtitle = 10;
+    $coldesc  = 11;
+  }else {
+    $coldate  = 0;
+    $coltime  = 1;
+    $coltitle = 2;
+    $colgenre = 3;
+    $coldesc  = 4;
+  }
+
 
   my $oBook;
 
@@ -115,6 +176,10 @@ sub ImportXLS {
 	my $foundcolumns = 0;
     # browse through rows
     for(my $iR = 2 ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
+      if(!defined($coldate)) {
+        f "No date found,";
+        return;
+      }
 
       my $oWkC;
 
@@ -157,8 +222,8 @@ sub ImportXLS {
       my $desc = norm($oWkC->Value) if( $oWkC );
 
       # genre
-      $oWkC = $oWkS->{Cells}[$iR][$colgenre];
-      my $genre = norm($oWkC->Value) if( $oWkC );
+      $oWkC = $oWkS->{Cells}[$iR][$colgenre] if defined($colgenre);
+      my $genre = norm($oWkC->Value) if( $oWkC and defined($colgenre) );
 
       # title
       $oWkC = $oWkS->{Cells}[$iR][$coltitle];
@@ -175,12 +240,12 @@ sub ImportXLS {
       $ce->{description} = $desc if defined($desc);
 
       # Duno what this is, not genre, I think.
-      if( defined($genre) and $genre ne "" ){
+      if(defined($colgenre) and defined($genre) and $genre ne "" ){
       #  my ($program_type2, $category2 ) = $ds->LookupCat( 'DWDE', $genre );
       #	AddCategory( $ce, $program_type2, $category2 );
       }
 
-	  progress("DWDE_XLS: $time - $title") if $title;
+	  progress("$xmltvid: $time - $title") if $title;
       $dsh->AddProgramme( $ce ) if $title;
     }
 
