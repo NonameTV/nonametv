@@ -45,6 +45,7 @@ $channel_data{ "SX" }  = "sixx.de";
   my( @cffiles ) = $cf->list_dir( "/nonametv/autoupload/prosieben", '--no-fsdots' );
   foreach my $cff (@cffiles)
   {
+    if($cff =~ /^\./) { next; }
     my ( $id, $week, $year ) = split(/_/, $cff);
 
     my $cftype = join(',', File::Util->file_type( "/nonametv/autoupload/prosieben/$cff" ) );

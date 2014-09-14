@@ -81,6 +81,7 @@ $d perl -I lib tools/nonametv-update-tvdb nl
 $d tools/se-tvzon/nonametv-filestore-svt $Q
 $d tools/se-tvzon/nonametv-filestore-venetsia $Q
 $d tools/se-tvzon/nonametv-filestore-prosieben $Q
+$d tools/se-tvzon/nonametv-filestore-tele5 $Q
 
 # Import everything
 $d tools/se-tvzon/nonametv-import-allhttp $Q

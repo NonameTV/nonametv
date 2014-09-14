@@ -74,6 +74,7 @@ $channel_data{ "r44" } = "x3m.radio.yle.fi";
   my( @cffiles ) = $cf->list_dir( "/nonametv/autoupload/venetsia", '--no-fsdots' );
   foreach my $cff (@cffiles)
   {
+    if($cff =~ /^\./) { next; }
 
     my ( $id, $date ) = split(/_/, $cff);
 

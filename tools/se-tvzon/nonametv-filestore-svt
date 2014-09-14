@@ -42,6 +42,7 @@ $channel_data{ "SVTK" } = "kunskapskanalen.svt.se";
   my( @cffiles ) = $cf->list_dir( "/nonametv/autoupload/svt", '--no-fsdots' );
   foreach my $cff (@cffiles)
   {
+    if($cff =~ /^\./) { next; }
     my $org_cff = $cff;
     $cff =~ s/SVT_SCHEDULE_//g if $cff;
 
