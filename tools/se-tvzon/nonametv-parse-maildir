@@ -92,6 +92,7 @@ my @folders = qw(NonameTV-Data.GlobalListings
 		 NonameTV-Data.VisjonNorge
 		 NonameTV-Data.Disney
 		 NonameTV-Data.Turner
+		 NonameTV-Data.DMB
         );
 
 # Flag messages AFTER they have been processed. Then I normally
@@ -185,7 +186,9 @@ sub process_parts
     # Channels you only want it decoded, not fucked up
     if($channel eq "rtl2.de" or $channel eq "historytv.se" or
        $channel eq "historytv.no" or $channel eq "historytv.dk" or
-       $channel eq "historytv.eu" or $channel eq "crimeandinvestigation.eu") {
+       $channel eq "historytv.eu" or $channel eq "crimeandinvestigation.eu" or
+       $channel eq "sonyentertainment.tv" or $channel eq "axntv.de" or $channel eq "animax.tv" or
+       $channel eq "familytv.de" or $channel eq "dasneue.tv") {
         $content = decode_base64($part->body);
     } else {
         $content = $part->decoded->string;
@@ -524,6 +527,17 @@ sub guess_channel
         return "ftv.com" if $filename =~ /hotbird/i;
         return "hd.ftv.com" if $filename =~ /eurobird/i;
     }
+ }
+
+ if( $dir =~ /DMB/ and $filename =~ /\.xml$/i ) {
+    # Sony Entertainment TV, Gmbh.
+    return "axntv.de" if $filename =~ /^AXN-/i;
+    return "animax.tv" if $filename =~ /^AAX-/i;
+    return "sonyentertainment.tv" if $filename =~ /^SEN-/i;
+
+    # ITV
+    return "familytv.de" if $filename =~ /^FamilyTV_/i;
+    return "dasneue.tv" if $filename =~ /^DasNeueTV_/i;
  }
 
   return undef;

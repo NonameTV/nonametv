@@ -180,6 +180,12 @@ foreach my $msg ($infolder->messages) {
   elsif( $fromaddr =~ /\@visjonnorge.com/i ) {
     MoveMessage( $msg, "VisjonNorge" );
   }
+  elsif( $fromaddr =~ /\@dmb-edi-net.com/i ) {
+    MoveMessage( $msg, "DMB" );
+  }
+  elsif( $fromaddr =~ /\@deutschemailbox.de/i ) {
+    MoveMessage( $msg, "DMB" );
+  }
 }
 
 sub MoveMessage {

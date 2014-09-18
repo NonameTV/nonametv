@@ -49,3 +49,4 @@ tools/nonametv-import TV8Norge $1 $2 $3
 tools/nonametv-import Motors $1 $2 $3
 tools/nonametv-import YaS $1 $2 $3
 tools/nonametv-import Tele5 $1 $2 $3
+tools/nonametv-import ITVDE $1 $2 $3
