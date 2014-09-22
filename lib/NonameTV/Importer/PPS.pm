@@ -50,9 +50,6 @@ sub ImportContentFile {
   if( $file =~ /\.xml$/i ){
     $self->ImportXML( $file, $chd );
   } elsif( $file =~ /\.zip$/i ) {
-  	# When ParseExcel can load a XLS file
-  	# from a string Please remove this
-  	# as this is too stupid.
 
     my $zip = Archive::Zip->new();
     if( $zip->read( $file ) != AZ_OK ) {
@@ -61,7 +58,6 @@ sub ImportContentFile {
     }
 
     my @files;
-
     my @members = $zip->members();
     foreach my $member (@members) {
       push( @files, $member->{fileName} ) if $member->{fileName} =~ /xml$/i;
@@ -120,7 +116,6 @@ sub ImportXML
   my $currdate = "x";
   my $column;
 
-  # the grabber_data should point exactly to one worksheet
   my $rows = $doc->findnodes( "//broadcast" );
 
   if( $rows->size() == 0 ) {
@@ -139,8 +134,8 @@ sub ImportXML
   my $batchid = $chd->{xmltvid} . "_" . $year . "-" . $month . "-" . $day;
 
   $dsh->StartBatch( $batchid , $chd->{id} );
-
   ## END
+
   my $currdate = "x";
 
   foreach my $row ($rows->get_nodelist) {
@@ -171,12 +166,14 @@ sub ImportXML
     my $music         = $row->findvalue( 'music' );
     my $country       = $row->findvalue( 'country' );
 
+    # Clean these up so they can be matched towards TVDB
     $desc =~ s/^\((.*?)\)//;
     $subtitle =~ s/\// \/ /g;
     $subtitle =~ s/\s+\s+/ /g;
     $subtitle_org =~ s/\// \/ /g;
     $subtitle_org =~ s/\s+\s+/ /g;
 
+    # Clean these up so they can be matched towards TVDB
     $title =~ s/÷/-/g;
     $title_org =~ s/÷/-/g;
     $subtitle =~ s/÷/-/g;
@@ -334,7 +331,7 @@ sub create_dt
                           minute => $minute,
                           time_zone => 'Europe/Stockholm',
                           );
- ##
+
  $dt->set_time_zone( "UTC" );
 
   return $dt;
