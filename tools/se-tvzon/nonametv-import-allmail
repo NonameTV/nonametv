@@ -50,3 +50,4 @@ tools/nonametv-import Motors $1 $2 $3
 tools/nonametv-import YaS $1 $2 $3
 tools/nonametv-import Tele5 $1 $2 $3
 tools/nonametv-import ITVDE $1 $2 $3
+tools/nonametv-import PPS $1 $2 $3

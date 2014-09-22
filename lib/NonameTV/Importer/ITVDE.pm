@@ -83,12 +83,12 @@ sub ImportContentFile
   foreach my $program (sort by_start $programs->get_nodelist) {
         $xpc->setContextNode( $program );
         my $start = $self->parseTimestamp( $xpc->findvalue( 's:termin/@start' ) );
-        my $end = $self->parseTimestamp( $xpc->findvalue( 's:termin/@ende' ) ) if $xpc->findvalue( 's:termin/@ende' ) =~ m/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/;
+        #my $end = $self->parseTimestamp( $xpc->findvalue( 's:termin/@ende' ) ) if $xpc->findvalue( 's:termin/@ende' ) =~ m/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/;
         my $ce = ();
         $ce->{channel_id} = $chd->{id};
 
         $ce->{start_time} = $start->ymd("-") . " " . $start->hms(":");
-        $ce->{end_time} = $end->hms(":") if $end;
+        #$ce->{end_time} = $end->hms(":") if $end;
 
         if($start->ymd("-") ne $currdate ) {
            if( $currdate ne "x" ) {
@@ -99,7 +99,7 @@ sub ImportContentFile
           $dsh->StartBatch( $batchid , $chd->{id} );
           #$dsh->StartDate( $start->ymd("-") , "06:00" );
           $currdate = $start->ymd("-");
-          progress("Tele5_xml: $chd->{xmltvid}: Date is: ".$start->ymd("-"));
+          progress("ITVDE: $chd->{xmltvid}: Date is: ".$start->ymd("-"));
         }
 
         $ce->{title} = norm($xpc->findvalue( 's:titel/@termintitel' ));
@@ -179,12 +179,12 @@ sub ImportContentFile
 
         my $genre = $xpc->findvalue( 's:infos/s:klassifizierung/@hauptgenre' );
         if( $genre ){
-          my ( $program_type, $category ) = $self->{datastore}->LookupCat( "Tele5_genre", $genre );
+          my ( $program_type, $category ) = $self->{datastore}->LookupCat( "ITVDE_genre", $genre );
           AddCategory( $ce, $program_type, $category );
         }
         $genre = $xpc->findvalue( 's:infos/s:klassifizierung/@formatgruppe' );
         if( $genre ){
-          my ( $program_type2, $category2 ) = $self->{datastore}->LookupCat( "Tele5_main", $genre );
+          my ( $program_type2, $category2 ) = $self->{datastore}->LookupCat( "ITVDE_main", $genre );
           AddCategory( $ce, $program_type2, $category2 );
         }
 
@@ -244,7 +244,7 @@ sub ImportContentFile
 
         $ds->AddProgrammeRaw( $ce );
 
-        progress("Tele5_xml: $chd->{xmltvid}: ".$ce->{start_time}." - ".$ce->{title});
+        progress("ITVDE: $chd->{xmltvid}: ".$ce->{start_time}." - ".$ce->{title});
   }
 
   $dsh->EndBatch( 1 );
@@ -259,8 +259,9 @@ sub parseTimestamp( $ ){
   if( $timestamp ){
     # 2011-11-12T20:15:00+01:00
     my ($year, $month, $day, $hour, $minute) = ($timestamp =~ m/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
-    if( !defined( $year )|| !defined( $hour ) ){
+    if( !defined( $year )|| !defined( $hour ) || ($month < 1) ){
       w( "could not parse timestamp: $timestamp" );
+      return undef;
     }
 
     my $dt = DateTime->new (
