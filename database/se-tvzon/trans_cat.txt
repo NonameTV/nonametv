@@ -293,6 +293,11 @@ CanalPlus,vampyrthriller,Thriller,
 CanalPlus,västern,Western,
 CanalPlus,"verklighetsbaserat drama",Drama,
 CanalPlus,western,Western,
+CarusMedia,auto,Automotor,sports
+CarusMedia,handwerk,\N,series
+CarusMedia,kochen,Food,series
+CarusMedia,"kunst/ kultur (kein musikfernsehen)",Art/Culture,series
+CarusMedia,motorsport,Motor,sports
 CMore_category,film,\N,movie
 CMore_genre,action,Action,
 CMore_genre,action/comedy,Action/Comedy,
@@ -583,6 +588,17 @@ Fatstone,snowboarding.,Snowboarding,sports
 Fatstone,snowboarding/skiing.,Snowboarding/Skiing,sports
 Fatstone,surfing.,Surfing,sports
 Fatstone,wintersports.,Winter,sports
+FOXTV,action,Action,
+FOXTV,cooking,Cooking,
+FOXTV,crime,Crime,
+FOXTV,documentry,Documentary,
+FOXTV,drama,Drama,
+FOXTV,entertainment,Entertainment,
+FOXTV,factual/cultural,Factual/Cultural,
+FOXTV,horror,Horror,
+FOXTV,lifestyle,Lifestyle,
+FOXTV,movie,\N,movie
+FOXTV,"science fiction",Sci-Fi,
 HBONordic,action,Action,\N
 HBONordic,comedy,Comedy,\N
 HBONordic,documentary,Documentary,\N
@@ -1261,6 +1277,30 @@ Tele5,thriller-serie,Crime/Mystery,
 Tele5,vampirfilm,Vampire,movie
 Tele5,western,Action/Adv,
 Tele5,westernparodie,Action/Adv,
+Tele5_genre,abenteuer,Adventure,
+Tele5_genre,action,Action,
+Tele5_genre,comedy,Comedy,
+Tele5_genre,crime,Crime,
+Tele5_genre,drama,Drama,
+Tele5_genre,fantasy,Fantasy,
+Tele5_genre,fantasy/abenteuer,Fantasy/Adventure,
+Tele5_genre,horror,Horror,
+Tele5_genre,horrorkomödie,Horror/Comedy,
+Tele5_genre,katastrophenfilm,\N,movie
+Tele5_genre,komödie,Comedy,
+Tele5_genre,krimi,Crime,
+Tele5_genre,mystery,Mystery,
+Tele5_genre,sci-fi,Sci-Fi,
+Tele5_genre,"science fiction",Sci-Fi,
+Tele5_genre,science-fiction,Sci-Fi,
+Tele5_genre,soap,Soap,
+Tele5_genre,thriller,Thriller,
+Tele5_genre,western,Western,
+Tele5_main,film,\N,movie
+Tele5_main,magazin/ratgeber,\N,series
+Tele5_main,serie,\N,series
+Tele5_main,sonstiges,\N,series
+Tele5_main,werbung,\N,series
 Tmdb_genre,10402,Music,
 Tmdb_genre,105,Disaster,
 Tmdb_genre,10748,Suspense,

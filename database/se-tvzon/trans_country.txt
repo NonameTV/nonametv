@@ -2,13 +2,16 @@ Arte,afghanistan,AF
 Arte,australien,AU
 Arte,belgien,BE
 Arte,bolivien,BO
+Arte,chile,CL
 Arte,china,CN
+Arte,"china, volksrepublik",CN
 Arte,dänemark,DK
 Arte,"deutsche dem rep",DE
 Arte,deutschland,DE
 Arte,estland,EE
 Arte,frankreich,FR
 Arte,"großbritannien",GB
+Arte,hongkong,HK
 Arte,indien,IN
 Arte,iran,IR
 Arte,irland,IE
@@ -20,20 +23,38 @@ Arte,jugoslawien,\N
 Arte,kanada,CA
 Arte,korea,KR
 Arte,luxemburg,LU
+Arte,mexiko,MX
 Arte,niederlande,NL
 Arte,norwegen,NO
 Arte,österreich,AT
 Arte,polen,PL
 Arte,portugal,PT
+Arte,rumänien,RO
 Arte,russland,RU
 Arte,schweden,SE
 Arte,schweiz,CH
 Arte,serbien,RS
 Arte,spanien,ES
+Arte,sudafrikasüdafrika,ZA
+Arte,südkorea,KR
 Arte,thailand,TH
 Arte,"tschechische republik",CZ
 Arte,türkei,TR
+Arte,udssr,\N
+Arte,ungarn,\N
 Arte,usa,US
+CarusMedia,aus,AU
+CarusMedia,ausatralien,AU
+CarusMedia,australien,AU
+CarusMedia,brd,\N
+CarusMedia,ch,CH
+CarusMedia,deutschland,DE
+CarusMedia,irland,IE
+CarusMedia,neuseeland,NZ
+CarusMedia,norwegen,NO
+CarusMedia,portugal,PT
+CarusMedia,schweiz,CH
+CarusMedia,uk,UK
 CMore,australia,AU
 CMore,australien,AU
 CMore,belgium,BE
@@ -49,7 +70,7 @@ CMore,france,FR
 CMore,frankrig,FR
 CMore,frankrike,FR
 CMore,germany,DE
-CMore,hungary,\N
+CMore,hungary,HU
 CMore,iceland,IS
 CMore,ireland,IE
 CMore,iso-britannia,GB
@@ -61,6 +82,7 @@ CMore,"new zealand",NZ
 CMore,norway,NO
 CMore,ranska,FR
 CMore,ruotsi,SE
+CMore,"russian federation",\N
 CMore,spain,ES
 CMore,spania,ES
 CMore,spanien,ES
@@ -76,6 +98,7 @@ CMore,"united states",US
 CMore,usa,US
 DR,asien,\N
 DR,australien,AU
+DR,"australien & oceanien",AU
 DR,belgien,BE
 DR,brasilien,BR
 DR,canada,CA
@@ -92,6 +115,7 @@ DR,italien,IT
 DR,japan,JP
 DR,mellemøsten,\N
 DR,mexico,MX
+DR,"nordamerika udenfor usa",\N
 DR,norden,\N
 DR,norge,NO
 DR,polen,PL
@@ -106,16 +130,24 @@ DR,usa,US
 DR,øst-asien,\N
 DR,"østlige europa",\N
 DR,østrig,AT
+FOXTV,france,FR
+FOXTV,null,\N
+FOXTV,"united kingdom",UK
+FOXTV,"united states",US
 KFZ,a,AT
 KFZ,aus,AU
+KFZ,ausatralien,AU
+KFZ,australien,AU
 KFZ,b,BE
 KFZ,bg,BG
 KFZ,br,BR
+KFZ,brd,\N
 KFZ,cdn,CA
 KFZ,ch,CH
 KFZ,cz,CZ
 KFZ,d,DE
 KFZ,ddr,\N
+KFZ,deutschland,DE
 KFZ,dk,DK
 KFZ,e,ES
 KFZ,f,FR
@@ -123,23 +155,33 @@ KFZ,fin,FI
 KFZ,gb,GB
 KFZ,h,HU
 KFZ,hk,HK
+KFZ,hr,HR
 KFZ,i,IT
 KFZ,ind,IN
 KFZ,irl,IE
+KFZ,irland,IE
 KFZ,j,JP
 KFZ,l,LU
 KFZ,m,MT
 KFZ,mex,MX
 KFZ,n,NO
+KFZ,neuseeland,NZ
+KFZ,nl,NL
+KFZ,norwegen,NO
 KFZ,nz,NZ
 KFZ,p,PT
+KFZ,pk,PK
+KFZ,portugal,PT
 KFZ,ra,AR
 KFZ,ro,RO
 KFZ,rok,KR
 KFZ,rus,RU
 KFZ,s,SE
+KFZ,scg,RS
+KFZ,schweiz,CH
 KFZ,sf,\N
 KFZ,ua,UA
+KFZ,uk,UK
 KFZ,usa,US
 KFZ,vrc,CN
 KFZ,za,ZA
@@ -161,7 +203,16 @@ Nonstop,"south korea",KR
 Nonstop,spain,ES
 Nonstop,uk,GB
 Nonstop,us,US
+PPS,cdn,CDN
+PPS,d,DE
+PPS,e,\N
+PPS,f,\N
+PPS,gb,UK
+PPS,gb/usa/d,\N
+PPS,i,\N
+PPS,usa,US
 RAI,aus,AU
+RAI,bra,\N
 RAI,cdn,CA
 RAI,cin,IN
 RAI,fra,FR
@@ -175,7 +226,9 @@ RAI,nor,NO
 RAI,ola,\N
 RAI,rok,KR
 RAI,spa,ES
+RAI,sve,\N
 RAI,svi,\N
+RAI,tha,\N
 RAI,uk,GB
 RAI,usa,US
 SBSTV,-,\N
@@ -185,21 +238,21 @@ SBSTV,dansk,DK
 SBSTV,eng,GB
 SBSTV,fodbold,\N
 SBSTV,norsk,NO
-SonyDE,australien,\N
-SonyDE,belgien,\N
+SonyDE,australien,AU
+SonyDE,belgien,BE
 SonyDE,china,CN
 SonyDE,deutschland,DE
 SonyDE,frankreich,FR
 SonyDE,"großbritannien",GB
 SonyDE,hongkong,HK
 SonyDE,irland,IE
-SonyDE,italien,\N
+SonyDE,italien,IT
 SonyDE,japan,JP
 SonyDE,kanada,CA
 SonyDE,mexiko,MX
 SonyDE,österreich,AT
-SonyDE,polen,\N
-SonyDE,spanien,\N
+SonyDE,polen,PL
+SonyDE,spanien,ES
 SonyDE,südkorea,KR
 SonyDE,ungarn,HU
 SonyDE,usa,US
@@ -218,6 +271,7 @@ SRF,irland,IE
 SRF,italien,IT
 SRF,japan,JP
 SRF,kanada,CA
+SRF,luxemburg,LU
 SRF,neuseeland,NZ
 SRF,niederlande,NL
 SRF,"nord- und südpazifik",\N
@@ -234,11 +288,13 @@ TV2NO,britisk,GB
 TV2NO,canadisk,CA
 TV2NO,dansk,DK
 TV2NO,fransk,FR
+TV2NO,indisk,\N
 TV2NO,irsk,IE
 TV2NO,italiensk,IT
 TV2NO,kanadisk,CA
 TV2NO,kinesisk,CN
 TV2NO,norsk,NO
+TV2NO,"not specified",\N
 TV2NO,spansk,ES
 TV2NO,svensk,SE
 TV2NO,tysk,DE

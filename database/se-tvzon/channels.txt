@@ -43,7 +43,7 @@
 284,FEM,fem.no,"TV,Norway,Sweden",TVNorge,1,FEM,1,series,Series,no,0,http://www.fem.no/,0
 285,MAX,max.no,"TV,Norway,Sweden",TVNorge,1,MAX,1,series,Series,no,0,http://www.max.no/,0
 287,TVNorge,tvnorge.no,"TV,Norway,Sweden",TVNorge,1,TVNorge,1,series,Series,no,0,http://www.tvnorge.no/,0
-288,DR1,dr1.dr.dk,"TV,Norway,Sweden,Denmark",DR,1,DR1,1,series,Series,da,0,http://www.dr.dk/DR1/,0
+288,DR1,dr1.dr.dk,"TV,Norway,Sweden,Denmark,Germany,Austria",DR,1,DR1,1,series,Series,da,0,http://www.dr.dk/DR1/,0
 289,DR2,dr2.dr.dk,"TV,Norway,Sweden,Denmark",DR,1,DR2,1,series,Series,da,0,http://www.dr.dk/DR2/,0
 292,Eurosport,eurosport.se,"TV,Sweden",Eurosport,1,EurosportNordic,1,sports,Sports,sv,0,http://www.eurosport.se/,0
 293,"Eurosport 2",eurosport2.se,"TV,Sweden",Eurosport,1,Eurosport2NE,1,sports,Sports,sv,0,http://www.eurosport.se/,0
@@ -144,7 +144,7 @@
 473,"DR Ramasjang",ramasjang.dr.dk,"TV,Denmark",DR,1,DRRAMASJANG,1,series,Series,da,0,http://www.dr.dk/RAMASJANG/,0
 475,"TV2 Film",film.tv2.dk,"TV,Denmark",TV2,1,TV%202%20FILM,1,series,Series,da,0,http://www.tv2.dk/film,0
 476,"TV2 Charlie",charlie.tv2.dk,"TV,Denmark",TV2,1,TV%202%20CHARLIE,1,series,Series,da,0,http://www.tv2.dk/charlie,0
-477,"TV2 Denmark",tv2.dk,"TV,Denmark,Norway,Sweden",TV2,1,TV%202%20DANMARK,1,series,Series,da,0,http://www.tv2.dk,0
+477,"TV2 Denmark",tv2.dk,"TV,Denmark,Norway,Sweden,Austria,Germany",TV2,1,TV%202%20DANMARK,1,series,Series,da,0,http://www.tv2.dk,0
 478,"TV2 ZULU",zulu.tv2.dk,"TV,Denmark",TV2,1,TV%202%20ZULU,1,series,Series,da,0,http://www.tv2.dk/zulu,0
 479,DK4,dk4.dk,"TV,Denmark",DK4,1,,1,series,Series,da,0,http://www.dk4.dk/,0
 480,Mezzo,mezzo.tv,"TV,Norway,Sweden,Denmark,Finland",Mezzo,1,,1,,,en,0,http://www.mezzo.tv,0
@@ -246,7 +246,6 @@
 654,"HBO Nordic",sv.hbonordic.tv,"TV,Sweden",HBONordic,1,sv,1,,,sv,0,http://www.hbonordic.tv/,0
 655,"Oppna Kanalen Vaxjo",okv.se,"TV,Sweden",OKV,1,,1,series,Series,sv,0,http://www.okv.se/,0
 656,"Mezzo Live HD",hd.mezzo.tv,"TV,Norway,Sweden,Denmark,Finland",Mezzo,1,,1,,,en,0,http://www.mezzo.tv,0
-657,"Viasat 14 HD",14.viasat.se,"TV,Sweden",Viasat,1,viasat_14_hd_se_,1,sports,Sports,sv,0,http://www.viasat.se/content/viasat-14-hd,0
 659,"Animal Planet Norway",animalplanet.discovery.no,"TV,Norway",Discovery_xml,1,APNOR,1,series,Animals,no,0,http://www.discovery.no/,0
 660,"Discovery Channel Norway",discovery.no,"TV,Norway",Discovery_xml,1,DCNOR,1,series,Documentary,no,0,http://www.discovery.no/,0
 661,"Animal Planet HD Norway",hd.animalplanet.discovery.no,"TV,Norway",Discovery_xml,1,AHNOR,1,series,Animals,no,0,http://www.discovery.no/,0
@@ -558,7 +557,7 @@
 1018,"MTV Music 24 Finland",music24.musictelevision.fi,"TV,Finland",MTVde,1,76:fi:FI,0,,,fi,0,http://www.musictelevision.fi/,0
 1019,"VIVA Austria",at.viva.tv,"TV,Austria",MTV_novg,1,2:de:DE,0,,,de,0,http://www.viva.tv/,0
 1020,"MTV Music 24 Germany",music24.mtv.de,"TV,Austria,Germany",MTV_novg,1,76:de:DE,0,,,de,0,http://www.mtv.de/,0
-1022,RTL2,rtl2.de,"TV,Germany,Austria",RTL2,1,,1,series,Series,de,0,,0
+1022,RTL2,rtl2.de,"TV,Germany,Austria",RTL2,1,,1,series,Series,de,0,http://rtl2.de,0
 1023,"TNT Film",tnt-film.de,"TV,Germany,Austria",Turner_xml,1,,0,movie,Movies,de,0,,0
 1024,"TNT Serie",tnt-serie.de,"TV,Germany,Austria",Turner_xml,1,,0,series,Series,de,0,,0
 1025,"Boomerang Germany",boomerangtv.de,"TV,Germany,Austria",Turner_xml,1,,0,series,Children's,de,0,,0
@@ -577,3 +576,14 @@
 1041,AXN,axntv.de,"TV,Germany",SonyDE,1,,0,series,Series,de,0,http://www.axntv.de/,0
 1042,"Sony Entertainment Television",sonyentertainment.tv,"TV,Germany",SonyDE,1,,0,series,Series,de,0,http://www.sonyentertainment.tv/,0
 1043,"TNT Glitz",tnt-glitz.tv,"TV,Germany,Austria",Turner_xml,1,,0,series,Series,de,0,,0
+1044,"Tele5 Germany",tele5.de,"TV,Germany,Austria",Tele5,1,,0,series,Series,de,0,,0
+1045,"Das Neue TV",dasneue.tv,"TV,Germany,Austria",ITVDE,1,,0,series,Series,de,0,,0
+1046,"Family TV Germany",familytv.de,"TV,Germany,Austria",ITVDE,1,,0,series,Series,de,0,,0
+1047,"Disney Channel Germany",disneychannel.de,"TV,Germany,Austria",PPS,1,disney_,0,series,Series,de,0,http://www.disneychannel.de/,0
+1048,"Disney Cinemagic Germany",cinemagic.disneychannel.de,"TV,Germany,Austria",PPS,1,discinemagic_,0,series,Series,de,0,http://cinemagic.disney.de/,0
+1049,"Disney Jr. Germany",jr.disneychannel.de,"TV,Germany,Austria",PPS,1,disneyjr_,0,series,Series,de,0,http://www.disney.de/disney-junior/,0
+1050,"Disney XD Germany",xd.disneychannel.de,"TV,Germany,Austria",PPS,1,disneyxd_,0,series,Series,de,0,http://disneyxd.disney.de/,0
+1051,"Kanal 9 DEV",kanal9.se.dev,DEV,SBSTVSWEDEV,1,,0,series,Series,sv,0,http://www.kanal9.se/,0
+1052,"FOX Sweden",foxtv.se,"TV,Sweden",FoxTV,1,,0,series,Series,sv,0,http://www.foxtv.se/,0
+1055,"auto motor und sport channel",auto-motor-und-sport.tv,"TV,Germany",CarusMedia,1,,0,series,Series,de,0,http://auto-motor-und-sport.tv/,0
+1056,"BON GUSTO",bongusto.tv,"TV,Germany",CarusMedia,1,,0,series,Series,de,0,http://www.bongusto.tv/,0

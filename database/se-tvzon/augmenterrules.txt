@@ -861,3 +861,12 @@
 1038,TvdbEN,^.*$,program_type,series,\N,guess
 1039,TvdbNL,^.*$,program_type,series,\N,guess
 1043,TvdbDE,^.*$,program_type,series,\N,guess
+1044,TvdbDE,^.*$,program_type,series,\N,episodetitle
+1052,Tvdb,^.*$,program_type,series,\N,guess
+1052,Tvdb,Gränsen,program_type,series,134381,guess
+1052,Tvdb,"The Border",program_type,series,134381,guess
+1052,Tvdb,"Star Trek Enterprise",program_type,series,73893,guess
+1052,Tvdb,Fargo,program_type,series,269613,guess
+1052,Tvdb,Numbers,program_type,series,73918,guess
+1055,TvdbDE,^.*$,program_type,series,\N,guess
+1056,TvdbDE,^.*$,program_type,series,\N,guess
