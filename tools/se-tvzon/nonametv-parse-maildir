@@ -93,6 +93,7 @@ my @folders = qw(NonameTV-Data.GlobalListings
 		 NonameTV-Data.Disney
 		 NonameTV-Data.Turner
 		 NonameTV-Data.DMB
+		 NonameTV-Data.PPS
         );
 
 # Flag messages AFTER they have been processed. Then I normally
@@ -538,6 +539,10 @@ sub guess_channel
     # ITV
     return "familytv.de" if $filename =~ /^FamilyTV_/i;
     return "dasneue.tv" if $filename =~ /^DasNeueTV_/i;
+ }
+
+ if( $dir =~ /PPS/ ) {
+    return "disneychannel.de" if $filename =~ /\.(xml|zip)$/i;
  }
 
   return undef;

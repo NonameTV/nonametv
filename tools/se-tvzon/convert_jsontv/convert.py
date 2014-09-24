@@ -6,6 +6,7 @@ import time
 import urllib2
 import os
 import pprint
+import re
 from sys import stdout, argv
 from bs4 import BeautifulSoup
 import xml.etree.ElementTree as ET
@@ -71,7 +72,20 @@ def create_xml():
 
             root = ET.Element("tv", { "generator-info-name": "Taiga XMLTV", "generator-info-url": "http://xmltv.se" })
 
-            if filename != "channels.js":
+            if re.match("^channels", filename) is not None:
+                for key in data['jsontv']['channels']:
+                    xml_channel = ET.SubElement(root, "channel", { "id": key })
+
+                    for lang in data['jsontv']['channels'][key]['displayName'].keys():
+                        xml_display_name = ET.SubElement(xml_channel, "display-name", { "lang": lang })
+                        xml_display_name.text = data['jsontv']['channels'][key]['displayName'][lang]
+
+                    xml_base_url = ET.SubElement(xml_channel, "base-url")
+                    xml_base_url.text = "http://xmltv.xmltv.se/"
+
+                    if data['jsontv']['channels'][key].has_key('icon'):
+                        xml_icon = ET.SubElement(xml_channel, "icon", { "src": data['jsontv']['channels'][key]['icon'] })
+            else:
                 for programme in data['jsontv']['programme']:
                     starttime = time.localtime(float(programme['start']))
                     stoptime = time.localtime(float(programme['stop']))
@@ -191,20 +205,6 @@ def create_xml():
                             star_rating = ET.SubElement(xml_programme, "star-rating")
                             star_rating_value = ET.SubElement(star_rating, "value")
                             star_rating_value.text = programme['rating']['stars']
-
-            else:
-                for key in data['jsontv']['channels']:
-                    xml_channel = ET.SubElement(root, "channel", { "id": key })
-
-                    for lang in data['jsontv']['channels'][key]['displayName'].keys():
-                        xml_display_name = ET.SubElement(xml_channel, "display-name", { "lang": lang })
-                        xml_display_name.text = data['jsontv']['channels'][key]['displayName'][lang]
-
-                    xml_base_url = ET.SubElement(xml_channel, "base-url")
-                    xml_base_url.text = "http://xmltv.xmltv.se/"
-
-                    if data['jsontv']['channels'][key].has_key('icon'):
-                        xml_icon = ET.SubElement(xml_channel, "icon", { "src": data['jsontv']['channels'][key]['icon'] })
 
             outfile = gzip.GzipFile('/tmp/xmltv_convert/xml/%s' % filename.replace('.js', '.xml.gz'), 'w+', 9, None, long(1))
             text = ET.tostring(root, encoding="utf-8")

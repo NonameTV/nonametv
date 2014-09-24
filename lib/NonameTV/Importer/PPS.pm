@@ -46,8 +46,9 @@ sub ImportContentFile {
   my( $file, $chd ) = @_;
 
   $self->{fileerror} = 0;
+  my $chanfileid = $chd->{grabber_info};
 
-  if( $file =~ /\.xml$/i ){
+  if( $file =~ /^$chanfileid/i and $file =~ /\.xml$/i ){
     $self->ImportXML( $file, $chd );
   } elsif( $file =~ /\.zip$/i ) {
 
@@ -60,7 +61,7 @@ sub ImportContentFile {
     my @files;
     my @members = $zip->members();
     foreach my $member (@members) {
-      push( @files, $member->{fileName} ) if $member->{fileName} =~ /xml$/i;
+      push( @files, $member->{fileName} ) if $member->{fileName} =~ /^$chanfileid/i and $member->{fileName} =~ /xml$/i;
     }
 
     my $numfiles = scalar( @files );
@@ -135,8 +136,6 @@ sub ImportXML
 
   $dsh->StartBatch( $batchid , $chd->{id} );
   ## END
-
-  my $currdate = "x";
 
   foreach my $row ($rows->get_nodelist) {
     my $start = $self->create_dt($row->findvalue( 'time' ));
@@ -235,7 +234,7 @@ sub ImportXML
       $ce->{stereo} = 'surround';
     }
 
-    if($music and $music ne "" and (!$subtitle or $subtitle eq "")) {
+    if($ce->{title} ne "Violetta" and (!$subtitle or $subtitle eq "")) {
         $ce->{program_type} = "movie";
     } else {
         $ce->{program_type} = "series";

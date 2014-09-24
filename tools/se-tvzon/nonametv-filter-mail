@@ -186,6 +186,9 @@ foreach my $msg ($infolder->messages) {
   elsif( $fromaddr =~ /\@deutschemailbox.de/i ) {
     MoveMessage( $msg, "DMB" );
   }
+  elsif( $fromaddr =~ /\@pps.de/i ) {
+    MoveMessage( $msg, "PPS" );
+  }
 }
 
 sub MoveMessage {

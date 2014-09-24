@@ -41,6 +41,9 @@ Options:
     Recreate all output files, not only the ones where data has
     changed.
 
+  --channel-group <groupname>
+    Export data only for the channel group specified.
+
 =cut 
 
 sub new {
@@ -58,13 +61,15 @@ sub new {
     $self->{LastRequiredDate} = 
       DateTime->today->add( days => $self->{MinDays}-1 )->ymd("-");
 
-    $self->{OptionSpec} = [ qw/export-channels remove-old force-export 
+    $self->{OptionSpec} = [ qw/export-channels remove-old force-export
+                channel-group=s
 			    verbose+ quiet+ help/ ];
 
     $self->{OptionDefaults} = { 
       'export-channels' => 0,
       'remove-old' => 0,
       'force-export' => 0,
+      'channel-group' => "",
       'help' => 0,
       'verbose' => 0,
       'quiet' => 0,
@@ -76,6 +81,7 @@ sub new {
 sub Export
 {
   my( $self, $p ) = @_;
+  my $channelgroup = $p->{'channel-group'};
 
   if( $p->{'help'} )
   {
@@ -106,7 +112,7 @@ EOH
 
   if( $p->{'export-channels'} )
   {
-    $self->ExportChannelList();
+    $self->ExportChannelList( $channelgroup );
     return;
   }
 
@@ -719,15 +725,19 @@ sub ParseCredits
 #
 sub ExportChannelList
 {
-  my( $self ) = @_;
+  my( $self ) = shift;
+  my( $channelgroup ) = @_;
   my $ds = $self->{datastore};
 
   my $channels = {};
 
-  my( $res, $sth ) = $ds->sa->Sql( "
-      SELECT * from channels 
-      WHERE export=1
-      ORDER BY xmltvid" );
+  my $query = "SELECT * from channels WHERE export=1 ";
+  if( $channelgroup )
+  {
+    $query .= "AND FIND_IN_SET (\'$channelgroup\', chgroup) ";
+  }
+  $query .= "ORDER BY display_name";
+  my( $res, $sth ) = $ds->sa->Sql( $query );
 
   while( my $data = $sth->fetchrow_hashref() )
   {
@@ -744,14 +754,24 @@ sub ExportChannelList
     }
   }
 
-  my $fh = new IO::File("> $self->{Root}channels.js");
+  my $outfile;
+  if( $channelgroup )
+  {
+    $outfile = "$self->{Root}channels-$channelgroup.js";
+  }
+  else
+  {
+    $outfile = "$self->{Root}channels.js";
+  }
+
+  my $fh = new IO::File("> $outfile");
   my $js = JSON::XS->new;
   $js->ascii( 1 );
   $js->pretty( 1 );
   $fh->print( $js->encode( { jsontv => { channels => $channels } } ) );
   $fh->close();
   
-  system("gzip -f -n $self->{Root}channels.js");
+  system("gzip -f -n $outfile");
 }
 
 #
