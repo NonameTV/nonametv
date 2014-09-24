@@ -301,6 +301,7 @@ sub guess_channel
 
     # FOX TV Norway
     return "foxtv.no"       if $filename =~ /^fox\s+norway/i;
+    return "foxtv.se"       if $filename =~ /^fox\s+sweden/i;
  }
 
  if( $dir =~ /Turner/ ) {
@@ -423,6 +424,10 @@ sub guess_channel
 
  if( $dir =~ /Fatstone/ and $filename =~ /\.xlsx$/i ) {
      return "fatstone.tv";
+ }
+
+if( $dir =~ /FOX/ and $filename =~ /\.xml$/i ) {
+     return "foxtv.se" if $filename =~ /^fox\s+sweden/i;
  }
  
  if( $dir =~ /LifestyleTV/ and $filename =~ /\.xls|.xlsx$/i ) {

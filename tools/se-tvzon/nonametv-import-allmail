@@ -51,3 +51,5 @@ tools/nonametv-import YaS $1 $2 $3
 tools/nonametv-import Tele5 $1 $2 $3
 tools/nonametv-import ITVDE $1 $2 $3
 tools/nonametv-import PPS $1 $2 $3
+tools/nonametv-import CarusMedia $1 $2 $3
+tools/nonametv-import FoxTV $1 $2 $3

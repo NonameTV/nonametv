@@ -82,6 +82,7 @@ $d tools/se-tvzon/nonametv-filestore-svt $Q
 $d tools/se-tvzon/nonametv-filestore-venetsia $Q
 $d tools/se-tvzon/nonametv-filestore-prosieben $Q
 $d tools/se-tvzon/nonametv-filestore-tele5 $Q
+$d tools/se-tvzon/nonametv-filestore-carusmedia $Q
 
 # Import everything
 $d tools/se-tvzon/nonametv-import-allhttp $Q
