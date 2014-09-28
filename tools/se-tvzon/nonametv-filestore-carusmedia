@@ -1,0 +1,61 @@
+#!/usr/bin/perl -w
+
+use strict;
+
+use FindBin;
+use lib "$FindBin::Bin/../lib";
+
+use DateTime;
+use File::Util;
+use File::Copy qw/copy move/;
+
+use NonameTV;
+use NonameTV::DataStore;
+use NonameTV::Config qw/ReadConfig/;
+use NonameTV::Log qw/progress error d p w f/;
+
+use Getopt::Long;
+
+my $opt = { 'verbose' => 0 };
+
+my $res = GetOptions( $opt, qw/verbose/ );
+
+NonameTV::Log::SetVerbosity( $opt->{verbose} );
+
+# Read configuration
+my $conf = ReadConfig();
+my $ds = NonameTV::DataStore->new( $conf->{DataStore} );
+my $filestore = $conf->{FileStore};
+
+# Channels
+my %channel_data;
+$channel_data{ "ams" } = "auto-motor-und-sport.tv";
+$channel_data{ "bongusto" } = "bongusto.tv";
+
+  # list files inside of the channel directory and check when they have been touched
+  my( $cf ) = File::Util->new();
+  my( @cffiles ) = $cf->list_dir( "/nonametv/autoupload/carusmedia", '--no-fsdots' );
+  foreach my $cff (@cffiles)
+  {
+    if($cff =~ /^\./) { next; }
+
+    my ( $id, $date ) = split(/_/, $cff);
+
+    my $cftype = join(',', File::Util->file_type( "/nonametv/autoupload/carusmedia/$cff" ) );
+    if( $cftype !~ /PLAIN/ ){
+      progress( "File $cff is $cftype - skipping" );
+      next;
+    }
+
+    if( not exists( $channel_data{$id} ) )
+    {
+        print "Files with name $id hasnt been specified as a channel.\n";
+        #unlink "/nonametv/autoupload/carusmedia/$cff";
+    } else {
+      move( "/nonametv/autoupload/carusmedia/$cff", "$filestore/$channel_data{$id}/$cff" );
+      print "$cff moved to $channel_data{$id}\n";
+    }
+
+  }
+
+exit;
