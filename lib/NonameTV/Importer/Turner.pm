@@ -233,6 +233,7 @@ sub ImportXLS
       my $time;
       my $title = "x";
       my $description;
+      my $title_org;
 
       # browse through the shows
       # starting at row 2
@@ -248,8 +249,22 @@ sub ImportXLS
           # in the memory already
           if( $title ne "x" ){
 
-						# Remove (UU) and so on
-						$title =~ s/\(.*\)//g;
+            # CN Dutch
+            if($xmltvid eq "cartoonnetwork.nl") {
+                if($title =~ /\((.*?)\)/) {
+                    ($title_org) = ($title =~ /\((.*?)\)/);
+                    $title_org =~ s/\(.*\)//g;
+                    $title_org =~ s/^NEW//i;
+                    $title_org =~ s/\- Season (\d+)//i;
+                    $title_org =~ s/^://i;
+                }
+            }
+
+		    # Remove (UU) and so on
+			$title =~ s/\(.*\)//g;
+			$title =~ s/^NIEUW//i;
+			$title =~ s/\- Season (\d+)//i;
+			$title =~ s/^://i;
 
             my $ce = {
               channel_id   => $channel_id,
@@ -258,6 +273,7 @@ sub ImportXLS
             };
 
             $ce->{description} = $description if $description;
+            $ce->{original_title} = norm($title_org) if defined($title_org) and $ce->{title} ne norm($title_org) and norm($title_org) ne "";
 
             push( @ces , $ce );
             $description = "";
@@ -317,6 +333,19 @@ sub FlushDayData {
 						
 						# Movies
 						$element->{program_type} = "movie";
+      		}
+
+      		if($xmltvid eq "cartoonnetwork.nl") {
+      		    my $subtitle = $element->{description};
+                if($subtitle =~ /\((.*?)\)/) {
+                    my($subtitle_org) = ($subtitle =~ /\((.*?)\)/);
+                    $subtitle =~ s/\(.*\)//g;
+                    $element->{original_subtitle} = norm($subtitle_org);
+                    $element->{program_type} = "series";
+                }
+
+                $element->{subtitle} = norm($subtitle);
+      		    $element->{description} = undef;
       		}
       	}
       	
