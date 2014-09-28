@@ -85,6 +85,7 @@ sub ImportContent
   {
 
     my($title, $subtitle, $desc) = undef;
+    my $lang = $chd->{sched_lang};
 
     my $date = $sc->findvalue('.//txDay');
     if($date ne $currdate ) {
@@ -124,7 +125,10 @@ sub ImportContent
     #
     # title
     #
-    $title = norm($sc->findvalue('.//title'));
+    my $title_eng  = norm($sc->findvalue('.//title'));
+    my $title_lang = norm($sc->findvalue('.//title[@lang="'.$lang.'"]'));
+    $title = $title_lang || $title_eng;
+
     if( not defined $title or !length($title) )
     {
        error( "$batch_id: Invalid title '" . $sc->findvalue( './/title' ) . "'. Skipping." );
@@ -136,7 +140,12 @@ sub ImportContent
     #
     # subtitle
     #
-    my $subtitle2 = $sc->findvalue('.//EpisodeTitle');
+    my $subtitle2_eng = $sc->findvalue('.//EpisodeTitle');
+    my $subtitle2_lang = norm($sc->findvalue('.//EpisodeTitle[@lang="'.$lang.'"]'));
+    my $subtitle2 = $subtitle2_lang || $subtitle2_eng;
+    if(norm($subtitle2) =~ /Serie (\d+), aflevering (\d+)/i) {
+        $subtitle2 = undef;
+    }
     if (!isdigit($subtitle2)) {
         $subtitle = $subtitle2; # Only set the subtitle if its not a number.
     }
@@ -147,8 +156,10 @@ sub ImportContent
     #
     my $desc_series = norm($sc->findvalue('.//programmeEPGSynopsis'));
     my $desc_episode = norm($sc->findvalue('.//episodeEPGSynopsis'));
+    my $desc_series_lang = norm($sc->findvalue('.//programmeEPGSynopsis[@lang="'.$lang.'"]'));
+    my $desc_episode_lang = norm($sc->findvalue('.//episodeEPGSynopsis[@lang="'.$lang.'"]'));
 
-    $desc = $desc_episode || $desc_series;
+    $desc = $desc_episode_lang || $desc_series_lang || $desc_episode || $desc_series;
 
 
 
@@ -206,8 +217,9 @@ sub ImportContent
         AddCategory( $ce, $program_type, $category );
     }
 
-    $dsh->AddProgramme( $ce );
+    $ce->{original_title} = norm($title_eng) if defined($title_eng) and $ce->{title} ne norm($title_eng) and norm($title_eng) ne "";
 
+    $dsh->AddProgramme( $ce );
     progress("EBS: $chd->{xmltvid}: $start - $title");
 
   }
