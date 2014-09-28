@@ -329,6 +329,7 @@ sub guess_channel
 
 		# Cartoon network ENGLISH
         return "cartoonnetwork.com" if $filename =~ /^cn\s*nordic/i;
+        return "cartoonnetwork.nl" if $filename =~ /^cn\s*dutch/i and $filename =~ /combo/i;
 	}
 
 	# XML Germany
