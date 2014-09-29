@@ -166,8 +166,15 @@ sub ImportContent {
       'tt:TVRProgram/tt:Description/tt:TextDesc', $pb );
     my $episodenum = $xp->findvalue( 'tt:TVRProgram/tt:EpisodeNumber', $pb );
 
-		# Del 3 av 13 in description - of_episod is not in use at the moment
-    my ( $ep_nr, $eps ) = ($description =~ /Del\s+(\d+)\s+av\s+(\d+)/ );
+	# Del 3 av 13 in description - of_episod is not in use at the moment
+	my ( $ep_nr, $eps );
+    ( $ep_nr, $eps ) = ($description =~ /Del\s+(\d+)\s+av\s+(\d+)/ );
+    ( $ep_nr, $eps ) = ($subtitle =~ /Del\s+(\d+)\s+av\s+(\d+)/ ) if defined $subtitle and not defined $ep_nr;
+
+    $description =~ s/Del\s+(\d+)\s+av\s+(\d+)\.//i if defined $description;
+    $subtitle    =~ s/Del\s+(\d+)\s+av\s+(\d+)//i if defined $subtitle;
+    $subtitle    =~ s/Del\s+(\d+)//i if defined $subtitle;
+    $description =~ s/&ndash;/–/;
 
     my $ce = {
       channel_id  => $chd->{id},
@@ -180,23 +187,28 @@ sub ImportContent {
 	my ( $program_type, $category ) = ParseDescCatSwe( $ce->{description} );
   	AddCategory( $ce, $program_type, $category );
     
-    if( my( $dumperino, $year ) = ($description =~ /(Produktions.r|Produktion.r):\s+(\d\d\d\d)\./) )
+    if( my( $dumperino, $dumptag, $year ) = ($description =~ /(Produktions.r|Produktion.r|Inspelat)(:|)\s+(\d\d\d\d)\./) )
     {
+      $ce->{description} =~ s/(Produktions.r|Produktion.r|Inspelat)(:|)\s+(\d\d\d\d)\.//i;
       $ce->{production_date} = "$year-01-01";
     }
 
     # original title
-    if( my( $orgtitle ) = ($description =~ /Originaltitel:\s+(.*?)\./) )
+    if( my( $dumperino2, $orgtitle ) = ($description =~ /(Originaltitel|Originatitel):\s+(.*?)\./) )
     {
+        $ce->{description} =~ s/(Originaltitel|Originatitel):\s+(.*?)\.//i;
         $ce->{original_title} = norm($orgtitle);
     }
 
     if( $end ne "" ) {
-	$ce->{end_time} = ParseDateTime( $end );
+	    $ce->{end_time} = ParseDateTime( $end );
     }
 
     if( $subtitle ne "" ) {
       $ce->{subtitle} = norm( $subtitle );
+      $ce->{subtitle} =~ s/^\-//;
+      $ce->{subtitle} =~ s/^://;
+      $ce->{subtitle} = norm( $ce->{subtitle} );
     }
 
     if( $episodenum ne "" ) {
@@ -207,6 +219,32 @@ sub ImportContent {
     if( defined($ep_nr) ) {
       $ce->{episode} = sprintf( " . %d/%d . ", $ep_nr-1, $eps );
     }
+
+    if( my( $actors ) = ($ce->{description} =~ /I rollerna:\s*(.*?)\./i ) )
+    {
+      	$ce->{actors} = parse_person_list( $actors );
+      	$ce->{description} =~ s/I rollerna:\s*(.*?)\.//i;
+    }
+
+    if( my( $directors ) = ($ce->{description} =~ /Regiss.r:\s*(.*?)\./i ) )
+    {
+      	$ce->{directors} = parse_person_list( $directors );
+      	$ce->{description} =~ s/Regiss.r:\s*(.*?)\.//i;
+    }
+
+    if( my( $producers ) = ($ce->{description} =~ /Producenter:\s*(.*?)\./i ) )
+    {
+      	$ce->{producers} = parse_person_list( $producers );
+      	$ce->{description} =~ s/Producenter:\s*(.*?)\.//i;
+    }
+
+    if( my( $writers ) = ($ce->{description} =~ /Manus:\s*(.*?)\./i ) )
+    {
+      	$ce->{writers} = parse_person_list( $writers );
+      	$ce->{description} =~ s/Manus:\s*(.*?)\.//i;
+    }
+
+    $ce->{description} = norm($ce->{description}) if defined $ce->{description};
 
     $ds->AddProgramme( $ce );
   }
@@ -245,14 +283,13 @@ sub ParseDateTime {
   return $dt->ymd() . " " . $dt->hms();
 }
 
-# Kanal5 Util
 sub parse_person_list
 {
   my( $str ) = @_;
 
   # Remove all variants of m.fl.
   $str =~ s/\s*m[\. ]*fl\.*\b//;
-  
+
   # Remove trailing '.'
   $str =~ s/\.$//;
 
@@ -263,10 +300,13 @@ sub parse_person_list
   foreach (@persons)
   {
     # The character name is sometimes given . Remove it.
-    s/^.*\s+-\s+//;
+    # The Cast-entry is sometimes cutoff, which means that the
+    # character name might be missing a trailing ).
+    s/\s*\(.*$//;
+    s/.*\s+-\s+//;
+    s/^\.$//;
   }
 
   return join( ";", grep( /\S/, @persons ) );
 }
-
 1;
