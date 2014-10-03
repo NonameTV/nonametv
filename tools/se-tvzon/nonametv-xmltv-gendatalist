@@ -40,15 +40,17 @@ foreach my $channel (@channels) {
 
   foreach my $filename (@files) {
     my $modified = ( stat( "$xmltvdir/$filename" ) )[9];
-    my( $date )=( $filename =~ m|^.*_(\d{4}-\d{2}-\d{2})\.xml.gz$| );
+    my( $xmltvid2, $date )=( $filename =~ m|^(.*)_(\d{4}-\d{2}-\d{2})\.xml.gz$| );
     my $dt = DateTime->from_epoch( epoch => $modified );
 
-    my $element = XML::LibXML::Element->new( 'datafor' );
-    $element->setAttribute( 'lastmodified', $dt->ymd( '' ) . $dt->hms( '' ) . ' +0000' );
-    $element->appendText( $date );
-    $channel->appendText( '  ' );
-    $channel->appendChild( $element );
-    $channel->appendText( "\n  " );
+    if( $xmltvid2 !~ /\.dev$/ ) {
+        my $element = XML::LibXML::Element->new( 'datafor' );
+        $element->setAttribute( 'lastmodified', $dt->ymd( '' ) . $dt->hms( '' ) . ' +0000' );
+        $element->appendText( $date );
+        $channel->appendText( '  ' );
+        $channel->appendChild( $element );
+        $channel->appendText( "\n  " );
+    }
   }
 }
 
