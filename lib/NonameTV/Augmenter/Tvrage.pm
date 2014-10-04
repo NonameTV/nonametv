@@ -39,24 +39,25 @@ sub FillHash( $$$$ ) {
           foreach my $genre2 ( @$genre ){
               # Genre add (if array)
               my ( $program_type, $categ ) = $self->{datastore}->LookupCat( "Tvrage", $genre2 );
-              # set category, unless category is already set!
-              AddCategory( $resultref, undef, $categ );
+              push @genres, $categ if defined $categ;
           }
       } else {
           # Genre add (if not array)
           my ( $program_type, $categ ) = $self->{datastore}->LookupCat( "Tvrage", $genre );
-          # set category, unless category is already set!
-          AddCategory( $resultref, undef, $categ );
+          push @genres, $categ if defined $categ;
       }
+  }
+
+  if( scalar( @genres ) > 0 ) {
+    my $cat = join "/", @genres;
+    AddCategory( $resultref, undef, $cat );
   }
   
   # Standard info (episode)
   $resultref->{subtitle} = normUtf8( norm( $episode->{title} ) );
   $resultref->{production_date} = normUtf8( norm( $episode->{airdate} ) );
   $resultref->{url} = normUtf8( norm( $episode->{link} ) );
-  
-  # Original Title
-  $resultref->{original_title} = norm($ceref->{title});
+
   $resultref->{extra_id} = $series->{showid};
   $resultref->{extra_id_type} = "tvrage";
   
@@ -84,8 +85,6 @@ sub AugmentProgram( $$$ ){
       if( (defined $episode) and (defined $season) ){
         $episode += 1;
         $season += 1;
-        
-        #print Dumper( $episode );
 
         my $series;
         my $episodes;
@@ -101,15 +100,7 @@ sub AugmentProgram( $$$ ){
         } else {
           die("You need to input series id into remoteref, until this is fixed.");
         }
-        
-        #if( (defined $series)){
-            # Set the title right, even if no season nor episode is found.
-            # This does so there is not any diffrences in title between
-            # a series with episode of 100+ when there's only 20 episodes of
-            # the season, like Simpsons. Simpsons becomes The Simpsons if seriesname
-            # is found.
-            $resultref->{title} = normUtf8( norm( $series->{showname} ) );
-            
+
             # Find season and episode
             if(($season ne "") and ($episode ne "")) {
                 my $episode2 = $tvrage->getEpisode( $ruleref->{remoteref}, $season, $episode );
@@ -120,7 +111,6 @@ sub AugmentProgram( $$$ ){
                 w( "no episode " . $episode . " of season " . $season . " found for '" . $ceref->{title} . "'" );
             }
           }
-        #}
       }
     }
   }else{
