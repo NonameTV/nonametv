@@ -1048,6 +1048,12 @@ SBSTV,underholdningsprogram,Entertainment,series
 SBSTV,underholdningsserie,Entertainment,series
 SBSTV,underholdningsshow,Entertainment,series
 SBSTV,ungdomskomedie,Youth/Comedy,
+SBS_Discovery,children,Children's,series
+SBS_Discovery,film,\N,movie
+SBS_Discovery,program,\N,series
+SBS_Discovery,series,\N,series
+SBS_Discovery,specials,Specials,series
+SBS_Discovery,sport,\N,sports
 SonyDE_genre,action,Action,
 SonyDE_genre,adventure,Adventure,
 SonyDE_genre,"adventure,comedy",Adventure/Comedy,
@@ -1632,18 +1638,23 @@ TVP,talk-show,Talk,tvshow
 Tvrage,action,Action,
 Tvrage,adventure,Adventure,
 Tvrage,"animation general",Animation,
+Tvrage,children,Children's,
 Tvrage,comedy,Comedy,\N
 Tvrage,cooking/food,Food,
 Tvrage,crime,Crime,
 Tvrage,design/decorating,"Home improvement",\N
+Tvrage,discovery/science,Science,
 Tvrage,drama,Drama,
 Tvrage,family,Family,
+Tvrage,fantasy,Fantasy,
 Tvrage,history,History,\N
 Tvrage,housing/building,"Home improvement",\N
 Tvrage,"how to/do it yourself",How-to,\N
 Tvrage,interview,Biography,\N
 Tvrage,lifestyle,Lifestyle,\N
 Tvrage,romance/dating,Romance,\N
+Tvrage,soaps,Soap,
+Tvrage,sports,Sports,
 Tvrage,talent,Talent,
 Tvrage,travel,Travel,
 Venetsia,01,News,tvshow
