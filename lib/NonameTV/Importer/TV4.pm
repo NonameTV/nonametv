@@ -167,6 +167,7 @@ sub ImportContent
     my $season = $pgm->findvalue( 'season_number' );
     my $episode = $pgm->findvalue( 'episode_number' );
     my $eps = $pgm->findvalue( 'number_of_episodes' );
+    my $prodyear = $pgm->findvalue( 'production_year' );
     
     my $prev_shown_date = $pgm->findvalue( 'previous_transmissiondate' );
     
@@ -220,6 +221,10 @@ sub ImportContent
       # Role played
       if( $act->findvalue('./role_played') ) {
       	$role = norm( $act->findvalue('./role_played') );
+
+      	if($name ne "" and $role ne "" and $type !~ /Regiss(.*)r/i and $type !~ /Producent/i) {
+      	    $name .= " (".$role.")";
+      	}
       }
 
       # Don't add if TV4 forgot the real name.
@@ -237,6 +242,11 @@ sub ImportContent
 			push @actors, $name;
 		  }
       }
+    }
+
+    if( $prodyear =~ /(\d\d\d\d)/ )
+    {
+        $ce->{production_date} = "$1-01-01";
     }
 
     if( scalar( @actors ) > 0 )
@@ -274,7 +284,12 @@ sub ImportContent
     if( scalar( @directors ) > 0 and !defined($ce->{episode}) and scalar( @actors ) > 0 )
     {
         $ce->{program_type} = "movie";
+    } elsif($ce->{title} =~ /^(Handboll|Fotboll|Hockey|Ishockey|Innebandy|Simning)\:/i or $ce->{title} =~ /^(Handboll|Fotboll|Hockey|Ishockey|Innebandy|Simning|UFC)$/i)
+    {
+        $ce->{program_type} = "sports";
     }
+
+    $ce->{title} =~ s/\:$//;
 
     progress($date." ".$starttime." - ".$ce->{title});
     
@@ -302,36 +317,11 @@ sub extract_extra_info
   ( $program_type, $category ) = ParseDescCatSwe( $ep_sentences[0] );
   AddCategory( $ce, $program_type, $category );
 
-  # Find production year from description.
-  if( $pr_sentences[0] =~ /\bfr.n (\d\d\d\d)\b/ )
-  {
-    $ce->{production_date} = "$1-01-01";
-  }
-  elsif( $ep_sentences[0] =~ /\bfr.n (\d\d\d\d)\b/ )
-  {
-    $ce->{production_date} = "$1-01-01";
-  }
-
   extract_episode( $ce );
 
   # Remove control characters {\b Text in bold}
   $ce->{description} =~ s/\{\\b\s+//g;
   $ce->{description} =~ s/\}//g;
-
-  # Find aspect-info and remove it from description.
-  if( $ce->{description} =~ s/(\bS.nds i )*\b16:9\s*-*\s*(format)*\.*\s*//i )
-  {
-    $ce->{aspect} = "16:9";
-  }
-  else
-  {
-    $ce->{aspect} = "4:3";
-  }
-
-  if( $ce->{description} =~ /16:9/ )
-  {
-    error( "TV4: Undetected 16:9: $ce->{description}" );
-  }
 
   # Remove temporary fields
   delete $ce->{pr_desc};
@@ -345,18 +335,6 @@ sub extract_extra_info
 
   # Must remove "Reprisstart: " and similar strings before the next check.
   FixProgrammeData( $ce );
-
-#  if( defined($ce->{program_type}) and ($ce->{program_type} eq 'series') )
-#  {
-#    my( $t, $st ) = ($ce->{title} =~ /(.*)\: (.*)/);
-#         if( defined( $st ) )
-#         {
-      # This program is part of a series and it has a colon in the title.
-      # Assume that the colon separates the title from the subtitle.
-#      $ce->{title} = $t;
-#      $ce->{subtitle} = $st;
-#    }
-#  }
 }
 
 # Split a string into individual sentences.
@@ -390,21 +368,34 @@ sub extract_episode
 
   # Get season from Roman numbers after the original title.
   if(defined($ce->{title_org}) and defined($ce->{episode})) {
+    # Remove , The at the end and add it at start
+    if($ce->{title_org} =~ /, The$/i) {
+        $ce->{title_org} =~ s/, The$//i;
+        $ce->{title_org} = norm("The ".$ce->{title_org});
+    }
+
+    # Remove , A at the end and add it at start
+    if($ce->{title_org} =~ /, A$/i) {
+        $ce->{title_org} =~ s/, A$//i;
+        $ce->{title_org} = norm("A ".$ce->{title_org});
+    }
+
   	my ( $original_title, $romanseason ) = ( $ce->{title_org} =~ /^(.*)\s+(.*)$/ );
 
   	# Roman season found
-  	if(defined($romanseason) and isroman($romanseason)) {
+  	if(defined($romanseason) and isroman(norm($romanseason))) {
   		my $romanseason_arabic = arabic($romanseason);
 
   		# Fix original title
   		$ce->{title_org} =~ s/$romanseason//;
   		
   		# Episode
-  		my( $season, $episode )=( $ce->{episode} =~ m|^\s*(\d+)\s*\.\s*(\d+)\s*/?\s*\d*\s*\.\s*$| );
+  		my( $season2, $episode2 )=( $ce->{episode} =~ m|^\s*(\d+)\s*\.\s*(\d+)| );
+  		( $episode2 )=( $ce->{episode} =~ m|\.\s*(\d+)\s*/?\s*\d*\s*\.\s*$| );
   		
   		# Put it into episode field
-  		if(defined($romanseason_arabic) and defined($episode) and not defined($season)) {
-  			$ce->{episode} = sprintf( "%d . %d .", $romanseason_arabic-1, $episode );
+  		if(defined($romanseason_arabic) and not defined($season2) and defined($episode2)) {
+  			$ce->{episode} = sprintf( "%d . %d .", $romanseason_arabic-1, $episode2 );
   		}
   	}
   }
@@ -417,15 +408,15 @@ sub extract_episode
       ( $year ) = ($ce->{production_date} =~ /(\d{4})-/ );
     }
 
-    my( $season, $episode )=( $ce->{episode} =~ m|^\s*(\d+)\s*\.\s*(\d+)\s*/?\s*\d*\s*\.\s*$| );
+    my( $season, $episode )=( $ce->{episode} =~ m|^\s*(\d+)\s*\.\s*(\d+)| );
 
     if(not defined($season) and exists( $ce->{production_date} )) {
-        $ce->{episode} = ($year-1) . $ce->{episode};;
+        $ce->{episode} = ($year-1) . $ce->{episode};
         $ce->{program_type} = 'series';
     }
   }
 
-  $ce->{original_title} = norm($ce->{title_org}) if $ce->{title} ne $ce->{title_org} and norm($ce->{title_org}) ne "";
+  $ce->{original_title} = norm($ce->{title_org}) if lc($ce->{title}) ne lc(norm($ce->{title_org})) and norm($ce->{title_org}) ne "";
 
   # Replace The in the original title.
   if(defined($ce->{original_title})) {
@@ -435,12 +426,20 @@ sub extract_episode
         $ce->{original_title} = norm("The ".$ce->{original_title});
     }
 
+    # Remove , A at the end and add it at start
+    if($ce->{original_title} =~ /, A$/i) {
+        $ce->{original_title} =~ s/, A$//i;
+        $ce->{original_title} = norm("A ".$ce->{original_title});
+    }
+
     # Remove , at the end if it bugs out
     $ce->{original_title} =~ s/,$//;
     $ce->{original_title} =~ s/(\d\d\d\d)$//;
 
     # Norm
     $ce->{original_title} = norm($ce->{original_title});
+
+    $ce->{original_title} = undef if $ce->{original_title} eq $ce->{title};
   }
 
   # remove original title
