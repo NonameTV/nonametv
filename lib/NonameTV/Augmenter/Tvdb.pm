@@ -228,11 +228,6 @@ sub AugmentProgram( $$$ ){
     return( undef, 'known bad data for SOKO Leipzig, skipping' );
   }
 
-  if( $ceref->{title} eq 'Challenge' ){
-      # broken dataset on Tvdb
-  #    return( undef, 'known bad data for Challenge, skipping' );
-  }
-  
   # Runned before every other "matchby", so it can guess the right "matchby" by what data which is supplied.
   if( $ruleref->{matchby} eq 'guess' ) {
     # Subtitles, no episode
@@ -255,6 +250,8 @@ sub AugmentProgram( $$$ ){
     	return( undef, 'couldn\'t guess the right matchby, sorry.' );
     }
   }
+
+  #print Dumper($ruleref);
 
   if( $ruleref->{matchby} eq 'episodeabs' ) {
     # match by absolute episode number from program hash. USE WITH CAUTION, NOT EVERYONE AGREES ON ANY ORDER!!!
@@ -296,7 +293,7 @@ sub AugmentProgram( $$$ ){
     # Viasat uses the total number of episodes, like 121 in Simpsons.
     # This will not work either. But Viasat often have the real episodes
     # in description, paste it from there. Sorry about the long text.
-		
+
 		if( defined $ceref->{episode} ){
       my( $season, $episode )=( $ceref->{episode} =~ m|^\s*(\d+)\s*\.\s*(\d+)\s*/?\s*\d*\s*\.\s*$| );
       if( (defined $episode) and (defined $season) ){
