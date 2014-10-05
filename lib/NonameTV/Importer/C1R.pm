@@ -38,6 +38,8 @@ sub new {
   my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
   $self->{datastorehelper} = $dsh;
 
+  $self->{datastore}->{augment} = 1;
+
   return $self;
 }
 
@@ -157,6 +159,14 @@ sub ImportContentFile
         };
 
         $ce->{description} = norm($desc) if defined $desc and norm($desc) ne "";
+
+        if(defined($ce->{description}) and $ce->{description} =~ / v (.*?)$/i) {
+            my $genre = $1;
+            $ce->{description} =~ s/ v (.*?)$//i;
+
+            my($program_type, $category ) = $ds->LookupCat( "C1R", norm($genre) );
+            AddCategory( $ce, $program_type, $category );
+        }
 
         $dsh->AddProgramme( $ce );
 
