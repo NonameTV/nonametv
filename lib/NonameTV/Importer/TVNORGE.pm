@@ -129,9 +129,20 @@ sub ImportContent
 	my $title = norm($title_programme) || norm($title_original);
 
 	$title =~ s/^Premiere: //g;
+	$title =~ s/^Sesongpremiere: //g;
 
     my $start = $sc->findvalue( './starttime' );
-    my $end = $sc->findvalue( './endtime' );
+    my $end   = $sc->findvalue( './endtime' );
+
+    # Count minutes between two times
+    my $format = DateTime::Format::Strptime->new(
+        pattern => '%Y-%m-%d %H:%M',
+    );
+
+    my $start2 = $format->parse_datetime( $start );
+    my $stop2  = $format->parse_datetime( $end );
+    my $durat  = $start2->delta_ms($stop2)->in_units('minutes');
+    ## END
 
     my $hd = $sc->findvalue( './hd' );
     
@@ -143,6 +154,8 @@ sub ImportContent
 	my $production_year = $sc->findvalue( './productionyear' );
 	my $episode =  $sc->findvalue( './episode' );
 	my $numepisodes =  $sc->findvalue( './numepisodes' );
+	my $subtitle = $sc->findvalue( './episodetitle' );
+
 
 	# TVNorge seems to have the season in the originaltitle, weird.
 	# �r 2
@@ -237,6 +250,19 @@ sub ImportContent
   	}
 
   	$ce->{original_title} = norm($title_original) if defined($title_original) and $ce->{title} ne norm($title_original) and norm($title_original) ne "";
+
+    if($subtitle ne "") {
+        if($subtitle =~ /(.r|sesong)\s*(\d+), (\d+)\. del/i) {
+            $ce->{episode} = sprintf( "%d . %d . ", $2-1, $3-1 );
+        } else {
+            $ce->{subtitle} = norm(ucfirst(lc($subtitle)));
+        }
+    }
+
+    # If duration is higher than 100 minutes (1h 40min) then its a movie
+    if($durat > 100 and $subtitle eq "" and not defined($ce->{episode})) {
+        $ce->{program_type} = 'movie';
+    }
 
 
     $dsh->AddProgramme( $ce );
