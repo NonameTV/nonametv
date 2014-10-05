@@ -171,7 +171,12 @@ sub ImportContent
     
     my $prev_shown_date = $pgm->findvalue( 'previous_transmissiondate' );
     
-    my $description = $ep_desc || $desc || $pr_desc;
+    my $description = $ep_desc || $pr_desc || $desc;
+
+    # Check if ep_desc includes data we don't want
+    $description =~ s/Reprisstart\.//i;
+    $description =~ s/S.songsavslutning\.//i;
+    $description = $pr_desc || $desc if norm($description) eq "";
     
     if( ($title =~ /^[- ]*s.ndningsuppeh.ll[- ]*$/i) )
     {
