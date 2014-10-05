@@ -185,11 +185,12 @@ sub process_parts
     my ($content);
 
     # Channels you only want it decoded, not fucked up
-    if($channel eq "rtl2.de" or $channel eq "historytv.se" or
-       $channel eq "historytv.no" or $channel eq "historytv.dk" or
-       $channel eq "historytv.eu" or $channel eq "crimeandinvestigation.eu" or
-       $channel eq "sonyentertainment.tv" or $channel eq "axntv.de" or $channel eq "animax.tv" or
-       $channel eq "familytv.de" or $channel eq "dasneue.tv") {
+    #$channel eq "rtl2.de" or $channel eq "historytv.se" or
+    #       $channel eq "historytv.no" or $channel eq "historytv.dk" or
+    #       $channel eq "historytv.eu" or $channel eq "crimeandinvestigation.eu" or
+    #       $channel eq "sonyentertainment.tv" or $channel eq "axntv.de" or $channel eq "animax.tv" or
+    #       $channel eq "familytv.de" or $channel eq "dasneue.tv" or $channel eq "tnt-tv.dk
+    if($name =~ /\.xml$/i) {
         $content = decode_base64($part->body);
     } else {
         $content = $part->decoded->string;
@@ -339,6 +340,26 @@ sub guess_channel
 	    return "tnt-serie.de" if $filename =~ /^TNTSerie_/i;
 	    return "tnt-film.de" if $filename =~ /^TNT_/i;
 	    return "tnt-glitz.tv" if $filename =~ /^Glitz_/i;
+	}
+
+	# XML Nordic (Nonstop)
+	if( $filename =~ /\.xml$/i ) {
+	    return "tnt-tv.dk" if $filename =~ /^TNT/i and $filename =~ /Danish/i;
+	    return "tnt-tv.se" if $filename =~ /^TNT/i and $filename =~ /Swedish/i;
+	    return "tnt-tv.no" if $filename =~ /^TNT/i and $filename =~ /Norwegian/i;
+	    return "star.nonstop.tv" if $filename =~ /^Star/i and $filename =~ /Swedish/i;
+	}
+
+	# Word Nordic (Nonstop)
+	if( $filename =~ /\.doc$/i ) {
+	    return "showtime.nonstop.tv" if $filename =~ /^SHO/i and $filename =~ /SWE/i;
+	    return "silver.nonstop.tv"   if $filename =~ /^SIL/i and $filename =~ /SWE/i;
+	    return "no.showtime.nonstop.tv" if $filename =~ /^SHO/i and $filename =~ /NOR/i;
+        return "no.silver.nonstop.tv"   if $filename =~ /^SIL/i and $filename =~ /NOR/i;
+        return "dk.showtime.nonstop.tv" if $filename =~ /^SHO/i and $filename =~ /DAN/i;
+        return "dk.silver.nonstop.tv"   if $filename =~ /^SIL/i and $filename =~ /DAN/i;
+        return "fi.showtime.nonstop.tv" if $filename =~ /^SHO/i and $filename =~ /FIN/i;
+        return "fi.silver.nonstop.tv"   if $filename =~ /^SIL/i and $filename =~ /FIN/i;
 	}
   }
  

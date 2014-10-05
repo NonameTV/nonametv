@@ -53,3 +53,5 @@ tools/nonametv-import ITVDE $1 $2 $3
 tools/nonametv-import PPS $1 $2 $3
 tools/nonametv-import CarusMedia $1 $2 $3
 tools/nonametv-import FoxTV $1 $2 $3
+tools/nonametv-import Nonstop $1 $2 $3
+tools/nonametv-import NonstopDOC $1 $2 $3
