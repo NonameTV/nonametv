@@ -223,6 +223,8 @@ sub AugmentProgram( $$$ ){
   # result string, empty/false for success, message/true for failure
   my $result = '';
 
+
+
   if( $ceref->{title} eq 'SOKO Leipzig' ){
     # broken dataset on Tvdb
     return( undef, 'known bad data for SOKO Leipzig, skipping' );
@@ -251,9 +253,10 @@ sub AugmentProgram( $$$ ){
     }
   }
 
-  #print Dumper($ruleref);
-
-  if( $ruleref->{matchby} eq 'episodeabs' ) {
+  if( $ceref->{url} && $ceref->{url} =~ m|^http://thetvdb\.com/| ) {
+      $result = "programme is already linked to thetvdb.com, ignoring";
+      $resultref = undef;
+  }elsif( $ruleref->{matchby} eq 'episodeabs' ) {
     # match by absolute episode number from program hash. USE WITH CAUTION, NOT EVERYONE AGREES ON ANY ORDER!!!
 
     if( defined $ceref->{episode} ){

@@ -345,7 +345,7 @@ sub AugmentBatch( $$ ) {
         last;
       }
 
-      d( 'best matching rule: ' . sprint_rule( $rule ) . "\n" );
+      d( 'best matching rule: ' .  sprint_rule( $rule ) . "\n" );
 
       # apply the rule
       ( $newprogram, $result ) = $augmenter->{$rule->{augmenter}}->AugmentProgram( $ce, $rule );
@@ -372,13 +372,6 @@ sub AugmentBatch( $$ ) {
             channel_id => $ce->{channel_id},
             start_time => $ce->{start_time}
           }, $newprogram );
-      }
-
-
-      # If it has a score above 6 then it should be a complete match and don't import the data from other
-      # augmenterrules. But only for tvdb and tvrage.
-      if($rule->{score} > 6 and ($rule->{augmenter} =~ /^Tvdb/i or $rule->{augmenter} =~ /^Tvrage/i)) {
-        last;
       }
 
       # go around and find the next best matching rule
