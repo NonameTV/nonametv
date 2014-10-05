@@ -35,9 +35,6 @@ sub new {
   my $class = ref($proto) || $proto;
   my $self  = $class->SUPER::new( @_ );
   bless ($self, $class);
-
-
-	$self->{datastore}->{augment} = 1;
   my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
   $self->{datastorehelper} = $dsh;
 
@@ -46,6 +43,8 @@ sub new {
   } else {
     $self->{UrlRoot} = 'http://ttv.sbstv.dk/programoversigtxml/xml.php';
   }
+
+  $self->{datastore}->{augment} = 1;
 
   return $self;
 }
@@ -311,6 +310,8 @@ sub ImportContent {
 
     $dsh->AddProgramme( $ce );
   }
+
+
 
   return 1;
 }

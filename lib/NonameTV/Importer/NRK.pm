@@ -89,10 +89,12 @@ sub ImportContent
         }
         
         # Film
-        if ($title eq "Film" || $title eq "Filmsommer" || $title eq "Dokusommer") {
+        if ($title eq "Film" || $title eq "Filmsommer" || $title eq "Dokusommer" || $title eq "Nattkino") {
             $title = $subtitle;
             $subtitle = "";
         }
+
+        $title =~ s/^Detektimen\://i;
         
         my $desc = $sc->findvalue( './RUBRIKKTEKST' );
         my( $episode, $ep, $eps, $seas, $dummy );
@@ -157,7 +159,7 @@ sub ImportContent
         };
         
         if(defined($subtitles) and ($subtitles ne "")) {
-        	$ce->{subtitle} = norm($subtitles);
+        	$ce->{original_title} = norm($subtitles);
         }
         
         $ce->{episode} = $episode if $episode;
