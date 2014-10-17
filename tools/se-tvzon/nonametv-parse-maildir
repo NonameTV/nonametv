@@ -94,6 +94,8 @@ my @folders = qw(NonameTV-Data.GlobalListings
 		 NonameTV-Data.Turner
 		 NonameTV-Data.DMB
 		 NonameTV-Data.PPS
+		 NonameTV-Data.OKGoteborg
+		 NonameTV-Data.ServusTV
         );
 
 # Flag messages AFTER they have been processed. Then I normally
@@ -570,6 +572,15 @@ if( $dir =~ /FOX/ and $filename =~ /\.xml$/i ) {
 
  if( $dir =~ /PPS/ ) {
     return "disneychannel.de" if $filename =~ /\.(xml|zip)$/i;
+ }
+
+ if( $dir =~ /ServusTV/ and $filename =~ /\.xml$/i and $filename =~ /struppi/i ) {
+    return "servustv.de" if $filename =~ /DE/i;
+    return "servustv.com" if $filename !~ /DE/i;
+ }
+
+ if ( $dir =~ /OKGoteborg/ and $filename =~ /\.doc$/i ) {
+    return "oppnakanalengoteborg.se";
  }
 
   return undef;
