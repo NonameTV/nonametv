@@ -124,6 +124,10 @@ sub ImportContent( $$$ ) {
     if( !$title ){
       $title = $xpc->findvalue( 's:titel/@termintitel' );
     }
+    if( $title eq 'Comedy Central Programming') {
+      # remove pseudo program when channel nick is off air
+      next;
+    }
     if( $title ){
       $ce->{title} = $title;
     }
