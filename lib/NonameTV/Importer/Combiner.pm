@@ -358,6 +358,44 @@ $channel_data{ "ch.nickcc.mtvnetworks.de" } =
 
 =pod
 
+Viva Germany / Comedy Central. The share the same channel and do not overlap.
+
+=cut
+
+$channel_data{ "vivacc.mtvnetworks.de" } =
+  { 
+    "viva.de" => 
+      [ 
+        {
+          day => 'all',
+        },
+      ],
+    "comedycentral.de" =>
+      [
+        {
+          day => 'all',
+        },
+      ],
+  };
+
+$channel_data{ "ch.vivacc.mtvnetworks.de" } =
+  { 
+    "viva.ch" => 
+      [ 
+        {
+          day => 'all',
+        },
+      ],
+    "comedycentral.ch" =>
+      [
+        {
+          day => 'all',
+        },
+      ],
+  };
+
+=pod
+
 RBB branches out at 1930 to Berlin/Brandenburg specific schedules
 
 =cut
