@@ -122,7 +122,20 @@ sub ImportContent( $$$ ) {
     $ce->{start_time} = $self->parseTimestamp( $xpc->findvalue( 's:termin/@start' ) );
     $ce->{end_time} = $self->parseTimestamp( $xpc->findvalue( 's:termin/@ende' ) );
 
-    $ce->{title} = norm($xpc->findvalue( 's:titel/@termintitel' ));
+    my $title = $xpc->findvalue( 's:titel/s:alias[@titelart="titel"]/@aliastitel' );
+    if( !$title ){
+      $title = $xpc->findvalue( 's:titel/s:alias[@titelart="originaltitel"]/@aliastitel' );
+    }
+    if( !$title ){
+      $title = $xpc->findvalue( 's:titel/@termintitel' );
+    }
+    if( $title eq 'Comedy Central Programming') {
+      # remove pseudo program when channel nick is off air
+      next;
+    }
+    if( $title ){
+      $ce->{title} = $title;
+    }
 
     my $title_org;
     $title_org = $xpc->findvalue( 's:titel/s:alias[@titelart="originaltitel"]/@aliastitel' );

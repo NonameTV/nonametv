@@ -279,6 +279,41 @@ sub ImportXML
             	if($episode ne "") {
                 	$sentences[$i2] = "";
                 }
+            }elsif( my( $episodetextnum12, $ofepisode12) = ($sentences[$i2] =~ /^Jakso (\d+)\/(\d+)\./ ) )
+            {
+            	$episode = $episodetextnum12;
+            	$eps = $ofepisode12;
+
+            	# Only remove sentence if it could find a season
+            	if($episode ne "") {
+                	$sentences[$i2] = "";
+                }
+            }elsif( my( $episodetextnum14) = ($sentences[$i2] =~ /^Jakso (\d+)\./ ) )
+            {
+            	$episode = $episodetextnum14;
+
+            	# Only remove sentence if it could find a season
+            	if($episode ne "") {
+                	$sentences[$i2] = "";
+                }
+            }elsif( my( $episodetextnum13, $ofepisode13) = ($sentences[$i2] =~ /^Avsnitt (\d+)\/(\d+)\./ ) )
+            {
+            	$episode = $episodetextnum13;
+            	$eps = $ofepisode13;
+
+            	# Only remove sentence if it could find a season
+            	if($episode ne "") {
+                	$sentences[$i2] = "";
+                }
+            }elsif( my( $episodetextnum16, $ofepisode16) = ($sentences[$i2] =~ /^Osa (\d+)\/(\d+)\./ ) )
+            {
+            	$episode = $episodetextnum16;
+            	$eps = $ofepisode16;
+
+            	# Only remove sentence if it could find a season
+            	if($episode ne "") {
+                	$sentences[$i2] = "";
+                }
             }elsif( my( $episodetextnum7, $ofepisode7, $epititle ) = ($sentences[$i2] =~ /^Del (\d+)\/(\d+)\:(.*)\./i ) )
             {
             	$episode = $episodetextnum7;
@@ -289,7 +324,7 @@ sub ImportXML
             	if($episode ne "") {
                 	$sentences[$i2] = "";
                 }
-            }elsif( my( $episodetextnum2, $ofepisode ) = ($sentences[$i2] =~ /^Del (\d+) av (\d+)\./i ) )
+            }elsif( my( $episodetextnum2, $ofepisode ) = ($sentences[$i2] =~ /Del (\d+) av (\d+)/i ) )
             {
             	$episode = $episodetextnum2;
             	$eps = $ofepisode;
@@ -301,6 +336,14 @@ sub ImportXML
             }elsif( my( $episodetextnum3 ) = ($sentences[$i2] =~ /^Del (\d+)\./i ) )
             {
             	$episode = $episodetextnum3;
+
+            	# Only remove sentence if it could find a season
+            	if($episode ne "") {
+                	$sentences[$i2] = "";
+                }
+            }elsif( my( $episodetextnum15 ) = ($sentences[$i2] =~ /^Avsnitt (\d+)\./i ) )
+            {
+            	$episode = $episodetextnum15;
 
             	# Only remove sentence if it could find a season
             	if($episode ne "") {

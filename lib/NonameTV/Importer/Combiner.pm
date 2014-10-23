@@ -484,6 +484,7 @@ $channel_data{ "ch.nickcc.mtvnetworks.de" } =
 
 =pod
 
+<<<<<<< HEAD
 NRK3 and NRK Super TV shares the same slot so the programmes dont overlap.for
 
 =cut
@@ -503,6 +504,45 @@ $channel_data{ "nrk3super.nrk.no" } =
         },
       ],
   };
+
+=pod
+
+Viva Germany / Comedy Central. The share the same channel and do not overlap.
+
+=cut
+
+$channel_data{ "vivacc.mtvnetworks.de" } =
+  { 
+    "viva.de" => 
+      [ 
+        {
+          day => 'all',
+        },
+      ],
+    "comedycentral.de" =>
+      [
+        {
+          day => 'all',
+        },
+      ],
+  };
+
+$channel_data{ "ch.vivacc.mtvnetworks.de" } =
+  { 
+    "viva.ch" => 
+      [ 
+        {
+          day => 'all',
+        },
+      ],
+    "comedycentral.ch" =>
+      [
+        {
+          day => 'all',
+        },
+      ],
+  };
+
 
 
 =pod

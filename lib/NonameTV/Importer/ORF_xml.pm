@@ -282,8 +282,10 @@ sub ImportContent
                 if( $desc =~ m|^\s*\(.*\)\s*$| ){
                         $desc = '';
                 }
-                if( $desc =~ m|^\s*Details folgen!\s*$| ) {
-                        $desc = '';
+                if( $desc ) {
+                       if( $desc =~ m|^\s*Details folgen!\s*$| ) {
+                              $desc = undef;
+                       }
                 }
                 if( $desc ){
                        $ce->{description} = norm($desc);

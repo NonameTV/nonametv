@@ -196,7 +196,7 @@ sub EndBatch {
       StartLogSection( 'augment ' . $self->{currbatchname}, 1 );
       if( $self->{augment} == 1 ){
         my $augmenter = NonameTV::Augmenter->new( $self );
-        $augmenter->AugmentBatch( $self->{currbatchname} );
+        eval { $augmenter->AugmentBatch( $self->{currbatchname} ) };
       }
       $log .= EndLogSection( 'augment ' . $self->{currbatchname} );
     }
