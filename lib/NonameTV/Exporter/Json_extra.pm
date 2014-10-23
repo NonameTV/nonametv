@@ -488,6 +488,7 @@ sub WriteEntry
 {
   my $self = shift;
   my( $data, $entry, $chd ) = @_;
+  my ($system, $inetref);
 
   $self->{writer_entries}++;
 
