@@ -66,7 +66,6 @@ my @folders = qw(NonameTV-Data.GlobalListings
 		 NonameTV-Data.GodTV
 		 NonameTV-Data.TVChile
 		 NonameTV-Data.TravelChannel
-		 NonameTV-Data.FOX
 		 NonameTV-Data.Kanal10
 		 NonameTV-Data.SBSTV
 		 NonameTV-Data.Motors
@@ -83,7 +82,6 @@ my @folders = qw(NonameTV-Data.GlobalListings
 		 NonameTV-Data.Euronews
 		 NonameTV-Data.TV8Norge
 		 NonameTV-Data.PokerChannel
-		 NonameTV-Data.Fatstone
 		 NonameTV-Data.Gospel
 		 NonameTV-Data.RTL2
 		 NonameTV-Data.DWDE
@@ -304,7 +302,14 @@ sub guess_channel
 
     # FOX TV Norway
     return "foxtv.no"       if $filename =~ /^fox\s+norway/i;
-    return "foxtv.se"       if $filename =~ /^fox\s+sweden/i;
+    return "foxtv.se"       if $filename =~ /^fox\s+sweden/i and $filename =~ /\.xml$/i;
+
+    # H2
+    if($filename =~ /h2\s+europe/i and $filename =~ /\.doc$/i) {
+        return "h2.historytv.se"  if $filename =~ /swe/i;
+        return "h2.historytv.no"  if $filename =~ /nor/i;
+        return "h2.historytv.dk"  if $filename =~ /dan/i;
+    }
  }
 
  if( $dir =~ /Turner/ ) {

@@ -35,6 +35,7 @@ $channel_data{ "mtf" } = "fakta.mtv.fi";
 $channel_data{ "mtd" } = "faktaxl.mtv.fi";
 $channel_data{ "fsd" } = "fem.yle.fi";
 $channel_data{ "stv" } = "fox.fi";
+$channel_data{ "her" } = "herotv.fi";
 $channel_data{ "nep" } = "jim.nelonen.fi";
 $channel_data{ "jun" } = "juniori.mtv.fi";
 $channel_data{ "r17" } = "klassinen.radio.yle.fi";
