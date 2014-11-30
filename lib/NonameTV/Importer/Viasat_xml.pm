@@ -337,6 +337,8 @@ sub ImportContent {
 	      ( $pty, $cat ) = $ds->LookupCat( 'Viasat2_category', $category );
 	  	  AddCategory( $ce, $pty, $cat );
 	  }
+
+	  $ce->{external_ids} = 'viasat_' . $emission->findvalue( 'uniqueId' );
       
       progress( "Viasat: $chd->{xmltvid}: $start_time - $name" );
       $dsh->AddProgramme( $ce );
