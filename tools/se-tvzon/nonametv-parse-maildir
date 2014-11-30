@@ -310,6 +310,12 @@ sub guess_channel
         return "h2.historytv.no"  if $filename =~ /nor/i;
         return "h2.historytv.dk"  if $filename =~ /dan/i;
     }
+
+    # Benelux schedules for Universal
+    return "13thstreet.nl" if $filename =~ /^13\.Ben\.Dut/i;
+    return "en.13thstreet.nl" if $filename =~ /^13\.Ben\.Eng/i;
+    return "syfy.nl" if $filename =~ /^Syfy\.Ben\.Dut/i;
+    return "en.syfy.nl" if $filename =~ /^Syfy\.Ben\.Eng/i;
  }
 
  if( $dir =~ /Turner/ ) {
