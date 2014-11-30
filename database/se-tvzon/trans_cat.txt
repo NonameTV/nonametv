@@ -20,6 +20,17 @@ Arte_genre,serie,\N,series
 Arte_genre,spielfilm,,movie
 Arte_genre,stummfilm,,movie
 Arte_genre,theater,,tvshow
+C1R,boevike,\N,movie
+C1R,detektive,Crime,
+C1R,fil'me,\N,movie
+C1R,"fil'me chellendzhera""",\N,movie
+C1R,"fil'me nikity mihalkova",\N,movie
+C1R,komedii,Comedy,
+C1R,"mnogoserijnom fil'me",\N,movie
+C1R,"muzykal'noj komedii",Musical/Comedy,
+C1R,"muzykal'nom fil'me",Musical,movie
+C1R,"ostrosjuzhetnom fil'me",\N,movie
+C1R,"prikljuchencheskom fil'me glorii""",\N,movie
 CanalPlus,action,Action,
 CanalPlus,"action comedy",Action/Comedy,
 CanalPlus,"action drama",Action/Drama,
@@ -729,6 +740,18 @@ Nonstop,"talk show","Talk show",series
 Nonstop,thriller,Thriller,movie
 Nonstop,war,War,movie
 Nonstop,western,Western,movie
+NonstopDOC,action,Action,
+NonstopDOC,adventure,Adventure,
+NonstopDOC,comedy,Comedy,
+NonstopDOC,crime,Crime,
+NonstopDOC,documentary,Documentary,
+NonstopDOC,drama,Drama,
+NonstopDOC,horror,Horror,
+NonstopDOC,sci-fi,Sci-Fi,
+NonstopDOC,"science fiction",Sci-Fi,
+NonstopDOC,thriller,Thriller,
+NonstopDOC,war,War,
+NonstopDOC,western,Western,
 OKV,barn,Children's,
 OKV,children,Children's,
 OKV,community,Community,

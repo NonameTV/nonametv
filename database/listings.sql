@@ -92,6 +92,7 @@ CREATE TABLE `programs` (
   `country` varchar(255) DEFAULT NULL,
   `poster` varchar(255) DEFAULT NULL,
   `fanart` varchar(255) DEFAULT NULL,
+  `external_ids` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`channel_id`,`start_time`),
   KEY `batch` (`batch_id`,`start_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

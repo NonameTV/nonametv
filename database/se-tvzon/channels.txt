@@ -38,7 +38,6 @@
 274,"Discovery Science",science.discoverychannel.com,"TV,Sweden",Discovery_xml,1,SCSWE,1,series,Documentary,sv,0,http://www.discoverychannel.se/,0
 275,TLC,tlcsverige.se,"TV,Sweden",Discovery_xml,1,TLCSWE,1,series,Reality,sv,0,http://www.discoverychannel.se/,0
 276,"Discovery World",world.discoveryworld.se,"TV,Sweden,Finland",Discovery_xml,1,DWSWE,1,series,Nature,sv,0,http://www.discoverychannel.se/,0
-278,Showtime,showtime.nonstop.tv,"TV,Sweden",Nonstop,1,showtime/se/swe,1,movie,Movies,sv,0,http://www.nonstop.tv/showtime/,0
 281,Star!,star.nonstop.tv,"TV,Norway,Sweden",Nonstop,1,star/se/eng,1,series,Entertainment,en,0,http://www.nonstop.tv/star/,0
 284,FEM,fem.no,"TV,Norway,Sweden",TVNorge,1,FEM,1,series,Series,no,0,http://www.fem.no/,0
 285,MAX,max.no,"TV,Norway,Sweden",TVNorge,1,MAX,1,series,Series,no,0,http://www.max.no/,0
@@ -109,8 +108,6 @@
 411,"SR P4 Radio Stockholm",p4sth.sr.se,"RADIO,Sweden",SverigesRadio,1,p4sth.sr.se,1,,Music,sv,0,http://sverigesradio.se/p4/,0
 412,"SR Metropol",srmetropol.sr.se,"RADIO,Sweden",SverigesRadio,1,srmetropol.sr.se,1,,Music,sv,0,http://sverigesradio.se/metropol/,0
 416,"Eurosport 2 HD",hd.eurosport2.se,"TV,Sweden",Downconverter,1,"eurosport2.se, quality=HDTV",1,,,sv,0,http://www.eurosport.se,0
-428,Silver,silver.nonstop.tv,"TV,Sweden",Nonstop,1,silver-1/se/swe,1,movie,Movies,en,0,http://www.nonstop.tv/silver/,0
-429,TNT,tnt-tv.se,"TV,Sweden",Nonstop,1,tnt/swe,1,series,Series,sv,0,http://www.tnt-tv.se/,0
 439,"TV4 Fakta XL",faktaxl.tv4.se,"TV,Sweden",TV4,1,20,1,series,Documentary,sv,0,http://www.tv4faktaxl.se/,0
 441,"6'eren Denmark",6-eren.dk,"TV,Denmark",SBSTV,1,6'eren,1,series,Series,da,0,http://www.6-eren.dk/,0
 442,"Kanal 4 Denmark",kanal4.dk,"TV,Denmark",SBSTV,1,"Kanal 4",1,series,Series,da,0,http://www.kanal4.dk/,0
@@ -163,7 +160,6 @@
 497,"TV3 SPORT 1",one.tv3sport.dk,"TV,Denmark",ViasatDK,1,tv3_sport_1_dk_,1,series,Series,da,0,http://www.tv3sport.dk/,0
 499,"TV3 Puls",puls.tv3.dk,"TV,Denmark",ViasatDK,1,tv3_puls_dk_,1,series,Series,da,0,http://www.tv3.dk/,0
 500,"TV3 SPORT 2",two.tv3sport.dk,"TV,Denmark",ViasatDK,1,tv3_sport_2_dk_,1,series,Series,da,0,http://www.tv3sport.dk/,0
-501,"7'eren Denmark",7-eren.sbstv.dk,"TV,Denmark",SBSTV,1,7'eren,1,series,Series,da,0,,0
 502,"C More Sport/SF-Kanalen",sport-sf.cmore.se,"TV,Sweden",CMore,1,33,1,sports,Sports,sv,0,http://www.cmore.se/,0
 503,"CANAL9 Danmark",canal9.dk,"TV,Denmark",CMoreDK,1,36,1,series,Series,da,0,http://www.canal9.dk/,0
 504,"CANAL8 Sport",sport.canal8.dk,"TV,Denmark",CMoreDK,1,23,1,sports,Sports,da,0,http://www.canal8.dk/,0
@@ -291,9 +287,6 @@
 708,"C More Series Norway",series.cmore.no,"TV,Norway",CMoreNO,1,29,1,series,Series,no,0,http://www.cmore.no/,0
 709,"SF-Kanalen Norway",sf-kanalen.cmore.no,"TV,Norway",CMoreNO,1,32,1,movie,Movies,no,0,http://www.cmore.no/,0
 710,"C More Tennis Norway",tennis.cmore.no,"TV,Norway",CMoreNO,1,21,1,sports,Sports,no,0,http://www.cmore.no/,0
-711,"Showtime Norway",no.showtime.nonstop.tv,"TV,Norway",Nonstop,1,showtime/se/nor,1,movie,Movies,no,0,http://www.nonstop.tv/showtime/,0
-712,"Silver Norway",no.silver.nonstop.tv,"TV,Norway",Nonstop,1,silver-1/se/nor,1,movie,Movies,no,0,http://www.nonstop.tv/silver/,0
-713,"TNT Norway",tnt-tv.no,"TV,Norway",Nonstop,1,tnt/nor,1,series,Series,no,0,http://www.tnt-tv.no/,0
 714,"C More Fotboll Hockey Kids",fotboll-hockey-kids.cmore.se,"TV,Sweden",CMore,1,54,1,series,Series,sv,0,http://www.cmore.se/,0
 715,"C More Sport/Film HD",sport-filmhd.cmore.se,"TV,Sweden",CMore,1,17,1,sports,Sports,sv,0,http://www.cmore.se/,0
 716,"TV2 Nyhetskanalen",news.tv2.no,"TV,Norway",TV2NO,1,11,1,tvshow,News,no,0,http://www.tv2.no/kanalene/news/,0
@@ -369,7 +362,6 @@
 791,"Discovery Channel Denmark",discovery.dk,"TV,Denmark",Discovery_xml,1,DCDAN,1,series,Documentary,da,0,http://www.discovery.dk/,0
 792,"Animal Planet HD Denmark",hd.animalplanet.discovery.dk,"TV,Denmark",Discovery_xml,1,AHDAN,1,series,Animals,da,0,http://www.discovery.dk/,0
 793,"Discovery HD Showcase Denmark",hd.discovery.dk,"TV,Denmark",Discovery_xml,1,HDDAN,1,series,Documentary,da,0,http://www.discovery.dk/,0
-794,"Investigation Discovery Denmark",investigation.discovery.dk,"TV,Denmark",Discovery_xml,1,IDDAN,1,series,Crime/Mystery,da,0,http://www.discovery.dk/,0
 795,"Discovery Science Denmark",science.discovery.dk,"TV,Denmark",Discovery_xml,1,SCDAN,1,series,Documentary,da,0,http://www.discovery.dk/,0
 796,"TLC Denmark",tlc.discovery.dk,"TV,Denmark",Discovery_xml,1,TLCDAN,1,series,Reality,da,0,http://www.discovery.dk/,0
 797,"Discovery World Denmark",world.discovery.dk,"TV,Denmark",Discovery_xml,1,DWDAN,1,series,Nature,da,0,http://www.discovery.dk/,0
@@ -396,9 +388,6 @@
 821,"CBeebies Nordic Finland",cbeebies.fi,"TV,Finland",BBCWW,1,,1,,,fi,0,http://www.cbeebies.com,0
 822,"Nat. Geo. Wild Denmark",wild.natgeo.dk,"TV,Denmark",NatGeoWild,1,,1,series,Animals,da,0,http://natgeotv.com/dk/wild/,0
 823,"Nat. Geo. Wild Norway",wild.natgeo.no,"TV,Norway",NatGeoWild,1,,1,series,Animals,no,0,http://natgeotv.com/no/wild/,0
-824,"Showtime Denmark",dk.showtime.nonstop.tv,"TV,Denmark",Nonstop,1,showtime/se/dan,1,movie,Movies,da,0,http://www.nonstop.tv/showtime/,0
-825,"Silver Denmark",dk.silver.nonstop.tv,"TV,Denmark",Nonstop,1,silver-1/se/dan,1,movie,Movies,da,0,http://www.nonstop.tv/silver/,0
-826,"TNT Denmark",tnt-tv.dk,"TV,Denmark",Nonstop,1,tnt/dan,1,series,Series,da,0,http://www.tnt-tv.dk/,0
 827,"TV8 Buskerud",buskerud.tv8norge.no,"TV,Norway",TV8Norge,1,,1,series,Series,no,0,http://tv8norge.no/,0
 828,"TV Finland",tvfinland.yle.fi,"TV,Norway,Sweden,Denmark,Finland",Venetsia,1,,1,series,Series,sv,0,http://yle.fi/tvfinland/svenska.htm,0
 829,AVA,ava.mtv.fi,"TV,Finland",Venetsia,1,UTC,1,series,Series,fi,0,http://avatv.fi/,0
@@ -588,3 +577,23 @@
 1056,"BON GUSTO",bongusto.tv,"TV,Germany",CarusMedia,1,,0,series,Series,de,0,http://www.bongusto.tv/,0
 1057,"JIMJAM Netherlands",jimjam.nl,"TV,Netherlands",EBS,1,776,0,series,Children's,nl,0,http://www.jimjam.nl/,0
 1058,"Cartoon Network Netherlands",cartoonnetwork.nl,"TV,Netherlands",Turner,1,,0,series,Kids,nl,0,http://www.cartoonnetwork.nl/,0
+1059,"Showtime Denmark",dk.showtime.nonstop.tv,"TV,Denmark",NonstopDOC,1,showtime/se/dan,1,movie,Movies,da,0,http://www.nonstop.tv/showtime/,0
+1060,"Silver Denmark",dk.silver.nonstop.tv,"TV,Denmark",NonstopDOC,1,silver-1/se/dan,1,movie,Movies,da,0,http://www.nonstop.tv/silver/,0
+1061,"Showtime Finland",fi.showtime.nonstop.tv,"TV,Finland",NonstopDOC,1,showtime/se/dan,0,movie,Movies,fi,0,http://www.nonstop.tv/showtime/,0
+1062,"Silver Finland",fi.silver.nonstop.tv,"TV,Finland",NonstopDOC,1,silver-1/se/dan,0,movie,Movies,fi,0,http://www.nonstop.tv/silver/,0
+1063,"Showtime Norway",no.showtime.nonstop.tv,"TV,Norway",NonstopDOC,1,showtime/se/nor,1,movie,Movies,no,0,http://www.nonstop.tv/showtime/,0
+1064,"Silver Norway",no.silver.nonstop.tv,"TV,Norway",NonstopDOC,1,silver-1/se/nor,1,movie,Movies,no,0,http://www.nonstop.tv/silver/,0
+1065,Showtime,showtime.nonstop.tv,"TV,Sweden",NonstopDOC,1,showtime/se/swe,1,movie,Movies,sv,0,http://www.nonstop.tv/showtime/,0
+1066,Silver,silver.nonstop.tv,"TV,Sweden",NonstopDOC,1,silver-1/se/swe,1,movie,Movies,en,0,http://www.nonstop.tv/silver/,0
+1067,"Oppna Kanalen Goteborg",oppnakanalengoteborg.se,"TV,Sweden",OKG,1,,1,series,Series,sv,0,http://www.oppnakanalengoteborg.se/,0
+1068,"ServusTV Austria",servustv.com,"TV,Austria",ServusTV,1,,0,series,Series,de,0,,0
+1069,"ServusTV Germany",servustv.de,"TV,Germany",ServusTV,1,,0,series,Series,de,0,,0
+1070,"H2 Denmark",h2.historytv.dk,"TV,Denmark",TravelChannel,1,,0,series,Documentary,da,0,http://www.historytv.dk/,0
+1071,"H2 Norway",h2.historytv.no,"TV,Norway",TravelChannel,1,,0,series,Documentary,no,0,http://www.historytv.no.com/,0
+1072,"H2 Sweden",h2.historytv.se,"TV,Sweden",TravelChannel,1,,0,series,Documentary,sv,0,http://www.historytv.se/,0
+1073,Hero,herotv.fi,"TV,Finland",Venetsia,1,UTC,0,series,Series,fi,0,http://www.herotv.fi/,0
+1074,"Viva / Comedy Central (Germany)",vivacc.mtvnetworks.de,"TV,Germany",Combiner,1,,0,,,de,0,\N,0
+1075,"Investigation Discovery Denmark",investigation.discovery.dk,"TV,Denmark",SBSTV,1,ID,1,series,Crime/Mystery,da,0,http://www.discovery.dk/,0
+1076,"TNT Denmark",tnt-tv.dk,"TV,Denmark",NonstopXLS,1,tnt/dan,1,series,Series,da,0,http://www.tnt-tv.dk/,0
+1077,"TNT Norway",tnt-tv.no,"TV,Norway",NonstopXLS,1,tnt/nor,1,series,Series,no,0,http://www.tnt-tv.no/,0
+1078,TNT,tnt-tv.se,"TV,Sweden",NonstopXLS,1,tnt/swe,1,series,Series,sv,0,http://www.tnt-tv.se/,0

@@ -65,10 +65,10 @@
 208,Fixups,\N,description,\N,\N,copylastdetails
 209,Fixups,\N,description,\N,\N,copylastdetails
 225,Tvdb,V,program_type,series,94971,episodeseason
-287,TvdbNO,^.*$,program_type,series,\N,episodeseason
-285,TvdbNO,^.*$,program_type,series,\N,episodeseason
-284,TvdbNO,^.*$,program_type,series,\N,episodeseason
-287,TvdbNO,CSI,program_type,series,72546,episodeseason
+287,TvdbNO,^.*$,program_type,series,\N,guess
+285,TvdbNO,^.*$,program_type,series,\N,guess
+284,TvdbNO,^.*$,program_type,series,\N,guess
+287,TvdbNO,CSI,program_type,series,72546,guess
 254,TvdbEN,AdamLive,program_type,series,251664,episodeseason
 \N,Tvdb,Portlandia,program_type,series,213221,episodeseason
 \N,Tvdb,"En callgirls dagbok",program_type,series,80621,episodeseason
@@ -107,44 +107,44 @@
 265,Tvdb,"Berg flyttar in",program_type,series,91711,episodeseason
 264,Tvdb,"Plastikdoktor 90210",program_type,series,74823,episodeseason
 264,Tvdb,"Gene Simmons familjejuveler",program_type,series,79406,episodeseason
-285,TvdbNO,Conan,program_type,tvshow,194751,episodeseason
-285,TvdbNO,"Terminator: Sarah Connor Chronicles",program_type,movie,80344,episodeseason
-285,TvdbNO,"Walker Texas Ranger",program_type,movie,73756,episodeseason
-285,TvdbNO,"Robot Chicken",program_type,movie,75734,episodeseason
-285,TvdbNO,Archer,program_type,movie,110381,episodeseason
+285,TvdbNO,Conan,program_type,tvshow,194751,guess
+285,TvdbNO,"Terminator: Sarah Connor Chronicles",program_type,movie,80344,guess
+285,TvdbNO,"Walker Texas Ranger",program_type,movie,73756,guess
+285,TvdbNO,"Robot Chicken",program_type,movie,75734,guess
+285,TvdbNO,Archer,program_type,movie,110381,guess
 232,TvdbEN,Christine,program_type,series,75756,episodeseason
-287,TvdbNO,Christine,program_type,series,75756,episodeseason
-287,TvdbNO,"Salong Makeover",program_type,series,88321,episodeseason
-287,TvdbNO,"The Rachael Ray Show",program_type,series,161811,episodeseason
+287,TvdbNO,Christine,program_type,series,75756,guess
+287,TvdbNO,"Salong Makeover",program_type,series,88321,guess
+287,TvdbNO,"The Rachael Ray Show",program_type,series,161811,guess
 225,Tvdb,Boss,program_type,series,249361,episodeseason
-287,TvdbNO,"Under samme tak",program_type,series,70500,episodeseason
-287,TvdbNO,"Undercover Boss Australia",program_type,series,198841,episodeseason
-287,TvdbNO,"Verdens strengeste foreldre",program_type,series,83115,episodeseason
-287,TvdbNO,Grensevakten,program_type,series,81563,episodeseason
-287,TvdbNO,"48 timer",program_type,series,138551,episodeseason
-287,TvdbNO,"Special Victims Unit",program_type,series,75692,episodeseason
-287,TvdbNO,"Millionær søker kjæreste",program_type,series,85425,episodeseason
-287,TvdbNO,Ungkarskvinnen,program_type,series,70869,episodeseason
-284,TvdbNO,"Tori & Dean i Hollywood",program_type,series,82499,episodeseason
-284,TvdbNO,"Mitt hemmelige tenåringsliv",program_type,series,82422,episodeseason
+287,TvdbNO,"Under samme tak",program_type,series,70500,guess
+287,TvdbNO,"Undercover Boss Australia",program_type,series,198841,guess
+287,TvdbNO,"Verdens strengeste foreldre",program_type,series,83115,guess
+287,TvdbNO,Grensevakten,program_type,series,81563,guess
+287,TvdbNO,"48 timer",program_type,series,138551,guess
+287,TvdbNO,"Special Victims Unit",program_type,series,75692,guess
+287,TvdbNO,"Millionær søker kjæreste",program_type,series,85425,guess
+287,TvdbNO,Ungkarskvinnen,program_type,series,70869,guess
+284,TvdbNO,"Tori & Dean i Hollywood",program_type,series,82499,guess
+284,TvdbNO,"Mitt hemmelige tenåringsliv",program_type,series,82422,guess
 284,Fixups,"Jamies matrevolusjon",program_type,series,"Jamie Oliver's Food Revolution",replacetitle
-284,TvdbNO,"Salong Makeover",program_type,series,88321,episodeseason
-284,TvdbNO,"Unge mødre DK",program_type,series,251499,episodeseason
+284,TvdbNO,"Salong Makeover",program_type,series,88321,guess
+284,TvdbNO,"Unge mødre DK",program_type,series,251499,guess
 284,Fixups,"The Rachael Ray Show",program_type,series,"Rachael Ray",replacetitle
-284,TvdbNO,"En, to, tre - oppussing!",program_type,series,74785,episodeseason
-284,TvdbNO,"Verdens strengeste foreldre",program_type,series,83115,episodeseason
-284,TvdbNO,"Tenåringenes sexliv",program_type,series,223501,episodeseason
-284,TvdbNO,"Søte fristelser",program_type,series,176261,episodeseason
-284,TvdbNO,Legene,program_type,series,242951,episodeseason
-284,TvdbNO,Slankekrigen,program_type,series,75166,episodeseason
-285,TvdbNO,Vettskremt!,program_type,series,79263,episodeseason
-285,TvdbNO,Fartsbøller,program_type,series,82427,episodeseason
-285,TvdbNO,Monstergarasjen,program_type,series,73080,episodeseason
-285,TvdbNO,Spesialstyrken,program_type,series,82438,episodeseason
-285,TvdbNO,"Pantelånerne i Las Vegas",program_type,series,111051,episodeseason
-285,TvdbNO,Skattejegerne,program_type,series,141181,episodeseason
-285,TvdbNO,Dusørjegeren,program_type,series,75036,episodeseason
-285,TvdbNO,"Poker: The Big Game",program_type,series,168931,episodeseason
+284,TvdbNO,"En, to, tre - oppussing!",program_type,series,74785,guess
+284,TvdbNO,"Verdens strengeste foreldre",program_type,series,83115,guess
+284,TvdbNO,"Tenåringenes sexliv",program_type,series,223501,guess
+284,TvdbNO,"Søte fristelser",program_type,series,176261,guess
+284,TvdbNO,Legene,program_type,series,242951,guess
+284,TvdbNO,Slankekrigen,program_type,series,75166,guess
+285,TvdbNO,Vettskremt!,program_type,series,79263,guess
+285,TvdbNO,Fartsbøller,program_type,series,82427,guess
+285,TvdbNO,Monstergarasjen,program_type,series,73080,guess
+285,TvdbNO,Spesialstyrken,program_type,series,82438,guess
+285,TvdbNO,"Pantelånerne i Las Vegas",program_type,series,111051,guess
+285,TvdbNO,Skattejegerne,program_type,series,141181,guess
+285,TvdbNO,Dusørjegeren,program_type,series,75036,guess
+285,TvdbNO,"Poker: The Big Game",program_type,series,168931,guess
 429,Tvdb,Portlandia,program_type,movie,213221,episodeseason
 429,Tvdb,"Todd and the Book of Pure Evil",program_type,movie,194041,episodeseason
 2341,Tvdb,"Gimme Gimme Gimme",program_type,series,75031,episodeseason
@@ -401,7 +401,7 @@
 305,Fixups,^.*(Motor):\s+(.*)$,\N,\N,\N,splittitle
 305,Fixups,^.*(Ishockey):\s+(.*)$,\N,\N,\N,splittitle
 304,Fixups,^.*(Ishockey):\s+(.*)$,\N,\N,\N,splittitle
-392,TvdbNO,^.*$,program_type,series,\N,episodeseason
+392,TvdbNO,^.*$,program_type,series,\N,guess
 305,Tvdb,^.*Historiepolisen.*$,program_type,series,255922,episodetitle
 307,Tvdb,^.*Historiepolisen.*$,program_type,series,255922,episodetitle
 305,Fixups,"^.*Lockie Leonard.*$",subtitle,"The first day","Stormy Mondays",replacesubtitle
@@ -482,7 +482,7 @@
 255,Tvdb,"The Last Resort",program_type,series,255413,episodeseason
 516,TvdbNO,^.*$,program_type,series,\N,episodeseason
 296,TvdbNO,^.*$,program_type,series,\N,episodeseason
-519,TvdbNO,^.*$,program_type,series,\N,episodeseason
+519,TvdbNO,^.*$,program_type,series,\N,guess
 516,TvdbNO,Rome,program_type,series,73508,episodetitle
 516,TvdbNO,"Pinlige sykdommer",program_type,series,136191,episodeseason
 516,TvdbNO,"Millionær i forkledning",program_type,series,79687,episodeseason
@@ -543,7 +543,7 @@
 442,TvdbDK,^.*$,program_type,series,\N,episodeseason
 443,TvdbEN,^.*$,program_type,series,\N,episodetitle
 501,TvdbEN,^.*$,program_type,series,\N,episodetitle
-441,TvdbDK,^.*$,program_type,series,\N,guess
+441,TvdbDK,^.*$,program_type,series,\N,episodeseason
 443,TvdbDK,^.*$,"program_type
 ",series,\N,episodeseason
 501,TvdbDK,^.*$,program_type,series,\N,episodeseason
@@ -620,8 +620,8 @@
 796,TvdbEN,^.*$,program_type,series,\N,episodetitle
 797,TvdbEN,^.*$,program_type,series,\N,episodetitle
 630,TvdbDK,^.*$,program_type,series,\N,episodeseason
-287,TvdbNO,Castle,program_type,series,83462,episodeseason
-392,TvdbNO,Castle,program_type,series,83462,episodeseason
+287,TvdbNO,Castle,program_type,series,83462,guess
+392,TvdbNO,Castle,program_type,series,83462,guess
 477,Tvdb,Castle,program_type,series,83462,episodetitle
 528,Tvdb,Castle,program_type,series,83462,episodeseason
 \N,Fixups,Brottskod,subtitle,Försvunnen,"Brottskod: Försvunnen",replacetitle
@@ -672,8 +672,8 @@
 254,TvdbEN,"Mr. Sunshine",program_type,series,164481,episodeseason
 489,Tvdb,"Familjen Holstein - Gottorp",program_type,series,265831,guess
 255,Tvdb,Sirens,program_type,series,269897,episodeseason
-284,TvdbNO,Scandal,program_type,series,248841,episodeseason
-392,TvdbNO,Boss,program_type,series,249361,episodeseason
+284,TvdbNO,Scandal,program_type,series,248841,guess
+392,TvdbNO,Boss,program_type,series,249361,guess
 398,TvdbNO,"Welcome to Sweden",program_type,series,274123,episodeseason
 493,Tvdb,Mayday,program_type,series,262148,episodeseason
 484,TvdbNO,"Paradise Hotel",program_type,series,149591,episodeseason
@@ -909,3 +909,27 @@
 255,Tvdb,"The Goldbergs",program_type,series,269653,guess
 484,TvdbNO,"The Goldbergs",program_type,series,269653,guess
 486,TvdbNO,"The Goldbergs",program_type,series,269653,guess
+441,TvdbEN,^.*$,program_type,series,\N,episodetitle
+284,TvdbNO,"Special Victims Unit",program_type,series,75692,guess
+284,TvdbNO,"Ekstremt vekttap",program_type,series,249085,guess
+284,TvdbNO,Fødeavdelingen,program_type,series,142401,guess
+284,TvdbNO,"Det lille paret",program_type,series,98481,episodetitle
+284,Tmdb,"Butterfly Effect 3 - Revelations",program_type,movie,16258,movieid
+392,TvdbNO,"Undercover Boss Australia",program_type,series,198841,guess
+392,TvdbNO,Skattejegerne,program_type,series,141181,episodetitle
+392,TvdbNO,"Dalziel og Pascoe",program_type,series,76187,guess
+826,TvdbDK,^.*$,program_type,series,\N,guess
+713,TvdbNO,^.*$,program_type,series,\N,guess
+281,Tvdb,^.*$,program_type,series,\N,guess
+1068,TvdbDE,^.*$,program_type,series,\N,guess
+1069,TvdbDE,^.*$,program_type,series,\N,guess
+1070,TvdbEN,^.*$,\N,\N,\N,guess
+1071,TvdbEN,^.*$,\N,\N,\N,guess
+1072,TvdbEN,^.*$,\N,\N,\N,guess
+1073,TvdbFI,^.*$,program_type,series,\N,episodeseason
+1073,TvdbFI,"Hawaii 5-0",program_type,series,164541,episodeseason
+1075,TvdbDK,^.*$,program_type,series,\N,episodeseason
+1075,TvdbEN,^.*$,program_type,series,\N,episodetitle
+1078,Tvdb,^.*$,program_type,series,\N,guess
+1077,TvdbNO,^.*$,program_type,series,\N,guess
+1076,TvdbDK,^.*$,program_type,series,\N,guess

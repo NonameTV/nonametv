@@ -2,6 +2,7 @@ Arte,afghanistan,AF
 Arte,australien,AU
 Arte,belgien,BE
 Arte,bolivien,BO
+Arte,brasilien,\N
 Arte,chile,CL
 Arte,china,CN
 Arte,"china, volksrepublik",CN
@@ -11,6 +12,7 @@ Arte,deutschland,DE
 Arte,estland,EE
 Arte,finnland,FI
 Arte,frankreich,FR
+Arte,griechenland,\N
 Arte,"großbritannien",GB
 Arte,hongkong,HK
 Arte,indien,IN
@@ -23,12 +25,15 @@ Arte,japan,JP
 Arte,jugoslawien,MK
 Arte,kanada,CA
 Arte,korea,KR
+Arte,lettland,\N
 Arte,luxemburg,LU
 Arte,madagaskar,MG
 Arte,mexiko,MX
+Arte,neuseeland,\N
 Arte,niederlande,NL
 Arte,norwegen,NO
 Arte,österreich,AT
+Arte,philippinen,\N
 Arte,polen,PL
 Arte,portugal,PT
 Arte,rumänien,RO
@@ -36,6 +41,7 @@ Arte,russland,RU
 Arte,schweden,SE
 Arte,schweiz,CH
 Arte,serbien,RS
+Arte,slowenien,\N
 Arte,spanien,ES
 Arte,sudafrikasüdafrika,ZA
 Arte,südkorea,KR
@@ -43,8 +49,10 @@ Arte,thailand,TH
 Arte,"tschechische republik",CZ
 Arte,türkei,TR
 Arte,udssr,\N
+Arte,ukraine,\N
 Arte,ungarn,HU
 Arte,usa,US
+Arte,vietnam,\N
 CarusMedia,aus,AU
 CarusMedia,ausatralien,AU
 CarusMedia,australien,AU
@@ -73,6 +81,7 @@ CMore,france,FR
 CMore,frankrig,FR
 CMore,frankrike,FR
 CMore,germany,DE
+CMore,"hong kong",\N
 CMore,hungary,HU
 CMore,iceland,IS
 CMore,ireland,IE
@@ -102,13 +111,16 @@ CMore,"united kingdom",GB
 CMore,"united states",US
 CMore,unkari,HU
 CMore,usa,US
+DR,argentina,\N
 DR,asien,\N
 DR,australien,AU
 DR,"australien & oceanien",AU
 DR,belgien,BE
 DR,brasilien,BR
+DR,bulgarien,\N
 DR,canada,CA
 DR,danmark,DK
+DR,"de baltiske lande",\N
 DR,europa,\N
 DR,finland,FI
 DR,"frankrig & monaco",FR/MC
@@ -116,11 +128,16 @@ DR,"grupper af lande",\N
 DR,grækenland,GR
 DR,holland,NL
 DR,"ikke geografisk bestemt",\N
+DR,"ikke placerbart på verdensdele",\N
+DR,iran,\N
 DR,irland,IE
+DR,island,\N
 DR,italien,IT
 DR,japan,JP
+DR,litauen,\N
 DR,mellemøsten,\N
 DR,mexico,MX
+DR,"new zealand",\N
 DR,"nordamerika udenfor usa",\N
 DR,norden,\N
 DR,norge,NO
@@ -131,7 +148,12 @@ DR,"schweiz & lichtenstein",CH/LI
 DR,spanien,ES
 DR,storbritannien,GB
 DR,sverige,SE
+DR,syd-afika,\N
+DR,"sydafikanske republik, den",\N
+DR,tjekkiet,\N
 DR,tyskland,DE
+DR,ukraine,\N
+DR,ungarn,\N
 DR,usa,US
 DR,øst-asien,\N
 DR,"østlige europa",\N
@@ -141,46 +163,68 @@ FOXTV,null,\N
 FOXTV,"united kingdom",UK
 FOXTV,"united states",US
 KFZ,a,AT
+KFZ,afrika,\N
+KFZ,äthiopien,\N
 KFZ,aus,AU
 KFZ,ausatralien,AU
 KFZ,australien,AU
+KFZ,austria,\N
 KFZ,b,BE
 KFZ,bg,BG
 KFZ,br,BR
+KFZ,brasilien,\N
 KFZ,brd,DE
+KFZ,c,\N
 KFZ,cdn,CA
 KFZ,ch,CH
+KFZ,cs,\N
 KFZ,cz,CZ
 KFZ,d,DE
+KFZ,dänemark,\N
 KFZ,ddr,\N
 KFZ,deutschland,DE
 KFZ,dk,DK
 KFZ,e,ES
 KFZ,f,FR
 KFZ,fin,FI
+KFZ,frankreich,\N
 KFZ,gb,GB
+KFZ,"großbritannien",\N
 KFZ,h,HU
 KFZ,hk,HK
 KFZ,hr,HR
 KFZ,i,IT
+KFZ,il,\N
 KFZ,ind,IN
+KFZ,indien,\N
 KFZ,irl,IE
 KFZ,irland,IE
+KFZ,island,\N
+KFZ,italien,\N
 KFZ,j,JP
+KFZ,kanada,\N
+KFZ,kp,\N
+KFZ,kz,\N
 KFZ,l,LU
 KFZ,lt,LT
 KFZ,m,MT
 KFZ,ma,MA
 KFZ,mex,MX
+KFZ,mongolei,\N
 KFZ,n,NO
+KFZ,nam,\N
+KFZ,nepal,\N
 KFZ,neuseeland,NZ
+KFZ,niederlande,\N
 KFZ,nl,NL
 KFZ,norwegen,NO
 KFZ,nz,NZ
+KFZ,österreich,\N
 KFZ,p,PT
 KFZ,pk,PK
 KFZ,portugal,PT
 KFZ,ra,AR
+KFZ,rc,\N
 KFZ,ro,RO
 KFZ,rok,KR
 KFZ,rus,RU
@@ -188,6 +232,8 @@ KFZ,s,SE
 KFZ,scg,RS
 KFZ,schweiz,CH
 KFZ,sf,FI
+KFZ,sgp,\N
+KFZ,spanien,\N
 KFZ,t,TH
 KFZ,tj,TJ
 KFZ,ua,UA
@@ -213,6 +259,33 @@ Nonstop,"south korea",KR
 Nonstop,spain,ES
 Nonstop,uk,GB
 Nonstop,us,US
+NonstopDOC,aus,AU
+NonstopDOC,bel,BE
+NonstopDOC,can,CA
+NonstopDOC,chn,CN
+NonstopDOC,col,CO
+NonstopDOC,deu,DE
+NonstopDOC,dom,\N
+NonstopDOC,esp,ES
+NonstopDOC,fra,FR
+NonstopDOC,gbr,UK
+NonstopDOC,hgk,HK
+NonstopDOC,ire,IE
+NonstopDOC,isl,IS
+NonstopDOC,ita,IT
+NonstopDOC,jpn,JP
+NonstopDOC,lbr,LR
+NonstopDOC,mex,\N
+NonstopDOC,nld,NL
+NonstopDOC,nzl,NZ
+NonstopDOC,rus,\N
+NonstopDOC,sok,KR
+NonstopDOC,swe,SE
+NonstopDOC,tha,\N
+NonstopDOC,tur,\N
+NonstopDOC,uru,UY
+NonstopDOC,usa,US
+NonstopDOC,zaf,ZA
 PPS,cdn,CDN
 PPS,d,DE
 PPS,e,ES
@@ -224,38 +297,54 @@ PPS,usa,US
 RAI,alg,DZ
 RAI,aus,AU
 RAI,aut,AT
+RAI,bel,\N
 RAI,bra,BR
+RAI,c,\N
 RAI,cdn,CA
+RAI,cil,\N
 RAI,cin,IN
 RAI,dan,DK
+RAI,fin,\N
 RAI,fra,FR
 RAI,gbr,GB
 RAI,ger,DE
 RAI,hgk,HR
 RAI,ind,IN
 RAI,irl,IE
+RAI,isr,\N
 RAI,ita,IT
 RAI,jap,JP
+RAI,mex,\N
 RAI,nor,NO
 RAI,nze,NZ
 RAI,ola,\N
 RAI,rok,KR
+RAI,rt,\N
+RAI,rus,\N
 RAI,spa,ES
 RAI,sve,SE
 RAI,svi,CH
+RAI,taw,\N
 RAI,tha,TH
 RAI,uk,GB
 RAI,usa,US
+RAI,yv,\N
 SBSTV,-,\N
 SBSTV,amr,US
 SBSTV,austr,AU
+SBSTV,can,\N
 SBSTV,dansk,DK
 SBSTV,eng,GB
 SBSTV,fodbold,\N
+SBSTV,italiensk,\N
 SBSTV,norsk,NO
+SBSTV,spansk,\N
+SBSTV,svensk,\N
+SBSTV,tysk,\N
 SonyDE,australien,AU
 SonyDE,belgien,BE
 SonyDE,china,CN
+SonyDE,dänemark,\N
 SonyDE,deutschland,DE
 SonyDE,frankreich,FR
 SonyDE,"großbritannien",GB
@@ -269,9 +358,11 @@ SonyDE,mexiko,MX
 SonyDE,österreich,AT
 SonyDE,polen,PL
 SonyDE,spanien,ES
+SonyDE,südafrika,\N
 SonyDE,südkorea,KR
 SonyDE,ungarn,HU
 SonyDE,usa,US
+SRF,atlantik,\N
 SRF,australien,AU
 SRF,aut,AT
 SRF,belgien,BE
@@ -280,25 +371,36 @@ SRF,dänemark,DK
 SRF,"deutsche schweiz",CH
 SRF,deutschland,DE
 SRF,england,GB
+SRF,finnland,\N
 SRF,frankreich,FR
+SRF,"französische schweiz",\N
 SRF,griechenland,GR
 SRF,grossbritannien,GB
 SRF,holland,NL
+SRF,hongkong,\N
 SRF,iran,IR
 SRF,irland,IE
+SRF,israel,\N
 SRF,italien,IT
 SRF,japan,JP
 SRF,kanada,CA
 SRF,luxemburg,LU
 SRF,neuseeland,NZ
 SRF,niederlande,NL
+SRF,niger,\N
 SRF,"nord- und südpazifik",\N
+SRF,norwegen,\N
 SRF,oesterreich,AT
 SRF,österreich,AT
+SRF,rumänien,\N
+SRF,russland,\N
 SRF,schweden,SE
 SRF,schweiz,CH
+SRF,singapur,\N
+SRF,slowakei,\N
 SRF,spanien,ES
 SRF,türkei,TR
+SRF,ungarn,\N
 SRF,usa,US
 TV2NO,amerikansk,US
 TV2NO,australsk,AU
@@ -308,11 +410,13 @@ TV2NO,dansk,DK
 TV2NO,fransk,FR
 TV2NO,indisk,IN
 TV2NO,irsk,IE
+TV2NO,islandsk,\N
 TV2NO,italiensk,IT
 TV2NO,kanadisk,CA
 TV2NO,kinesisk,CN
 TV2NO,norsk,NO
 TV2NO,"not specified",\N
+TV2NO,polsk,\N
 TV2NO,spansk,ES
 TV2NO,svensk,SE
 TV2NO,tysk,DE
@@ -323,9 +427,11 @@ TVNorge,dansk,DK
 TVNorge,kanadisk,CA
 TVNorge,norsk,NO
 TVNorge,svensk,SE
+Viasat,ae,\N
 Viasat,at,AT
 Viasat,au,AU
 Viasat,be,BE
+Viasat,br,\N
 Viasat,ca,CA
 Viasat,ch,CH
 Viasat,cl,CL
@@ -336,6 +442,7 @@ Viasat,dk,DK
 Viasat,es,ES
 Viasat,fi,FI
 Viasat,fr,FR
+Viasat,ga,\N
 Viasat,hk,HK
 Viasat,hr,HR
 Viasat,hu,HU
@@ -346,11 +453,13 @@ Viasat,is,IS
 Viasat,it,IT
 Viasat,jp,JP
 Viasat,kr,KR
+Viasat,ma,\N
 Viasat,mx,MX
 Viasat,my,MY
 Viasat,nl,NL
 Viasat,no,NO
 Viasat,nz,NZ
+Viasat,pr,\N
 Viasat,ro,RO
 Viasat,ru,RU
 Viasat,se,SE
