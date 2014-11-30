@@ -456,17 +456,17 @@ sub ImportXML
             }
      	 }
 
-     	 my ( $season2 ) = ($description =~ /^(\d+). kausi./ ); # bugfix
+     	 my ( $season2 ) = ($description =~ /(\d+). kausi./ ); # bugfix
      	 if(defined($season2) and $season == 0) {
      	 	$season = $season2;
      	 }
 
-        my ( $season3 ) = ($description =~ /^(\d+). tuotantokausi./ ); # bugfix
+        my ( $season3 ) = ($description =~ /(\d+). tuotantokausi./ ); # bugfix
      	 if(defined($season3) and $season == 0) {
      	 	$season = $season3;
      	 }
 
-         my ( $episode2 ) = ($description =~ /^(\d+). jakso./ ); # bugfix
+         my ( $episode2 ) = ($description =~ /(\d+). jakso./ ); # bugfix
      	 if(defined($episode2) and $episode2 == 0) {
      	 	$episode = $episode2;
      	 }
