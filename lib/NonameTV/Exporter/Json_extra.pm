@@ -665,6 +665,10 @@ sub WriteEntry
   	$d->{original_title} = $entry->{original_title};
   }
 
+  $d->{image}->{poster} = $entry->{poster};
+  $d->{image}->{fanart} = $entry->{fanart};
+  $d->{external_ids} = $entry->{external_ids};
+
   push @{$data}, $d;
 }
 

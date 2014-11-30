@@ -509,7 +509,7 @@ sub CreateWriter
   my $w = new XMLTV::Writer( encoding => $self->{Encoding},
                              OUTPUT   => $fh );
   
-  $w->start({ 'generator-info-name' => 'nonametv' });
+  $w->start({ 'generator-info-name' => 'Taiga XMLTV', 'generator-info-url' => 'http://xmltv.se' });
     
   return $w;
 }
