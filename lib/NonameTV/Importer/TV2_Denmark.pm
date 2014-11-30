@@ -270,6 +270,18 @@ sub ImportContent
         $ce->{subtitle} = "The ".$ce->{subtitle};
     }
 
+    ## Images
+    my $images = $pgm->find( "./images/image" );
+
+    # Each
+    foreach my $ic ($images->get_nodelist)
+    {
+        # Fanart
+        if(not defined $ce->{fanart}) {
+            $ce->{fanart} = $ic->findvalue( 'url' );
+        }
+    }
+
     $ce->{directors} = undef if defined $ce->{directors} and $ce->{directors} =~ /^\(/; # Failure to parse
 
     $dsh->AddProgramme( $ce );
