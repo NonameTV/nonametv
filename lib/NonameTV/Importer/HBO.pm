@@ -208,6 +208,11 @@ sub ImportContent {
 
       $ce->{episode} = $episode if $episode;
 
+      # Image
+      if($prg->findvalue( 'thnImage' )) {
+        $ce->{fanart} = $prg->findvalue( 'thnImage' );
+      }
+
       $dsh->AddProgramme( $ce );
 
       progress( "HBO: $channel_xmltvid: $starttime - $ce->{title}" );

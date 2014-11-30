@@ -243,6 +243,11 @@ sub ImportContent
 
     $ce->{original_title} = norm($title_org) if $ce->{title} ne norm($title_org) and norm($title_org) ne "";
 
+    ## Image
+    if($sc->findvalue( './icon/@src' )) {
+        $ce->{poster} = $sc->findvalue( './icon/@src' );
+    }
+
     $ds->AddProgramme( $ce );
 
   }
