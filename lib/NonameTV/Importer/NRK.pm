@@ -75,6 +75,9 @@ sub ImportContent
         my $start = $sc->findvalue( './ANNTID' );
         $start =~ s/\./:/;
 
+        my $stop = $sc->findvalue( './SLUTTID' );
+        $stop =~ s/\./:/;
+
         my $title = $sc->findvalue( './SERIETITTEL' );
         my $subtitle = $sc->findvalue( './SENDETITTEL' );
         if ($title eq "") {
@@ -153,7 +156,7 @@ sub ImportContent
          
         my $ce = {
             start_time  => $start,
-            #end_time   => $stop,
+            end_time    => $stop,
             description => norm($desc),
             title       => norm($title),
         };
