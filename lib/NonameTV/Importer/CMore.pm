@@ -203,14 +203,9 @@ sub ImportContent
 #    my $premieredate = $sc->findvalue( './Program/@PremiereDate' );
 
     # program_type can be partially derived from this:
-    my $sport = $sc->findvalue( './Program/@Sport' );
-    my $series = $sc->findvalue( './Program/@Series' );
+    my $class = $sc->findvalue( './Program/@Class' );
     my $cate = $sc->findvalue( './Program/@Category' );
 
-    if( $series and ($series_title eq "") ) {
-#      w "Series without SeriesTitle: $title";
-    }
- 
     my $production_year = $sc->findvalue( './Program/@ProductionYear' );
     my $production_country = $sc->findvalue( './Program/@ProductionCountry' );
 
@@ -251,13 +246,6 @@ sub ImportContent
 	# Remove everything inside ()
 	$org_title =~ s/\(.*\)//g;
       $ce->{title} = norm($org_title) || norm($title);
-    }
-
-    $ce->{category} = 'Sports' if $sport;
-    $ce->{program_type} = "series" if $series;
-
-    if( (not $series) and (not $sport) ) {
-      $ce->{program_type} = 'movie';
     }
 
     my($program_type, $category ) = $ds->LookupCat( "CMore_genre", $genre );
@@ -304,6 +292,16 @@ sub ImportContent
     
     #$self->extract_extra_info( $ce );
 
+    # Program types
+    if($cate eq 'Film') {
+        $ce->{program_type} = 'movie';
+    } elsif($class eq "Sport" && $cate eq 'Game') {
+        $ce->{program_type} = 'sports';
+        $ce->{episode} = undef;
+    } else {
+        $ce->{program_type} = 'series';
+    }
+
     # Org title
     my $title_org = $sc->findvalue( './Program/@OriginalTitle' );
     if($ce->{program_type} eq 'series') {
@@ -322,6 +320,24 @@ sub ImportContent
     if(defined $ce->{original_title} and $ce->{original_title} =~ /, A$/i) {
         $ce->{original_title} =~ s/, A$//i;
         $ce->{original_title} = norm("A ".$ce->{original_title});
+    }
+
+    # No sports image as CMore told us we can't include those
+    if($class ne "Sport" && $cate ne 'Game')
+    {
+      # Find all "Schedule"-entries.
+      my $images = $sc->find( "./Program/Resources/Image" );
+
+      # Each
+      foreach my $ic ($images->get_nodelist)
+      {
+        # Cover / Poster
+        if($ic->findvalue( './@Category' ) eq 'Cover') {
+            $ce->{poster} = 'http://cdn01.img.cmore.se/' . $ic->findvalue( './@Id' ) . '/8.img';
+        } elsif($ic->findvalue( './@Category' ) eq 'Primary') {
+            $ce->{fanart} = 'http://cdn01.img.cmore.se/' . $ic->findvalue( './@Id' ) . '/8.img';
+        }
+      }
     }
 
     $ds->AddProgramme( $ce );
