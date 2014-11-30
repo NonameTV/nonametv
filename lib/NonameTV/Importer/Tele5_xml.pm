@@ -250,7 +250,7 @@ sub ImportContentFile
 
         #print Dumper($ce);
 
-        $ce->{description} = norm($desc) if $desc and $desc ne "";
+        #$ce->{description} = norm($desc) if $desc and $desc ne "";
 
         $ds->AddProgrammeRaw( $ce );
 
