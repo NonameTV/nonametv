@@ -305,7 +305,7 @@ sub guess_channel
     return "foxtv.se"       if $filename =~ /^fox\s+sweden/i and $filename =~ /\.xml$/i;
 
     # H2
-    if($filename =~ /h2\s+europe/i and $filename =~ /\.doc$/i) {
+    if($filename =~ /h2\s+europe/i and $filename =~ /\.xml$/i) {
         return "h2.historytv.se"  if $filename =~ /swe/i;
         return "h2.historytv.no"  if $filename =~ /nor/i;
         return "h2.historytv.dk"  if $filename =~ /dan/i;
@@ -570,15 +570,19 @@ if( $dir =~ /FOX/ and $filename =~ /\.xml$/i ) {
     }
  }
 
- if( $dir =~ /DMB/ and $filename =~ /\.xml$/i ) {
+ if( $dir =~ /DMB/ ) {
     # Sony Entertainment TV, Gmbh.
-    return "axntv.de" if $filename =~ /^AXN-/i;
-    return "animax.tv" if $filename =~ /^AAX-/i;
-    return "sonyentertainment.tv" if $filename =~ /^SEN-/i;
+    if($filename =~ /\.xml$/i or $filename =~ /\.xls$/i) {
+        return "axntv.de" if $filename =~ /^AXN-/i;
+        return "animax.tv" if $filename =~ /^AAX-/i;
+        return "sonyentertainment.tv" if $filename =~ /^SEN-/i;
+    }
 
     # ITV
-    return "familytv.de" if $filename =~ /^FamilyTV_/i;
-    return "dasneue.tv" if $filename =~ /^DasNeueTV_/i;
+    if($filename =~ /\.xml$/i) {
+        return "familytv.de" if $filename =~ /^FamilyTV_/i;
+        return "dasneue.tv" if $filename =~ /^DasNeueTV_/i;
+    }
  }
 
  if( $dir =~ /PPS/ ) {
