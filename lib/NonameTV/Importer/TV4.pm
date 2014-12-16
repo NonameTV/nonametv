@@ -156,7 +156,8 @@ sub ImportContent
   
   foreach my $pgm ($ns->get_nodelist)
   {
-    my $starttime = $pgm->findvalue( 'transmissiontime' );
+    my $start = $self->create_dt($pgm->findvalue( 'transmissiontime' ));
+    my $starttime = $start->hms();
     my $title =$pgm->findvalue( 'title' );
     my $title_org = $pgm->findvalue( 'originaltitle' );
     my $desc = $pgm->findvalue( 'description' );
@@ -292,6 +293,14 @@ sub ImportContent
     } elsif($ce->{title} =~ /^(Handboll|Fotboll|Hockey|Ishockey|Innebandy|Simning)\:/i or $ce->{title} =~ /^(Handboll|Fotboll|Hockey|Ishockey|Innebandy|Simning|UFC)$/i)
     {
         $ce->{program_type} = "sports";
+    }
+
+    # Images
+    my $imgs = $pgm->find( './/item' );
+    foreach my $item ($imgs->get_nodelist)
+    {
+        $ce->{fanart} = $item->to_literal;
+        #print "IMG:" .$item->to_literal;
     }
 
     $ce->{title} =~ s/\:$//;
@@ -450,6 +459,36 @@ sub extract_episode
   # remove original title
   delete $ce->{title_org};
   
+}
+
+sub create_dt ( $ )
+{
+  my $self = shift;
+  my ($timestamp, $date) = @_;
+
+  if( $timestamp ){
+    # 2011-11-12T20:15:00+01:00
+    my ($year, $month, $day, $hour, $minute, $second, $tz_hour, $tz_minute) = ($timestamp =~ m/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\+(\d{2}):(\d{2})/);
+    if( !defined( $year )|| !defined( $hour ) || ($month < 1) ){
+      w( "could not parse timestamp: $timestamp" );
+      return undef;
+    }
+
+    my $dt = DateTime->new (
+      year      => $year,
+      month     => $month,
+      day       => $day,
+      hour      => $hour,
+      minute    => $minute,
+      time_zone => 'Europe/Stockholm'
+    );
+    #$dt->set_time_zone( 'UTC' );
+
+    return( $dt );
+
+  } else {
+    return undef;
+  }
 }
 
 1;
