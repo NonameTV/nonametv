@@ -13,15 +13,19 @@ The downloaded file is in xml-format.
 
 use DateTime;
 use XML::LibXML;
-use HTTP::Date;
+use IO::Scalar;
 use Data::Dumper;
+use Text::Unidecode;
+use File::Slurp;
+use Encode;
 
 use NonameTV qw/ParseXml norm AddCountry AddCategory/;
+use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/w progress error f/;
 
-use NonameTV::Importer::BaseMonthly;
+use NonameTV::Importer::BaseFile;
 
-use base 'NonameTV::Importer::BaseMonthly';
+use base 'NonameTV::Importer::BaseFile';
 
 sub new {
     my $proto = shift;
@@ -29,90 +33,48 @@ sub new {
     my $self = $class->SUPER::new( @_ );
     bless ($self, $class);
 
+    my $dsh = NonameTV::DataStore::Helper->new( $self->{datastore} );
+    $self->{datastorehelper} = $dsh;
 
-    $self->{MinMonths} = 0 unless defined $self->{MinMonths};
-    $self->{MaxMonths} = 2 unless defined $self->{MaxMonths};
-
-    defined( $self->{UrlRoot} ) or die "You must specify UrlRoot";
-    
     $self->{datastore}->{augment} = 1;
 
     return $self;
 }
 
-sub Object2Url {
+sub ImportContentFile {
   my $self = shift;
-  my( $objectname, $chd ) = @_;
+  my( $file, $chd ) = @_;
 
-  my( $year, $month ) = ( $objectname =~ /(\d+)-(\d+)$/ );
+  $self->{fileerror} = 0;
 
-  my $url = $self->{UrlRoot} .
-    $chd->{grabber_info} . '/' . $year . '/' . $month;
-
-  return( $url, undef );
-}
-
-sub ApproveContent {
-  my $self = shift;
-  my( $cref, $callbackdata ) = @_;
-
-  if( $$cref =~ '<!--' ) {
-    return "404 not found";
-  }
-  else {
-    return undef;
-  }
-}
-
-sub FilterContent {
-  my $self = shift;
-  my( $cref, $chd ) = @_;
-
-  my( $chid ) = ($chd->{grabber_info} =~ /^(\d+)/);
-
-  my $doc;
-  $doc = ParseXml( $cref );
-
-  if( not defined $doc ) {
-    return (undef, "ParseXml failed" );
+  my $channel_id = $chd->{id};
+  my $channel_xmltvid = $chd->{xmltvid};
+  my $dsh = $self->{datastorehelper};
+  my $ds = $self->{datastore};
+  if( $file =~ /\.xml$/i ){
+    $self->ImportXML( $file, $chd );
   }
 
-  # Find all "Schedule"-entries.
-  my $ns = $doc->find( "//rs:data" );
-
-  if( $ns->size() == 0 ) {
-    return (undef, "No data found" );
-  }
-
-  my $str = $doc->toString( 1 );
-
-  return( \$str, undef );
+  return;
 }
 
-sub ContentExtension {
-  return 'xml';
-}
-
-sub FilteredExtension {
-  return 'xml';
-}
-
-sub ImportContent
+sub ImportXML
 {
   my $self = shift;
-
-  my( $batch_id, $cref, $chd ) = @_;
+  my( $file, $chd ) = @_;
 
   my $ds = $self->{datastore};
   $ds->{SILENCE_END_START_OVERLAP}=1;
   $ds->{SILENCE_DUPLICATE_SKIP}=1;
+
+  progress( "Nonstop: $chd->{xmltvid}: Processing XML $file" );
  
-  my $xml = XML::LibXML->new;
   my $doc;
-  eval { $doc = $xml->parse_string($$cref); };
+  my $xml = XML::LibXML->new;
+  eval { $doc = $xml->parse_file($file); };
   if( $@ ne "" )
   {
-    f "Failed to parse $@";
+    error( "Nonstop: $file: Failed to parse xml" );
     return 0;
   }
   
@@ -121,7 +83,7 @@ sub ImportContent
 
   if( $ns->size() == 0 )
   {
-    f "No data found 2";
+    error( "Nonstop: $file: No data found." );
     return 0;
   }
   
