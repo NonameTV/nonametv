@@ -125,15 +125,22 @@ $data =~ s| xmlns="urn:crystal-reports:schemas:report-detail"||;
 
         $title =~ s/1st hr//gi;
         $title =~ s/2nd & 3rd hr//gi;
+        $title =~ s/\#(\d+) Hour(s|)//gi;
+        $title =~ s/\((\d+) Part(|s)\)//gi;
         $title =~ s/2nd hr//gi;
         $title =~ s/3rd hr//gi;
         $title =~ s/1st hour//gi;
+        $title =~ s/1 hour//gi;
+        $title =~ s/Series (\d+)//gi;
         $title =~ s/2nd hour//gi;
         $title =~ s/3rd hour//gi;
-        $title =~ s/#(\d+) min//gi;
+        $title =~ s/\#(\d+) min//gi;
+        $title =~ s/\#(\d+)min//gi;
+        $title =~ s/\#(\d+)//gi;
         $title =~ s/\(UNSPONSORED\)//gi;
         $title =~ s/\(f\)//gi;
         $title =~ s/\(g\)//gi;
+        $title =~ s/^L\-//gi;
 
         $title = norm($title);
 
