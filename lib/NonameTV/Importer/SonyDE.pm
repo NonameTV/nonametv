@@ -21,6 +21,13 @@ use Text::Unidecode;
 use File::Slurp;
 use Encode;
 
+use Spreadsheet::XLSX;
+use Spreadsheet::XLSX::Utility2007 qw(ExcelFmt ExcelLocaltime LocaltimeExcel);
+use Spreadsheet::Read;
+
+use Text::Iconv;
+my $converter = Text::Iconv -> new ("utf-8", "windows-1251");
+
 use NonameTV qw/ParseXml norm normLatin1 normUtf8 AddCategory MonthNumber AddCountry/;
 use NonameTV::DataStore::Helper;
 use NonameTV::Log qw/progress error/;
@@ -60,8 +67,10 @@ sub ImportContentFile {
   my $dsh = $self->{datastorehelper};
   my $ds = $self->{datastore};
 
-  if( $file =~ /\.xml$/i ){
+  if( $file =~ /\.xml$/i ) {
     $self->ImportXML( $file, $chd );
+  } elsif( $file =~ /\.xls$/i ){
+    $self->ImportXLS( $file, $chd );
   }
 
   return;
@@ -188,6 +197,110 @@ sub ImportXML
   return 1;
 }
 
+sub ImportXLS
+{
+  my $self = shift;
+  my( $file, $chd ) = @_;
+
+  my $dsh = $self->{datastorehelper};
+  my $ds = $self->{datastore};
+
+  my %columns = ();
+  my $date;
+  my $currdate = "x";
+  my $oBook;
+
+  if ( $file =~ /\.xlsx$/i ){ progress( "using .xlsx" );  $oBook = Spreadsheet::XLSX -> new ($file, $converter); }
+  else { $oBook = Spreadsheet::ParseExcel::Workbook->Parse( $file );  }
+
+  # fields
+  my $num_date = 0;
+  my $num_time = 1;
+  my $num_title_org = 4;
+  my $num_title = 3;
+  my $num_type = 5;
+  my $num_genre = 9;
+  my $num_subtitle = 12;
+  my $num_episode = 13;
+  my $num_directors = 8;
+  my $num_actors = 7;
+  my $num_prodyear = 11;
+  my $num_country = 10;
+  my $num_desc = 6;
+
+  # main loop
+  #for(my $iSheet=0; $iSheet < $oBook->{SheetCount} ; $iSheet++) {
+  foreach my $oWkS (@{$oBook->{Worksheet}}) {
+
+    #my $oWkS = $oBook->{Worksheet}[$iSheet];
+    progress( "SonyDE: $chd->{xmltvid}: Processing worksheet: $oWkS->{Name}" );
+
+    # browse through rows
+    for(my $iR = 2 ; defined $oWkS->{MaxRow} && $iR <= $oWkS->{MaxRow} ; $iR++) {
+      # date - column 0 ('Date')
+      my $oWkC = $oWkS->{Cells}[$iR][$num_date];
+      next if( ! $oWkC );
+      next if( ! $oWkC->Value );
+      $date = ParseDate( $oWkC->Value );
+      next if( ! $date );
+
+	  # Startdate
+      if( $date ne $currdate ) {
+      	if( $currdate ne "x" ) {
+			# save last day if we have it in memory
+		#	FlushDayData( $channel_xmltvid, $dsh , @ces );
+			$dsh->EndBatch( 1 );
+        }
+
+      	my $batchid = $chd->{xmltvid} . "_" . $date;
+        $dsh->StartBatch( $batchid , $chd->{id} );
+        progress("SonyDE: $chd->{xmltvid}: Date is $date");
+        $dsh->StartDate( $date , "00:00" );
+        $currdate = $date;
+      }
+
+	  # time
+	  $oWkC = $oWkS->{Cells}[$iR][$num_time];
+      next if( ! $oWkC );
+      my $time = ParseTime($oWkC->Value) if( $oWkC->Value );
+
+      # title
+      $oWkC = $oWkS->{Cells}[$iR][$num_title];
+      next if( ! $oWkC );
+      my $title = $oWkC->Value if( $oWkC->Value );
+
+	  # extra info
+	  my $desc = $oWkS->{Cells}[$iR][$num_desc]->Value if $oWkS->{Cells}[$iR][$num_desc];
+	  my $year = $oWkS->{Cells}[$iR][$num_prodyear]->Value if defined($columns{'Year'}) and $oWkS->{Cells}[$iR][$num_prodyear];
+
+      progress("SonyDE: $chd->{xmltvid}: $time - $title");
+
+      my $ce = {
+        channel_id => $chd->{channel_id},
+        title => norm( $title ),
+        start_time => $time,
+        description => norm( $desc ),
+      };
+
+
+      my $genre = $oWkS->{Cells}[$iR][$num_genre]->Value;
+      my ($program_type, $category ) = $ds->LookupCat( "SonyDE_genre", norm($genre) );
+	  AddCategory( $ce, $program_type, $category );
+
+      my $type = $oWkS->{Cells}[$iR][$num_type]->Value;
+      my ($program_type2, $category2 ) = $ds->LookupCat( "SonyDE_type", norm($type) );
+	  AddCategory( $ce, $program_type2, $category2 );
+
+      $dsh->AddProgramme( $ce );
+
+    } # next row
+  } # next worksheet
+
+	$dsh->EndBatch( 1 );
+
+  return 1;
+}
+
 # call with sce, target field, sendung element, xpath expression
 # e.g. ParseCredits( \%sce, 'actors', $sc, './programm//besetzung/darsteller' );
 # e.g. ParseCredits( \%sce, 'writers', $sc, './programm//stab/person[funktion=buch]' );
@@ -224,6 +337,37 @@ sub AddCredits
       $ce->{$field} = join( ';', @people );
     }
   }
+}
+
+sub ParseDate {
+  my( $text ) = @_;
+
+  my( $month, $day, $year );
+
+  if( $text =~ /^\d+-\d+-\d+$/ ) { # format '2011-07-01'
+    ( $year, $month, $day ) = ( $text =~ /^(\d+)-(\d+)-(\d+)$/ );
+  } elsif( $text =~ /^\d+\/\d+\/\d+$/ ) { # format '01/11/2008'
+    ( $day, $month, $year ) = ( $text =~ /^(\d+)\/(\d+)\/(\d+)$/ );
+  }
+
+  if(not defined($year)) {
+    return undef;
+  }
+
+  $year += 2000 if $year < 100;
+
+  return sprintf( '%d-%02d-%02d', $year, $month, $day );
+}
+
+sub ParseTime
+{
+  my ( $text ) = @_;
+
+  my( $hour, $min ) = ( $text =~ /^(\d+):(\d+)/ );
+
+  #return undef if( ! $hour or ! $min );
+
+  return sprintf( "%02d:%02d", $hour, $min );
 }
 
 1;
