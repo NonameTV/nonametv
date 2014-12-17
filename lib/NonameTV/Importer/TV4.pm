@@ -290,7 +290,7 @@ sub ImportContent
     if( scalar( @directors ) > 0 and !defined($ce->{episode}) and scalar( @actors ) > 0 )
     {
         $ce->{program_type} = "movie";
-    } elsif($ce->{title} =~ /^(Handboll|Fotboll|Hockey|Ishockey|Innebandy|Simning)\:/i or $ce->{title} =~ /^(Handboll|Fotboll|Hockey|Ishockey|Innebandy|Simning|UFC)$/i)
+    } elsif($ce->{title} =~ /^(Handboll|Fotboll|Hockey|Ishockey|Innebandy|Simning|(.*)\-EM)\:/i or $ce->{title} =~ /^(Handboll|Fotboll|Hockey|Ishockey|Innebandy|Simning|UFC|(.*)\-EM)$/i)
     {
         $ce->{program_type} = "sports";
     }
