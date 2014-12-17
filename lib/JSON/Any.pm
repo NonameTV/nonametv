@@ -1,16 +1,14 @@
 package JSON::Any;
-{
-  $JSON::Any::VERSION = '1.30';
-}
-{
-  $JSON::Any::VERSION = '1.30';
-}
+# git description: v1.37-1-g15d51fd
+$JSON::Any::VERSION = '1.38';
 
 use warnings;
 use strict;
 use Carp qw(croak carp);
+use namespace::clean;
 
-# ABSTRACT: Wrapper Class for the various JSON classes.
+# ABSTRACT: Wrapper Class for the various JSON classes (DEPRECATED)
+# KEYWORDS: json serialization serialisation wrapper abstraction
 
 our $UTF8;
 
@@ -217,6 +215,11 @@ BEGIN {
     $conf{cpanel_json_xs} = { %{ $conf{json_xs_2} } };
     $conf{cpanel_json_xs}{get_true}  = sub { return Cpanel::JSON::XS::true(); };
     $conf{cpanel_json_xs}{get_false} = sub { return Cpanel::JSON::XS::false(); };
+
+    # JSON::XS 3 is almost the same as JSON::XS 2
+    $conf{json_xs_3} = { %{ $conf{json_xs_2} } };
+    $conf{json_xs_3}{get_true}  = sub { return Types::Serialiser::true(); };
+    $conf{json_xs_3}{get_false} = sub { return Types::Serialiser::false(); };
 }
 
 sub _make_key {
@@ -244,10 +247,10 @@ sub _try_loading {
     ( $handler, $encoder, $decoder ) = ();
     foreach my $mod (@order) {
         my $testmod = _module_name($mod);
-        eval "require $testmod";
-        unless ($@) {
+        if (eval "require $testmod; 1") {
             $handler = $testmod;
             my $key = _make_key($handler);
+            next unless exists $conf{$key};
             $encoder = $conf{$key}->{encoder};
             $decoder = $conf{$key}->{decoder};
             last;
@@ -268,10 +271,10 @@ sub import {
     if (@order) {
         ( $handler, $encoder, $decoder ) = _try_loading(@order);
         if ( $handler && grep { "JSON::$_" eq $handler } @deprecated ) {
-            my $last = pop @default;
+            my @upgrade_to = grep { my $mod = $_; !grep { $mod eq $_ } @deprecated } @order;
+            @upgrade_to = @default if not @upgrade_to;
             carp "Found deprecated package $handler. Please upgrade to ",
-              join ', ' => @default,
-              "or $last";
+                _module_name_list(@upgrade_to);
         }
     }
     else {
@@ -279,45 +282,212 @@ sub import {
         unless ($handler) {
             ( $handler, $encoder, $decoder ) = _try_loading(@deprecated);
             if ($handler) {
-                my $last = pop @default;
                 carp "Found deprecated package $handler. Please upgrade to ",
-                  join ', ' => @default,
-                  "or $last";
+                  _module_name_list(@default);
             }
         }
     }
+
     unless ($handler) {
-        my $last = pop @default;
-        croak "Couldn't find a JSON package. Need ", join ', ' => @default,
-          "or $last";
+        croak "Couldn't find a JSON package. Need ", _module_name_list(@order ? @order : @default);
     }
-    croak "Couldn't find a decoder method." unless $decoder;
-    croak "Couldn't find a encoder method." unless $encoder;
+    croak "Couldn't find a working decoder method (but found handler $handler ", $handler->VERSION, ")." unless $decoder;
+    croak "Couldn't find a working encoder method (but found handler $handler ", $handler->VERSION, ")." unless $encoder;
 }
 
+sub _module_name_list {
+    my @list = map { _module_name($_) } @_;
+    my $last = pop @list;
+    return (@list
+        ? (join(', ' => @list), " or $last")
+        : $last
+    );
+}
+
+#pod =head1 SYNOPSIS
+#pod
+#pod     use JSON::Any;
+#pod     my $j = JSON::Any->new;
+#pod     my $json = $j->objToJson({foo=>'bar', baz=>'quux'});
+#pod     my $obj = $j->jsonToObj($json);
+#pod
+#pod =head1 DEPRECATION NOTICE
+#pod
+#pod The original need for L<JSON::Any> has been solved (quite some time ago
+#pod actually). If you're producing new code it is recommended to use L<JSON::MaybeXS> which
+#pod will optionally use L<Cpanel::JSON::XS> for speed purposes.
+#pod
+#pod JSON::Any will continue to be maintained for compatibility with existing code,
+#pod but for new code you should strongly consider using L<JSON::MaybeXS> instead.
+#pod
+#pod =head1 DESCRIPTION
+#pod
+#pod This module tries to provide a coherent API to bring together the various JSON
+#pod modules currently on CPAN. This module will allow you to code to any JSON API
+#pod and have it work regardless of which JSON module is actually installed.
+#pod
+#pod     use JSON::Any;
+#pod
+#pod     my $j = JSON::Any->new;
+#pod
+#pod     $json = $j->objToJson({foo=>'bar', baz=>'quux'});
+#pod     $obj = $j->jsonToObj($json);
+#pod
+#pod or
+#pod
+#pod     $json = $j->encode({foo=>'bar', baz=>'quux'});
+#pod     $obj = $j->decode($json);
+#pod
+#pod or
+#pod
+#pod     $json = $j->Dump({foo=>'bar', baz=>'quux'});
+#pod     $obj = $j->Load($json);
+#pod
+#pod or
+#pod
+#pod     $json = $j->to_json({foo=>'bar', baz=>'quux'});
+#pod     $obj = $j->from_json($json);
+#pod
+#pod or without creating an object:
+#pod
+#pod     $json = JSON::Any->objToJson({foo=>'bar', baz=>'quux'});
+#pod     $obj = JSON::Any->jsonToObj($json);
+#pod
+#pod On load, JSON::Any will find a valid JSON module in your @INC by looking
+#pod for them in this order:
+#pod
+#pod     Cpanel::JSON::XS
+#pod     JSON::XS
+#pod     JSON::PP
+#pod     JSON
+#pod     JSON::DWIW
+#pod
+#pod And loading the first one it finds.
+#pod
+#pod You may change the order by specifying it on the C<use JSON::Any> line:
+#pod
+#pod     use JSON::Any qw(DWIW XS CPANEL JSON PP);
+#pod
+#pod Specifying an order that is missing modules will prevent those module from
+#pod being used:
+#pod
+#pod     use JSON::Any qw(CPANEL PP); # same as JSON::MaybeXS
+#pod
+#pod This will check in that order, and will never attempt to load L<JSON::XS>,
+#pod L<JSON.pm/JSON>, or L<JSON::DWIW>. This can also be set via the C<$ENV{JSON_ANY_ORDER}>
+#pod environment variable.
+#pod
+#pod L<JSON::Syck> has been deprecated by its author, but in the attempt to still
+#pod stay relevant as a "Compatibility Layer" JSON::Any still supports it. This support
+#pod however has been made optional starting with JSON::Any 1.19. In deference to a
+#pod bug request starting with L<JSON.pm|JSON> 1.20, L<JSON::Syck> and other deprecated modules
+#pod will still be installed, but only as a last resort and will now include a
+#pod warning.
+#pod
+#pod     use JSON::Any qw(Syck XS JSON);
+#pod
+#pod or
+#pod
+#pod     $ENV{JSON_ANY_ORDER} = 'Syck XS JSON';
+#pod
+#pod At install time, JSON::Any will attempt to install L<JSON::PP> as a reasonable
+#pod fallback if you do not appear have B<any> backends installed on your system.
+#pod
+#pod WARNING: If you call JSON::Any with an empty list
+#pod
+#pod     use JSON::Any ();
+#pod
+#pod It will skip the JSON package detection routines and will die loudly that it
+#pod couldn't find a package.
+#pod
+#pod =head1 WARNING
+#pod
+#pod L<JSON::XS> 3.0 or higher has a conflict with any version of L<JSON.pm|JSON> less than 2.90
+#pod when you use L<JSON.pm|JSON>'s C<-support_by_pp> option, which JSON::Any enables by
+#pod default.
+#pod
+#pod This situation should only come up with JSON::Any if you have L<JSON.pm|JSON> 2.61 or
+#pod lower B<and> L<JSON::XS> 3.0 or higher installed, and you use L<JSON.pm|JSON>
+#pod via C<< use JSON::Any qw(JSON); >> or the C<JSON_ANY_ORDER> environment variable.
+#pod
+#pod If you run into an issue where you're getting recursive inheritance errors in a
+#pod L<Types::Serialiser> package, please try upgrading L<JSON.pm|JSON> to 2.90 or higher.
+#pod
+#pod =head1 METHODS
+#pod
+#pod =over
+#pod
+#pod =item C<new>
+#pod
+#pod =for :stopwords recognised unicode
+#pod
+#pod Will take any of the parameters for the underlying system and pass them
+#pod through. However these values don't map between JSON modules, so, from a
+#pod portability standpoint this is really only helpful for those parameters that
+#pod happen to have the same name.
+#pod
+#pod The one parameter that is universally supported (to the extent that is
+#pod supported by the underlying JSON modules) is C<utf8>. When this parameter is
+#pod enabled all resulting JSON will be marked as unicode, and all unicode strings
+#pod in the input data structure will be preserved as such.
+#pod
+#pod Also note that the C<allow_blessed> parameter is recognised by all the modules
+#pod that throw exceptions when a blessed reference is given them meaning that
+#pod setting it to true works for all modules. Of course, that means that you
+#pod cannot set it to false intentionally in order to always get such exceptions.
+#pod
+#pod The actual output will vary, for example L<JSON> will encode and decode
+#pod unicode chars (the resulting JSON is not unicode) whereas L<JSON::XS> will emit
+#pod unicode JSON.
+#pod
+#pod =back
+#pod
+#pod =cut
 
 sub new {
     my $class = shift;
     my $self  = bless [], $class;
     my $key   = _make_key($handler);
     if ( my $creator = $conf{$key}->{create_object} ) {
-        my @config = @_;
+        my @config;
+        # undocumented! and yet, people are using this...
         if ( $ENV{JSON_ANY_CONFIG} ) {
             push @config, map { split /=/, $_ } split /,\s*/,
               $ENV{JSON_ANY_CONFIG};
         }
+        push @config, @_;
         $creator->( $self, my $conf = {@config} );
         $self->[UTF8] = $conf->{utf8};
     }
     return $self;
 }
 
+#pod =over
+#pod
+#pod =item C<handlerType>
+#pod
+#pod Takes no arguments, returns a string indicating which JSON Module is in use.
+#pod
+#pod =back
+#pod
+#pod =cut
 
 sub handlerType {
     my $class = shift;
     $handler;
 }
 
+#pod =over
+#pod
+#pod =item C<handler>
+#pod
+#pod Takes no arguments, if called on an object returns the internal JSON::*
+#pod object in use.  Otherwise returns the JSON::* package we are using for
+#pod class methods.
+#pod
+#pod =back
+#pod
+#pod =cut
 
 sub handler {
     my $self = shift;
@@ -327,18 +497,48 @@ sub handler {
     return $handler;
 }
 
+#pod =over
+#pod
+#pod =item C<true>
+#pod
+#pod Takes no arguments, returns the special value that the internal JSON
+#pod object uses to map to a JSON C<true> boolean.
+#pod
+#pod =back
+#pod
+#pod =cut
 
 sub true {
     my $key = _make_key($handler);
     return $conf{$key}->{get_true}->();
 }
 
+#pod =over
+#pod
+#pod =item C<false>
+#pod
+#pod Takes no arguments, returns the special value that the internal JSON
+#pod object uses to map to a JSON C<false> boolean.
+#pod
+#pod =back
+#pod
+#pod =cut
 
 sub false {
     my $key = _make_key($handler);
     return $conf{$key}->{get_false}->();
 }
 
+#pod =over
+#pod
+#pod =item C<objToJson>
+#pod
+#pod Takes a single argument, a hashref to be converted into JSON.
+#pod It returns the JSON text in a scalar.
+#pod
+#pod =back
+#pod
+#pod =cut
 
 sub objToJson {
     my $self = shift;
@@ -371,11 +571,35 @@ sub objToJson {
     return $json;
 }
 
+#pod =over
+#pod
+#pod =item C<to_json>
+#pod
+#pod =item C<Dump>
+#pod
+#pod =item C<encode>
+#pod
+#pod Aliases for C<objToJson>, can be used interchangeably, regardless of the
+#pod underlying JSON module.
+#pod
+#pod =back
+#pod
+#pod =cut
 
 *to_json = \&objToJson;
 *Dump    = \&objToJson;
 *encode  = \&objToJson;
 
+#pod =over
+#pod
+#pod =item C<jsonToObj>
+#pod
+#pod Takes a single argument, a string of JSON text to be converted
+#pod back into a hashref.
+#pod
+#pod =back
+#pod
+#pod =cut
 
 sub jsonToObj {
     my $self = shift;
@@ -403,6 +627,20 @@ sub jsonToObj {
     $handler->can($decoder)->($obj);
 }
 
+#pod =over
+#pod
+#pod =item C<from_json>
+#pod
+#pod =item C<Load>
+#pod
+#pod =item C<decode>
+#pod
+#pod Aliases for C<jsonToObj>, can be used interchangeably, regardless of the
+#pod underlying JSON module.
+#pod
+#pod =back
+#pod
+#pod =cut
 
 *from_json = \&jsonToObj;
 *Load      = \&jsonToObj;
@@ -414,83 +652,95 @@ __END__
 
 =pod
 
+=encoding UTF-8
+
 =head1 NAME
 
-JSON::Any - Wrapper Class for the various JSON classes.
+JSON::Any - Wrapper Class for the various JSON classes (DEPRECATED)
 
 =head1 VERSION
 
-version 1.30
+version 1.38
 
 =head1 SYNOPSIS
+
+    use JSON::Any;
+    my $j = JSON::Any->new;
+    my $json = $j->objToJson({foo=>'bar', baz=>'quux'});
+    my $obj = $j->jsonToObj($json);
+
+=head1 DESCRIPTION
 
 This module tries to provide a coherent API to bring together the various JSON
 modules currently on CPAN. This module will allow you to code to any JSON API
 and have it work regardless of which JSON module is actually installed.
 
-	use JSON::Any;
+    use JSON::Any;
 
-	my $j = JSON::Any->new;
+    my $j = JSON::Any->new;
 
-	$json = $j->objToJson({foo=>'bar', baz=>'quux'});
-	$obj = $j->jsonToObj($json);
-
-or
-
-	$json = $j->encode({foo=>'bar', baz=>'quux'});
-	$obj = $j->decode($json);
+    $json = $j->objToJson({foo=>'bar', baz=>'quux'});
+    $obj = $j->jsonToObj($json);
 
 or
 
-	$json = $j->Dump({foo=>'bar', baz=>'quux'});
-	$obj = $j->Load($json);
+    $json = $j->encode({foo=>'bar', baz=>'quux'});
+    $obj = $j->decode($json);
 
 or
 
-	$json = $j->to_json({foo=>'bar', baz=>'quux'});
-	$obj = $j->from_json($json);
+    $json = $j->Dump({foo=>'bar', baz=>'quux'});
+    $obj = $j->Load($json);
+
+or
+
+    $json = $j->to_json({foo=>'bar', baz=>'quux'});
+    $obj = $j->from_json($json);
 
 or without creating an object:
 
-	$json = JSON::Any->objToJson({foo=>'bar', baz=>'quux'});
-	$obj = JSON::Any->jsonToObj($json);
+    $json = JSON::Any->objToJson({foo=>'bar', baz=>'quux'});
+    $obj = JSON::Any->jsonToObj($json);
 
-On load, JSON::Any will find a valid JSON module in your @INC by looking 
+On load, JSON::Any will find a valid JSON module in your @INC by looking
 for them in this order:
 
     Cpanel::JSON::XS
-	JSON::XS 
+    JSON::XS
     JSON::PP
-	JSON 
-	JSON::DWIW 
+    JSON
+    JSON::DWIW
 
 And loading the first one it finds.
 
 You may change the order by specifying it on the C<use JSON::Any> line:
 
-	use JSON::Any qw(DWIW XS CPANEL JSON PP);
+    use JSON::Any qw(DWIW XS CPANEL JSON PP);
 
-Specifying an order that is missing modules will prevent those module from 
+Specifying an order that is missing modules will prevent those module from
 being used:
 
-	use JSON::Any qw(CPANEL PP); # same as JSON::MaybeXS
+    use JSON::Any qw(CPANEL PP); # same as JSON::MaybeXS
 
-This will check in that order, and will never attempt to load JSON::XS, 
-JSON.pm, or JSON::DWIW. This can also be set via the $ENV{JSON_ANY_ORDER} 
+This will check in that order, and will never attempt to load L<JSON::XS>,
+L<JSON.pm/JSON>, or L<JSON::DWIW>. This can also be set via the C<$ENV{JSON_ANY_ORDER}>
 environment variable.
 
-JSON::Syck has been deprecated by it's author, but in the attempt to still
-stay relevant as a "Compat Layer" JSON::Any still supports it. This support
+L<JSON::Syck> has been deprecated by its author, but in the attempt to still
+stay relevant as a "Compatibility Layer" JSON::Any still supports it. This support
 however has been made optional starting with JSON::Any 1.19. In deference to a
-bug request starting with JSON 1.20 JSON::Syck and other deprecated modules
+bug request starting with L<JSON.pm|JSON> 1.20, L<JSON::Syck> and other deprecated modules
 will still be installed, but only as a last resort and will now include a
-warning. 
+warning.
 
-    use JSON::Any qw(Syck XS JSON); 
+    use JSON::Any qw(Syck XS JSON);
 
-or 
+or
 
     $ENV{JSON_ANY_ORDER} = 'Syck XS JSON';
+
+At install time, JSON::Any will attempt to install L<JSON::PP> as a reasonable
+fallback if you do not appear have B<any> backends installed on your system.
 
 WARNING: If you call JSON::Any with an empty list
 
@@ -499,22 +749,27 @@ WARNING: If you call JSON::Any with an empty list
 It will skip the JSON package detection routines and will die loudly that it
 couldn't find a package.
 
-=head1 NAME 
+=head1 DEPRECATION NOTICE
 
-JSON::Any
-
-=head1 VERSION
-
-version 1.30
-
-=head1 DEPRECATION
-
-The original need for JSON::Any has been solved (quite some time ago
-actually). If you're producing new code it is recommended to use JSON.pm which
-will optionally use JSON::XS for speed purposes.
+The original need for L<JSON::Any> has been solved (quite some time ago
+actually). If you're producing new code it is recommended to use L<JSON::MaybeXS> which
+will optionally use L<Cpanel::JSON::XS> for speed purposes.
 
 JSON::Any will continue to be maintained for compatibility with existing code,
-and frankly because the maintainer prefers the JSON::Any API.
+but for new code you should strongly consider using L<JSON::MaybeXS> instead.
+
+=head1 WARNING
+
+L<JSON::XS> 3.0 or higher has a conflict with any version of L<JSON.pm|JSON> less than 2.90
+when you use L<JSON.pm|JSON>'s C<-support_by_pp> option, which JSON::Any enables by
+default.
+
+This situation should only come up with JSON::Any if you have L<JSON.pm|JSON> 2.61 or
+lower B<and> L<JSON::XS> 3.0 or higher installed, and you use L<JSON.pm|JSON>
+via C<< use JSON::Any qw(JSON); >> or the C<JSON_ANY_ORDER> environment variable.
+
+If you run into an issue where you're getting recursive inheritance errors in a
+L<Types::Serialiser> package, please try upgrading L<JSON.pm|JSON> to 2.90 or higher.
 
 =head1 METHODS
 
@@ -522,10 +777,12 @@ and frankly because the maintainer prefers the JSON::Any API.
 
 =item C<new>
 
+=for :stopwords recognised unicode
+
 Will take any of the parameters for the underlying system and pass them
 through. However these values don't map between JSON modules, so, from a
 portability standpoint this is really only helpful for those parameters that
-happen to have the same name. This will be addressed in a future release.
+happen to have the same name.
 
 The one parameter that is universally supported (to the extent that is
 supported by the underlying JSON modules) is C<utf8>. When this parameter is
@@ -555,8 +812,8 @@ Takes no arguments, returns a string indicating which JSON Module is in use.
 
 =item C<handler>
 
-Takes no arguments, if called on an object returns the internal JSON::* 
-object in use.  Otherwise returns the JSON::* package we are using for 
+Takes no arguments, if called on an object returns the internal JSON::*
+object in use.  Otherwise returns the JSON::* package we are using for
 class methods.
 
 =back
@@ -596,7 +853,7 @@ It returns the JSON text in a scalar.
 
 =item C<encode>
 
-Aliases for objToJson, can be used interchangeably, regardless of the 
+Aliases for C<objToJson>, can be used interchangeably, regardless of the
 underlying JSON module.
 
 =back
@@ -618,20 +875,22 @@ back into a hashref.
 
 =item C<decode>
 
-Aliases for jsonToObj, can be used interchangeably, regardless of the 
+Aliases for C<jsonToObj>, can be used interchangeably, regardless of the
 underlying JSON module.
 
 =back
 
 =head1 ACKNOWLEDGEMENTS
 
-This module came about after discussions on irc.perl.org about the fact 
+=for :stopwords Dimas Wistow mst
+
+This module came about after discussions on irc.perl.org about the fact
 that there were now six separate JSON perl modules with different interfaces.
 
-In the spirit of Class::Any, JSON::Any was created with the considerable 
+In the spirit of Class::Any, JSON::Any was created with the considerable
 help of Matt 'mst' Trout.
 
-Simon Wistow graciously supplied a patch for backwards compat with JSON::XS 
+Simon Wistow graciously supplied a patch for backwards compatibility with JSON::XS
 versions previous to 2.01
 
 San Dimas High School Football Rules!
@@ -664,18 +923,28 @@ Tomas Doran <bobtfish@bobtfish.net>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2013 by Chris Thompson.
+This software is copyright (c) 2007 by Chris Thompson.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =head1 CONTRIBUTORS
 
+=for stopwords Karen Etheridge ×™×•×‘×œ ×§×•×’'×ž×Ÿ (Yuval Kogman) Dagfinn Ilmari MannsÃ¥ker Justin Hunter Todd Rinaldo Matthew Horsfall
+
 =over 4
 
 =item *
 
-Chris Prather <cprather@hdpublishing.com>
+Karen Etheridge <ether@cpan.org>
+
+=item *
+
+×™×•×‘×œ ×§×•×’'×ž×Ÿ (Yuval Kogman) <nothingmuch@woobling.org>
+
+=item *
+
+Dagfinn Ilmari MannsÃ¥ker <ilmari@ilmari.org>
 
 =item *
 
@@ -687,19 +956,7 @@ Todd Rinaldo <toddr@cpan.org>
 
 =item *
 
-marc.mims <marc.mims@daca5766-e62f-0410-9ddd-e5e43faa6270>
-
-=item *
-
-nothingmuch@woobling.org <nothingmuch@woobling.org@daca5766-e62f-0410-9ddd-e5e43faa6270>
-
-=item *
-
-perigrin <perigrin@daca5766-e62f-0410-9ddd-e5e43faa6270>
-
-=item *
-
-robin.berjon@gmail.com <robin.berjon@gmail.com@daca5766-e62f-0410-9ddd-e5e43faa6270>
+Matthew Horsfall <wolfsage@gmail.com>
 
 =back
 
