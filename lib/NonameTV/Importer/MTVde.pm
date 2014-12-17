@@ -122,20 +122,7 @@ sub ImportContent( $$$ ) {
     $ce->{start_time} = $self->parseTimestamp( $xpc->findvalue( 's:termin/@start' ) );
     $ce->{end_time} = $self->parseTimestamp( $xpc->findvalue( 's:termin/@ende' ) );
 
-    my $title = $xpc->findvalue( 's:titel/s:alias[@titelart="titel"]/@aliastitel' );
-    if( !$title ){
-      $title = $xpc->findvalue( 's:titel/s:alias[@titelart="originaltitel"]/@aliastitel' );
-    }
-    if( !$title ){
-      $title = $xpc->findvalue( 's:titel/@termintitel' );
-    }
-    if( $title eq 'Comedy Central Programming') {
-      # remove pseudo program when channel nick is off air
-      next;
-    }
-    if( $title ){
-      $ce->{title} = $title;
-    }
+    $ce->{title} = norm($xpc->findvalue( 's:titel/@termintitel' ));
 
     my $title_org;
     $title_org = $xpc->findvalue( 's:titel/s:alias[@titelart="originaltitel"]/@aliastitel' );
@@ -162,7 +149,7 @@ sub ImportContent( $$$ ) {
       }
     }
 
-    my $production_year = $xpc->findvalue( 's:produktion/s:produktionszeitraum/s:jahr/@von' );
+    my $production_year = $xpc->findvalue( 's:infos/s:produktion/s:produktionszeitraum/s:jahr/@von' );
     if( $production_year =~ m|^\d{4}$| ){
       $ce->{production_date} = $production_year . '-01-01';
     }
@@ -202,6 +189,12 @@ sub ImportContent( $$$ ) {
     }
 
     $ce->{description} = norm($desc) if $self->{KeepDesc} and $desc and $desc ne "";
+    $ce->{title} = norm($ce->{title});
+    $ce->{subtitle} = norm($ce->{subtitle}) if defined $ce->{subtitle};
+    $ce->{subtitle} = undef if defined($ce->{subtitle}) and $ce->{title} eq $ce->{subtitle};
+
+    # Remove episode
+    $ce->{episode} = undef if defined($ce->{program_type}) and $ce->{program_type} eq "movie";
 
     $self->{datastore}->AddProgramme( $ce );
 
