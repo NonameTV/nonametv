@@ -54,7 +54,7 @@ sub InitiateDownload {
   $mech->form_with_fields( ( 'form1:password' ) );
   $mech->field( 'form1:user', $self->{Username}, 1 );
   $mech->field( 'form1:password', $self->{Password}, 1 );
-  $mech->click_button( name => 'form1:j_idt106' );
+  $mech->click_button( name => 'form1:einloggen' );
 
   if ($mech->success()) {
     return undef;
